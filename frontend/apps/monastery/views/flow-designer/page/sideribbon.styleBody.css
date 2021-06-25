@@ -1,0 +1,18 @@
+body {
+    background: #DFF0FE;
+    font-family: Raleway;
+}
+
+div#ribbon {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    padding: 10px 0px 10px 0px;
+}
+
+div#ribbon > img {
+    height: 40px;
+    width: 40px;
+    padding: 0px 0px 30px 0px;
+    cursor: copy;
+}

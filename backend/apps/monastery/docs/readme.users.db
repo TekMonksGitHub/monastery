@@ -1,0 +1,7 @@
+This is a SQLIte based user registration DB.
+
+Default user name: tekmonks
+Default password: tekmonks
+
+For registration minimum password length required is 8 characters. This is 
+enforced in login.mjs.

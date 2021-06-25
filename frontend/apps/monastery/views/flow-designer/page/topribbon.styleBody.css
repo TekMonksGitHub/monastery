@@ -1,0 +1,17 @@
+body {
+    background: #DFF0FE;
+    font-family: Raleway;
+}
+
+div#ribbon {
+    color: rgb(241, 235, 235);
+    display: flex;
+    flex-flow: row nowrap;
+    margin-left: 10px;
+}
+
+div#ribbon > img {
+    height: 24px;
+    width: 24px;
+    padding: 10px;
+}
