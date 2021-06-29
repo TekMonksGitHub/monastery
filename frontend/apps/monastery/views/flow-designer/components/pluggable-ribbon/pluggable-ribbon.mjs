@@ -7,7 +7,7 @@ import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
 const API_GETFILES = APP_CONSTANTS.BACKEND+"/apps/"+APP_CONSTANTS.APP_NAME+"/getfiles";
-const COMPONENT_PATH = `${APP_CONSTANTS.VIEW_COMPONENT_PATH}/pluggable-ribbon/`;
+const COMPONENT_PATH = `${import.meta.url.substring(0,import.meta.url.lastIndexOf("/"))}`;
 
 async function elementConnected(element) {
     let data = {};
@@ -27,7 +27,7 @@ async function instantiatePlugins(element) {
 	const shadowRoot = pluggable_ribbon.getShadowRootByHostId(element.id);
 	const elementRibbon = shadowRoot.querySelector("div#ribbon");
 
-	const path = `${APP_CONSTANTS.VIEW_COMPONENT_PATH}/pluggable-ribbon/${element.id}`.substring(APP_CONSTANTS.APP_PATH.length);
+	const path = `${COMPONENT_PATH}/${element.id}`.substring(APP_CONSTANTS.APP_PATH.length);
 	const resp = await apiman.rest(API_GETFILES, "GET", {path}, true); if (!resp.result) return;
 
 	pluggable_ribbon.extensions = pluggable_ribbon.extensions||{}; pluggable_ribbon.extensions[element.id] = {}; 
@@ -35,7 +35,7 @@ async function instantiatePlugins(element) {
 		const moduleSrc = `${COMPONENT_PATH}/${element.id}/${plugin.name}/${plugin.name}.mjs`;
 		const pluginModule = (await import(moduleSrc))[plugin.name]; pluginModule.shadowRoot = shadowRoot;
 
-		if (await pluginModule.init(_getPluginData(element.getAttribute("pluginData")),`${COMPONENT_PATH}/${element.id}/${plugin.name}`)) {
+		if (await pluginModule.init(`${COMPONENT_PATH}/${element.id}/${plugin.name}`)) {
 			pluggable_ribbon.extensions[element.id][plugin.name] = {clicked: pluginModule.clicked};
 			const imgElement = document.createElement("img"); imgElement.setAttribute("src", pluginModule.getImage()); 
 			imgElement.setAttribute("onclick", `monkshu_env.components["pluggable-ribbon"].extensions["${element.id}"]["${plugin.name}"].clicked(this, event)`);
@@ -43,12 +43,6 @@ async function instantiatePlugins(element) {
 			elementRibbon.appendChild(imgElement);
 		} else LOG.error(`Can't initialize plugin - ${plugin.name}`);
 	}
-}
-
-function _getPluginData(attrValue) {
-	if (!attrValue) return {}; 
-	const retData = {}; for (const tuple of attrValue.split(",")) retData[tuple.split(":")[0]] = tuple.split(":")[1];
-	return retData;
 }
 
 // convert this all into a WebComponent so we can use it

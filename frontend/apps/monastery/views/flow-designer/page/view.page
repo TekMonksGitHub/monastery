@@ -2,8 +2,8 @@ SCHEMA
 ======
 {
     "space": {"html":"span", "style":"height:100%; display:block; background:#DFF0FE;"},
-    "topribbon": {"html":"pluggable-ribbon", "pluginData":"graphID:flowui", "styleBody":"url(./views/flow-designer/page/topribbon.styleBody.css)"},
-    "sideribbon": {"html":"pluggable-ribbon", "pluginData":"graphID:flowui", "styleBody":"url(./views/flow-designer/page/sideribbon.styleBody.css)"},
+    "topribbon": {"html":"pluggable-ribbon", "styleBody":"url(./views/flow-designer/page/topribbon.styleBody.css)"},
+    "sideribbon": {"html":"pluggable-ribbon", "styleBody":"url(./views/flow-designer/page/sideribbon.styleBody.css)"},
     "flowui": {"html":"flow-diagram", "id":"flowui", "styleBody":"url(./views/flow-designer/page/flowui.styleBody.css)"}
 }
 ======

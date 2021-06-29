@@ -5,24 +5,22 @@
 
 import {blackboard} from "/framework/js/blackboard.mjs";
 
-const MSG_REGISTER_SHAPE = "REGISTER_SHAPE", MSG_ADD_SHAPE = "ADD_SHAPE", MSG_SHAPE_CLICKED = "SHAPE_CLICKED";
+const MSG_SHAPE_INIT = "SHAPE_INIT_ON_RIBBON", MSG_SHAPE_CLICKED_ON_RIBBON = "SHAPE_CLICKED_ON_RIBBON";
 
 class FlowNode {
     DIAG_ELEMENT_ID; CONF; I18N; SHAPE_NAME; IMAGE;
 
-    async init(shapeName, pluginName, pluginData, pluginPath) {
-        this.DIAG_ELEMENT_ID = pluginData["graphID"]; this.SHAPE_NAME = shapeName;
-        this.CONF = btoa(await (await fetch(`${pluginPath}/${pluginName}.json`)).json());
+    async init(shapeName, pluginName, pluginPath) {
+        this.SHAPE_NAME = shapeName;
+        this.CONF = await (await fetch(`${pluginPath}/${pluginName}.json`)).json();
         this.I18N = (await import(`${pluginPath}/${pluginName}.i18n.mjs`)).i18n; 
         
         const svgSource64 = btoa(await (await fetch(`${pluginPath}/${pluginName}.svg`)).text());
         const svg = "data:image/svg+xml," + svgSource64; this.IMAGE = "data:image/svg+xml;base64," + svgSource64;
-        blackboard.broadcastMessage(MSG_REGISTER_SHAPE, {graphID: this.DIAG_ELEMENT_ID, name: this.SHAPE_NAME, svg, rounded: true});
-        blackboard.registerListener(MSG_SHAPE_CLICKED, message => {if (message.name==this.SHAPE_NAME) this._shapeObjectClicked(message.id)});
+        blackboard.broadcastMessage(MSG_SHAPE_INIT, {name: this.SHAPE_NAME, svg, rounded: true});
     }
 
-    clicked = _ => blackboard.broadcastMessage(MSG_ADD_SHAPE, {graphID:this.DIAG_ELEMENT_ID, 
-        name:this.SHAPE_NAME, value:"", x:20, y:20, width:40, height:40, id:this._getUniqueID()});
+    clicked = _ => blackboard.broadcastMessage(MSG_SHAPE_CLICKED_ON_RIBBON, {name:this.SHAPE_NAME, id:this._getUniqueID()});
 
     getImage = _ => this.IMAGE;
     
@@ -51,9 +49,7 @@ class FlowNode {
         return retConf;
     }
     
-    _shapeObjectClicked = id => alert(`${this.SHAPE_NAME} with ID ${id} clicked.`);
-    
     _getUniqueID = _ => `${Date.now()}${Math.random()*100}`;
 }
 
-export const flowNode = {newFlowNode:_=>new FlowNode()};
+export const newFlowNode = _ => new FlowNode();

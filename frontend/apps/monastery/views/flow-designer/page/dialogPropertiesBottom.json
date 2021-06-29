@@ -1,0 +1,17 @@
+{
+    "okButton": false,
+    "cancelButton": false,
+    "modal": false,
+    "var--dialog-background": "#DFF0FE",
+    "var--dialog-left": "120px",
+    "var--dialog-width": "calc(100vw - 240px)",
+    "var--animation-name": "flyinbottom",
+    "var--animation-duration": "0.18s",
+    "var--animation-left-transform": "0%",
+    "var--button-background-color": "#B6DCFE",
+    "var--button-text-color": "black",
+    "okIcon": "./views/flow-designer/page/ok.svg",
+    "closeIcon": "./views/flow-designer/page/close.svg",
+    "showOKIcon": true,
+    "showCancelIcon": true
+}

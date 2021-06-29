@@ -10,5 +10,7 @@ export const i18n = {
 "Register" : "登録",
 "LoginTaken" : "ログイン重複",
 "PasswordTooShort" : "パスワードが短すぎます",
-"Search": "サーチ"
+"Search": "サーチ",
+"OK": "はい",
+"Cancel": "キャンセル"
 }

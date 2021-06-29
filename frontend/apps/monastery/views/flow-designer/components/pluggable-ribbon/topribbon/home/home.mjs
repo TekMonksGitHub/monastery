@@ -1,14 +1,14 @@
 /* 
  * (C) 2020 TekMonks. All rights reserved.
  */
+import {util} from "/framework/js/util.mjs";
+const PLUGIN_PATH = util.getModulePath(import.meta);
+let SVG_DATA, IMAGE, I18N, MENU_DIV;
 
-let DIAG_ELEMENT_ID, PLUGIN_PATH, SVG_DATA, IMAGE, I18N, MENU_DIV;
-
-async function init(pluginData, pluginPath) {
-    DIAG_ELEMENT_ID = pluginData["graphID"]; PLUGIN_PATH = pluginPath;
-    const svgSource64 = btoa(await (await fetch(`${pluginPath}/home.svg`)).text());
+async function init() {
+    const svgSource64 = btoa(await (await fetch(`${PLUGIN_PATH}/home.svg`)).text());
     SVG_DATA = "data:image/svg+xml," + svgSource64; IMAGE = "data:image/svg+xml;base64," + svgSource64;
-    I18N = (await import(`${pluginPath}/home.i18n.mjs`)).i18n; 
+    I18N = (await import(`${PLUGIN_PATH}/home.i18n.mjs`)).i18n; 
     return true;
 }
 

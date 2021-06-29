@@ -10,5 +10,7 @@ export const i18n = {
 "Register" : "Register",
 "LoginTaken" : "Login ID taken",
 "PasswordTooShort" : "Password too short",
-"Search": "Search"
+"Search": "Search",
+"OK": "OK",
+"Cancel": "Cancel"
 }

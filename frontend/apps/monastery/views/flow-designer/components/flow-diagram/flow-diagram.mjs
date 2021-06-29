@@ -1,13 +1,13 @@
 /* 
  * (C) 2020 TekMonks. All rights reserved.
  */
+import {util} from "/framework/js/util.mjs";
 import {blackboard} from "/framework/js/blackboard.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
 const graphs = {};
-const GRAPH_CONNECTABLE = true;
+const GRAPH_CONNECTABLE = true, COMPONENT_PATH = util.getModulePath(import.meta);
 const MSG_REGISTER_SHAPE = "REGISTER_SHAPE", MSG_ADD_SHAPE = "ADD_SHAPE", MSG_SHAPE_CLICKED = "SHAPE_CLICKED";
-const COMPONENT_PATH = `${APP_CONSTANTS.VIEW_COMPONENT_PATH}/flow-diagram/`;
 
 function elementConnected(element) {
     let data = {};

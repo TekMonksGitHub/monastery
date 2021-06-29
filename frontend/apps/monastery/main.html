@@ -1,10 +1,12 @@
 <html>
 <head>
+	<style>@import url('https://fonts.googleapis.com/css?family=Raleway:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&amp;display=swap');</style>
+
 	<title>{{i18n.Title}}</title>
 
 	<script type="module">
-		import {page_generator} from "./components/page-generator/page-generator.mjs"; 
-		import "./views/{{url.view}}/view.mjs"; 
+		import ("./components/page-generator/page-generator.mjs");
+		import {view} from "./views/{{url.view}}/view.mjs"; view.init();
 	</script>
 </head>
 
