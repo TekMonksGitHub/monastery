@@ -22,10 +22,7 @@ class FlowNode {
             if (message.name == pluginName) message.callback(this.PLUGIN_PATH); });
     }
 
-    clicked() {
-        const uniqueID = _getUniqueID(); ID_MAP[uniqueID] = this.PLUGIN_PATH;
-        blackboard.broadcastMessage(MSG_SHAPE_CLICKED_ON_RIBBON, {name:this.SHAPE_NAME, id:uniqueID});
-    }
+    clicked = _ => this.#clicked();
 
     getImage = _ => this.IMAGE;
     
@@ -35,7 +32,13 @@ class FlowNode {
 
     releaseID = id => delete this.ID_MAP[id];
 
-    _getUniqueID = _ => `${Date.now()}${Math.random()*100}`;
+    // Private Members    
+    #clicked() {
+        const uniqueID = FlowNode.#getUniqueID(); this.ID_MAP[uniqueID] = this.PLUGIN_PATH;
+        blackboard.broadcastMessage(MSG_SHAPE_CLICKED_ON_RIBBON, {name:this.SHAPE_NAME, id:uniqueID});
+    }
+
+    static #getUniqueID = _ => `${Date.now()}${Math.random()*100}`;
 }
 
 export const newFlowNode = _ => new FlowNode();

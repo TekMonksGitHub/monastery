@@ -8,5 +8,5 @@ const thisNode = newFlowNode();
  
 const init = async _ => {await thisNode.init("fileReader", util.getModulePath(import.meta)); return true;}
  
-const parentExports = {...thisNode}; delete parentExports["init"];
+const parentExports = {...thisNode};
 export const fileReader = {init, ...parentExports};

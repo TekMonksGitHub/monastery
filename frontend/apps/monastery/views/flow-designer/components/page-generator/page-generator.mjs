@@ -9,16 +9,16 @@
  
  const elementConnected = async element => {
 	 const pagePath = element.getAttribute("file");
-	 element.componentHTML = await getHTML(new URL(pagePath, window.location.href), element); 
+	 element.componentHTML = await getHTML(new URL(pagePath, window.location.href), element.getAttribute("css")); 
  }
  
  /**
   * Generates HTML for the give page
   * @param pageFileURLOrPageSchema Page URL as a URL object or page schema definition as a string
-  * @param element The host element
+  * @param cssHref Optional: Any external CSS to include 
   * @returns The generated HTML
   */
- async function getHTML(pageFileURLOrPageSchema, element) {
+ async function getHTML(pageFileURLOrPageSchema, cssHref) {
 	 const pageFile = (pageFileURLOrPageSchema instanceof URL) ? await $$.requireText(pageFileURLOrPageSchema) : pageFileURLOrPageSchema; 
 	 const schemaArray = pageFile.match(/SCHEMA\s*\r?\n=+\r?\n(.+?)\r?\n=+[\r?\n]*/sm);
 	 const schema = (schemaArray && schemaArray.length > 1) ? schemaArray[1] : "";
@@ -75,11 +75,10 @@
  
 	 const layoutObj = {rows: layoutLines.length, columns: columnLocations.length-1, rowHeights, colWidths, elementsAndPlacements};
  
-	 return await _generatePageHTML(element, schema, cssClassesParsed, css, element.getAttribute("css"), layoutObj);
+	 return await _generatePageHTML(schema, cssClassesParsed, css, cssHref, layoutObj);
  }
  
- async function _generatePageHTML(elementParent, schema, cssParsed, cssInternal, cssHref, layoutObj) {
-	 if (!elementParent.webscrolls_env) elementParent.webscrolls_env = {};
+ async function _generatePageHTML(schema, cssParsed, cssInternal, cssHref, layoutObj) {
 	 if (layoutObj.rowHeights.length < layoutObj.rows.length) layoutObj.rowHeights.push(Array(layoutObj.rows.length-layoutObj.rowHeights.length).fill("auto"));
 	 if (layoutObj.colWidths.length < layoutObj.columns.length) layoutObj.colWidths.push(Array(layoutObj.columns.length-layoutObj.colWidths.length).fill("auto"));
  

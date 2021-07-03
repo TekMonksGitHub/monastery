@@ -4,6 +4,7 @@
  */
 import {blackboard} from "/framework/js/blackboard.mjs";
 
+const MODULE_PATH = `${import.meta.url.substring(0,import.meta.url.lastIndexOf("/"))}`;
 const COMPONENTS_NEEDED_BY_THE_VIEW_PAGE = ["dialog-box", "flow-diagram", "pluggable-ribbon", "page-generator"];
 const MSG_REGISTER_SHAPE = "REGISTER_SHAPE", MSG_SHAPE_INIT = "SHAPE_INIT_ON_RIBBON", MSG_ADD_SHAPE = "ADD_SHAPE", 
     MSG_SHAPE_CLICKED_ON_RIBBON = "SHAPE_CLICKED_ON_RIBBON", MSG_SHAPE_CLICKED = "SHAPE_CLICKED", GRAPH_ID = "flowui",
@@ -22,7 +23,7 @@ function init() {
 function _shapeObjectClicked(shapeName) {
 	blackboard.broadcastMessage(MSG_GET_RIBBON_PLUGINPATH, {name: shapeName, callback: async path => {
         const pageFile = `${path}/dialog.page`;
-        const html = await window.monkshu_env.components["page-generator"].getHTML(pageFile);
+        const html = await window.monkshu_env.components["page-generator"].getHTML(new URL(pageFile));
         const dialog_box = window.monkshu_env.components["dialog-box"];
         dialog_box.showDialog(`${MODULE_PATH}/page/dialogPropertiesBottom.json`, html, null, [], _=>{});
     }});
