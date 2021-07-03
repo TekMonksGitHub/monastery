@@ -6,7 +6,7 @@ import {newFlowNode} from "../../lib/flowNode.mjs";
 
 const thisNode = newFlowNode();
  
-const init = async _ => {await thisNode.init("FILE_READER", "fileReader", util.getModulePath(import.meta)); return true;}
+const init = async _ => {await thisNode.init("fileReader", util.getModulePath(import.meta)); return true;}
  
 const parentExports = {...thisNode}; delete parentExports["init"];
 export const fileReader = {init, ...parentExports};

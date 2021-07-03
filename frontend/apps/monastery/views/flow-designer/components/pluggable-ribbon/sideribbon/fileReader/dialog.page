@@ -1,0 +1,44 @@
+SCHEMA
+======
+{
+    "donepath": {"html":"input", "type":"text"},
+    "dependencies": {"html":"input", "type":"text"},
+    "encoding": {"html":"input", "type":"text", "placeholder":"{{i18n.Encoding}}", "value":"UTF-8"}
+}
+======
+
+
+LAYOUT
+=================
+-----------------------------
+|         donepath          |
+-----------------------------
+| dependencies |  encoding  |
+-----------------------------
+=================
+Row Heights = 2em, 2em
+Col Widths = 50%, 50%
+=================
+
+
+CSS CLASSES
+===========
+CONTAINER CLASSES = grid-container-extension
+ITEM CLASSES = grid-item-extension
+PER ITEM CLASS = class
+===========
+
+CSS
+=======
+.grid-container-extension {
+    height: 100%;
+}
+
+.grid-item-extension {
+    background-color: rgba(255, 255, 255, 1);
+}
+
+body {
+    margin: 0%;
+}
+=======

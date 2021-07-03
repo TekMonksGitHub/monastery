@@ -42,6 +42,4 @@ CSS
 body {
     margin: 0%;
 }
-
-.class-sidebar { padding-right: 40px; }
 =======

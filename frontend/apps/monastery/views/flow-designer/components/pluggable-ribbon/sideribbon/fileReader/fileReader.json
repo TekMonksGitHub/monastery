@@ -1,9 +1,0 @@
-{
-    "properties": [
-        {"donePath": "var:r1"}, {"type": "filereader"}, {"dependencies": "var:r1"}, {"encoding":"var:r2"}, {"needsName":true}
-    ],
-    "rules": {
-        "r1":"text:required",
-        "r2":"text:required:element => {return (element.value && element.value != '')}:UTF-8"
-    }
-}

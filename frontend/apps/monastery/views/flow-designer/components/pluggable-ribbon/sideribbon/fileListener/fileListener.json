@@ -1,8 +1,0 @@
-{
-    "properties": [
-        {"path": "var:r1"}, {"donePath": "var:r1"}, {"isMessageGenerator": "true"}, {"type": "file"}
-    ],
-    "rules": {
-        "r1":"text:required"
-    }
-}
