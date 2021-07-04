@@ -2,6 +2,12 @@
     "okButton": false,
     "cancelButton": false,
     "modal": false,
+    "okIcon": "./views/flow-designer/dialogs/ok.svg",
+    "closeIcon": "./views/flow-designer/dialogs/close.svg",
+    "showOKIcon": true,
+    "showCancelIcon": true,
+    
+    "var--dialog-font": "Raleway",
     "var--dialog-background": "#DFF0FE",
     "var--dialog-left": "120px",
     "var--dialog-width": "calc(100vw - 240px)",
@@ -10,8 +16,6 @@
     "var--animation-left-transform": "0%",
     "var--button-background-color": "#B6DCFE",
     "var--button-text-color": "black",
-    "okIcon": "./views/flow-designer/page/ok.svg",
-    "closeIcon": "./views/flow-designer/page/close.svg",
-    "showOKIcon": true,
-    "showCancelIcon": true
+    "var--margin-bottom": "0px",
+    "var--error-display": "none"
 }

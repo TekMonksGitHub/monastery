@@ -60,15 +60,15 @@ function hideDialog(element) {
  }
 
 /**
- * Submits the dialog and calls the callback in showDialog. It will NOT close the dialog, as submission may result
- * in errors which need to be shown to the user, to allow him to correct his input.
+ * Submits the dialog and calls the callback in showDialog. If callback returns false the dialog will stay 
+ * open (to show errors and resubmit).
  * @param element The element inside the dialog or ID of the dialog host element (if custom hostID was used in showDialog), else null
  * @returns The values of elements whose IDs were passed as retValIDs in showDialog function
  */
  function submit(element) {
     const memory = dialog_box.getMemoryByContainedElement(element);
     const retVals = _getRetVals(memory, dialog_box.getShadowRootByContainedElement(element));
-    memory.callback?.("submit", retVals, element);
+    if (memory.callback?.("submit", retVals, element)) hideDialog(element);
 } 
 
  /**

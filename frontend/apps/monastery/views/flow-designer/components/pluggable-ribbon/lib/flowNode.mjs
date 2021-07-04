@@ -5,8 +5,7 @@
 
 import {blackboard} from "/framework/js/blackboard.mjs";
 
-const MSG_SHAPE_INIT = "SHAPE_INIT_ON_RIBBON", MSG_SHAPE_CLICKED_ON_RIBBON = "SHAPE_CLICKED_ON_RIBBON", 
-    MSG_GET_RIBBON_PLUGINPATH = "GET_RIBBON_PLUGINPATH";
+const MSG_SHAPE_INIT = "SHAPE_INIT_ON_RIBBON", MSG_SHAPE_CLICKED_ON_RIBBON = "SHAPE_CLICKED_ON_RIBBON";
 
 class FlowNode {
     DIAG_ELEMENT_ID; PLUGIN_PATH; I18N; SHAPE_NAME; IMAGE; ID_MAP = {};
@@ -18,8 +17,6 @@ class FlowNode {
         const svgSource64 = btoa(await (await fetch(`${pluginPath}/${pluginName}.svg`)).text());
         const svg = "data:image/svg+xml," + svgSource64; this.IMAGE = "data:image/svg+xml;base64," + svgSource64;
         blackboard.broadcastMessage(MSG_SHAPE_INIT, {name: this.SHAPE_NAME, svg, rounded: true});
-        blackboard.registerListener(MSG_GET_RIBBON_PLUGINPATH, message => {
-            if (message.name == pluginName) message.callback(this.PLUGIN_PATH); });
     }
 
     clicked = _ => this.#clicked();
