@@ -25,7 +25,7 @@ let _pendingRenderResolves;
  */
 async function showDialog(themePath, templatePath, templateData, retValIDs, callback, hostID=DEFAULT_HOST_ID) {
     await _initDialogFramework(hostID); 
-    if (themePath) await dialog_box.bindData(_processTheme(await $$.requireJSON(themePath)), hostID);    // bind the theme data
+    if (themePath) await dialog_box.bindData(await _processTheme(await $$.requireJSON(themePath)), hostID);    // bind the theme data
 
     const shadowRoot = dialog_box.getShadowRootByHostId(hostID); _resetUI(shadowRoot);
     const templateHTML = typeof templatePath == "string" ? templatePath : await router.loadHTML(templatePath, templateData, false);
@@ -120,8 +120,8 @@ function _resetUI(shadowRoot) {
     if (shadowRoot.querySelector("span#cancel")) shadowRoot.querySelector("span#cancel").style.display = "inline";
 }
 
-function _processTheme(theme) {
-    const clone = {...theme};
+async function _processTheme(theme) {
+    const clone = JSON.parse(await router.expandPageData(JSON.stringify(theme)));
     const cssVars = [];
     for (const key in theme) if (key.startsWith("var--")) cssVars.push(`${key.substring(3)}: ${theme[key]}`);
     if (cssVars.length || theme.styleBody)

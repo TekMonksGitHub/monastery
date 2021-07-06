@@ -2,8 +2,8 @@
     "okButton": false,
     "cancelButton": false,
     "modal": false,
-    "okIcon": "./views/flow-designer/dialogs/ok.svg",
-    "closeIcon": "./views/flow-designer/dialogs/close.svg",
+    "okIcon": "./views/{{url.view}}/dialogs/ok.svg",
+    "closeIcon": "./views/{{url.view}}/dialogs/close.svg",
     "showOKIcon": true,
     "showCancelIcon": true,
     

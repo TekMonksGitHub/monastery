@@ -5,7 +5,7 @@
 	<title>{{i18n.Title}}</title>
 
 	<script type="module">
-		import ("./components/page-generator/page-generator.mjs");
+		import ("/framework/components/page-generator/page-generator.mjs");
 		import {view} from "./views/{{url.view}}/view.mjs"; view.init();
 	</script>
 </head>
@@ -14,4 +14,3 @@
 	<page-generator file="./views/{{url.view}}/page/view.page"></page-generator>
 </body>
 </html>
-
