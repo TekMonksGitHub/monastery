@@ -1,6 +1,9 @@
-# Monastery - The TekMonks IDE Framework
+<div align="center"><h1>Monastery - The TekMonks IDE Framework</h1>
 
-<p align="center"><img src="https://github.com/TekMonksGitHub/raw/blob/master/monastery.gif?raw=true" height="400px"></p>
+<img src="https://github.com/TekMonksGitHub/raw/blob/master/monastery.gif?raw=true" height="400px">
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</div>
 
 Getting Started
 ===============
