@@ -2,12 +2,13 @@
  * (C) 2019 TekMonks. All rights reserved.
  * License: See enclosed LICENSE file.
  */
+import {util} from "/framework/js/util.mjs";
 import {session} from "/framework/js/session.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
 const API_GETFILES = APP_CONSTANTS.BACKEND+"/apps/"+APP_CONSTANTS.APP_NAME+"/getfiles";
-const COMPONENT_PATH = `${import.meta.url.substring(0,import.meta.url.lastIndexOf("/"))}`;
+const COMPONENT_PATH = util.getModulePath(import.meta);
 
 async function elementConnected(element) {
     let data = {};
