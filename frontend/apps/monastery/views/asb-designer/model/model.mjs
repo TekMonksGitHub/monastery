@@ -51,7 +51,7 @@
      if (sourceID == targetID) return false; // can't loop from same node to itself
  
      const targetDependencies = asbModel[idCache[targetID]]?.dependencies;
-     if (targetDependencies && targetDependencies.contains([idCache[sourceID]])) return false;   // can't reconnect same nodes again
+     if (targetDependencies) for (const dependency of targetDependencies) if (dependency.includes(idCache[sourceID])) return false;   // can't reconnect same nodes again
      
      return true;
  }
