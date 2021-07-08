@@ -2,12 +2,29 @@
  * (C) 2021 TekMonks. All rights reserved.
  * License: See enclosed LICENSE file.
  */
+import {blackboard} from "/framework/js/blackboard.mjs";
 
 const asbModel = {}, idCache = {};
 let routeCounter = 0, listenerCounter = 0, outputCounter = 0;
+const MSG_NODES_MODIFIED = "NODES_MODIFIED", MSG_CONNECTORS_MODIFIED = "CONNECTORS_MODIFIED", 
+    MSG_NODE_DESCRIPTION_CHANGED = "NODE_DESCRIPTION_CHANGED", MSG_ARE_NODES_CONNECTABLE = "ARE_NODES_CONNECTABLE",
+    MSG_CONNECT_NODES = "CONNECT_NODES", MSG_LABEL_SHAPE = "LABEL_NODE", MSG_ADD_NODE = "ADD_NODE";
 
-function modelNodesModified(type, shapeName, id, properties) {
-    if (type == model.ADDED) return _nodeAdded(shapeName, id, properties);
+function init() {
+    blackboard.registerListener(MSG_NODES_MODIFIED, message => modelNodesModified(message.type, message.nodeName,
+        message.id, message.properties), true);
+    blackboard.registerListener(MSG_CONNECTORS_MODIFIED, message => modelConnectorsModified(message.type, 
+        message.sourceNode, message.targetNode, message.sourceID, message.targetID));
+    blackboard.registerListener(MSG_NODE_DESCRIPTION_CHANGED, message => nodeDescriptionChanged(message.nodeName, 
+        message.id, message.description));
+    blackboard.registerListener(MSG_NODE_DESCRIPTION_CHANGED, message => nodeDescriptionChanged(message.nodeName, 
+        message.id, message.description));
+    blackboard.registerListener(MSG_ARE_NODES_CONNECTABLE, message => isConnectable(message.sourceName, 
+        message.targetName, message.sourceID, message.targetID), true);
+}
+
+function modelNodesModified(type, nodeName, id, properties) {
+    if (type == model.ADDED) return _nodeAdded(nodeName, id, properties);
     if (type == model.REMOVED) return _nodeRemoved(id);
 
     return false;   // unknown modification
@@ -35,17 +52,17 @@ function isConnectable(_sourceName, _targetName, sourceID, targetID) {    // are
     return true;
 }
 
-function nodeDescriptionChanged(_shapeName, id, description) {
+function nodeDescriptionChanged(_nodeName, id, description) {
     if (!idCache[id]) return; 
     asbModel[idCache[id]].description = description;
 }
 
-function _nodeAdded(shapeName, id, properties) {
-    const modelProperty = idCache[id] ? idCache[id] : shapeName.endsWith("Listener") ? 
-        `listener${++listenerCounter}` : shapeName.endsWith("Output") ? `output${++outputCounter}` : `route${++routeCounter}`;
-    if (modelProperty.startsWith("listener")) asbModel[modelProperty] = {type: shapeName.substring(0, shapeName.length-8)};
-    else if (modelProperty.startsWith("output")) asbModel[modelProperty] = {type: shapeName.substring(0, shapeName.length-6)};
-    else asbModel[modelProperty] = {type: shapeName.toLowerCase()};
+function _nodeAdded(nodeName, id, properties) {
+    const modelProperty = idCache[id] ? idCache[id] : nodeName.endsWith("Listener") ? 
+        `listener${++listenerCounter}` : nodeName.endsWith("Output") ? `output${++outputCounter}` : `route${++routeCounter}`;
+    if (modelProperty.startsWith("listener")) asbModel[modelProperty] = {type: nodeName.substring(0, nodeName.length-8)};
+    else if (modelProperty.startsWith("output")) asbModel[modelProperty] = {type: nodeName.substring(0, nodeName.length-6)};
+    else asbModel[modelProperty] = {type: nodeName.toLowerCase()};
 
     // listeners are message generators
     if (modelProperty.startsWith("listener")) asbModel[modelProperty].isMessageGenerator = true;
@@ -65,5 +82,5 @@ function _nodeRemoved(id) {
     return true;
 }
 
-export const model = {modelNodesModified, modelConnectorsModified, isConnectable, nodeDescriptionChanged, 
+export const model = {init, modelNodesModified, modelConnectorsModified, isConnectable, nodeDescriptionChanged, 
     ADDED: "added", REMOVED: "removed"};

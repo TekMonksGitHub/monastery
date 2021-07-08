@@ -11,7 +11,8 @@ const GRAPH_CONNECTABLE = true, COMPONENT_PATH = util.getModulePath(import.meta)
 const MSG_REGISTER_SHAPE = "REGISTER_SHAPE", MSG_ADD_SHAPE = "ADD_SHAPE", MSG_SHAPE_CLICKED = "SHAPE_CLICKED",
 	MSG_SHAPE_REMOVED = "SHAPE_REMOVED", MSG_SHAPES_DISCONNECTED = "SHAPES_DISCONNECTED", 
 	MSG_SHAPES_CONNECTED = "SHAPES_CONNECTED", GRAPH_MONASTERY_ID = "__org_monkshu_monastery_id",
-	MSG_VALIDATE_CONNECTION = "VALIDATE_FLOW_CONNECTION", MSG_LABEL_CHANGED = "LABEL_CHANGED";
+	MSG_VALIDATE_CONNECTION = "VALIDATE_FLOW_CONNECTION", MSG_LABEL_CHANGED = "LABEL_CHANGED",
+	MSG_CONNECT_SHAPES = "CONNECT_SHAPES", MSG_LABEL_SHAPE = "LABEL_SHAPE";
 
 function elementConnected(element) {
     let data = {};
@@ -23,17 +24,38 @@ function elementConnected(element) {
 	} else flow_diagram.data = data;
 
 	blackboard.registerListener(MSG_REGISTER_SHAPE, message => registerShape(message.graphID, message.name, message.svg, message.rounded));
-	blackboard.registerListener(MSG_ADD_SHAPE, message => insertNode(message.graphID, message.id, message.value, message.name, message.x, message.y, message.width, message.height));
+	blackboard.registerListener(MSG_ADD_SHAPE, message => insertNode(message.graphID, message.id, message.label, message.name, message.x, message.y, message.width, message.height));
+	blackboard.registerListener(MSG_CONNECT_SHAPES, message => connectNodes(message.graphID, message.sourceid, message.targetid, message.labelid, message.label));
+	blackboard.registerListener(MSG_LABEL_SHAPE, message => addLabel(message.graphID, message.shapeid, message.label));
 }
 
+/**
+ * Inserts the given node into the given graph.
+ * @param hostID The host graph ID
+ * @param id The node ID
+ * @param value The text to show under the node
+ * @param shapeName The shape name
+ * @param x Optional: X coordinates to insert at
+ * @param y Optional: Y coordinates to insert at
+ * @param width Optional: Width of the image, default is 80px
+ * @param height Optional: Height of the image, default is 80px
+ * @returns true on success and false on error
+ */
 async function insertNode(hostID, id, value, shapeName, x=0, y=0, width=80, height=30) {
-	const graph = await _getGraph(hostID); if (!graph) return;
+	const graph = await _getGraph(hostID); if (!graph) return false;
 	const parent = graph.getDefaultParent();
-	graph.getModel().beginUpdate();
 	graph.insertVertex(parent, id, value, x, y, width, height, shapeName);
-	graph.getModel().endUpdate();
+	return true;
 }
 
+/**
+ * Registers the given shape for the graph.
+ * @param hostID The graph ID of the graph to use
+ * @param name The name of the shape
+ * @param svgData The SVG image data
+ * @param rounded Whether or not the rounded style is used
+ * @returns true on success, false otherwise
+ */
 async function registerShape(hostID, name, svgData, rounded=false) {
 	const graph = await _getGraph(hostID); if (!graph) return;
 	const style = new Object();
@@ -45,6 +67,39 @@ async function registerShape(hostID, name, svgData, rounded=false) {
 	style[mxConstants.STYLE_FONTSIZE] = "12";
 	graph.getStylesheet().putCellStyle(name,style);
 	return true;
+}
+
+/**
+ * Connects the given nodes with a directed arrow from Node1 to Node2.
+ * @param hostID The graph ID of the graph to use
+ * @param nodeID1 The ID of the first node, that is the source node to use
+ * @param nodeID2  The ID of the target node, that is the node to point to
+ * @param id Optional: The ID of the connector, this can be used to label it later
+ * @param value Optional: The text to display on the edge
+ * @returns true on success, false otherwise
+ */
+async function connectNodes(hostID, nodeID1, nodeID2, id, value) {
+	const graph = await _getGraph(hostID); if (!graph) return false;
+	const parent = graph.getDefaultParent(), allVertices = graph.getChildVertices(parent);
+	let source, target; for (const vertex of allVertices) {
+		if (vertex.id == nodeID1) source = vertex;
+		if (vertex.id == nodeID2) target = vertex;
+	}
+	if ((!source) || (!target)) return false;	// cells not found.
+	else { graph.insertEdge(parent, id, value, source, target, null); return true; }
+}
+
+/**
+ * Adds a label to the given node
+ * @param hostID The graph ID of the graph to use
+ * @param nodeID The ID of the node to label, can be a shape or a connector
+ * @param value The label 
+ * @returns true on success, false otherwise
+ */
+async function addLabel(hostID, nodeID, value) {
+	const graph = await _getGraph(hostID); if (!graph) return false;
+	const cell = graph.getModel().getCell(nodeID); if (!cell) return false;	// not found
+	cell.setValue(value); return true;
 }
 
 async function _getGraph(hostID) {
@@ -135,5 +190,5 @@ function _createNonWebComponentDiagramContainer(container) {
 const _findGraphID = graph => {for (const key in graphs) if (graphs[key][GRAPH_MONASTERY_ID] == graph[GRAPH_MONASTERY_ID]) return key; return null;}
 
 // convert this all into a WebComponent so we can use it
-export const flow_diagram = {trueWebComponentMode: true, insertNode, registerShape, elementConnected}
+export const flow_diagram = {trueWebComponentMode: true, registerShape, elementConnected, insertNode, connectNodes, addLabel}
 monkshu_component.register("flow-diagram", `${COMPONENT_PATH}/flow-diagram.html`, flow_diagram);
