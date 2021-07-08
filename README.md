@@ -16,8 +16,3 @@ Step 5: Browse to http://<your IP>:8080/apps/monastery/index.html
 Optional Step
 =============
 Modify /frontend/framework/conf/default_app.json to "monastery" and then http://<your IP>:8080 should auto redirect.
-
-Login
-=====
-ID: tekmonks
-Password: testing123
