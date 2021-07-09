@@ -3,5 +3,10 @@ export const i18n = {
         en:"File Listener\nWatches for incoming files", 
         hi: "फ़ाइल श्रोता\nआने वाली फ़ाइलों के लिए देखता है", 
         ja: "ファイルリスナー\n着信ファイルを監視する"
+    },
+    DESCRIPTIVE_NAME : {
+        en:"File Listener", 
+        hi: "फ़ाइल श्रोता", 
+        ja: "ファイルリスナー"
     }
 }

@@ -25,6 +25,8 @@ class FlowNode {
     
     getHelpText = (lang=en) => this.I18N.HELP_TEXTS[lang];
 
+    getDescriptiveName = (lang=en) => this.I18N.DESCRIPTIVE_NAME[lang];
+
     geti18n = _ => this.I18N;
 
     releaseID = id => delete this.ID_MAP[id];

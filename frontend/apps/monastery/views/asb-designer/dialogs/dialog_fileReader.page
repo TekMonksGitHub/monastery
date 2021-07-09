@@ -1,8 +1,7 @@
 SCHEMA
 ======
 {
-    "donepath": {"html":"input", "type":"text"},
-    "dependencies": {"html":"input", "type":"text"},
+    "donepath": {"html":"input", "type":"text", "placeholder":"{{i18n.DonePath}}"},
     "encoding": {"html":"input", "type":"text", "placeholder":"{{i18n.Encoding}}", "value":"UTF-8"}
 }
 ======
@@ -10,14 +9,12 @@ SCHEMA
 
 LAYOUT
 =================
------------------------------
-|         donepath          |
------------------------------
-| dependencies |  encoding  |
------------------------------
+-------------------------------
+|     donepath     | encoding |
+-------------------------------
 =================
-Row Heights = 2em, 2em
-Col Widths = 50%, 50%
+Row Heights = 4em
+Col Widths = 80%, 20%
 =================
 
 
@@ -35,10 +32,28 @@ CSS
 }
 
 .grid-item-extension {
-    background-color: rgba(255, 255, 255, 1);
+    background-color: var(--dialog-background, white);
+    padding: 10px 20px 10px 20px;
+    display: flex;
+    flex-flow: row;
+    box-sizing: border-box;
 }
+
+.grid-item-extension > input, .grid-item-extension > input:focus, 
+        .grid-item-extension > select, .grid-item-extension > select:focus {
+    height: 100%;
+    width: 100%;
+    border-radius: 10px;
+    border: 0px;
+    outline: none;
+    padding: 10px;
+}
+
+::placeholder {opacity: 0.8;}
 
 body {
     margin: 0%;
+    display: inline-block;
+    width: 100%;
 }
 =======

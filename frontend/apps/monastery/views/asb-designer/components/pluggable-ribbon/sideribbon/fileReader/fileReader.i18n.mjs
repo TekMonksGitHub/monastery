@@ -3,5 +3,10 @@ export const i18n = {
         en:"File Reader\nReads incoming files", 
         hi: "फ़ाइल रीडर\nआने वाली फ़ाइलों को पड़ता है", 
         ja: "ファイルリーダー\n着信ファイルを読み取ります"
+    },
+    DESCRIPTIVE_NAME : {
+        en:"File Reader", 
+        hi: "फ़ाइल रीडर", 
+        ja: "ファイルリーダー"
     }
 }
