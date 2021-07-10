@@ -17,13 +17,14 @@ const MSG_REGISTER_SHAPE = "REGISTER_SHAPE", MSG_SHAPE_INIT = "SHAPE_INIT_ON_RIB
     MSG_MODEL_CONNECT_NODES = "CONNECT_NODES", MSG_MODEL_LABEL_NODE = "LABEL_NODE", MSG_MODEL_ADD_NODE = "ADD_NODE", 
     MSG_MODEL_NODES_MODIFIED = "NODES_MODIFIED", MSG_MODEL_CONNECTORS_MODIFIED = "CONNECTORS_MODIFIED", 
     MSG_MODEL_NODE_DESCRIPTION_CHANGED = "NODE_DESCRIPTION_CHANGED", MSG_MODEL_ARE_NODES_CONNECTABLE = "ARE_NODES_CONNECTABLE",
-    GRAPH_ID = "flowui", MODEL_OP_ADDED = "added", MODEL_OP_REMOVED = "removed";
+    MSG_MODEL_LOAD_MODEL = "LOAD_MODEL", MSG_RESET = "RESET", MSG_FILE_UPLOADED = "FILE_UPLOADED", GRAPH_ID = "flowui", MODEL_OP_ADDED = "added", 
+    MODEL_OP_REMOVED = "removed", MODEL_OP_MODIFIED = "modified";
 const PAGE_GENERATOR_GRID_ITEM_CLASS = "grid-item-extension", HTML_INPUT_ELEMENTS = ["input","select"];
-const ID_CACHE = {};
+let ID_CACHE = {};
 
 async function init() {
     blackboard.registerListener(MSG_SHAPE_INIT, message => blackboard.broadcastMessage(MSG_REGISTER_SHAPE, 
-        {name: message.name, svg: message.svg, graphID: GRAPH_ID, rounded: true}));
+        {name: message.name.toLowerCase(), svg: message.svg, graphID: GRAPH_ID, rounded: true}));
     blackboard.registerListener(MSG_SHAPE_CLICKED_ON_RIBBON, message => shapeAdded(message.name, message.id));
     blackboard.registerListener(MSG_SHAPE_CLICKED, message => _shapeObjectClickedOnFlowDiagram(message.name, message.id));
     blackboard.registerListener(MSG_SHAPE_REMOVED, message => blackboard.broadcastMessage(MSG_MODEL_NODES_MODIFIED,
@@ -38,16 +39,23 @@ async function init() {
     blackboard.registerListener(MSG_LABEL_CHANGED, message => blackboard.broadcastMessage(MSG_MODEL_NODE_DESCRIPTION_CHANGED,
         {nodeName: message.name, id: message.id, description: message.label}));
     blackboard.registerListener(MSG_MODEL_CONNECT_NODES, message => blackboard.broadcastMessage(MSG_CONNECT_SHAPES, 
-        {graphID: GRAPH_ID, sourceid: message.sourceid, targetid: message.targetid, labelid: message.labelid, label: message.label}));
+        {graphID: GRAPH_ID, sourceID: message.sourceID, targetID: message.targetID, labelID: message.labelID, label: message.description}));
     blackboard.registerListener(MSG_MODEL_LABEL_NODE, message => blackboard.broadcastMessage(MSG_LABEL_SHAPE, 
         {graphID: GRAPH_ID, shapeid: message.shapeid, label: message.label}));
-    blackboard.registerListener(MSG_MODEL_ADD_NODE, message => blackboard.broadcastMessage(MSG_ADD_SHAPE, 
-        {name: message.nodeName, id: message.id, graphID: GRAPH_ID, label:message.label, x:20, y:20, width:40, height:40})); 
+    blackboard.registerListener(MSG_MODEL_ADD_NODE, message => { ID_CACHE[message.id] = message.properties; 
+        blackboard.broadcastMessage(MSG_ADD_SHAPE, {name: message.nodeName.toLowerCase(), id: message.id, 
+            graphID: GRAPH_ID, label: message.description, x:20, y:20, width:40, height:40}); }); 
+    blackboard.registerListener(MSG_FILE_UPLOADED, async message => { await reset(); blackboard.broadcastMessage(MSG_MODEL_LOAD_MODEL,
+        {data: message.data, name: message.name}) });
 
     for (const component of COMPONENTS_NEEDED_BY_THE_VIEW_PAGE) import (`./components/${component}/${component}.mjs`);
 
     const i18NForView = await import(`${MODULE_PATH}/page/i18n.mjs`); // merge the view's i18ns into the global i18n
     for (const lang in i18NForView.i18n) i18n.setI18NObject(lang, {...await i18n.getI18NObject(lang, true), ...i18NForView.i18n[lang]});
+}
+
+async function reset() {
+    for (const listener of blackboard.getListeners(MSG_RESET)) await listener({graphID: GRAPH_ID}); ID_CACHE = {};
 }
 
 function shapeAdded(shapeName, id) {
@@ -74,7 +82,7 @@ async function _shapeObjectClickedOnFlowDiagram(shapeName, id) {
     window.monkshu_env.components["dialog-box"].showDialog(`${MODULE_PATH}/dialogs/dialogPropertiesBottom.json`, 
         html, null, idsNeeded, (typeOfClose, result) => { if (typeOfClose == "submit") {
                 ID_CACHE[id] = result; const listeners = blackboard.getListeners(MSG_MODEL_NODES_MODIFIED); // inform model
-                for (const listener of listeners) if (!listener({type: MODEL_OP_ADDED, nodeName: shapeName, id, properties: result})) return false;
+                for (const listener of listeners) if (!listener({type: MODEL_OP_MODIFIED, nodeName: shapeName, id, properties: result})) return false;
                 return true;
             }
         }
@@ -88,4 +96,4 @@ function _validateConnection(message) {
     return true;
 }
 
-export const view = {init};
+export const view = {init, reset};

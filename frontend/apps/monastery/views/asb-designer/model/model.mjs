@@ -4,12 +4,12 @@
  */
 import {blackboard} from "/framework/js/blackboard.mjs";
 
-const asbModel = {}, idCache = {};
+let asbModel = {}, idCache = {};
 let routeCounter = 0, listenerCounter = 0, outputCounter = 0;
 const MSG_NODES_MODIFIED = "NODES_MODIFIED", MSG_CONNECTORS_MODIFIED = "CONNECTORS_MODIFIED", 
     MSG_NODE_DESCRIPTION_CHANGED = "NODE_DESCRIPTION_CHANGED", MSG_ARE_NODES_CONNECTABLE = "ARE_NODES_CONNECTABLE",
-    MSG_GET_MODEL = "GET_MODEL", MSG_CONNECT_NODES = "CONNECT_NODES", MSG_LABEL_SHAPE = "LABEL_NODE", 
-    MSG_ADD_NODE = "ADD_NODE";
+    MSG_GET_MODEL = "GET_MODEL", MSG_RESET = "RESET", MSG_LOAD_MODEL = "LOAD_MODEL", 
+    MSG_CONNECT_NODES = "CONNECT_NODES", MSG_ADD_NODE = "ADD_NODE";
 
 function init() {
     blackboard.registerListener(MSG_NODES_MODIFIED, message => modelNodesModified(message.type, message.nodeName,
@@ -23,11 +23,37 @@ function init() {
     blackboard.registerListener(MSG_ARE_NODES_CONNECTABLE, message => isConnectable(message.sourceName, 
         message.targetName, message.sourceID, message.targetID), true);
     blackboard.registerListener(MSG_GET_MODEL, _ => getModelAsFile(), true);
+    blackboard.registerListener(MSG_RESET, _ => {asbModel = {}; idCache = {};}, true)
+    blackboard.registerListener(MSG_LOAD_MODEL, message => loadModel(message.data));
+}
+
+function loadModel(jsonModel) {
+    try {asbModel = JSON.parse(jsonModel)} 
+    catch (err) {LOG.error(`Bad ASB model, error ${err}, skipping.`); return;}
+
+    const _getUniqueID = _ => `${Date.now()}${Math.random()*100}`;    
+    const _getNodeType = node => node.startsWith("listener") ? `${asbModel[node].type}Listener` : node.startsWith("output") ?
+        `${asbModel[node].type}Output` : asbModel[node].type;
+
+    for (const node in asbModel) {  // first add all the nodes
+        const id = _getUniqueID(); idCache[id] = node;
+        blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: _getNodeType(node), id, description: asbModel[node].description, properties: {...asbModel[node]}});
+    }
+
+    const _findID = node => {for (const id in idCache) if (idCache[id] == node) return id;}; // now add all the connectors
+    for (const node in asbModel) if (asbModel[node].dependencies) for (const dependency of asbModel[node].dependencies) { 
+        const sourceNodeKey = dependency[0], targetNodeKey = node; 
+        if (!asbModel[sourceNodeKey]) {LOG.error(`Bad dependency in the model ${sourceNodeKey}, skipping.`); break;}
+        const sourceName = _getNodeType(sourceNodeKey), targetName = _getNodeType(targetNodeKey);
+        const sourceID = _findID(sourceNodeKey), targetID = _findID(targetNodeKey);
+        blackboard.broadcastMessage(MSG_CONNECT_NODES, {sourceName, targetName, sourceID, targetID});
+    }
 }
 
 function modelNodesModified(type, nodeName, id, properties) {
     if (type == model.ADDED) return _nodeAdded(nodeName, id, properties);
     if (type == model.REMOVED) return _nodeRemoved(id);
+    if (type == model.MODIFIED) return _nodeModified(nodeName, id, properties);
 
     return false;   // unknown modification
 }
@@ -68,8 +94,8 @@ const getModelAsFile = _ => {return {data: JSON.stringify(asbModel, null, 4), mi
 function _nodeAdded(nodeName, id, properties) {
     const modelProperty = idCache[id] ? idCache[id] : nodeName.endsWith("Listener") ? 
         `listener${++listenerCounter}` : nodeName.endsWith("Output") ? `output${++outputCounter}` : `route${++routeCounter}`;
-    if (modelProperty.startsWith("listener")) asbModel[modelProperty] = {type: nodeName.substring(0, nodeName.length-8)};
-    else if (modelProperty.startsWith("output")) asbModel[modelProperty] = {type: nodeName.substring(0, nodeName.length-6)};
+    if (modelProperty.startsWith("listener")) asbModel[modelProperty] = {type: nodeName.substring(0, nodeName.length-8).toLowerCase()};
+    else if (modelProperty.startsWith("output")) asbModel[modelProperty] = {type: nodeName.substring(0, nodeName.length-6).toLowerCase()};
     else asbModel[modelProperty] = {type: nodeName.toLowerCase()};
 
     // listeners are message generators
@@ -90,5 +116,12 @@ function _nodeRemoved(id) {
     return true;
 }
 
-export const model = {init, modelNodesModified, modelConnectorsModified, isConnectable, nodeDescriptionChanged, 
-    getModelAsFile, ADDED: "added", REMOVED: "removed"};
+function _nodeModified(_nodeName, id, properties) {
+    if (!idCache[id]) return false; 
+    // transfer the properties
+    for (const key in properties) asbModel[idCache[id]][key] = properties[key];
+    return true;
+}
+
+export const model = {init, loadModel, modelNodesModified, modelConnectorsModified, isConnectable, nodeDescriptionChanged, 
+    getModelAsFile, ADDED: "added", REMOVED: "removed", MODIFIED: "modified"};

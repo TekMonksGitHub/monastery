@@ -4,10 +4,8 @@
  */
 import {util} from "/framework/js/util.mjs";
 import {session} from "/framework/js/session.mjs";
-import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
-const API_GETFILES = APP_CONSTANTS.BACKEND+"/apps/"+APP_CONSTANTS.APP_NAME+"/getfiles";
 const COMPONENT_PATH = util.getModulePath(import.meta);
 
 async function elementConnected(element) {
@@ -29,19 +27,16 @@ async function elementRendered(element) {
 }
 
 async function _instantiatePlugins(element) {
-	const path = `${COMPONENT_PATH}/${element.id}`.substring(APP_CONSTANTS.APP_PATH.length);
-	const resp = await apiman.rest(API_GETFILES, "GET", {path}, true); if (!resp.result) return;
-
+	let plugins; try{plugins = await $$.requireJSON(`${COMPONENT_PATH}/${element.id}/pluginreg.json`);} catch (err) {LOG.error(`Can't read plugin registry, error is ${err}`); return {};};
 	const data = {plugins:[]}; pluggable_ribbon.extensions = pluggable_ribbon.extensions||{}; pluggable_ribbon.extensions[element.id||"null"] = {};
-	for (const plugin of resp.entries) {
-		const moduleSrc = `${COMPONENT_PATH}/${element.id}/${plugin.name}/${plugin.name}.mjs`;
-		const pluginModule = (await import(moduleSrc))[plugin.name]; 
-
-		if (pluginModule && await pluginModule.init(`${COMPONENT_PATH}/${element.id}/${plugin.name}`)) {
-			pluggable_ribbon.extensions[element.id][plugin.name] = pluginModule;
+	for (const plugin of plugins) {
+		const moduleSrc = `${COMPONENT_PATH}/${element.id}/${plugin}/${plugin}.mjs`;
+		const pluginModule = (await import(moduleSrc))[plugin]; 
+		if (pluginModule && await pluginModule.init(`${COMPONENT_PATH}/${element.id}/${plugin}`)) {
+			pluggable_ribbon.extensions[element.id][plugin] = pluginModule;
 			data.plugins.push({img: pluginModule.getImage(), title: pluginModule.getHelpText(session.get($$.MONKSHU_CONSTANTS.LANG_ID)), 
-				id: element.id||"null", pluginName: plugin.name, name: pluginModule.getDescriptiveName(session.get($$.MONKSHU_CONSTANTS.LANG_ID))});
-		} else LOG.error(`Can't initialize plugin - ${plugin.name}`);
+				id: element.id||"null", pluginName: plugin, name: pluginModule.getDescriptiveName(session.get($$.MONKSHU_CONSTANTS.LANG_ID))});
+		} else LOG.error(`Can't initialize plugin - ${plugin}`);
 	}
 	return data;
 }

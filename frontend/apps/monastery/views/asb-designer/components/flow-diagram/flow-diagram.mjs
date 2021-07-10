@@ -12,7 +12,7 @@ const MSG_REGISTER_SHAPE = "REGISTER_SHAPE", MSG_ADD_SHAPE = "ADD_SHAPE", MSG_SH
 	MSG_SHAPE_REMOVED = "SHAPE_REMOVED", MSG_SHAPES_DISCONNECTED = "SHAPES_DISCONNECTED", 
 	MSG_SHAPES_CONNECTED = "SHAPES_CONNECTED", GRAPH_MONASTERY_ID = "__org_monkshu_monastery_id",
 	MSG_VALIDATE_CONNECTION = "VALIDATE_FLOW_CONNECTION", MSG_LABEL_CHANGED = "LABEL_CHANGED",
-	MSG_CONNECT_SHAPES = "CONNECT_SHAPES", MSG_LABEL_SHAPE = "LABEL_SHAPE";
+	MSG_CONNECT_SHAPES = "CONNECT_SHAPES", MSG_LABEL_SHAPE = "LABEL_SHAPE", MSG_RESET = "RESET";
 
 function elementConnected(element) {
     let data = {};
@@ -25,8 +25,9 @@ function elementConnected(element) {
 
 	blackboard.registerListener(MSG_REGISTER_SHAPE, message => registerShape(message.graphID, message.name, message.svg, message.rounded));
 	blackboard.registerListener(MSG_ADD_SHAPE, message => insertNode(message.graphID, message.id, message.label, message.name, message.x, message.y, message.width, message.height));
-	blackboard.registerListener(MSG_CONNECT_SHAPES, message => connectNodes(message.graphID, message.sourceid, message.targetid, message.labelid, message.label));
+	blackboard.registerListener(MSG_CONNECT_SHAPES, message => connectNodes(message.graphID, message.sourceID, message.targetID, message.labelID, message.label));
 	blackboard.registerListener(MSG_LABEL_SHAPE, message => addLabel(message.graphID, message.shapeid, message.label));
+	blackboard.registerListener(MSG_RESET, async message => {const graph = await _getGraph(message.graphID); if (!graph) return; graph.removeCells(graph.getChildVertices(graph.getDefaultParent()));}, true)
 }
 
 /**

@@ -1,4 +1,3 @@
 {
-    "/apps/monastery/login" : "/apis/login.js",
-    "/apps/monastery/getfiles" : "/apis/getFiles.js?get=true"
+    "/apps/monastery/login" : "/apis/login.js"
 }

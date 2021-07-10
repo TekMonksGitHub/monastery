@@ -4,7 +4,7 @@
 import {util} from "/framework/js/util.mjs";
 import {blackboard} from "/framework/js/blackboard.mjs";
 
-const PLUGIN_PATH = util.getModulePath(import.meta), MSG_MODEL_OPEN_MODEL = "OPEN_MODEL";
+const PLUGIN_PATH = util.getModulePath(import.meta), MSG_FILE_UPLOADED = "FILE_UPLOADED";
 let IMAGE, I18N;
 
 async function init() {
@@ -15,7 +15,10 @@ async function init() {
 }
 
 async function clicked(_element) {
-    blackboard.broadcastMessage(MSG_MODEL_OPEN_MODEL, {});
+    try {
+        const {name, data} = await util.uploadAFile("application/json");
+        blackboard.broadcastMessage(MSG_FILE_UPLOADED, {name, data});
+    } catch (err) {LOG.error(`Error opening file: ${err}`);}
 }
 
 const getImage = _ => IMAGE;
