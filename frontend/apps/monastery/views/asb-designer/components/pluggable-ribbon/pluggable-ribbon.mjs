@@ -34,8 +34,13 @@ async function _instantiatePlugins(element) {
 		const pluginModule = (await import(moduleSrc))[plugin]; 
 		if (pluginModule && await pluginModule.init(`${COMPONENT_PATH}/${element.id}/${plugin}`)) {
 			pluggable_ribbon.extensions[element.id][plugin] = pluginModule;
-			data.plugins.push({img: pluginModule.getImage(), title: pluginModule.getHelpText(session.get($$.MONKSHU_CONSTANTS.LANG_ID)), 
-				id: element.id||"null", pluginName: plugin, name: pluginModule.getDescriptiveName(session.get($$.MONKSHU_CONSTANTS.LANG_ID))});
+			const pluginObj = {img: pluginModule.getImage(), title: pluginModule.getHelpText(session.get($$.MONKSHU_CONSTANTS.LANG_ID)), 
+				id: element.id||"null", pluginName: plugin, name: pluginModule.getDescriptiveName(session.get($$.MONKSHU_CONSTANTS.LANG_ID))};
+			if (pluginModule.customEvents) {	// plug in custom event handlers if the plugin supports it
+				pluginObj.customEvents = []; for (const event of pluginModule.customEvents) 
+					pluginObj.customEvents.push({event, id: element.id||"null", pluginName: plugin}); 
+			}
+			data.plugins.push(pluginObj);
 		} else LOG.error(`Can't initialize plugin - ${plugin}`);
 	}
 	return data;

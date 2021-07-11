@@ -1,0 +1,45 @@
+SCHEMA
+======
+{
+    "space": {"html":"span", "style":"height:100%; display:block; background:#DFF0FE;"},
+    "topribbon": {"html":"pluggable-ribbon", "styleBody":"url(./views/{{url.view}}/page/topribbon.styleBody.css)", "ribbonTitle":"{{i18n.ASBView}}"},
+    "sideribbon": {"html":"pluggable-ribbon", "styleBody":"url(./views/{{url.view}}/page/sideribbon.styleBody.css)"},
+    "flowui": {"html":"flow-diagram", "id":"flowui", "styleBody":"url(./views/{{url.view}}/page/flowui.styleBody.css)"}
+}
+======
+
+
+LAYOUT
+=================
+-----------------------------
+|    space    |  topribbon  |
+-----------------------------
+| sideribbon  |  flowui     |
+-----------------------------
+=================
+Row Heights = 70px, calc(100vh - 70px)
+Col Widths = 80px, calc(100% - 80px)
+=================
+
+
+CSS CLASSES
+===========
+CONTAINER CLASSES = grid-container-extension
+ITEM CLASSES = grid-item-extension
+PER ITEM CLASS = class
+===========
+
+CSS
+=======
+.grid-container-extension {
+    height: 100%;
+}
+
+.grid-item-extension {
+    background-color: rgba(255, 255, 255, 1);
+}
+
+body {
+    margin: 0%;
+}
+=======

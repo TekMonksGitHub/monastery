@@ -32,8 +32,8 @@ function loadModel(jsonModel) {
     catch (err) {LOG.error(`Bad ASB model, error ${err}, skipping.`); return;}
 
     const _getUniqueID = _ => `${Date.now()}${Math.random()*100}`;    
-    const _getNodeType = node => node.startsWith("listener") ? `${asbModel[node].type}Listener` : node.startsWith("output") ?
-        `${asbModel[node].type}Output` : asbModel[node].type;
+    const _getNodeType = node => node.startsWith("listener") ? `${asbModel[node].type}listener` : node.startsWith("output") ?
+        `${asbModel[node].type}output` : asbModel[node].type;
 
     for (const node in asbModel) {  // first add all the nodes
         const id = _getUniqueID(); idCache[id] = node;
@@ -92,8 +92,8 @@ function nodeDescriptionChanged(_nodeName, id, description) {
 const getModelAsFile = _ => {return {data: JSON.stringify(asbModel, null, 4), mime: "application/json", filename: "pipeline_asbFlow.json"}}
 
 function _nodeAdded(nodeName, id, properties) {
-    const modelProperty = idCache[id] ? idCache[id] : nodeName.endsWith("Listener") ? 
-        `listener${++listenerCounter}` : nodeName.endsWith("Output") ? `output${++outputCounter}` : `route${++routeCounter}`;
+    const modelProperty = idCache[id] ? idCache[id] : nodeName.toLowerCase().endsWith("listener") ? 
+        `listener${++listenerCounter}` : nodeName.toLowerCase().endsWith("output") ? `output${++outputCounter}` : `route${++routeCounter}`;
     if (modelProperty.startsWith("listener")) asbModel[modelProperty] = {type: nodeName.substring(0, nodeName.length-8).toLowerCase()};
     else if (modelProperty.startsWith("output")) asbModel[modelProperty] = {type: nodeName.substring(0, nodeName.length-6).toLowerCase()};
     else asbModel[modelProperty] = {type: nodeName.toLowerCase()};

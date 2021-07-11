@@ -1,0 +1,59 @@
+SCHEMA
+======
+{
+    "path": {"html":"input", "type":"text", "placeholder":"{{i18n.WatchPath}}"},
+    "donepath": {"html":"input", "type":"text", "placeholder":"{{i18n.DonePath}}"}
+}
+======
+
+
+LAYOUT
+=================
+-----------------------
+|   path   | donepath |
+-----------------------
+=================
+Row Heights = 4em
+Col Widths = 50%, 50%
+=================
+
+
+CSS CLASSES
+===========
+CONTAINER CLASSES = grid-container-extension
+ITEM CLASSES = grid-item-extension
+PER ITEM CLASS = class
+===========
+
+CSS
+=======
+.grid-container-extension {
+    height: 100%;
+}
+
+.grid-item-extension {
+    background-color: var(--dialog-background, white);
+    padding: 10px 20px 10px 20px;
+    display: flex;
+    flex-flow: row;
+    box-sizing: border-box;
+}
+
+.grid-item-extension > input, .grid-item-extension > input:focus, 
+        .grid-item-extension > select, .grid-item-extension > select:focus {
+    height: 100%;
+    width: 100%;
+    border-radius: 10px;
+    border: 0px;
+    outline: none;
+    padding: 10px;
+}
+
+::placeholder {opacity: 0.8;}
+
+body {
+    margin: 0%;
+    display: inline-block;
+    width: 100%;
+}
+=======

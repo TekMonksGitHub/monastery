@@ -12,6 +12,9 @@ export const APP_CONSTANTS = {
     COMPONENTS_PATH: `${APP_PATH}/components`,
     MAIN_HTML: `${APP_PATH}/main.html?view=asb-designer`,
 
+    MSG_OBJECT_DRAGGED: "OBJECT_BEING_DRAGGED", 
+    MSG_OBJECT_DROPPED: "OBJECT_DROPPED",
+
     USER_ROLE: "user",
     GUEST_ROLE: "guest",
     PERMISSIONS_MAP: {

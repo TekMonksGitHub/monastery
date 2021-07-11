@@ -1,0 +1,10 @@
+{
+    "__comment": "/** All paths in this file are required to be relative to the view's folder **/",
+
+    "components": {
+        "dialog-box": "../shared/components/dialog-box", 
+        "flow-diagram": "../shared/components/flow-diagram", 
+        "pluggable-ribbon": "components/pluggable-ribbon"
+    },
+    "initModules": {"model": "model/model.mjs"}
+}
