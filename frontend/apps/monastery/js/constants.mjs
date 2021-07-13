@@ -10,7 +10,7 @@ const APP_PATH = `${FRONTEND}/apps/${APP_NAME}`;
 export const APP_CONSTANTS = {
     FRONTEND, BACKEND, APP_PATH, APP_NAME,
     COMPONENTS_PATH: `${APP_PATH}/components`,
-    MAIN_HTML: `${APP_PATH}/main.html?view=asb-designer`,
+    MAIN_HTML: `${APP_PATH}/main.html?view=monkruls-designer`,
 
     MSG_OBJECT_DRAGGED: "OBJECT_BEING_DRAGGED", 
     MSG_OBJECT_DROPPED: "OBJECT_DROPPED",

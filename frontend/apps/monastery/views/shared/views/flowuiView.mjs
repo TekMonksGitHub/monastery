@@ -18,7 +18,7 @@ const MSG_REGISTER_SHAPE = "REGISTER_SHAPE", MSG_SHAPE_INIT = "SHAPE_INIT_ON_RIB
     MSG_MODEL_NODE_DESCRIPTION_CHANGED = "NODE_DESCRIPTION_CHANGED", MSG_MODEL_ARE_NODES_CONNECTABLE = "ARE_NODES_CONNECTABLE",
     MSG_MODEL_LOAD_MODEL = "LOAD_MODEL", MSG_RESET = "RESET", MSG_FILE_UPLOADED = "FILE_UPLOADED", GRAPH_ID = "flowui", MODEL_OP_ADDED = "added", 
     MODEL_OP_REMOVED = "removed", MODEL_OP_MODIFIED = "modified";
-const PAGE_GENERATOR_GRID_ITEM_CLASS = "grid-item-extension", HTML_INPUT_ELEMENTS = ["input","select"];
+const PAGE_GENERATOR_GRID_ITEM_CLASS = "grid-item-extension", HTML_INPUT_ELEMENTS = ["input","select","textarea"];
 let ID_CACHE = {}, CONF, VIEW_PATH;
 
 const _generateShapeName = name => name.toLowerCase(), _generateShapeX = _ => 30, _generateShapeY = _ => 30;
@@ -28,7 +28,7 @@ async function init(viewPath) {
 
     blackboard.registerListener(MSG_SHAPE_INIT, message => blackboard.broadcastMessage(MSG_REGISTER_SHAPE, 
         {name: _generateShapeName(message.name), svg: message.svg, graphID: GRAPH_ID, rounded: true}));
-    blackboard.registerListener(MSG_SHAPE_CLICKED_ON_RIBBON, message => shapeAdded(message.name, message.id));
+    blackboard.registerListener(MSG_SHAPE_CLICKED_ON_RIBBON, message => shapeAdded(message.name, message.id, message.label, message.connectable));
     blackboard.registerListener(MSG_SHAPE_CLICKED, message => _shapeObjectClickedOnFlowDiagram(message.name, message.id));
     blackboard.registerListener(MSG_SHAPE_REMOVED, message => blackboard.broadcastMessage(MSG_MODEL_NODES_MODIFIED,
         {type: MODEL_OP_REMOVED, nodeName: message.name, id: message.id}));
@@ -48,7 +48,7 @@ async function init(viewPath) {
     blackboard.registerListener(MSG_MODEL_ADD_NODE, message => { ID_CACHE[message.id] = message.properties; 
         blackboard.broadcastMessage(MSG_ADD_SHAPE, {name: _generateShapeName(message.nodeName), id: message.id, 
             graphID: GRAPH_ID, label: message.description, x:_generateShapeX(), y:_generateShapeY(), width:IMG_SIZE.width, 
-            height:IMG_SIZE.height}); }); 
+            height:IMG_SIZE.height, connectable:message.connectable||true}); }); 
     blackboard.registerListener(MSG_FILE_UPLOADED, async message => { await reset(); blackboard.broadcastMessage(MSG_MODEL_LOAD_MODEL,
         {data: message.data, name: message.name}) });
 
@@ -64,11 +64,11 @@ async function reset() {
     for (const listener of blackboard.getListeners(MSG_RESET)) await listener({graphID: GRAPH_ID}); ID_CACHE = {};
 }
 
-function shapeAdded(shapeName, id) {
+function shapeAdded(shapeName, id, label, connectable=true) {
     const shapeNameTweaked = _generateShapeName(shapeName);
-    blackboard.broadcastMessage(MSG_ADD_SHAPE, {name: shapeNameTweaked, id, graphID: GRAPH_ID, label:"", 
-        x:_generateShapeX(), y:_generateShapeY(), width:IMG_SIZE.width, height:IMG_SIZE.height});  // add to the flow diagram
-    blackboard.broadcastMessage(MSG_MODEL_NODES_MODIFIED, {type: MODEL_OP_ADDED, nodeName: shapeNameTweaked, id, properties: {}}); // add to the model
+    blackboard.broadcastMessage(MSG_ADD_SHAPE, {name: shapeNameTweaked, id, graphID: GRAPH_ID, label:label||"", 
+        x:_generateShapeX(), y:_generateShapeY(), width:IMG_SIZE.width, height:IMG_SIZE.height, connectable});  // add to the flow diagram
+    blackboard.broadcastMessage(MSG_MODEL_NODES_MODIFIED, {type: MODEL_OP_ADDED, nodeName: shapeNameTweaked, id, properties: {description: label}}); // add to the model
 }
 
 async function _shapeObjectClickedOnFlowDiagram(shapeName, id) {
@@ -81,7 +81,8 @@ async function _shapeObjectClickedOnFlowDiagram(shapeName, id) {
     const idsNeeded = []; for (const item of items) for (const child of item.childNodes) if (
         HTML_INPUT_ELEMENTS.includes(child.nodeName.toLowerCase()) && child.id ) {
             idsNeeded.push(child.id); 
-            if (savedDialogProperties[child.id]) child.setAttribute("value", savedDialogProperties[child.id]);
+            if (savedDialogProperties[child.id]) if (child.nodeName.toLowerCase() == "textarea") child.innerHTML = savedDialogProperties[child.id];
+            else child.setAttribute("value", savedDialogProperties[child.id]);
     }
     html = dom.documentElement.outerHTML;   // this creates HTML with default values set from the previous run
 

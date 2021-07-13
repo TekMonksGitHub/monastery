@@ -1,25 +1,25 @@
 export const i18n = {
     en: {
-        "WatchPath": "Path to watch",
-        "DonePath": "Path to move the file to once detected",
-        "Dependencies": "Prerequisite nodes",
-        "Encoding": "File encoding",
-        "ASBView": "ASB Flow Designer"
+        "Condition": "Condition",
+        "IfTrueDo": "If True Do",
+        "ElseDo": "Else Do",
+        "Reason": "Reason",
+        "MonkrulsView": "Monkruls Flow Designer"
     },
 
     hi: {
-        "WatchPath": "निगरानी के लिए फ़ाइल पथ",
-        "DonePath": "फ़ाइल को यहां ले जाने का पथ",
-        "Dependencies": "आवश्यक शर्तें",
-        "Encoding": "फ़ाइल एन्कोडिंग",
-        "ASBView": "एएसबी फ्लो डिजाइनर"
+        "Condition": "शर्त",
+        "IfTrueDo": "अगर सच है तो करें",
+        "ElseDo": "अगर यह सच नहीं है तो करें",
+        "Reason": "कारण",
+        "MonkrulsView": "मोनक्रूल्स फ्लो डिजाइनर"
     }, 
 
     ja: {
-        "WatchPath": "監視するファイルパス",
-        "DonePath": "ファイルを移動するパス",
-        "Dependencies": "前提条件",
-        "Encoding": "ファイルエンコーディング",
-        "ASBView": "ASBフローデザイナー"
+        "Condition": "状態",
+        "IfTrueDo": "本当の場合これを行う",
+        "ElseDo": "正しくない場合はこれを行う",
+        "Reason": "理由",
+        "MonkrulsView": "Monkrulsフローデザイナー"
     }
 }

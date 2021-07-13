@@ -15,7 +15,7 @@ body {
 {{{styleBody}}}
 
 <div id="ribbon">
-    {{#ribbonTitle}}<span>{{ribbonTitle}}</span>{{/ribbonTitle}}
+    {{#ribbonTitle}}<span>{{#ribbonLogo}}<img id="logo" src="{{ribbonLogo}}">{{/ribbonLogo}}{{ribbonTitle}}</span>{{/ribbonTitle}}
     
     {{#plugins}}
     <div id="{{pluginName}}" 

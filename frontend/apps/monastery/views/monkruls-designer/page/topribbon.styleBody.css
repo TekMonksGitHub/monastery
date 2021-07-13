@@ -13,14 +13,20 @@ div#ribbon {
 }
 
 div#ribbon > span {
-    font-weight: 600;
+    font-weight: 500;
     left: 50%;
     position: absolute;
     transform: translateX(-50%);
     color: #444444;
     font-family: 'Red Hat Text';
     font-size: smaller;
+    align-items: center;
+    display: inline-flex;
 }
+
+div#ribbon > span > img#logo {max-height: 2em;}
+
+@media only screen and (max-width: 920px) {div#ribbon > span{display: none;}}
 
 div#ribbon > div {
     display: inline-flex;

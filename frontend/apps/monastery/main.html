@@ -7,17 +7,13 @@
 
 	<title>{{i18n.Title}}</title>
 
-	<script type="module">
-		import ("/framework/components/page-generator/page-generator.mjs");
-		import {blackboard} from "/framework/js/blackboard.mjs"; window.monkshu_env.frameworklibs.blackboard = blackboard;
-		import {view} from "./views/{{url.view}}/view.mjs"; view.init(); 
-	</script>
+	<script type="module">import {main} from "./js/main.mjs"; main.init(new URL("./views/{{url.view}}", window.location.href).href);</script>
 </head>
 
 <body style="margin:0px" 
 	ondragover="event.preventDefault(); event.dataTransfer.dropEffect = 'none'; window.monkshu_env.frameworklibs.blackboard.broadcastMessage(APP_CONSTANTS.MSG_OBJECT_DRAGGED, event);"
 	ondrop="event.preventDefault(); window.monkshu_env.frameworklibs.blackboard.broadcastMessage(APP_CONSTANTS.MSG_OBJECT_DROPPED, event);">
 
-	<page-generator file="./views/{{url.view}}/page/view.page"></page-generator>
+	<!-- pageGenerator is appended here by main's main.mjs file -->
 </body>
 </html>

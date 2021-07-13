@@ -1,19 +1,25 @@
 SCHEMA
 ======
 {
-    "path": {"html":"input", "type":"text", "placeholder":"{{i18n.WatchPath}}"},
-    "donepath": {"html":"input", "type":"text", "placeholder":"{{i18n.DonePath}}"}
+    "condition": {"html":"textarea", "placeholder":"{{i18n.Condition}}", "wrap":"soft"},
+    "iftruedo": {"html":"input", "type":"text", "placeholder":"{{i18n.IfTrueDo}}"},
+    "elsedo": {"html":"input", "type":"text", "placeholder":"{{i18n.ElseDo}}"},
+    "reason": {"html":"input", "type":"text", "placeholder":"{{i18n.Reason}}"}
 }
 ======
 
 
 LAYOUT
 =================
------------------------
-|   path   | donepath |
------------------------
+----------------------------
+|   condition   | iftruedo |
+----------------------------  
+|   condition   | elsedo   |      
+----------------------------
+|   condition   | reason   |
+----------------------------
 =================
-Row Heights = 4em
+Row Heights = 4em, 4em, 4em
 Col Widths = 50%, 50%
 =================
 
@@ -40,13 +46,16 @@ CSS
 }
 
 .grid-item-extension > input, .grid-item-extension > input:focus, 
-        .grid-item-extension > select, .grid-item-extension > select:focus {
+        .grid-item-extension > select, .grid-item-extension > select:focus, 
+        .grid-item-extension > textarea, .grid-item-extension > textarea:focus {
     height: 100%;
     width: 100%;
     border-radius: 10px;
     border: 0px;
     outline: none;
     padding: 10px;
+    resize: none;
+    font-family: inherit;
 }
 
 ::placeholder {opacity: 0.8;}

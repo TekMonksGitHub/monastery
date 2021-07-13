@@ -6,5 +6,5 @@
         "flow-diagram": "../shared/components/flow-diagram", 
         "pluggable-ribbon": "components/pluggable-ribbon"
     },
-    "initModules": {"model": "model/model.mjs"}
+    "initModules": {"monkrulsmodel": "model/monkrulsmodel.mjs"}
 }

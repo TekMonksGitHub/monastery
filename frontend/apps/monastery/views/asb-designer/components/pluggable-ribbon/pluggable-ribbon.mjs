@@ -14,6 +14,7 @@ async function elementConnected(element) {
 	if (element.getAttribute("styleBody")) data.styleBody = `<style>${element.getAttribute("styleBody")}</style>`;
 
 	if (element.getAttribute("ribbonTitle")) data.ribbonTitle = element.getAttribute("ribbonTitle");
+	if (element.getAttribute("ribbonLogo")) data.ribbonLogo = element.getAttribute("ribbonLogo");
 	
 	if (element.id) {
 		if (!pluggable_ribbon.datas) pluggable_ribbon.datas = {}; pluggable_ribbon.datas[element.id] = data;

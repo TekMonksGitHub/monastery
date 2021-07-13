@@ -8,10 +8,10 @@ import {blackboard} from "/framework/js/blackboard.mjs";
 const MSG_SHAPE_INIT = "SHAPE_INIT_ON_RIBBON", MSG_SHAPE_CLICKED_ON_RIBBON = "SHAPE_CLICKED_ON_RIBBON";
 
 class FlowNode {
-    DIAG_ELEMENT_ID; PLUGIN_PATH; I18N; SHAPE_NAME; IMAGE; ID_MAP = {};
+    DIAG_ELEMENT_ID; PLUGIN_PATH; I18N; SHAPE_NAME; IMAGE; SHAPE_CONNECTABLE; ID_MAP = {}; COUNTER = 0;
 
-    async init(pluginName, pluginPath) {
-        this.SHAPE_NAME = pluginName; this.PLUGIN_PATH = pluginPath;
+    async init(pluginName, pluginPath, connectable=true) {
+        this.SHAPE_NAME = pluginName; this.PLUGIN_PATH = pluginPath; this.SHAPE_CONNECTABLE = connectable;
         this.I18N = (await import(`${pluginPath}/${pluginName}.i18n.mjs`)).i18n; 
         
         const svgSource64 = btoa(await (await fetch(`${pluginPath}/${pluginName}.svg`)).text());
@@ -34,10 +34,13 @@ class FlowNode {
     // Private Members    
     #clicked() {
         const uniqueID = FlowNode.#getUniqueID(); this.ID_MAP[uniqueID] = this.PLUGIN_PATH;
-        blackboard.broadcastMessage(MSG_SHAPE_CLICKED_ON_RIBBON, {name:this.SHAPE_NAME, id:uniqueID});
+        blackboard.broadcastMessage(MSG_SHAPE_CLICKED_ON_RIBBON, {name:this.SHAPE_NAME, id:uniqueID, 
+            connectable: this.SHAPE_CONNECTABLE, label: FlowNode.#capitalizeFirstChar(this.SHAPE_NAME)+(++this.COUNTER)});
     }
 
     static #getUniqueID = _ => `${Date.now()}${Math.random()*100}`;
+
+    static #capitalizeFirstChar = s => s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
 }
 
 export const newFlowNode = _ => new FlowNode();

@@ -24,7 +24,7 @@ function elementConnected(element) {
 	} else flow_diagram.data = data;
 
 	blackboard.registerListener(MSG_REGISTER_SHAPE, message => registerShape(message.graphID, message.name, message.svg, message.rounded));
-	blackboard.registerListener(MSG_ADD_SHAPE, message => insertNode(message.graphID, message.id, message.label, message.name, message.x, message.y, message.width, message.height));
+	blackboard.registerListener(MSG_ADD_SHAPE, message => insertNode(message.graphID, message.id, message.label, message.name, message.x, message.y, message.width, message.height, message.connectable));
 	blackboard.registerListener(MSG_CONNECT_SHAPES, message => connectNodes(message.graphID, message.sourceID, message.targetID, message.labelID, message.label));
 	blackboard.registerListener(MSG_LABEL_SHAPE, message => addLabel(message.graphID, message.shapeid, message.label));
 	blackboard.registerListener(MSG_RESET, async message => {const graph = await _getGraph(message.graphID); if (!graph) return; graph.removeCells(graph.getChildVertices(graph.getDefaultParent()));}, true)
@@ -40,12 +40,14 @@ function elementConnected(element) {
  * @param y Optional: Y coordinates to insert at
  * @param width Optional: Width of the image, default is 80px
  * @param height Optional: Height of the image, default is 80px
+ * @param connectable Optional: Is the vertex connectable
  * @returns true on success and false on error
  */
-async function insertNode(hostID, id, value, shapeName, x=0, y=0, width=80, height=30) {
+async function insertNode(hostID, id, value, shapeName, x=0, y=0, width=80, height=30, connectable=true) {
 	const graph = await _getGraph(hostID); if (!graph) return false;
 	const parent = graph.getDefaultParent();
-	graph.insertVertex(parent, id, value, x, y, width, height, shapeName);
+	const vertex = graph.createVertex(parent, id, value, x, y, width, height, shapeName);
+	vertex.setConnectable(connectable); graph.addCell(vertex);
 	return true;
 }
 
@@ -66,6 +68,7 @@ async function registerShape(hostID, name, svgData, rounded=false) {
 	style[mxConstants.STYLE_VERTICAL_LABEL_POSITION] = mxConstants.ALIGN_BOTTOM;
 	style[mxConstants.STYLE_FONTCOLOR] = "#444444";
 	style[mxConstants.STYLE_FONTSIZE] = "12";
+	style[mxConstants.STYLE_WHITE_SPACE] = "nowrap";
 	graph.getStylesheet().putCellStyle(name,style);
 	return true;
 }
@@ -185,7 +188,12 @@ function _createNonWebComponentDiagramContainer(container) {
     diagramContainer.style.position = "absolute";
     diagramContainer.style.top = rect.top; diagramContainer.style.left = rect.left; 
     diagramContainer.style.width = rect.width; diagramContainer.style.height = rect.height;  
-    diagramContainer.style.visibility = "visible"; return diagramContainer;
+    diagramContainer.style.visibility = "visible"; 
+	new ResizeObserver(_=>{	// resize on resizing of the parent component
+		const rect = container.getBoundingClientRect();
+		diagramContainer.style.width = rect.width; 
+		diagramContainer.style.height = rect.height; }).observe(container);
+	return diagramContainer;
 }
 
 const _findGraphID = graph => {for (const key in graphs) if (graphs[key][GRAPH_MONASTERY_ID] == graph[GRAPH_MONASTERY_ID]) return key; return null;}
