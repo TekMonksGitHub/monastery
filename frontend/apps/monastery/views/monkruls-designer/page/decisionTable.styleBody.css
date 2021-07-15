@@ -1,0 +1,14 @@
+table {
+    font-size: smaller;
+    font-family: sans-serif;
+}
+
+td {
+    border: 1px solid #4788C7;
+    border-radius: 4px;
+    background-color: white;
+    color: #444444;
+    padding: 4px;
+}
+
+td.head {background-color: #4788C7; color: white;}

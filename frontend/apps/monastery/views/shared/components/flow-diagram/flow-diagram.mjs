@@ -6,7 +6,7 @@ import {util} from "/framework/js/util.mjs";
 import {blackboard} from "/framework/js/blackboard.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
-const graphs = {};
+const graphs = {}; 
 const GRAPH_CONNECTABLE = true, COMPONENT_PATH = util.getModulePath(import.meta);
 const MSG_REGISTER_SHAPE = "REGISTER_SHAPE", MSG_ADD_SHAPE = "ADD_SHAPE", MSG_SHAPE_CLICKED = "SHAPE_CLICKED",
 	MSG_SHAPE_REMOVED = "SHAPE_REMOVED", MSG_SHAPES_DISCONNECTED = "SHAPES_DISCONNECTED", 
@@ -125,7 +125,7 @@ async function _getGraph(hostID) {
 
 	mxEvent.disableContextMenu(mxgraphContainer);
 	graphs[hostID] = new mxGraph(mxgraphContainer, null, "fastest"); graphs[hostID].setConnectable(GRAPH_CONNECTABLE);
-	graphs[hostID][GRAPH_MONASTERY_ID] = hostID; const graph = graphs[hostID]; 
+	graphs[hostID][GRAPH_MONASTERY_ID] = hostID; const graph = graphs[hostID]; 	
 
 	new mxRubberband(graph); // allows selecting multiple items using dragging rectangle
 	graph.addListener(mxEvent.DOUBLE_CLICK, (sender, evt) => {	// shape is double clicked

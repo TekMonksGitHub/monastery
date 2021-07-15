@@ -4,7 +4,8 @@
     "components": {
         "dialog-box": "../shared/components/dialog-box", 
         "flow-diagram": "../shared/components/flow-diagram", 
-        "pluggable-ribbon": "components/pluggable-ribbon"
+        "pluggable-ribbon": "components/pluggable-ribbon",
+        "spread-sheet": "components/spread-sheet"
     },
     "initModules": {"monkrulsmodel": "model/monkrulsmodel.mjs"}
 }

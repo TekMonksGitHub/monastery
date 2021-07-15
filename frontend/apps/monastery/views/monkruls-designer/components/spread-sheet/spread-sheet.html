@@ -1,0 +1,38 @@
+<!--
+/* 
+ * (C) 2020 TekMonks. All rights reserved.
+ * License: MIT - see enclosed license.txt file.
+ */
+ -->
+<style>
+body {
+    margin: 0%;
+    height: 100%;
+}
+
+table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+td {
+    border: 1px solid #444444;
+    border-radius: 4px;
+}
+
+td.head {background-color: #444444; color: white;}
+
+</style>
+
+{{{styleBody}}}
+
+<table>
+    <tr>
+        {{#columns}}<td contenteditable class="head"></td>{{/columns}}
+    </tr>
+    {{#rows}}
+    <tr>
+        {{#columns}}<td contenteditable></td>{{/columns}}
+    </tr>
+    {{/rows}}
+</table>
