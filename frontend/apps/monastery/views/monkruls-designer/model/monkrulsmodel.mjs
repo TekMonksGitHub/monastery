@@ -31,14 +31,17 @@ function init() {
 function loadModel(jsonModel) {
     try {monkrulsModel = JSON.parse(jsonModel)} 
     catch (err) {LOG.error(`Bad Monkruls model, error ${err}, skipping.`); return;}
-    if (!Array.isArray(monkrulsModel)) {LOG.error(`Bad Monkruls model, not in right format.`); return;}
+    if (!(monkrulsModel.rule_bundles && monkrulsModel.functions && monkrulsModel.data && monkrulsModel.rule_parameters)) {LOG.error(`Bad Monkruls model, not in right format.`); return;}
 
     const _getUniqueID = _ => `${Date.now()}${Math.random()*100}`;    
 
     // first add all the rules and bundles
-    for (const bundle of monkrulsModel.rule_bundles) for (const rule of bundle.rules) {  
-        const id = rule.id||_getUniqueID(); idCache[id] = node;
+    for (const bundle of monkrulsModel.rule_bundles) if (!bundle.rules.decisiontable) for (const rule of bundle.rules) {  
+        const id = rule.id||_getUniqueID(); idCache[id] = rule;
         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: "rule", id, description: rule.description, properties: {...rule}});
+    } else {
+        const decisiontable = bundle.rules; const id = decisiontable.id||_getUniqueID(); idCache[id] = decisiontable;
+        blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: "decision", id, description: decisiontable.description, properties: {...decisiontable}});
     }
 
     // add connections
@@ -106,6 +109,7 @@ function _nodeAdded(nodeName, id, properties) {
 
     if (nodeName == "rule") _findOrCreateRuleBundle().rules.push(node);
     else if (nodeName == "variable") monkrulsModel.rule_parameters.push(node);
+    else if (nodeName == "decision") _findOrCreateRuleBundle(properties.description).rules = node;
     
     node.id = id; idCache[id] = node;   // transfer ID and cache the node
     

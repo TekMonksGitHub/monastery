@@ -1,7 +1,7 @@
 SCHEMA
 ======
 {
-    "spread-sheet": {"html":"spread-sheet", "rows":15, "columns":10, "styleBody":"url(./views/{{url.view}}/page/decisionTable.styleBody.css)" }
+    "decisiontable": {"html":"spread-sheet", "rows":15, "columns":10, "styleBody":"url(./views/{{url.view}}/page/decisionTable.styleBody.css)" }
 }
 ======
 
@@ -9,7 +9,7 @@ SCHEMA
 LAYOUT
 =================
 ----------------------------  
-|       spread-sheet        |      
+|       decisiontable      |      
 ----------------------------
 =================
 Row Heights = 50vh
