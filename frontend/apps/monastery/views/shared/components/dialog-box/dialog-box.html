@@ -48,38 +48,38 @@ div#dialog {
     width: var(--dialog-width, auto);
     max-height: 80vh;
     background: var(--dialog-background, white);
-    padding: 40px;
-    position: fixed;
-    border-radius: 10px;
+    padding: var(--dialog-padding, 40px);
+    position: var(--dialog-position, fixed);
     z-index: 105;
-    box-shadow: 0px 10px 0px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    box-shadow: var(--box-shadow, 0px 10px 0px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23));
     animation: var(--animation-name, flyincenter) var(--animation-duration, 0.18s) linear forwards;
     overflow-y: auto;
     color: #444444;
+    border: var(--dialog-border, none);
 }
 
 @keyframes flyincenter {
-    0%{filter: blur(4px);transform: translate(var(--animation-left-transform, -50%), calc(-1*(50vh + 100%)));opacity: 0;}
-    25%{filter: blur(3px);transform: translate(var(--animation-left-transform, -50%), calc(-1*(38vh + 88%)));opacity: 0.25;}
-    50%{filter: blur(2px);transform: translate(var(--animation-left-transform, -50%), calc(-1*(27vh + 75%)));opacity: 0.50;}
-    75%{filter: blur(1px);transform: translate(var(--animation-left-transform, -50%), calc(-1*(14vh + 62%)));opacity: 0.75;}
+    0%{filter: blur(4px);transform: translate(var(--animation-left-transform, -50%), calc(-1*(50vh + 100%)));opacity: 0;border-radius: var(--dialog-border-radius, 10px);}
+    25%{filter: blur(3px);transform: translate(var(--animation-left-transform, -50%), calc(-1*(38vh + 88%)));opacity: 0.25;border-radius: var(--dialog-border-radius, 10px);}
+    50%{filter: blur(2px);transform: translate(var(--animation-left-transform, -50%), calc(-1*(27vh + 75%)));opacity: 0.50;border-radius: var(--dialog-border-radius, 10px);}
+    75%{filter: blur(1px);transform: translate(var(--animation-left-transform, -50%), calc(-1*(14vh + 62%)));opacity: 0.75;border-radius: var(--dialog-border-radius, 10px);}
     100%{filter: blur(0px);transform: translate(var(--animation-left-transform, -50%), -50%);opacity: 1.0;}
 }
 
 @keyframes flyinbottom {
-    0%{filter: blur(4px);transform: translate(var(--animation-left-transform, -50%), calc(50vh - 5%));opacity: 0;border-radius: 10px 10px 0px 0px;}
-    25%{filter: blur(3px);transform: translate(var(--animation-left-transform, -50%), calc(50vh - 29%));opacity: 0.25;border-radius: 10px 10px 0px 0px;}
-    50%{filter: blur(2px);transform: translate(var(--animation-left-transform, -50%), calc(50vh - 52%));opacity: 0.50;border-radius: 10px 10px 0px 0px;}
-    75%{filter: blur(1px);transform: translate(var(--animation-left-transform, -50%), calc(50vh - 76%));opacity: 0.75;border-radius: 10px 10px 0px 0px;}
-    100%{filter: blur(0px);transform: translate(var(--animation-left-transform, -50%), calc(50vh - 100%));opacity: 1.0;border-radius: 10px 10px 0px 0px;}
+    0%{filter: blur(4px);transform: translate(var(--animation-left-transform, -50%), calc(50vh - 5%));opacity: 0;border-radius: var(--dialog-border-radius, 10px 10px 0px 0px);}
+    25%{filter: blur(3px);transform: translate(var(--animation-left-transform, -50%), calc(50vh - 29%));opacity: 0.25;border-radius: var(--dialog-border-radius, 10px 10px 0px 0px);}
+    50%{filter: blur(2px);transform: translate(var(--animation-left-transform, -50%), calc(50vh - 52%));opacity: 0.50;border-radius: var(--dialog-border-radius, 10px 10px 0px 0px);}
+    75%{filter: blur(1px);transform: translate(var(--animation-left-transform, -50%), calc(50vh - 76%));opacity: 0.75;border-radius: var(--dialog-border-radius, 10px 10px 0px 0px);}
+    100%{filter: blur(0px);transform: translate(var(--animation-left-transform, -50%), calc(50vh - 100%));opacity: 1.0;border-radius: var(--dialog-border-radius, 10px 10px 0px 0px);}
 }
 
 @keyframes flyintop {
-    0%{filter: blur(4px);transform: translate(var(--animation-left-transform, -50%), calc(-1*(50vh + 95%)));opacity: 0;border-radius: 0px 0px 10px 10px;}
-    25%{filter: blur(3px);transform: translate(var(--animation-left-transform, -50%), calc(-1*(50vh + 71%)));opacity: 0.25;border-radius: 0px 0px 10px 10px;}
-    50%{filter: blur(2px);transform: translate(var(--animation-left-transform, -50%), calc(-1*(50vh + 48%)));opacity: 0.50;border-radius: 0px 0px 10px 10px;}
-    75%{filter: blur(1px);transform: translate(var(--animation-left-transform, -50%), calc(-1*(50vh + 24%)));opacity: 0.75;border-radius: 0px 0px 10px 10px;}
-    100%{filter: blur(0px);transform: translate(var(--animation-left-transform, -50%), -50vh);opacity: 1.0;border-radius: 0px 0px 10px 10px;}
+    0%{filter: blur(4px);transform: translate(var(--animation-left-transform, -50%), calc(-1*(50vh + 95%)));opacity: 0;border-radius: var(--dialog-border-radius, 0px 0px 10px 10px);}
+    25%{filter: blur(3px);transform: translate(var(--animation-left-transform, -50%), calc(-1*(50vh + 71%)));opacity: 0.25;border-radius: var(--dialog-border-radius, 0px 0px 10px 10px);}
+    50%{filter: blur(2px);transform: translate(var(--animation-left-transform, -50%), calc(-1*(50vh + 48%)));opacity: 0.50;border-radius: var(--dialog-border-radius, 0px 0px 10px 10px);}
+    75%{filter: blur(1px);transform: translate(var(--animation-left-transform, -50%), calc(-1*(50vh + 24%)));opacity: 0.75;border-radius: var(--dialog-border-radius, 0px 0px 10px 10px);}
+    100%{filter: blur(0px);transform: translate(var(--animation-left-transform, -50%), -50vh);opacity: 1.0;border-radius: var(--dialog-border-radius, 0px 0px 10px 10px);}
 }
 
 .visible {

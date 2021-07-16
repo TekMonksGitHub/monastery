@@ -7,7 +7,7 @@ import {i18n} from "/framework/js/i18n.mjs";
 import {blackboard} from "/framework/js/blackboard.mjs";
 import {page_generator} from "/framework/components/page-generator/page-generator.mjs";
 
-const IMG_SIZE = {width: 40, height: 40}
+const IMG_SIZE = {width: 40, height: 40}, DEFAULT_DIALOG_PROPERTIES="dialogPropertiesBottom.json";
 const MSG_REGISTER_SHAPE = "REGISTER_SHAPE", MSG_SHAPE_INIT = "SHAPE_INIT_ON_RIBBON", MSG_ADD_SHAPE = "ADD_SHAPE", 
     MSG_SHAPE_CLICKED_ON_RIBBON = "SHAPE_CLICKED_ON_RIBBON", MSG_SHAPE_CLICKED = "SHAPE_CLICKED", 
     MSG_SHAPE_REMOVED = "SHAPE_REMOVED", MSG_SHAPES_DISCONNECTED = "SHAPES_DISCONNECTED", 
@@ -87,8 +87,10 @@ async function _shapeObjectClickedOnFlowDiagram(shapeName, id) {
     html = dom.documentElement.outerHTML;   // this creates HTML with default values set from the previous run
 
     // now show and run the dialog
-    window.monkshu_env.components["dialog-box"].showDialog(`${VIEW_PATH}/dialogs/dialogPropertiesBottom.json`, 
-        html, null, idsNeeded, (typeOfClose, result) => { if (typeOfClose == "submit") {
+    const dialogPropertiesPath = await _returnFirstFileThatExists([`${VIEW_PATH}/dialogs/dialogProperties${shapeName}.json`,
+        `${VIEW_PATH}/dialogs/${DEFAULT_DIALOG_PROPERTIES}`]);
+    window.monkshu_env.components["dialog-box"].showDialog(dialogPropertiesPath, html, null, idsNeeded, 
+        (typeOfClose, result) => { if (typeOfClose == "submit") {
                 ID_CACHE[id] = result; const listeners = blackboard.getListeners(MSG_MODEL_NODES_MODIFIED); // inform model
                 for (const listener of listeners) if (!listener({type: MODEL_OP_MODIFIED, nodeName: shapeName, id, properties: result})) return false;
                 return true;
@@ -102,6 +104,11 @@ function _validateConnection(message) {
     for (const validator of validators) if (!validator({sourceName: message.sourceName, targetName: message.targetName, 
         sourceID: message.sourceID, targetID: message.targetID})) return false;
     return true;
+}
+
+async function _returnFirstFileThatExists(arrayOfURLs) {    // no this isn't slow, as $$.require caches files and 404s should be quick
+    for (const url of arrayOfURLs) try {await $$.requireText(url); return url;} catch (err) {};
+    return null;    // none of these URLs exists
 }
 
 export const flowuiView = {init, reset};

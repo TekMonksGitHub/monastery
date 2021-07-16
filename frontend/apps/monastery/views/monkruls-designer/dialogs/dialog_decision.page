@@ -1,7 +1,7 @@
 SCHEMA
 ======
 {
-    "decisiontable": {"html":"spread-sheet", "rows":15, "columns":10, "styleBody":"url(./views/{{url.view}}/page/decisionTable.styleBody.css)" }
+    "decisiontable": {"html":"spread-sheet", "rows":15, "columns":10, "onlyText": "true", "styleBody":"url(./views/{{url.view}}/page/decisionTable.styleBody.css)" }
 }
 ======
 
@@ -12,7 +12,7 @@ LAYOUT
 |       decisiontable      |      
 ----------------------------
 =================
-Row Heights = 50vh
+Row Heights = calc(100vh - 152px)
 Col Widths = 100%
 =================
 
@@ -38,7 +38,7 @@ CSS
     box-sizing: border-box;
 }
 
-.class-spread-sheet {
+.class-decisiontable {
     overflow: auto;
 }
 

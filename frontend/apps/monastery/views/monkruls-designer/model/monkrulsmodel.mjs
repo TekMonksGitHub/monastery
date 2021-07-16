@@ -45,7 +45,7 @@ function loadModel(jsonModel) {
     }
 
     // add connections
-    for (const bundle of monkrulsModel.rule_bundles) for (const rule of bundle.rules) if (rule.dependencies) for (const dependency of rule.dependencies) { 
+    for (const bundle of monkrulsModel.rule_bundles) if (!bundle.rules.decisiontable) for (const rule of bundle.rules) if (rule.dependencies) for (const dependency of rule.dependencies) { 
         const sourceID = dependency, targetID = rule.id; 
         if (!idCache[sourceNodeID]) {LOG.error(`Bad dependency in the model ${sourceNodeKey}, skipping.`); break;}
         const sourceName = _getNodeType(sourceNodeKey), targetName = _getNodeType(targetNodeKey);

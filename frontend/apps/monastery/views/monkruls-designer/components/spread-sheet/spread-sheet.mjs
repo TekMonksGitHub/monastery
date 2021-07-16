@@ -32,11 +32,18 @@ function elementRendered(element) {
 	if (element.getAttribute("value")) _setSpreadSheetFromCSV(element.getAttribute("value"), element.id);
 }
 
+function cellpastedon(element, event) {
+	const hostElement = spread_sheet.getHostElement(element);
+	const textPasted = event.clipboardData.getData("text"); if ((!textPasted || textPasted == "") && hostElement.getAttribute("onlyText")?.toLowerCase() == "true") return;	
+	const asCSV = Papa.parse(textPasted||"", {header: false, skipEmptyLines: true}).data, isCSV = asCSV.length > 1 || asCSV[0]?.length > 1;
+	if (isCSV) {_setSpreadSheetFromCSV(asCSV, spread_sheet.getHostElementID(element)); event.preventDefault();}
+}
+
 function _getSpreadSheetAsCSV(id) {
 	const _isEmptyArray = array => {for (const cell of array) if (cell.trim() != '') return false; return true;}
 	const shadowRoot = spread_sheet.getShadowRootByHostId(id), rows = shadowRoot.querySelectorAll("tr");
 	const csvObject = []; for (const row of rows) {
-		const column = Array.prototype.slice.call(row.children).map(e => e.innerHTML);
+		const column = Array.prototype.slice.call(row.children).map(e => e.innerText);
 		if (_isEmptyArray(column)) continue;	// skip totally empty rows
 		else csvObject.push(column);
 	}
@@ -57,7 +64,7 @@ function _getSpreadSheetAsCSV(id) {
 }
 
 function _setSpreadSheetFromCSV(value, id) {
-	const csvArrayOfArrays = Papa.parse(value, {header: false, skipEmptyLines: true}).data;
+	const csvArrayOfArrays = typeof value === "string" ? Papa.parse(value, {header: false, skipEmptyLines: true}).data : value;
 	const shadowRoot = spread_sheet.getShadowRootByHostId(id), rows = Array.prototype.slice.call(shadowRoot.querySelectorAll("tr"));
 	for (const [rowNumber, row] of rows.entries()) {
 		const column = Array.prototype.slice.call(row.children);
@@ -68,5 +75,5 @@ function _setSpreadSheetFromCSV(value, id) {
 }
 
 // convert this all into a WebComponent so we can use it
-export const spread_sheet = {trueWebComponentMode: true, elementConnected, elementRendered}
+export const spread_sheet = {trueWebComponentMode: true, elementConnected, elementRendered, cellpastedon}
 monkshu_component.register("spread-sheet", `${COMPONENT_PATH}/spread-sheet.html`, spread_sheet);

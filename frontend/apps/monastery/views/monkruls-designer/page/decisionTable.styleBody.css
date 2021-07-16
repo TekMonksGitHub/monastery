@@ -4,11 +4,27 @@ table {
 }
 
 td {
-    border: 1px solid #4788C7;
-    border-radius: 4px;
+    border: 0.5px solid #4788C7;
     background-color: white;
     color: #444444;
     padding: 4px;
 }
 
-td.head {background-color: #4788C7; color: white;}
+td.head {
+    background-color: #4788C7; 
+    color: white;
+}
+
+tr td:last-child.head {border-right-color: #4788C7}
+
+td:focus {
+    background-color: #DFF0FE;
+    outline: none;
+    color: #444444;
+}
+
+/* Disable user being able to bold, italic etc. inside the table cells */
+[contenteditable] b {font-weight: normal;}
+[contenteditable] i {font-style: normal;}
+[contenteditable] img {display: none;}
+[contenteditable] u {text-decoration: none;}

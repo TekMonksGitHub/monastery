@@ -13,14 +13,29 @@ body {
 table {
     table-layout: fixed;
     width: 100%;
+    border-spacing: 0px;
 }
 
 td {
     border: 1px solid #444444;
-    border-radius: 4px;
+    border-radius: 0px;
+    background-color: white;
 }
 
-td.head {background-color: #444444; color: white;}
+td.head {
+    background-color: #444444; 
+    color: white; 
+    border-right-color: white;
+}
+
+tr td:last-child.head {border-right-color: #444444}
+
+
+td:focus {
+    background-color: white;
+    outline: none;
+    color: #444444;
+}
 
 </style>
 
@@ -28,11 +43,11 @@ td.head {background-color: #444444; color: white;}
 
 <table>
     <tr>
-        {{#columns}}<td contenteditable class="head"></td>{{/columns}}
+        {{#columns}}<td contenteditable class="head" onpaste='monkshu_env.components["spread-sheet"].cellpastedon(this, event)'></td>{{/columns}}
     </tr>
     {{#rows}}
     <tr>
-        {{#columns}}<td contenteditable></td>{{/columns}}
+        {{#columns}}<td contenteditable onpaste='monkshu_env.components["spread-sheet"].cellpastedon(this, event)'></td>{{/columns}}
     </tr>
     {{/rows}}
 </table>
