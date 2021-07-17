@@ -23,6 +23,7 @@ td > textarea:focus {
     outline: none;
     color: #444444;
 }
+td:focus-within {background-color: #DFF0FE; color: #444444;}
 
 /* Disable user being able to bold, italic etc. inside the table cells */
 [contenteditable] b {font-weight: normal;}

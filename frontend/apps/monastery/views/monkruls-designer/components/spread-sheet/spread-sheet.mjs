@@ -24,6 +24,7 @@ function elementRendered(element) {
 	if (element.getAttribute("value")) _setSpreadSheetFromCSV(element.getAttribute("value"), element.id);
 	resizable.makeResizableTable(spread_sheet.getShadowRootByHost(element).querySelector("table#spreadsheet"),
 		element.getAttribute("barstyle"));
+	_attachResizeObservers(spread_sheet.getShadowRootByHost(element));
 }
 
 function cellpastedon(element, event) {
@@ -60,11 +61,19 @@ async function save(element) {
 	util.downloadFile(csvData, "text/csv", host.getAttribute("downloadfilename")||"spreadsheet.csv");
 }
 
+function getLargestRowScrollHeight(elementList) {
+	let largest = 0; for (const element of elementList) {
+		const saved = element.style.height; element.style.height = "auto"; 
+		if (element.scrollHeight > largest) largest = element.scrollHeight;
+		element.style.height = saved;
+	}
+	return largest;
+}
+
 function _getSpreadSheetAsCSV(id) {
 	const _isEmptyArray = array => {for (const cell of array) if (cell.trim() != '') return false; return true;}
 	const shadowRoot = spread_sheet.getShadowRootByHostId(id), rows = shadowRoot.querySelectorAll("tr");
 	const csvObject = []; for (const [index, row] of rows.entries()) {
-		if (index == 0) continue;	// first row is resizable headers
 		const column = Array.prototype.slice.call(row.getElementsByTagName("textarea")).map(e => e.value);
 		if (_isEmptyArray(column)) continue;	// skip totally empty rows
 		else csvObject.push(column);
@@ -96,7 +105,6 @@ async function _setSpreadSheetFromCSV(value, id) {
 
 	const shadowRoot = spread_sheet.getShadowRootByHostId(id), rows = Array.prototype.slice.call(shadowRoot.querySelectorAll("tr"));
 	for (let [rowNumber, row] of rows.entries()) {
-		rowNumber = rowNumber - 1;	// first row is the resizable TDs.
 		const column = Array.prototype.slice.call(row.children);
 		for (const [colNumber, tdElement] of column.entries()) 
 			if (csvArrayOfArrays[rowNumber] && csvArrayOfArrays[rowNumber][colNumber]) {
@@ -119,7 +127,12 @@ function _createElementData(element, rows=element.getAttribute("rows")||6, colum
 	return data;
 }
 
+function _attachResizeObservers(shadowRoot) {
+	const tds = shadowRoot.querySelectorAll("td");
+	for (const td of tds) new ResizeObserver(_=>td.querySelector("textarea").oninput()).observe(td);
+}
+
 // convert this all into a WebComponent so we can use it
 export const spread_sheet = {trueWebComponentMode: true, elementConnected, elementRendered, cellpastedon, 
-	rowop, columnop, open, save}
+	rowop, columnop, open, save, getLargestRowScrollHeight}
 monkshu_component.register("spread-sheet", `${COMPONENT_PATH}/spread-sheet.html`, spread_sheet);

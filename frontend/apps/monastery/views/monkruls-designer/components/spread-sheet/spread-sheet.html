@@ -36,16 +36,15 @@ td > textarea {
     font-family: inherit;
 }
 
-td.head, td.resizer {
+td.head {
     background-color: #444444; 
     color: white; 
     border-right-color: white;
 }
 
-td.resizer {height: 0.5px; padding: 0px;}
+tr td:last-child.head {border-right-color: #444444}
 
-tr td:last-child.head td:last-child.resizer {border-right-color: #444444}
-
+td:focus-within {background-color: yellow; color: #444444;}
 td > textarea:focus {background-color: yellow; color: #444444;}
 
 span#toolbar {
@@ -100,21 +99,20 @@ span#toolbar > span > span.button:last-child {margin-right: 0vw;}
 </span>
 <table id="spreadsheet">
     <tr>
-        {{#columns}}<td class="resizer"></td>{{/columns}}
-    </tr>
-    <tr>
-        {{#columns}}<td class="head"><textarea rows="1" 
+        {{#columns}}<td class="head" onclick='this.querySelector("textarea").focus()'><textarea rows="1" 
             onpaste='monkshu_env.components["spread-sheet"].cellpastedon(this, event)'
-            oninput="this.style.height='auto'; this.style.height=`${this.scrollHeight}px`;"
-            onchange="this.style.height='auto'; this.style.height=`${this.scrollHeight}px`;"></textarea>
+            oninput='this.style.height=monkshu_env.components["spread-sheet"].getLargestRowScrollHeight(this.parentElement.parentElement.querySelectorAll("textarea"), this)+"px"; this.parentElement.style.height = this.style.height;'
+            onchange="this.oninput()" onfocus="this.oninput()"
+            onkeypress="if (event.keyCode == 13) event.preventDefault();"></textarea>
         </td>{{/columns}}
     </tr>
     {{#rows}}
     <tr>
-        {{#columns}}<td><textarea rows="1" 
+        {{#columns}}<td onclick='this.querySelector("textarea").focus()'><textarea rows="1" 
             onpaste='monkshu_env.components["spread-sheet"].cellpastedon(this, event)'
-            oninput="this.style.height='auto'; this.style.height=`${this.scrollHeight}px`;"
-            onchange="this.style.height='auto'; this.style.height=`${this.scrollHeight}px`;"></textarea>
+            oninput='this.style.height=monkshu_env.components["spread-sheet"].getLargestRowScrollHeight(this.parentElement.parentElement.querySelectorAll("textarea"), this)+"px"; this.parentElement.style.height = this.style.height;'
+            onchange="this.oninput()" onfocus="this.oninput()"
+            onkeypress="if (event.keyCode == 13) event.preventDefault();"></textarea>
         </td>{{/columns}}
     </tr>
     {{/rows}}
