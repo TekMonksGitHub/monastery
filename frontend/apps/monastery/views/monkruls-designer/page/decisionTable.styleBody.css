@@ -7,7 +7,8 @@ td {
     border: 0.5px solid #4788C7;
     background-color: white;
     color: #444444;
-    padding: 4px;
+    padding: 0px;
+    width: 10em;
 }
 
 td.head {
@@ -17,7 +18,7 @@ td.head {
 
 tr td:last-child.head {border-right-color: #4788C7}
 
-td:focus {
+td > textarea:focus {
     background-color: #DFF0FE;
     outline: none;
     color: #444444;
