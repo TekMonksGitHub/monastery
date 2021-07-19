@@ -36,13 +36,13 @@ td > textarea {
     font-family: inherit;
 }
 
-td.head {
+tr:first-child > td {
     background-color: #444444; 
     color: white; 
     border-right-color: white;
 }
 
-tr td:last-child.head {border-right-color: #444444}
+tr:first-child > td:last-child.head {border-right-color: #444444}
 
 td:focus-within {background-color: yellow; color: #444444;}
 td > textarea:focus {background-color: yellow; color: #444444;}
@@ -80,6 +80,19 @@ span#toolbar span#middleitems {margin-left: 5vw; margin-right: 5vw;}
 
 span#toolbar > span > span.button:last-child {margin-right: 0vw;}
 
+span#tabbar {display: flex; font-size: x-small; user-select: none;}
+
+span#tabbar > span.tabbutton {
+    border-radius: 0px 0px 10px 10px;
+    background-color: #E5E5E5;
+    margin-right: 10px;
+    padding: 5px;
+    min-width: 5vw;
+    border: 1px solid #828283;
+    border-top: transparent;
+}
+span#tabbar > span.tabbutton.active {background-color: #ffffff}
+
 </style>
 
 {{{styleBody}}}
@@ -97,23 +110,23 @@ span#toolbar > span > span.button:last-child {margin-right: 0vw;}
         <span class="button" onclick='monkshu_env.components["spread-sheet"].save(this)'><img src="{{{componentPath}}}/img/save.svg">&nbsp;&nbsp;Save</span>
     </span>
 </span>
+
 <table id="spreadsheet">
-    <tr>
-        {{#columns}}<td class="head" onclick='this.querySelector("textarea").focus()'><textarea rows="1" 
-            onpaste='monkshu_env.components["spread-sheet"].cellpastedon(this, event)'
-            oninput='this.style.height=monkshu_env.components["spread-sheet"].getLargestRowScrollHeight(this.parentElement.parentElement.querySelectorAll("textarea"), this)+"px"; this.parentElement.style.height = this.style.height;'
-            onchange="this.oninput()" onfocus="this.oninput()"
-            onkeypress="if (event.keyCode == 13) event.preventDefault();"></textarea>
-        </td>{{/columns}}
-    </tr>
     {{#rows}}
     <tr>
         {{#columns}}<td onclick='this.querySelector("textarea").focus()'><textarea rows="1" 
             onpaste='monkshu_env.components["spread-sheet"].cellpastedon(this, event)'
-            oninput='this.style.height=monkshu_env.components["spread-sheet"].getLargestRowScrollHeight(this.parentElement.parentElement.querySelectorAll("textarea"), this)+"px"; this.parentElement.style.height = this.style.height;'
+            oninput='monkshu_env.components["spread-sheet"].resizeRowInputsForLargestScroll(this)'
             onchange="this.oninput()" onfocus="this.oninput()"
             onkeypress="if (event.keyCode == 13) event.preventDefault();"></textarea>
         </td>{{/columns}}
     </tr>
     {{/rows}}
 </table>
+
+{{#tabs}}<span id="tabbar">{{/tabs}}
+    {{#tabs}}
+    <span id="{{id}}" class="tabbutton{{#active}} active{{/active}}" 
+        onclick='monkshu_env.components["spread-sheet"].switchSheet(this, "{{id}}")'>{{name}}</span>
+    {{/tabs}}
+{{#tabs}}</span>{{/tabs}}

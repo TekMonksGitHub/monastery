@@ -7,7 +7,10 @@ export const i18n = {
         "VariableName": "Variable Name",
         "VariableValue": "Variable Value",
         "VariableDescription": "Variable Description",
-        "MonkrulsView": "Monkruls Flow Designer"
+        "MonkrulsView": "Monkruls Flow Designer",
+        "Rules": "Rules",
+        "Objects": "Objects",
+        "Data": "Data"
     },
 
     hi: {
@@ -18,7 +21,10 @@ export const i18n = {
         "VariableName": "परिवर्तनीय नाम",
         "VariableValue": "परिवर्तनीय मूल्य",
         "VariableDescription": "परिवर्तनीय विवरण",
-        "MonkrulsView": "मोनक्रूल्स फ्लो डिजाइनर"
+        "MonkrulsView": "मोनक्रूल्स फ्लो डिजाइनर",
+        "Rules": "नियम",
+        "Objects": "वस्तुएं",
+        "Data": "डेटा"
     }, 
 
     ja: {
@@ -29,6 +35,9 @@ export const i18n = {
         "VariableName": "変数名",
         "VariableValue": "変数値",
         "VariableDescription": "変数の説明",
-        "MonkrulsView": "Monkrulsフローデザイナー"
+        "MonkrulsView": "Monkrulsフローデザイナー",
+        "Rules": "ルール",
+        "Objects": "オブジェクト",
+        "Data": "データ"
     }
 }

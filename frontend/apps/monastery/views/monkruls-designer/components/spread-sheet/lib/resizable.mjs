@@ -5,7 +5,7 @@
  * License: See enclosed LICENSE file.
  */
 
-function makeResizableTable(table, barStyle="1px solid #444444") {
+function makeResizableTable(table, barStyle="1px solid #444444", callbacks) {
   const row = table.getElementsByTagName("tr")[0],
   cols = row ? row.children : undefined; if (!cols) return;
   
@@ -13,11 +13,11 @@ function makeResizableTable(table, barStyle="1px solid #444444") {
   
   for (let i = 0; i < cols.length; i++) {
     const div = _createDiv(table.offsetHeight);
-    cols[i].appendChild(div); cols[i].style.position = "relative"; _setListeners(div, table, barStyle);
+    cols[i].appendChild(div); cols[i].style.position = "relative"; _setListeners(div, table, barStyle, callbacks);
   }
 }
 
-function _setListeners(div, table, barStyle) {
+function _setListeners(div, table, barStyle, callbacks) {
   let pageX, curCol, nxtCol, curColWidth, nxtColWidth;
   
   div.addEventListener("mousedown", e => {
@@ -26,6 +26,7 @@ function _setListeners(div, table, barStyle) {
     const padding = _paddingDiff(curCol); 
     curColWidth = curCol.offsetWidth - padding;
     if (nxtCol) nxtColWidth = nxtCol.offsetWidth - padding;
+    if (callbacks && callbacks.onresize) {callbacks.onresize(curCol); if (nxtCol) callbacks.onresize(nxtCol);}
   });
 
   div.addEventListener("mouseover", e => {e.target.style.height = table.offsetHeight; e.target.style.borderRight = barStyle});
@@ -36,8 +37,9 @@ function _setListeners(div, table, barStyle) {
     if (!curCol) return;
     
     const diffX = e.pageX - pageX;
-    if (nxtCol) nxtCol.style.width = (nxtColWidth - (diffX))+'px';
-    curCol.style.width = (curColWidth + diffX)+'px';
+    if (nxtCol) nxtCol.style.width = (nxtColWidth - (diffX))+"px";
+    curCol.style.width = (curColWidth + diffX)+"px";
+    if (callbacks && callbacks.onresize) {callbacks.onresize(curCol); if (nxtCol) callbacks.onresize(nxtCol);}
   });
 
   document.addEventListener("mouseup", _ => { 

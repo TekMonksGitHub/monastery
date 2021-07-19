@@ -11,12 +11,12 @@ td {
     width: 10em;
 }
 
-td.head {
+tr:first-child > td {
     background-color: #4788C7; 
     color: white;
 }
 
-tr td:last-child.head {border-right-color: #4788C7}
+tr:first-child > td:last-child.head {border-right-color: #4788C7}
 
 td > textarea:focus {
     background-color: #DFF0FE;
@@ -25,8 +25,8 @@ td > textarea:focus {
 }
 td:focus-within {background-color: #DFF0FE; color: #444444;}
 
-/* Disable user being able to bold, italic etc. inside the table cells */
-[contenteditable] b {font-weight: normal;}
-[contenteditable] i {font-style: normal;}
-[contenteditable] img {display: none;}
-[contenteditable] u {text-decoration: none;}
+span#tabbar > span.tabbutton {
+    background-color: #D6EFFF;
+    border: 1px solid #4788C7;
+    border-top: transparent;
+}
