@@ -10,7 +10,8 @@ let monkrulsModel = EMPTY_MODEL, idCache = {}, current_rule_bundle = DEFAULT_BUN
 const MSG_NODES_MODIFIED = "NODES_MODIFIED", MSG_CONNECTORS_MODIFIED = "CONNECTORS_MODIFIED", 
     MSG_NODE_DESCRIPTION_CHANGED = "NODE_DESCRIPTION_CHANGED", MSG_ARE_NODES_CONNECTABLE = "ARE_NODES_CONNECTABLE",
     MSG_GET_MODEL = "GET_MODEL", MSG_RESET = "RESET", MSG_LOAD_MODEL = "LOAD_MODEL", 
-    MSG_CONNECT_NODES = "CONNECT_NODES", MSG_ADD_NODE = "ADD_NODE";
+    MSG_CONNECT_NODES = "CONNECT_NODES", MSG_ADD_NODE = "ADD_NODE", CSVLOOKUPTABLESCHEME = "csvlookuptable://", 
+    CSVSCHEME = "csv://";
 
 function init() {
     blackboard.registerListener(MSG_NODES_MODIFIED, message => modelNodesModified(message.type, message.nodeName,
@@ -36,12 +37,10 @@ function loadModel(jsonModel) {
     const _getUniqueID = _ => `${Date.now()}${Math.random()*100}`;    
 
     // first add all the rules and bundles
-    for (const bundle of monkrulsModel.rule_bundles) if (!bundle.rules.decisiontable) for (const rule of bundle.rules) {  
-        const id = rule.id||_getUniqueID(); idCache[id] = rule;
-        blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: "rule", id, description: rule.description, properties: {...rule}});
-    } else {
-        const decisiontable = bundle.rules; const id = decisiontable.id||_getUniqueID(); idCache[id] = decisiontable;
-        blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: "decision", id, description: decisiontable.description, properties: {...decisiontable}});
+    for (const bundle of monkrulsModel.rule_bundles) for (const rule of bundle.rules) {
+        const id = rule.id||_getUniqueID(), nodeName = rule.nodeName || rule.decisiontable?"decision":"rule"; 
+        idCache[id] = rule; if (rule.decisiontable) rule.decisiontable = rule.decisiontable.substring(CSVSCHEME.length);
+        blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName, id, description: rule.description, properties: {...rule}});
     }
 
     // add connections
@@ -55,7 +54,14 @@ function loadModel(jsonModel) {
     // add variables
     for (const variable of monkrulsModel.rule_parameters) {
         const id = variable.id||_getUniqueID(); idCache[id] = variable;
-        blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: "variable", id, description: variable.description, properties: {...variable}, connectable: false});
+        blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: variable.nodeName||"variable", id, description: variable.description, properties: {...variable}, connectable: false});
+    }
+
+    // add data
+    for (const data of monkrulsModel.data) {
+        const id = data.id||_getUniqueID(); idCache[id] = data;
+        data.data = JSON.stringify({isLookupTable: data.data.startsWith(CSVLOOKUPTABLESCHEME), csv:data.data.substring(data.data.startsWith(CSVLOOKUPTABLESCHEME)?CSVLOOKUPTABLESCHEME.length:CSVSCHEME.length)});
+        blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: data.nodeName||"data", id, description: data.description, properties: {...data}, connectable: false});
     }
 }
 
@@ -104,12 +110,13 @@ function _findOrCreateRuleBundle(name=current_rule_bundle) {
 }
 
 function _nodeAdded(nodeName, id, properties) {
-    const node = idCache[id] ? idCache[id] : JSON.parse(JSON.stringify(properties)); 
+    const node = idCache[id] ? idCache[id] : JSON.parse(JSON.stringify(properties)); node.nodeName = nodeName;
     if (idCache[id]) {_nodeModified(nodeName, id, properties); return;}  // node properties modified
 
     if (nodeName == "rule") _findOrCreateRuleBundle().rules.push(node);
     else if (nodeName == "variable") monkrulsModel.rule_parameters.push(node);
-    else if (nodeName == "decision") _findOrCreateRuleBundle(properties.description).rules = node;
+    else if (nodeName == "decision") _findOrCreateRuleBundle(properties.description).rules.push(node);
+    else if (nodeName == "data") {node.name = node.description; monkrulsModel.data.push(node);}
     
     node.id = id; idCache[id] = node;   // transfer ID and cache the node
     
@@ -129,7 +136,13 @@ function _nodeRemoved(nodeName, id) {
 
 function _nodeModified(_nodeName, id, properties) {
     if (!idCache[id]) return false; // we don't know of this node
-    for (const key in properties) idCache[id][key] = properties[key];   // transfer the new properties
+    for (const key in properties) { // transfer the new properties, CSVs need the CSV scheme added
+        if (key == "decisiontable") idCache[id][key] = CSVSCHEME+properties[key];
+        else if (key == "data") {
+            const parsedProperties = JSON.parse(properties[key]);
+            idCache[id][key] = (parsedProperties.isLookupTable.toLowerCase()=="true"?CSVLOOKUPTABLESCHEME:CSVSCHEME)+parsedProperties.csv;
+        } else idCache[id][key] = properties[key];   
+    }
     return true;
 }
 

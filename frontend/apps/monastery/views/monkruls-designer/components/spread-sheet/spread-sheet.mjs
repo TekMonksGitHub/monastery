@@ -10,7 +10,7 @@ const COMPONENT_PATH = util.getModulePath(import.meta), ROW_PROP = "__org_monksh
 	COLUMN_PROP = "__org_monkshu_components_spreadsheet_columns", DEFAULT_TAB="default";
 
 async function elementConnected(element) {
-	Object.defineProperty(element, "value", {get: _=>_getSpreadSheetAsCSV(element.id), set: value=>_setSpreadSheetFromCSV(value, element.id)});
+	Object.defineProperty(element, "value", {get: _=>_getValue(element), set: value=>_setValue(value, element)});
 	$$.require(`${COMPONENT_PATH}/3p/papaparse.min.js`);	// we need this to export and import data as CSV
 
 	// first tab in the attribute is active, or default (hidden) tab is active if multiple tabs are not being used
@@ -24,7 +24,7 @@ async function elementConnected(element) {
 }
 
 function elementRendered(element) {
-	if (element.getAttribute("value")) _setSpreadSheetFromCSV(element.getAttribute("value"), element.id);
+	if (element.getAttribute("value")) _setValue(element.getAttribute("value"), element);
 
 	// make table resizable and all elements to auto-resize when the columns are resized
 	const _getAllTextAreasForThisColumn = td => {
@@ -97,21 +97,40 @@ function switchSheet(element, sheetID) {
 	else _setSpreadSheetFromCSV(tabObjectNewSheet.data, host.id);	// have saved data from past, reload the sheet
 }
 
+function _getValue(host) {
+	const sheetValue = _getSpreadSheetAsCSV(host.id, true), shadowRoot = spread_sheet.getShadowRootByHost(host);
+	if (host.getAttribute("needPluginValues")) {
+		const retValue = {csv:sheetValue}; for (const pluginValueID of host.getAttribute("needPluginValues").split(","))
+			retValue[pluginValueID] = shadowRoot.querySelector(`#${pluginValueID}`)?.value;
+		return JSON.stringify(retValue);
+	} else return sheetValue;
+}
+
+function _setValue(value, host) {
+	const shadowRoot = spread_sheet.getShadowRootByHost(host);
+	if (host.getAttribute("needPluginValues")) {
+		const parsedValue = JSON.parse(value);
+		for (const pluginValueID of host.getAttribute("needPluginValues").split(","))
+			if (shadowRoot.querySelector(`#${pluginValueID}`)) shadowRoot.querySelector(`#${pluginValueID}`).value = parsedValue[pluginValueID];
+		_setSpreadSheetFromCSV(parsedValue.csv, host.id);
+	} else _setSpreadSheetFromCSV(value, host.id);
+}
+
 function _getSpreadSheetAsCSV(hostID, dontTrim) {
 	const _isEmptyArray = array => {for (const cell of array) if (cell.trim() != '') return false; return true;}
 	const shadowRoot = spread_sheet.getShadowRootByHostId(hostID), rows = shadowRoot.querySelectorAll("tr");
 	const csvObject = []; for (const row of rows) {
-		const column = Array.prototype.slice.call(row.getElementsByTagName("textarea")).map(e => e.value);
-		if (_isEmptyArray(column) && !dontTrim) continue;	// skip totally empty rows
-		else csvObject.push(column);
+		const rowData = Array.prototype.slice.call(row.getElementsByTagName("textarea")).map(e => e.value);
+		if (_isEmptyArray(rowData) && !dontTrim) continue;	// skip totally empty rows, unless don't trim was specified.
+		else csvObject.push(rowData);
 	}
 
-	// trim away totally empty columns
+	// trim away totally empty columns, unless don't trim was specified.
 	const columnsToDelete = []; if (!dontTrim) for (let columnNum = 0; columnNum < csvObject[0]?.length||0; columnNum++) {
 		const column = []; for (let rowNum = 0; rowNum < csvObject.length; rowNum++) column[rowNum] = csvObject[rowNum][columnNum];
 		if (_isEmptyArray(column)) columnsToDelete.push(columnNum);
 	}
-	const csvObjectTrimmed = []; for (const rowData of csvObject) {
+	const csvObjectTrimmed = dontTrim?csvObject:[]; if (!dontTrim) for (const rowData of csvObject) {
 		const row = [];
 		for (const [columnNum,column] of rowData.entries()) { if (!columnsToDelete.includes(columnNum)) row.push(column) }
 		csvObjectTrimmed.push(row);
@@ -143,7 +162,7 @@ async function _setSpreadSheetFromCSV(value, hostID) {	// will set data for the 
 }
 
 function _createElementData(host, rows=host.getAttribute("rows")||6, columns=host.getAttribute("columns")||2) {
-	const data = {componentPath: COMPONENT_PATH};
+	const data = {componentPath: COMPONENT_PATH, toolbarPluginHTML: host.getAttribute("toolbarPluginHTML")?decodeURIComponent(host.getAttribute("toolbarPluginHTML")):undefined};
 	data.rows = []; data.columns = []; for (let j = 0; j < columns; j++) data.columns.push(' ');
 	for (let i = 0; i < rows; i++) data.rows.push(' ');
 	if (host.getAttribute("styleBody")) data.styleBody = `<style>${host.getAttribute("styleBody")}</style>`;

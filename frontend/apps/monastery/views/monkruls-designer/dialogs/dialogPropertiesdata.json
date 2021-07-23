@@ -1,0 +1,25 @@
+{
+    "okButton": false,
+    "cancelButton": false,
+    "modal": false,
+    "okIcon": "./views/{{url.view}}/dialogs/ok.svg",
+    "closeIcon": "./views/{{url.view}}/dialogs/close.svg",
+    "showOKIcon": true,
+    "showCancelIcon": true,
+    
+    "var--dialog-font": "Raleway",
+    "var--dialog-background": "#DFF0FE",
+    "var--dialog-left": "80px",
+    "var--dialog-width": "calc(100% - 162px)",
+    "var--animation-name": "flyinbottom",
+    "var--animation-duration": "0.18s",
+    "var--animation-left-transform": "0%",
+    "var--button-background-color": "#B6DCFE",
+    "var--button-text-color": "black",
+    "var--margin-bottom": "0px",
+    "var--error-display": "none",
+    "var--dialog-position": "absolute",
+    "var--box-shadow": "none",
+    "var--dialog-border": "1px solid #98CCFD",
+    "var--dialog-border-radius": "40px 0px 0px 0px"
+}
