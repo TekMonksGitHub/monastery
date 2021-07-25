@@ -6,7 +6,7 @@ import {util} from "/framework/js/util.mjs";
 import {blackboard} from "/framework/js/blackboard.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
-const graphs = {}; 
+const graphs = {}, STYLE_CACHE = {}; 
 const GRAPH_CONNECTABLE = true, COMPONENT_PATH = util.getModulePath(import.meta);
 const MSG_REGISTER_SHAPE = "REGISTER_SHAPE", MSG_ADD_SHAPE = "ADD_SHAPE", MSG_SHAPE_CLICKED = "SHAPE_CLICKED",
 	MSG_SHAPE_REMOVED = "SHAPE_REMOVED", MSG_SHAPES_DISCONNECTED = "SHAPES_DISCONNECTED", 
@@ -23,7 +23,7 @@ function elementConnected(element) {
 		if (!flow_diagram.datas) flow_diagram.datas = {}; flow_diagram.datas[element.id] = data;
 	} else flow_diagram.data = data;
 
-	blackboard.registerListener(MSG_REGISTER_SHAPE, message => registerShape(message.graphID, message.name, message.svg, message.rounded));
+	blackboard.registerListener(MSG_REGISTER_SHAPE, message => registerShape(message.graphID, message.name, message.imgURL, message.rounded));
 	blackboard.registerListener(MSG_ADD_SHAPE, message => insertNode(message.graphID, message.id, message.label, message.name, message.x, message.y, message.width, message.height, message.connectable));
 	blackboard.registerListener(MSG_CONNECT_SHAPES, message => connectNodes(message.graphID, message.sourceID, message.targetID, message.labelID, message.label));
 	blackboard.registerListener(MSG_LABEL_SHAPE, message => addLabel(message.graphID, message.shapeid, message.label));
@@ -45,9 +45,11 @@ function elementConnected(element) {
  */
 async function insertNode(hostID, id, value, shapeName, x=0, y=0, width=80, height=30, connectable=true) {
 	const graph = await _getGraph(hostID); if (!graph) return false;
+	const style = graph.getStylesheet().getCellStyle(shapeName);	
+	if (!style[mxConstants.STYLE_IMAGE]) graph.getStylesheet().putCellStyle(shapeName,STYLE_CACHE[shapeName]);	// there is some bug in mxGraph where it forgets styles
 	const parent = graph.getDefaultParent();
-	const vertex = graph.createVertex(parent, id, value, x, y, width, height, shapeName);
-	vertex.setConnectable(connectable); graph.addCell(vertex);
+	const vertex = graph.insertVertex(parent, id, value, x, y, width, height, shapeName);
+	vertex.setConnectable(connectable); 
 	return true;
 }
 
@@ -55,21 +57,22 @@ async function insertNode(hostID, id, value, shapeName, x=0, y=0, width=80, heig
  * Registers the given shape for the graph.
  * @param hostID The graph ID of the graph to use
  * @param name The name of the shape
- * @param svgData The SVG image data
+ * @param imgURL The image URL
  * @param rounded Whether or not the rounded style is used
  * @returns true on success, false otherwise
  */
-async function registerShape(hostID, name, svgData, rounded=false) {
+async function registerShape(hostID, name, imgURL, rounded=false) {
 	const graph = await _getGraph(hostID); if (!graph) return;
 	const style = new Object();
 	style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_IMAGE;
-	style[mxConstants.STYLE_IMAGE] = svgData;
+	style[mxConstants.STYLE_IMAGE] = imgURL;
 	style[mxConstants.STYLE_ROUNDED]= rounded;
 	style[mxConstants.STYLE_VERTICAL_LABEL_POSITION] = mxConstants.ALIGN_BOTTOM;
 	style[mxConstants.STYLE_FONTCOLOR] = "#444444";
 	style[mxConstants.STYLE_FONTSIZE] = "12";
 	style[mxConstants.STYLE_WHITE_SPACE] = "nowrap";
 	graph.getStylesheet().putCellStyle(name,style);
+	STYLE_CACHE[name] = style;
 	return true;
 }
 
@@ -109,8 +112,7 @@ async function addLabel(hostID, nodeID, value) {
 async function _getGraph(hostID) {
 	if (graphs[hostID]) return graphs[hostID];	// already done
 
-	window.mxBasePath = `${COMPONENT_PATH}/3p/mxGraph`;	
-	await $$.require(`${window.mxBasePath}/mxClient.js`); 
+	window.mxBasePath = `${COMPONENT_PATH}/3p/mxGraph`;	await $$.require(`${window.mxBasePath}/mxClient.js`); 
 
 	if (!mxClient.isBrowserSupported()) {mxUtils.error("Browser is not supported!", 200, false); return false;}
 	mxGraphHandler.prototype.guidesEnabled = true; mxEdgeHandler.prototype.snapToTerminals = true;
@@ -124,14 +126,18 @@ async function _getGraph(hostID) {
     const mxgraphContainer = _createNonWebComponentDiagramContainer(shadowRoot.querySelector(`#${containerID}`));
 
 	mxEvent.disableContextMenu(mxgraphContainer);
+	
 	graphs[hostID] = new mxGraph(mxgraphContainer, null, "fastest"); graphs[hostID].setConnectable(GRAPH_CONNECTABLE);
 	graphs[hostID][GRAPH_MONASTERY_ID] = hostID; const graph = graphs[hostID]; 	
+
+	graph.popupMenuHandler.factoryMethod = (menu, cell, _evt) => { if (cell.vertex) 
+		menu.addItem('Rename', null, _=>graph.startEditingAtCell(cell) ); };
 
 	new mxRubberband(graph); // allows selecting multiple items using dragging rectangle
 	graph.addListener(mxEvent.DOUBLE_CLICK, (sender, evt) => {	// shape is double clicked
 		const cell = evt.getProperty("cell");
-		if (cell?.vertex) blackboard.broadcastMessage(MSG_SHAPE_CLICKED, { name:cell.style, id:cell.id, 
-			graphID:_findGraphID(sender) });
+		if (cell?.vertex) { blackboard.broadcastMessage(MSG_SHAPE_CLICKED, { name:cell.style, id:cell.id, 
+			graphID:_findGraphID(sender), label: cell.value }); evt.consume(); }
 	});
 	new mxKeyHandler(graph).bindKey(46, _ => {if (graph.isEnabled()) graph.removeCells()});	// allows deleting on DEL key press
 	graph.addListener(mxEvent.CELLS_REMOVED, (sender, evt) => {	// shape deleted or edge deleted

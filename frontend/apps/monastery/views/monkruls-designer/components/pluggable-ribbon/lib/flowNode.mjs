@@ -16,7 +16,7 @@ class FlowNode {
         
         const svgSource64 = btoa(await (await fetch(`${pluginPath}/${pluginName}.svg`)).text());
         const svg = "data:image/svg+xml," + svgSource64; this.IMAGE = "data:image/svg+xml;base64," + svgSource64;
-        blackboard.broadcastMessage(MSG_SHAPE_INIT, {name: this.SHAPE_NAME, svg});
+        blackboard.broadcastMessage(MSG_SHAPE_INIT, {name: this.SHAPE_NAME, imgURL: svg});
     }
 
     clicked = _ => this.#clicked();

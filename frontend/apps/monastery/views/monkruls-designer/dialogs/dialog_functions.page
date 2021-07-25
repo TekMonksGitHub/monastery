@@ -1,0 +1,50 @@
+SCHEMA
+======
+{
+    "code": {"html":"text-editor", "downloadfilename":"{{{description}}}.js"}
+}
+======
+
+
+LAYOUT
+=================
+----------------------------  
+|          code            |      
+----------------------------
+=================
+Row Heights = calc(100vh - 152px)
+Col Widths = 100%
+=================
+
+
+CSS CLASSES
+===========
+CONTAINER CLASSES = grid-container-extension
+ITEM CLASSES = grid-item-extension
+PER ITEM CLASS = class
+===========
+
+CSS
+=======
+.grid-container-extension {
+    height: 100%;
+}
+
+.grid-item-extension {
+    background-color: var(--dialog-background, white);
+    padding: 10px 20px 10px 20px;
+    display: flex;
+    flex-flow: row;
+    box-sizing: border-box;
+}
+
+.class-decisiontable {
+    overflow: auto;
+}
+
+body {
+    margin: 0%;
+    display: inline-block;
+    width: 100%;
+}
+=======

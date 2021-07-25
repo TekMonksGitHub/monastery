@@ -1,4 +1,5 @@
 /** 
+ * Spread sheet component
  * (C) 2019 TekMonks. All rights reserved.
  * License: See enclosed LICENSE file.
  */

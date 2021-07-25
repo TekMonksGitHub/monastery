@@ -41,9 +41,7 @@ CSS
     box-sizing: border-box;
 }
 
-.class-decisiontable {
-    overflow: auto;
-}
+.class-data {overflow: auto;}
 
 body {
     margin: 0%;
@@ -51,4 +49,3 @@ body {
     width: 100%;
 }
 =======
-{"mode":"full","isActive":false}

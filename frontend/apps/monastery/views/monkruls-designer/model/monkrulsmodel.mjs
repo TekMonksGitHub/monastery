@@ -117,6 +117,7 @@ function _nodeAdded(nodeName, id, properties) {
     else if (nodeName == "variable") monkrulsModel.rule_parameters.push(node);
     else if (nodeName == "decision") _findOrCreateRuleBundle(properties.description).rules.push(node);
     else if (nodeName == "data") {node.name = node.description; monkrulsModel.data.push(node);}
+    else if (nodeName == "functions") {node.name = node.description; monkrulsModel.functions.push(node);}
     
     node.id = id; idCache[id] = node;   // transfer ID and cache the node
     
@@ -128,7 +129,10 @@ function _nodeRemoved(nodeName, id) {
     const node = idCache[id];
 
     if (nodeName == "rule") _arrayDelete(_findOrCreateRuleBundle().rules, node);
+    else if (nodeName == "decision") _arrayDelete(monkrulsModel.rule_bundles, _findOrCreateRuleBundle(node.description));
     else if (nodeName == "variable") _arrayDelete(monkrulsModel.rule_parameters, node);
+    else if (nodeName == "data") _arrayDelete(monkrulsModel.data, node);
+    else if (nodeName == "functions") _arrayDelete(monkrulsModel.functions, node);
 
     delete idCache[id]; // uncache
     return true;

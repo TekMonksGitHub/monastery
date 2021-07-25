@@ -93,6 +93,7 @@ span#tabbar > span.tabbutton {
 }
 span#tabbar > span.tabbutton.active {background-color: #ffffff}
 
+img.button {width: 20px;}
 </style>
 
 {{{styleBody}}}
@@ -106,8 +107,8 @@ span#tabbar > span.tabbutton.active {background-color: #ffffff}
         {{{toolbarPluginHTML}}}
     </span>
     <span id="rightitems">
-        <span class="button" onclick='monkshu_env.components["spread-sheet"].open(this)'><img src="{{{componentPath}}}/img/open.svg">&nbsp;&nbsp;Load</span>
-        <span class="button" onclick='monkshu_env.components["spread-sheet"].save(this)'><img src="{{{componentPath}}}/img/save.svg">&nbsp;&nbsp;Save</span>
+        <span class="button" onclick='monkshu_env.components["spread-sheet"].open(this)'><img class="button" src="{{{componentPath}}}/img/open.svg">&nbsp;&nbsp;Load</span>
+        <span class="button" onclick='monkshu_env.components["spread-sheet"].save(this)'><img class="button" src="{{{componentPath}}}/img/save.svg">&nbsp;&nbsp;Save</span>
     </span>
 </span>
 

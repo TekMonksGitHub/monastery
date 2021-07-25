@@ -18,7 +18,8 @@ const MSG_REGISTER_SHAPE = "REGISTER_SHAPE", MSG_SHAPE_INIT = "SHAPE_INIT_ON_RIB
     MSG_MODEL_NODE_DESCRIPTION_CHANGED = "NODE_DESCRIPTION_CHANGED", MSG_MODEL_ARE_NODES_CONNECTABLE = "ARE_NODES_CONNECTABLE",
     MSG_MODEL_LOAD_MODEL = "LOAD_MODEL", MSG_RESET = "RESET", MSG_FILE_UPLOADED = "FILE_UPLOADED", GRAPH_ID = "flowui", MODEL_OP_ADDED = "added", 
     MODEL_OP_REMOVED = "removed", MODEL_OP_MODIFIED = "modified";
-const PAGE_GENERATOR_GRID_ITEM_CLASS = "grid-item-extension", HTML_INPUT_ELEMENTS = ["input","select","textarea","spread-sheet"];
+const PAGE_GENERATOR_GRID_ITEM_CLASS = "grid-item-extension", HTML_INPUT_ELEMENTS = ["input","select",
+    "textarea","spread-sheet","text-editor"];
 let ID_CACHE = {}, CONF, VIEW_PATH;
 
 const _generateShapeName = name => name.toLowerCase(), _generateShapeX = _ => 30, _generateShapeY = _ => 30;
@@ -27,9 +28,9 @@ async function init(viewPath) {
     VIEW_PATH = viewPath; CONF = await $$.requireJSON(`${VIEW_PATH}/conf/view.json`);
 
     blackboard.registerListener(MSG_SHAPE_INIT, message => blackboard.broadcastMessage(MSG_REGISTER_SHAPE, 
-        {name: _generateShapeName(message.name), svg: message.svg, graphID: GRAPH_ID, rounded: true}));
+        {name: _generateShapeName(message.name), imgURL: message.imgURL, graphID: GRAPH_ID, rounded: true}));
     blackboard.registerListener(MSG_SHAPE_CLICKED_ON_RIBBON, message => shapeAdded(message.name, message.id, message.label, message.connectable));
-    blackboard.registerListener(MSG_SHAPE_CLICKED, message => _shapeObjectClickedOnFlowDiagram(message.name, message.id));
+    blackboard.registerListener(MSG_SHAPE_CLICKED, message => _shapeObjectClickedOnFlowDiagram(message.name, message.id, message.label));
     blackboard.registerListener(MSG_SHAPE_REMOVED, message => blackboard.broadcastMessage(MSG_MODEL_NODES_MODIFIED,
         {type: MODEL_OP_REMOVED, nodeName: message.name, id: message.id}));
     blackboard.registerListener(MSG_SHAPES_CONNECTED, message => blackboard.broadcastMessage(MSG_MODEL_CONNECTORS_MODIFIED,
@@ -71,9 +72,9 @@ function shapeAdded(shapeName, id, label, connectable=true) {
     blackboard.broadcastMessage(MSG_MODEL_NODES_MODIFIED, {type: MODEL_OP_ADDED, nodeName: shapeNameTweaked, id, properties: {description: label}}); // add to the model
 }
 
-async function _shapeObjectClickedOnFlowDiagram(shapeName, id) {
+async function _shapeObjectClickedOnFlowDiagram(shapeName, id, shapelabel) {
     const pageFile = new URL(`${VIEW_PATH}/dialogs/dialog_${shapeName}.page`);
-    let html = await page_generator.getHTML(pageFile);
+    let html = await page_generator.getHTML(pageFile, null, {description: shapelabel});
 
     const savedDialogProperties = ID_CACHE[id]||{};
     // figure out IDs for all input items on the dialog and fill their defaults, if saved previously
