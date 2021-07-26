@@ -6,7 +6,7 @@ import {util} from "/framework/js/util.mjs";
 import {blackboard} from "/framework/js/blackboard.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
-const graphs = {}, STYLE_CACHE = {}; 
+const GRAPHS = {}, STYLE_CACHE = {}, SELECTED_CELLS = {};
 const GRAPH_CONNECTABLE = true, COMPONENT_PATH = util.getModulePath(import.meta);
 const MSG_REGISTER_SHAPE = "REGISTER_SHAPE", MSG_ADD_SHAPE = "ADD_SHAPE", MSG_SHAPE_CLICKED = "SHAPE_CLICKED",
 	MSG_SHAPE_REMOVED = "SHAPE_REMOVED", MSG_SHAPES_DISCONNECTED = "SHAPES_DISCONNECTED", 
@@ -46,7 +46,8 @@ function elementConnected(element) {
 async function insertNode(hostID, id, value, shapeName, x=0, y=0, width=80, height=30, connectable=true) {
 	const graph = await _getGraph(hostID); if (!graph) return false;
 	const style = graph.getStylesheet().getCellStyle(shapeName);	
-	if (!style[mxConstants.STYLE_IMAGE]) graph.getStylesheet().putCellStyle(shapeName,STYLE_CACHE[shapeName]);	// there is some bug in mxGraph where it forgets styles
+	if (!style[mxConstants.STYLE_IMAGE] != STYLE_CACHE[shapeName][mxConstants.STYLE_IMAGE]) 
+		graph.getStylesheet().putCellStyle(shapeName,STYLE_CACHE[shapeName]);	// there is some bug in mxGraph where it forgets styles
 	const parent = graph.getDefaultParent();
 	const vertex = graph.insertVertex(parent, id, value, x, y, width, height, shapeName);
 	vertex.setConnectable(connectable); 
@@ -110,7 +111,7 @@ async function addLabel(hostID, nodeID, value) {
 }
 
 async function _getGraph(hostID) {
-	if (graphs[hostID]) return graphs[hostID];	// already done
+	if (GRAPHS[hostID]) return GRAPHS[hostID];	// already done
 
 	window.mxBasePath = `${COMPONENT_PATH}/3p/mxGraph`;	await $$.require(`${window.mxBasePath}/mxClient.js`); 
 
@@ -127,11 +128,14 @@ async function _getGraph(hostID) {
 
 	mxEvent.disableContextMenu(mxgraphContainer);
 	
-	graphs[hostID] = new mxGraph(mxgraphContainer, null, "fastest"); graphs[hostID].setConnectable(GRAPH_CONNECTABLE);
-	graphs[hostID][GRAPH_MONASTERY_ID] = hostID; const graph = graphs[hostID]; 	
+	GRAPHS[hostID] = new mxGraph(mxgraphContainer, null, "fastest"); GRAPHS[hostID].setConnectable(GRAPH_CONNECTABLE);
+	GRAPHS[hostID][GRAPH_MONASTERY_ID] = hostID; const graph = GRAPHS[hostID]; 	
 
 	graph.popupMenuHandler.factoryMethod = (menu, cell, _evt) => { if (cell.vertex) 
-		menu.addItem('Rename', null, _=>graph.startEditingAtCell(cell) ); };
+		menu.addItem('Rename', null, _=>graph.startEditingAtCell(cell) ); 
+		menu.addSeparator();
+		menu.addItem('Delete', null, _=>graph.removeCells([cell]) ); 
+	};
 
 	new mxRubberband(graph); // allows selecting multiple items using dragging rectangle
 	graph.addListener(mxEvent.DOUBLE_CLICK, (sender, evt) => {	// shape is double clicked
@@ -139,7 +143,6 @@ async function _getGraph(hostID) {
 		if (cell?.vertex) { blackboard.broadcastMessage(MSG_SHAPE_CLICKED, { name:cell.style, id:cell.id, 
 			graphID:_findGraphID(sender), label: cell.value }); evt.consume(); }
 	});
-	new mxKeyHandler(graph).bindKey(46, _ => {if (graph.isEnabled()) graph.removeCells()});	// allows deleting on DEL key press
 	graph.addListener(mxEvent.CELLS_REMOVED, (sender, evt) => {	// shape deleted or edge deleted
 		const listOfCellsRemoved = evt.getProperty("cells");
 		for (const cell of listOfCellsRemoved) 
@@ -199,10 +202,15 @@ function _createNonWebComponentDiagramContainer(container) {
 		const rect = container.getBoundingClientRect();
 		diagramContainer.style.width = rect.width; 
 		diagramContainer.style.height = rect.height; }).observe(container);
+	const host = flow_diagram.getHostElement(container); if (host.getAttribute("mxGraphStyleBody")) {	// set style on mxGraph if provided.
+		const graphStyle = window.document.createElement("style"); 
+		graphStyle.innerHTML = host.getAttribute("mxGraphStyleBody");
+		document.getElementsByTagName("head")[0].appendChild(graphStyle);
+	}
 	return diagramContainer;
 }
 
-const _findGraphID = graph => {for (const key in graphs) if (graphs[key][GRAPH_MONASTERY_ID] == graph[GRAPH_MONASTERY_ID]) return key; return null;}
+const _findGraphID = graph => {for (const key in GRAPHS) if (GRAPHS[key][GRAPH_MONASTERY_ID] == graph[GRAPH_MONASTERY_ID]) return key; return null;}
 
 // convert this all into a WebComponent so we can use it
 export const flow_diagram = {trueWebComponentMode: true, registerShape, elementConnected, insertNode, connectNodes, addLabel}

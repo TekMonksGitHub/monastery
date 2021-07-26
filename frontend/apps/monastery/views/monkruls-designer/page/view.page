@@ -4,7 +4,8 @@ SCHEMA
     "space": {"html":"span", "style":"height:100%; display:block; background:#DFF0FE;"},
     "topribbon": {"html":"pluggable-ribbon", "styleBody":"url(./views/{{url.view}}/page/topribbon.styleBody.css)", "ribbonTitle":"{{i18n.MonkrulsView}}", "ribbonLogo":"./views/{{url.view}}/page/logo.png"},
     "sideribbon": {"html":"pluggable-ribbon", "styleBody":"url(./views/{{url.view}}/page/sideribbon.styleBody.css)"},
-    "flowui": {"html":"flow-diagram", "id":"flowui", "styleBody":"url(./views/{{url.view}}/page/flowui.styleBody.css)"}
+    "flowui": {"html":"flow-diagram", "id":"flowui", "styleBody":"url(./views/{{url.view}}/page/flowui.styleBody.css)",
+        "mxGraphStyleBody":"url(./views/{{url.view}}/page/flowui.mxGraph.styleBody.css)"}
 }
 ======
 

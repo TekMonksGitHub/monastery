@@ -15,8 +15,6 @@ const P3_LIBS = [`${COMPONENT_PATH}/3p/codemirror/lib/codemirror.js`, `${COMPONE
 async function elementConnected(element) {
 	Object.defineProperty(element, "value", {get: _=>_getValue(element), set: value=>_setValue(value, element)});
 	
-	for (const p3lib of P3_LIBS) await $$.require(p3lib);
-
 	const data = { componentPath: COMPONENT_PATH, styleBody:element.getAttribute("styleBody")?
 		`<style>${element.getAttribute("styleBody")}</style>`:undefined };
 
@@ -24,12 +22,13 @@ async function elementConnected(element) {
 	else text_editor.data = data;
 }
 
-function elementRendered(element) {
+async function elementRendered(element) {
+	for (const p3lib of P3_LIBS) await $$.require(p3lib);	// load all the libs we need
 	const editorElement = text_editor.getShadowRootByHost(element).querySelector("textarea#texteditor");
-	const cm = CodeMirror.fromTextArea(editorElement, {lineNumbers:true, gutter:true, lineWrapping:true,
-		styleActiveLine: true, styleActiveSelected: true, mode: "javascript", lint: {selfContain: true}, 
-		gutters: ["CodeMirror-lint-markers"], matchBrackets: true }); 
-	text_editor.getMemoryByHost(element).editor = cm; cm.setSize("100%", "100%"); cm.setValue("");
+	const cm = CodeMirror(cmElement => editorElement.parentNode.replaceChild(cmElement, editorElement), 
+		{lineNumbers:true, gutter:true, lineWrapping:true, styleActiveLine: true, styleActiveSelected: true, 
+			mode: "javascript", lint: {selfContain: true}, gutters: ["CodeMirror-lint-markers"], matchBrackets: true}); 
+	text_editor.getMemoryByHost(element).editor = cm; cm.setSize("100%", "100%"); 
 
 	if (element.getAttribute("value")) _setValue(element.getAttribute("value"), element);
 }
