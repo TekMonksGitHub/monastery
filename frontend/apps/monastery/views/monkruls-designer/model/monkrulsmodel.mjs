@@ -109,6 +109,8 @@ function _findOrCreateRuleBundle(name=current_rule_bundle) {
     const newBundle = {name, rules:[]}; monkrulsModel.rule_bundles.push(newBundle); return newBundle;
 }
 
+const _findAndDeleteRuleBundle = (name=current_rule_bundle) => _arrayDelete(monkrulsModel.rule_bundles, _findOrCreateRuleBundle(name));
+
 function _nodeAdded(nodeName, id, properties) {
     const node = idCache[id] ? idCache[id] : JSON.parse(JSON.stringify(properties)); node.nodeName = nodeName;
     if (idCache[id]) {_nodeModified(nodeName, id, properties); return;}  // node properties modified
@@ -128,7 +130,7 @@ function _nodeRemoved(nodeName, id) {
     if (!idCache[id]) return;   // we don't know of this node
     const node = idCache[id];
 
-    if (nodeName == "rule") _arrayDelete(_findOrCreateRuleBundle().rules, node);
+    if (nodeName == "rule") {const bundle = _findOrCreateRuleBundle(); _arrayDelete(bundle.rules, node); if (!bundle.rules.length) _findAndDeleteRuleBundle();}
     else if (nodeName == "decision") _arrayDelete(monkrulsModel.rule_bundles, _findOrCreateRuleBundle(node.description));
     else if (nodeName == "variable") _arrayDelete(monkrulsModel.rule_parameters, node);
     else if (nodeName == "data") _arrayDelete(monkrulsModel.data, node);
