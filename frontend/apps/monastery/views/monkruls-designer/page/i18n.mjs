@@ -10,7 +10,8 @@ export const i18n = {
         "MonkrulsView": "Monkruls Flow Designer",
         "Rules": "Rules",
         "Objects": "Objects",
-        "Data": "Data"
+        "Data": "Data",
+        "Test": "Test"
     },
 
     hi: {
@@ -24,7 +25,8 @@ export const i18n = {
         "MonkrulsView": "मोनक्रूल्स फ्लो डिजाइनर",
         "Rules": "नियम",
         "Objects": "वस्तुएं",
-        "Data": "डेटा"
+        "Data": "डेटा",
+        "Test": "परीक्षण करें"
     }, 
 
     ja: {
@@ -38,6 +40,7 @@ export const i18n = {
         "MonkrulsView": "Monkrulsフローデザイナー",
         "Rules": "ルール",
         "Objects": "オブジェクト",
-        "Data": "データ"
+        "Data": "データ",
+        "Test": "試す"
     }
 }

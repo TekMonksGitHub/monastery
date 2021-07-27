@@ -60,7 +60,7 @@ function loadModel(jsonModel) {
     // add data
     for (const data of monkrulsModel.data) {
         const id = data.id||_getUniqueID(); idCache[id] = data;
-        data.data = JSON.stringify({isLookupTable: data.data.startsWith(CSVLOOKUPTABLESCHEME), csv:data.data.substring(data.data.startsWith(CSVLOOKUPTABLESCHEME)?CSVLOOKUPTABLESCHEME.length:CSVSCHEME.length)});
+        data.data = JSON.stringify({isLookupTable: data.data.startsWith(CSVLOOKUPTABLESCHEME), default:data.data.substring(data.data.startsWith(CSVLOOKUPTABLESCHEME)?CSVLOOKUPTABLESCHEME.length:CSVSCHEME.length)});
         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: data.nodeName||"data", id, description: data.description, properties: {...data}, connectable: false});
     }
 }

@@ -4,7 +4,10 @@
  * License: See enclosed LICENSE file.
  */
 import {util} from "/framework/js/util.mjs";
+import {i18n} from "./spread-sheet.i18n.mjs";
 import {resizable} from "./lib/resizable.mjs";
+import {router} from "/framework/js/router.mjs";
+import {session} from "/framework/js/session.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
 const COMPONENT_PATH = util.getModulePath(import.meta), ROW_PROP = "__org_monkshu_components_spreadsheet_rows",
@@ -18,7 +21,7 @@ async function elementConnected(element) {
 	_setActiveTab(element, element.getAttribute("tabs") ? 
 		element.getAttribute("tabs").split(",")[0].split(":")[0].trim() : DEFAULT_TAB);
 
-	const data = _createElementData(element);
+	const data = await _createElementData(element);
 
 	if (element.id) if (!spread_sheet.datas) {
 		spread_sheet.datas = {}; spread_sheet.datas[element.id] = data; } else spread_sheet.data = data;
@@ -50,14 +53,14 @@ function cellpastedon(element, event) {
 async function rowop(op, element) {
 	const host = spread_sheet.getHostElement(element);
 	const numOfRows = _getActiveTabObject(host)[ROW_PROP], numOfColumns = _getActiveTabObject(host)[COLUMN_PROP];
-	const data = _createElementData(host, op=="add"?numOfRows+1:numOfRows-1, numOfColumns);
+	const data = await _createElementData(host, op=="add"?numOfRows+1:numOfRows-1, numOfColumns);
 	const currentData = _getSpreadSheetAsCSV(host.id); await spread_sheet.bindData(data, host.id); _setSpreadSheetFromCSV(currentData, host.id);
 }
 
 async function columnop(op, element) {
 	const host = spread_sheet.getHostElement(element);
 	const numOfRows = _getActiveTabObject(host)[ROW_PROP], numOfColumns = _getActiveTabObject(host)[COLUMN_PROP];
-	const data = _createElementData(host, numOfRows, op=="add"?numOfColumns+1:numOfColumns-1);
+	const data = await _createElementData(host, numOfRows, op=="add"?numOfColumns+1:numOfColumns-1);
 	const currentData = _getSpreadSheetAsCSV(host.id); await spread_sheet.bindData(data, host.id); _setSpreadSheetFromCSV(currentData, host.id);
 }
 
@@ -87,13 +90,13 @@ function resizeRowInputsForLargestScroll(element) {
 	else for (const element of rowElements) element.style.height = largestScrollHeight+"px"; 
 }
 
-function switchSheet(element, sheetID) {
+async function switchSheet(element, sheetID) {
 	const host = spread_sheet.getHostElement(element);
 	_getActiveTabObject(host).data = _getSpreadSheetAsCSV(host.id, true);
 
 	const tabObjectNewSheet = _getTabObject(host, sheetID); _setActiveTab(host, sheetID);	// set this sheet as active
 	if (!tabObjectNewSheet.data || tabObjectNewSheet.data == "") spread_sheet.bindData(	// no data, new sheet
-		_createElementData(host, tabObjectNewSheet[ROW_PROP], tabObjectNewSheet[COLUMN_PROP]), host.id);
+		await _createElementData(host, tabObjectNewSheet[ROW_PROP], tabObjectNewSheet[COLUMN_PROP]), host.id);
 	else _setSpreadSheetFromCSV(tabObjectNewSheet.data, host.id);	// have saved data from past, reload the sheet
 }
 
@@ -149,7 +152,7 @@ async function _setSpreadSheetFromCSV(value, hostID) {	// will set data for the 
 		Papa.parse(value.trim(), {header: false, skipEmptyLines: true}).data : value;
 	if ((!Array.isArray(csvArrayOfArrays)) || (!Array.isArray(csvArrayOfArrays[0]))) {LOG.error("Bad CSV data"); return;}	// bad CSV data
 	const numOfColumnsInCSV = csvArrayOfArrays[0].length, numOfRowsInCSV = csvArrayOfArrays.length;
-	const host = spread_sheet.getHostElementByID(hostID), data = _createElementData(host, 
+	const host = spread_sheet.getHostElementByID(hostID), data = await _createElementData(host, 
 		numOfRowsInCSV>_getActiveTabObject(host)[ROW_PROP]?numOfRowsInCSV:_getActiveTabObject(host)[ROW_PROP], 
 		numOfColumnsInCSV>_getActiveTabObject(host)[COLUMN_PROP]?numOfColumnsInCSV:_getActiveTabObject(host)[COLUMN_PROP]);
 	
@@ -166,8 +169,11 @@ async function _setSpreadSheetFromCSV(value, hostID) {	// will set data for the 
 	return true;
 }
 
-function _createElementData(host, rows=host.getAttribute("rows")||6, columns=host.getAttribute("columns")||2) {
-	const data = {componentPath: COMPONENT_PATH, toolbarPluginHTML: host.getAttribute("toolbarPluginHTML")?decodeURIComponent(host.getAttribute("toolbarPluginHTML")):undefined};
+async function _createElementData(host, rows=host.getAttribute("rows")||6, columns=host.getAttribute("columns")||2) {
+	const data = {componentPath: COMPONENT_PATH, i18n: {},
+		toolbarPluginHTML: host.getAttribute("toolbarPluginHTML")?decodeURIComponent(host.getAttribute("toolbarPluginHTML")):undefined};
+	for (const i18nKey in i18n) data.i18n[i18nKey] = i18n[i18nKey][session.get($$.MONKSHU_CONSTANTS.LANG_ID)];
+
 	data.rows = []; data.columns = []; for (let j = 0; j < columns; j++) data.columns.push(' ');
 	for (let i = 0; i < rows; i++) data.rows.push(' ');
 	if (host.getAttribute("styleBody")) data.styleBody = `<style>${host.getAttribute("styleBody")}</style>`;
@@ -175,6 +181,9 @@ function _createElementData(host, rows=host.getAttribute("rows")||6, columns=hos
 	data.tabs = []; const tabs = host.getAttribute("tabs"); if (tabs) for (const tabTuple of tabs.split(",")) 
 		data.tabs.push( {name: tabTuple.trim().split(":")[1].trim(), id: tabTuple.trim().split(":")[0].trim(), 
 			active: tabTuple.trim().split(":")[0].trim() == _getActiveTab(host)?"true":undefined} );
+
+	// expand toolbar plugin HTML now that data object is complete, as it may need expansion
+	if (data.toolbarPluginHTML) data.toolbarPluginHTML = await router.expandPageData(data.toolbarPluginHTML, undefined, data);
 	
 	_getActiveTabObject(host)[ROW_PROP] = parseInt(rows), _getActiveTabObject(host)[COLUMN_PROP] = parseInt(columns);
 

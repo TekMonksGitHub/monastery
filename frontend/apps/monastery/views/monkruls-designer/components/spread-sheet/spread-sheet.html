@@ -100,15 +100,15 @@ img.button {width: 20px;}
 
 <span id="toolbar">
     <span id="leftitems">
-        <span><img src="{{{componentPath}}}/img/delete.svg" onclick='monkshu_env.components["spread-sheet"].rowop("delete",this)'>&nbsp;&nbsp;Rows&nbsp;&nbsp;<img src="{{{componentPath}}}/img/add.svg" onclick='monkshu_env.components["spread-sheet"].rowop("add",this)'></span>
-        <span><img src="{{{componentPath}}}/img/delete.svg" onclick='monkshu_env.components["spread-sheet"].columnop("delete",this)'>&nbsp;&nbsp;Cloumns&nbsp;&nbsp;<img src="{{{componentPath}}}/img/add.svg" onclick='monkshu_env.components["spread-sheet"].columnop("add",this)'></span>
+        <span><img src="{{{componentPath}}}/img/delete.svg" onclick='monkshu_env.components["spread-sheet"].rowop("delete",this)'>&nbsp;&nbsp;{{i18n.Rows}}&nbsp;&nbsp;<img src="{{{componentPath}}}/img/add.svg" onclick='monkshu_env.components["spread-sheet"].rowop("add",this)'></span>
+        <span><img src="{{{componentPath}}}/img/delete.svg" onclick='monkshu_env.components["spread-sheet"].columnop("delete",this)'>&nbsp;&nbsp;{{i18n.Columns}}&nbsp;&nbsp;<img src="{{{componentPath}}}/img/add.svg" onclick='monkshu_env.components["spread-sheet"].columnop("add",this)'></span>
     </span>
     <span id="middleitems">
         {{{toolbarPluginHTML}}}
     </span>
     <span id="rightitems">
-        <span class="button" onclick='monkshu_env.components["spread-sheet"].open(this)'><img class="button" src="{{{componentPath}}}/img/open.svg">&nbsp;&nbsp;Load</span>
-        <span class="button" onclick='monkshu_env.components["spread-sheet"].save(this)'><img class="button" src="{{{componentPath}}}/img/save.svg">&nbsp;&nbsp;Save</span>
+        <span class="button" onclick='monkshu_env.components["spread-sheet"].open(this)'><img class="button" src="{{{componentPath}}}/img/open.svg">&nbsp;&nbsp;{{i18n.Load}}</span>
+        <span class="button" onclick='monkshu_env.components["spread-sheet"].save(this)'><img class="button" src="{{{componentPath}}}/img/save.svg">&nbsp;&nbsp;{{i18n.Save}}</span>
     </span>
 </span>
 
