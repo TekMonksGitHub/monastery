@@ -2,7 +2,7 @@ SCHEMA
 ======
 {
     "decisiontable": {"html":"spread-sheet", "rows":15, "columns":5, "onlyText": "true", "barstyle": "0px solid #4788C7",
-        "downloadfilename":"decisiontable.csv", "tabs": "Rules:{{i18n.Rules}},Data:{{i18n.Data}}",
+        "downloadfilename":"{{{description}}}", "tabs": "Rules:{{i18n.Rules}},Objects:{{i18n.Objects}}",
         "styleBody":"url(./views/{{url.view}}/dialogs/monkrulsTable.styleBody.css)" }
 }
 ======

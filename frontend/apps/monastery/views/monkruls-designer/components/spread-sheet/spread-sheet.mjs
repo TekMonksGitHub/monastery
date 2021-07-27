@@ -24,8 +24,8 @@ async function elementConnected(element) {
 		spread_sheet.datas = {}; spread_sheet.datas[element.id] = data; } else spread_sheet.data = data;
 }
 
-function elementRendered(element) {
-	if (element.getAttribute("value")) _setValue(element.getAttribute("value"), element);
+function elementRendered(element, initialRender) {
+	if (element.getAttribute("value") && initialRender) _setValue(element.getAttribute("value"), element);
 
 	// make table resizable and all elements to auto-resize when the columns are resized
 	const _getAllTextAreasForThisColumn = td => {
@@ -63,15 +63,14 @@ async function columnop(op, element) {
 
 async function open(element) {
 	try {
-		const csvContents = (await util.uploadAFile("text/csv")).data;
-		if (csvContents) _setSpreadSheetFromCSV(csvContents, spread_sheet.getHostElement(element).id);
-	} catch (err) {LOG.error(`Error uploading file, ${err}`);}
+		const sheetData = (await util.uploadAFile(".csv,.json")).data;
+		if (sheetData) _setValue(sheetData, spread_sheet.getHostElement(element));
+	} catch (err) {LOG.error(`Error opening file, ${err}`);}
 }
 
 async function save(element) {
-	const host = spread_sheet.getHostElement(element);
-	const csvData = _getSpreadSheetAsCSV(host.id);
-	util.downloadFile(csvData, "text/csv", host.getAttribute("downloadfilename")||"spreadsheet.csv");
+	const host = spread_sheet.getHostElement(element), sheetData = _getValue(host); let isJSON = true; try{JSON.parse(sheetData)} catch (err) {isJSON=false};
+	util.downloadFile(sheetData, isJSON?"application/json":"text/csv", `${host.getAttribute("downloadfilename")||"spreadsheet"}${isJSON?".json":".csv"}`);
 }
 
 function resizeRowInputsForLargestScroll(element) {
@@ -99,21 +98,25 @@ function switchSheet(element, sheetID) {
 }
 
 function _getValue(host) {
-	const sheetValue = _getSpreadSheetAsCSV(host.id, true), shadowRoot = spread_sheet.getShadowRootByHost(host);
-	if (host.getAttribute("needPluginValues")) {
-		const retValue = {csv:sheetValue}; for (const pluginValueID of host.getAttribute("needPluginValues").split(","))
+	const activeSheetValue = _getSpreadSheetAsCSV(host.id, true), shadowRoot = spread_sheet.getShadowRootByHost(host);
+	if (host.getAttribute("needPluginValues") || Object.keys(_getAllTabs(host)).length) {
+		const retValue = {}; for (const tabID in _getAllTabs(host))
+			retValue[tabID] = tabID == _getActiveTab(host) ? activeSheetValue : _getTabObject(host, tabID).data;
+		if (host.getAttribute("needPluginValues")) for (const pluginValueID of host.getAttribute("needPluginValues").split(","))
 			retValue[pluginValueID] = shadowRoot.querySelector(`#${pluginValueID}`)?.value;
 		return JSON.stringify(retValue);
-	} else return sheetValue;
+	} else return activeSheetValue;
 }
 
 function _setValue(value, host) {
-	const shadowRoot = spread_sheet.getShadowRootByHost(host);
-	if (host.getAttribute("needPluginValues")) {
-		const parsedValue = JSON.parse(value);
-		for (const pluginValueID of host.getAttribute("needPluginValues").split(","))
-			if (shadowRoot.querySelector(`#${pluginValueID}`)) shadowRoot.querySelector(`#${pluginValueID}`).value = parsedValue[pluginValueID];
-		_setSpreadSheetFromCSV(parsedValue.csv, host.id);
+	const shadowRoot = spread_sheet.getShadowRootByHost(host); let isJSONValue = true; try {JSON.parse(value)} catch (err) {isJSONValue  = false;}
+	if (isJSONValue) {
+		const parsedObject = JSON.parse(value), pluginIDs = host.getAttribute("needPluginValues")?host.getAttribute("needPluginValues").split(","):[];
+		for (const key in parsedObject) if (pluginIDs.includes(key)) {
+			if (shadowRoot.querySelector(`#${key}`)) shadowRoot.querySelector(`#${key}`).value = parsedObject[key] }
+		else _getTabObject(host, key).data = parsedObject[key];
+		
+		const activeTab = _getActiveTab(host); _setSpreadSheetFromCSV(parsedObject[activeTab], host.id);
 	} else _setSpreadSheetFromCSV(value, host.id);
 }
 
@@ -149,7 +152,8 @@ async function _setSpreadSheetFromCSV(value, hostID) {	// will set data for the 
 	const host = spread_sheet.getHostElementByID(hostID), data = _createElementData(host, 
 		numOfRowsInCSV>_getActiveTabObject(host)[ROW_PROP]?numOfRowsInCSV:_getActiveTabObject(host)[ROW_PROP], 
 		numOfColumnsInCSV>_getActiveTabObject(host)[COLUMN_PROP]?numOfColumnsInCSV:_getActiveTabObject(host)[COLUMN_PROP]);
-	await spread_sheet.bindData(data, host.id);	// adjust the sheet size to match the data
+	
+	await spread_sheet.bindData(data, host.id);	// adjust the sheet size to match the data, this will called elementRendered
 
 	const shadowRoot = spread_sheet.getShadowRootByHost(host), rows = Array.prototype.slice.call(shadowRoot.querySelectorAll("tr"));
 	for (let [rowNumber, row] of rows.entries()) {
@@ -179,14 +183,13 @@ function _createElementData(host, rows=host.getAttribute("rows")||6, columns=hos
 
 const _getActiveTab = hostOrHostID => spread_sheet[hostOrHostID instanceof HTMLElement ? "getMemoryByHost":"getMemory"](hostOrHostID).activeTab;
 const _setActiveTab = (hostOrHostID, tab) => spread_sheet[hostOrHostID instanceof HTMLElement ? "getMemoryByHost":"getMemory"](hostOrHostID).activeTab = tab;
-function _getActiveTabObject(hostOrHostID) {
-	const memory = spread_sheet[hostOrHostID instanceof HTMLElement ? "getMemoryByHost":"getMemory"](hostOrHostID);
-	if (!memory[_getActiveTab(hostOrHostID)]) memory[_getActiveTab(hostOrHostID)] = {};
-	return memory[_getActiveTab(hostOrHostID)];
-}
+const _getActiveTabObject = hostOrHostID => _getTabObject(hostOrHostID, _getActiveTab(hostOrHostID));
 function _getTabObject(hostOrHostID, tabID) {
+	const allTabs = _getAllTabs(hostOrHostID); if (!allTabs[tabID]) allTabs[tabID] = {}; return allTabs[tabID];
+}
+function _getAllTabs(hostOrHostID) {
 	const memory = spread_sheet[hostOrHostID instanceof HTMLElement ? "getMemoryByHost":"getMemory"](hostOrHostID);
-	if (!memory[tabID]) memory[tabID] = {}; return memory[tabID];
+	if (!memory.tabs) memory.tabs = {}; return memory.tabs;
 }
 
 // convert this all into a WebComponent so we can use it

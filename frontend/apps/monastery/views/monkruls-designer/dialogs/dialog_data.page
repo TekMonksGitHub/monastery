@@ -2,7 +2,7 @@ SCHEMA
 ======
 {
     "data": {"html":"spread-sheet", "rows":15, "columns":5, "onlyText": "true", "barstyle": "0px solid #4788C7",
-        "downloadfilename":"data.csv", "styleBody":"url(./views/{{url.view}}/dialogs/monkrulsTable.styleBody.css)",
+        "downloadfilename":"{{{description}}}.csv", "styleBody":"url(./views/{{url.view}}/dialogs/monkrulsTable.styleBody.css)",
         "toolbarPluginHTML":"encodeURIComponent(url(./views/{{url.view}}/dialogs/dialog_data.toolbarPlugin.html))", 
         "needPluginValues":"isLookupTable" }
 }

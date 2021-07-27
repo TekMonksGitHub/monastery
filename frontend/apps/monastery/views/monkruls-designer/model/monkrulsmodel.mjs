@@ -143,10 +143,10 @@ function _nodeRemoved(nodeName, id) {
 function _nodeModified(_nodeName, id, properties) {
     if (!idCache[id]) return false; // we don't know of this node
     for (const key in properties) { // transfer the new properties, CSVs need the CSV scheme added
-        if (key == "decisiontable") idCache[id][key] = CSVSCHEME+properties[key];
+        if (key == "decisiontable") idCache[id][key] = CSVSCHEME+JSON.parse(properties[key]).Rules;
         else if (key == "data") {
             const parsedProperties = JSON.parse(properties[key]);
-            idCache[id][key] = (parsedProperties.isLookupTable.toLowerCase()=="true"?CSVLOOKUPTABLESCHEME:CSVSCHEME)+parsedProperties.csv;
+            idCache[id][key] = (parsedProperties.isLookupTable.toLowerCase()=="true"?CSVLOOKUPTABLESCHEME:CSVSCHEME)+parsedProperties.default;
         } else idCache[id][key] = properties[key];   
     }
     return true;
