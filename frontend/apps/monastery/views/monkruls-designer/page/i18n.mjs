@@ -11,7 +11,9 @@ export const i18n = {
         "Rules": "Rules",
         "Objects": "Objects",
         "Data": "Data",
-        "Test": "Test"
+        "Test": "Test",
+        "OutputObject": "Output name",
+        "OutputInternalObject": "Internal object name"
     },
 
     hi: {
@@ -26,7 +28,9 @@ export const i18n = {
         "Rules": "नियम",
         "Objects": "वस्तुएं",
         "Data": "डेटा",
-        "Test": "परीक्षण करें"
+        "Test": "परीक्षण करें",
+        "OutputObject": "आउटपुट नाम",
+        "OutputInternalObject": "आंतरिक वस्तु का नाम"
     }, 
 
     ja: {
@@ -41,6 +45,8 @@ export const i18n = {
         "Rules": "ルール",
         "Objects": "オブジェクト",
         "Data": "データ",
-        "Test": "試す"
+        "Test": "試す",
+        "OutputObject": "出力名",
+        "OutputInternalObject": "内部オブジェクト名"
     }
 }

@@ -8,10 +8,11 @@ import {i18n} from "./spread-sheet.i18n.mjs";
 import {resizable} from "./lib/resizable.mjs";
 import {router} from "/framework/js/router.mjs";
 import {session} from "/framework/js/session.mjs";
+import {context_menu} from "../context-menu/context-menu.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
 const COMPONENT_PATH = util.getModulePath(import.meta), ROW_PROP = "__org_monkshu_components_spreadsheet_rows",
-	COLUMN_PROP = "__org_monkshu_components_spreadsheet_columns", DEFAULT_TAB="default";
+	COLUMN_PROP = "__org_monkshu_components_spreadsheet_columns", DEFAULT_TAB="default", CONTEXT_MENU_ID = "spreadsheetContextMenu";
 
 async function elementConnected(element) {
 	Object.defineProperty(element, "value", {get: _=>_getValue(element), set: value=>_setValue(value, element)});
@@ -100,6 +101,10 @@ async function switchSheet(element, sheetID) {
 	else _setSpreadSheetFromCSV(tabObjectNewSheet.data, host.id);	// have saved data from past, reload the sheet
 }
 
+function tabMenuClicked(event, element, sheetID) {
+	context_menu.showMenu(CONTEXT_MENU_ID, {"Rename":_=>alert("Rename called")}, `${event.pageX+2}px`, `${event.pageY+2}px`);
+}
+
 function _getValue(host) {
 	const activeSheetValue = _getSpreadSheetAsCSV(host.id, true), shadowRoot = spread_sheet.getShadowRootByHost(host);
 	if (host.getAttribute("needPluginValues") || Object.keys(_getAllTabs(host)).length) {
@@ -170,7 +175,7 @@ async function _setSpreadSheetFromCSV(value, hostID) {	// will set data for the 
 }
 
 async function _createElementData(host, rows=host.getAttribute("rows")||6, columns=host.getAttribute("columns")||2) {
-	const data = {componentPath: COMPONENT_PATH, i18n: {},
+	const data = {componentPath: COMPONENT_PATH, i18n: {}, CONTEXT_MENU_ID,
 		toolbarPluginHTML: host.getAttribute("toolbarPluginHTML")?decodeURIComponent(host.getAttribute("toolbarPluginHTML")):undefined};
 	for (const i18nKey in i18n) data.i18n[i18nKey] = i18n[i18nKey][session.get($$.MONKSHU_CONSTANTS.LANG_ID)];
 
@@ -203,5 +208,5 @@ function _getAllTabs(hostOrHostID) {
 
 // convert this all into a WebComponent so we can use it
 export const spread_sheet = {trueWebComponentMode: true, elementConnected, elementRendered, cellpastedon, 
-	rowop, columnop, open, save, resizeRowInputsForLargestScroll, switchSheet}
+	rowop, columnop, open, save, resizeRowInputsForLargestScroll, switchSheet, tabMenuClicked}
 monkshu_component.register("spread-sheet", `${COMPONENT_PATH}/spread-sheet.html`, spread_sheet);

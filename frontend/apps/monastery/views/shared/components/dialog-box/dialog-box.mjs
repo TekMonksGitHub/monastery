@@ -35,6 +35,7 @@ async function showDialog(themePath, templatePath, templateData, retValIDs, call
 
     const memory = dialog_box.getMemory(hostID); memory.retValIDs = retValIDs; memory.callback = callback; 
     document.querySelector(`#${hostID}`).style.display = "block";   // show the dialog
+    shadowRoot.querySelector("html").style.height = "0px";  // for some reason this otherwise adds in a visible block if the <!doctype HTML> is declared in the parent document, and transitions don't work if this is defined in HTML file 
 }
 
 /**

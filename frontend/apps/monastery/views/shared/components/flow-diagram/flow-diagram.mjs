@@ -131,11 +131,11 @@ async function _getGraph(hostID) {
 	GRAPHS[hostID] = new mxGraph(mxgraphContainer, null, "fastest"); GRAPHS[hostID].setConnectable(GRAPH_CONNECTABLE);
 	GRAPHS[hostID][GRAPH_MONASTERY_ID] = hostID; const graph = GRAPHS[hostID]; 	
 
-	graph.popupMenuHandler.factoryMethod = (menu, cell, _evt) => { if (cell.vertex) 
+	graph.popupMenuHandler.factoryMethod = (menu, cell, _evt) => { if (cell?.vertex) {
 		menu.addItem('Rename', null, _=>graph.startEditingAtCell(cell) ); 
 		menu.addSeparator();
 		menu.addItem('Delete', null, _=>graph.removeCells([cell]) ); 
-	};
+	} };
 
 	new mxRubberband(graph); // allows selecting multiple items using dragging rectangle
 	graph.addListener(mxEvent.DOUBLE_CLICK, (sender, evt) => {	// shape is double clicked
@@ -195,13 +195,13 @@ function _createNonWebComponentDiagramContainer(container) {
     window.document.body.appendChild(diagramContainer);
     const rect = container.getBoundingClientRect();
     diagramContainer.style.position = "absolute";
-    diagramContainer.style.top = rect.top; diagramContainer.style.left = rect.left; 
-    diagramContainer.style.width = rect.width; diagramContainer.style.height = rect.height;  
+    diagramContainer.style.top = `${rect.top}px`; diagramContainer.style.left = `${rect.left}px`; 
+    diagramContainer.style.width = `${rect.width}px`; diagramContainer.style.height = `${rect.height}px`;  
     diagramContainer.style.visibility = "visible"; 
 	new ResizeObserver(_=>{	// resize on resizing of the parent component
 		const rect = container.getBoundingClientRect();
-		diagramContainer.style.width = rect.width; 
-		diagramContainer.style.height = rect.height; }).observe(container);
+		diagramContainer.style.width = `${rect.width}px`; 
+		diagramContainer.style.height = `${rect.height}px`; }).observe(container);
 	const host = flow_diagram.getHostElement(container); if (host.getAttribute("mxGraphStyleBody")) {	// set style on mxGraph if provided.
 		const graphStyle = window.document.createElement("style"); 
 		graphStyle.innerHTML = host.getAttribute("mxGraphStyleBody");

@@ -128,6 +128,9 @@ img.button {width: 20px;}
 {{#tabs}}<span id="tabbar">{{/tabs}}
     {{#tabs}}
     <span id="{{id}}" class="tabbutton{{#active}} active{{/active}}" 
-        onclick='monkshu_env.components["spread-sheet"].switchSheet(this, "{{id}}")'>{{name}}</span>
+        onclick='monkshu_env.components["spread-sheet"].switchSheet(this, "{{id}}")'
+        oncontextmenu='monkshu_env.components["spread-sheet"].tabMenuClicked(event, this, "{{id}}")'>{{name}}</span>
     {{/tabs}}
 {{#tabs}}</span>{{/tabs}}
+
+<context-menu id="{{{CONTEXT_MENU_ID}}}"></context-menu>

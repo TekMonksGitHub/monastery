@@ -1,0 +1,33 @@
+<!--
+/* 
+ * (C) 2020 TekMonks. All rights reserved.
+ * License: MIT - see enclosed license.txt file.
+ */
+ -->
+<style>
+ul {
+    z-index: 1000;
+    position: absolute;
+    overflow: hidden;
+    border: 1px solid #CCC;
+    white-space: nowrap;
+    font-family: sans-serif;
+    background: #FFF;
+    color: #333;
+    border-radius: 5px;
+    cursor: pointer;
+    display: none;
+}
+
+ul > li {padding: 8px 12px;}
+
+ul > li:hover {background-color: #DEF;}
+</style>
+
+{{{styleBody}}}
+
+<ul>
+    {{#items}}}
+        <li onclick='monkshu_env.components["context-menu"].menuClicked(this, "{{{functionID}}}")'>{{displayText}}</li>
+    {{/items}}
+</ul>

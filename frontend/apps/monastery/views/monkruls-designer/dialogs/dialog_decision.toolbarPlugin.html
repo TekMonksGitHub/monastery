@@ -1,1 +1,4 @@
-<span class="button" onclick='alert("wow");'><img class="button" src="./views/{{url.view}}/dialogs/test.svg">&nbsp;&nbsp;{{i18n.Test}}</span>
+<script type="module">
+    import {decisionTableTester} from "./views/{{url.view}}/js/decisionTableTester.mjs"; window.monkshu_env.__decisionTableTester = decisionTableTester;
+</script>
+<span class="button" onclick="window.monkshu_env.__decisionTableTester.test(this)"><img class="button" src="./views/{{url.view}}/dialogs/test.svg">&nbsp;&nbsp;{{i18n.Test}}</span>

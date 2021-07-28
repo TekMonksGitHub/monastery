@@ -5,7 +5,7 @@
  */
 import {blackboard} from "/framework/js/blackboard.mjs";
 
-const EMPTY_MODEL = {rule_bundles:[], functions:[], data:[], rule_parameters: []}, DEFAULT_BUNDLE="rules";
+const EMPTY_MODEL = {rule_bundles:[], functions:[], data:[], rule_parameters: [], outputs:[]}, DEFAULT_BUNDLE="rules";
 let monkrulsModel = EMPTY_MODEL, idCache = {}, current_rule_bundle = DEFAULT_BUNDLE;
 const MSG_NODES_MODIFIED = "NODES_MODIFIED", MSG_CONNECTORS_MODIFIED = "CONNECTORS_MODIFIED", 
     MSG_NODE_DESCRIPTION_CHANGED = "NODE_DESCRIPTION_CHANGED", MSG_ARE_NODES_CONNECTABLE = "ARE_NODES_CONNECTABLE",
@@ -36,7 +36,7 @@ function loadModel(jsonModel) {
 
     const _getUniqueID = _ => `${Date.now()}${Math.random()*100}`;    
 
-    // first add all the rules and bundles
+    // first add all the rules and bundles and decision tables
     for (const bundle of monkrulsModel.rule_bundles) for (const rule of bundle.rules) {
         const id = rule.id||_getUniqueID(), nodeName = rule.nodeName || rule.decisiontable?"decision":"rule"; 
         idCache[id] = rule; if (rule.decisiontable) rule.decisiontable = rule.decisiontable.substring(CSVSCHEME.length);
@@ -60,8 +60,19 @@ function loadModel(jsonModel) {
     // add data
     for (const data of monkrulsModel.data) {
         const id = data.id||_getUniqueID(); idCache[id] = data;
-        data.data = JSON.stringify({isLookupTable: data.data.startsWith(CSVLOOKUPTABLESCHEME), default:data.data.substring(data.data.startsWith(CSVLOOKUPTABLESCHEME)?CSVLOOKUPTABLESCHEME.length:CSVSCHEME.length)});
         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: data.nodeName||"data", id, description: data.description, properties: {...data}, connectable: false});
+    }
+
+    // add functions
+    for (const functionThis of monkrulsModel.functions) {
+        const id = functionThis.id||_getUniqueID(); idCache[id] = functionThis;
+        blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: functionThis.nodeName||"functions", id, description: functionThis.description, properties: {...functionThis}, connectable: false});
+    }
+
+    // add outputs
+    for (const output of monkrulsModel.outputs) {
+        const id = output.id||_getUniqueID(); idCache[id] = output;
+        blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: output.nodeName||"output", id, description: output.description, properties: {...output}, connectable: false});
     }
 }
 
@@ -120,6 +131,7 @@ function _nodeAdded(nodeName, id, properties) {
     else if (nodeName == "decision") _findOrCreateRuleBundle(properties.description).rules.push(node);
     else if (nodeName == "data") {node.name = node.description; monkrulsModel.data.push(node);}
     else if (nodeName == "functions") {node.name = node.description; monkrulsModel.functions.push(node);}
+    else if (nodeName == "output") monkrulsModel.outputs.push(node);
     
     node.id = id; idCache[id] = node;   // transfer ID and cache the node
     
@@ -135,6 +147,7 @@ function _nodeRemoved(nodeName, id) {
     else if (nodeName == "variable") _arrayDelete(monkrulsModel.rule_parameters, node);
     else if (nodeName == "data") _arrayDelete(monkrulsModel.data, node);
     else if (nodeName == "functions") _arrayDelete(monkrulsModel.functions, node);
+    else if (nodeName == "functions") _arrayDelete(monkrulsModel.outputs, node);
 
     delete idCache[id]; // uncache
     return true;
