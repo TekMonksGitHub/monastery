@@ -22,8 +22,18 @@ async function elementConnected(element) {
 	_setActiveTab(element, element.getAttribute("tabs") ? 
 		element.getAttribute("tabs").split(",")[0].split(":")[0].trim() : DEFAULT_TAB);
 
-	const data = await _createElementData(element);
+	// init data and tab objects
+	const rows=element.getAttribute("rows")||6, columns=element.getAttribute("columns")||2;
+	const tabs = element.getAttribute("tabs"); if (tabs) for (const tabTuple of tabs.split(",")) {	// setup tabs in element attr
+		const tabReadableName = tabTuple.trim().split(":")[1].trim(), tabID = tabTuple.trim().split(":")[0].trim();
+		const tabObject = _getTabObject(element, tabID); tabObject[ROW_PROP] = rows; tabObject[COLUMN_PROP] = columns; tabObject.data = "";
+		tabObject.name = tabReadableName; tabObject.data = "";
+	} else {	// setup default tab object otherwise
+		const tabObject = _getTabObject(element, DEFAULT_TAB); tabObject[ROW_PROP] = rows; tabObject[COLUMN_PROP] = columns; tabObject.data = "";
+		tabObject.name = DEFAULT_TAB; tabObject.data = "";
+	}
 
+	const data = await _createElementData(element, rows, columns);
 	if (element.id) if (!spread_sheet.datas) {
 		spread_sheet.datas = {}; spread_sheet.datas[element.id] = data; } else spread_sheet.data = data;
 }
@@ -53,15 +63,17 @@ function cellpastedon(element, event) {
 
 async function rowop(op, element) {
 	const host = spread_sheet.getHostElement(element);
-	const numOfRows = _getActiveTabObject(host)[ROW_PROP], numOfColumns = _getActiveTabObject(host)[COLUMN_PROP];
-	const data = await _createElementData(host, op=="add"?numOfRows+1:numOfRows-1, numOfColumns);
+	let numOfRows = _getActiveTabObject(host)[ROW_PROP]; const numOfColumns = _getActiveTabObject(host)[COLUMN_PROP];
+	numOfRows = op=="add"?numOfRows+1:numOfRows-1; _getActiveTabObject(host)[ROW_PROP] = numOfRows;
+	const data = await _createElementData(host, numOfRows, numOfColumns);
 	const currentData = _getSpreadSheetAsCSV(host.id); await spread_sheet.bindData(data, host.id); _setSpreadSheetFromCSV(currentData, host.id);
 }
 
 async function columnop(op, element) {
 	const host = spread_sheet.getHostElement(element);
-	const numOfRows = _getActiveTabObject(host)[ROW_PROP], numOfColumns = _getActiveTabObject(host)[COLUMN_PROP];
-	const data = await _createElementData(host, numOfRows, op=="add"?numOfColumns+1:numOfColumns-1);
+	const numOfRows = _getActiveTabObject(host)[ROW_PROP]; let numOfColumns = _getActiveTabObject(host)[COLUMN_PROP];
+	numOfColumns = op=="add"?numOfColumns+1:numOfColumns-1; _getActiveTabObject(host)[COLUMN_PROP] = numOfColumns;
+	const data = await _createElementData(host, numOfRows, numOfColumns); 
 	const currentData = _getSpreadSheetAsCSV(host.id); await spread_sheet.bindData(data, host.id); _setSpreadSheetFromCSV(currentData, host.id);
 }
 
@@ -91,19 +103,27 @@ function resizeRowInputsForLargestScroll(element) {
 	else for (const element of rowElements) element.style.height = largestScrollHeight+"px"; 
 }
 
-async function switchSheet(element, sheetID) {
-	const host = spread_sheet.getHostElement(element);
-	_getActiveTabObject(host).data = _getSpreadSheetAsCSV(host.id, true);
+async function switchSheet(elementOrHostID, sheetID, forceReload) {
+	const host = elementOrHostID instanceof Element?spread_sheet.getHostElement(elementOrHostID):spread_sheet.getHostElementByID(elementOrHostID);  	
+	if (sheetID == _getActiveTab(host) && (!forceReload)) return;	// no need to switch
+	_getActiveTabObject(host).data = _getSpreadSheetAsCSV(host.id, true);	// save active data etc.
 
-	const tabObjectNewSheet = _getTabObject(host, sheetID); _setActiveTab(host, sheetID);	// set this sheet as active
-	if (!tabObjectNewSheet.data || tabObjectNewSheet.data == "") spread_sheet.bindData(	// no data, new sheet
-		await _createElementData(host, tabObjectNewSheet[ROW_PROP], tabObjectNewSheet[COLUMN_PROP]), host.id);
-	else _setSpreadSheetFromCSV(tabObjectNewSheet.data, host.id);	// have saved data from past, reload the sheet
+	// set this sheet as active and switch data
+	_setActiveTab(host, sheetID); _setSpreadSheetFromCSV(_getTabObject(host, sheetID).data, host.id);	
 }
 
 function tabMenuClicked(event, element, sheetID) {
-	context_menu.showMenu(CONTEXT_MENU_ID, {"Rename":_=>alert("Rename called")}, `${event.pageX+2}px`, `${event.pageY+2}px`);
+	const host = spread_sheet.getHostElement(element);
+	const _renameTab = newName => {
+		const allTabs = _getAllTabs(host); allTabs[newName] = allTabs[sheetID]; allTabs[newName].name = newName; 
+		delete allTabs[sheetID]; _setAllTabs(host, allTabs);
+		
+		if (_getActiveTab(host) == sheetID) _setActiveTab(host, newName); _reload(host);
+	}
+	context_menu.showMenu(CONTEXT_MENU_ID, {"Rename":_=>_renameTab("kakaTab")}, event.pageX, event.pageY, 2, 2);
 }
+
+const _reload = host => switchSheet(host.id, _getActiveTab(host), true)
 
 function _getValue(host) {
 	const activeSheetValue = _getSpreadSheetAsCSV(host.id, true), shadowRoot = spread_sheet.getShadowRootByHost(host);
@@ -153,9 +173,10 @@ function _getSpreadSheetAsCSV(hostID, dontTrim) {
 }
 
 async function _setSpreadSheetFromCSV(value, hostID) {	// will set data for the active sheet only
-	if (!value || value == "") return; const csvArrayOfArrays = typeof value === "string" ? 
-		Papa.parse(value.trim(), {header: false, skipEmptyLines: true}).data : value;
+	const csvArrayOfArrays = value == "" ? [[]] : Array.isArray(value) ?
+		value : Papa.parse(value.trim(), {header: false, skipEmptyLines: true}).data;
 	if ((!Array.isArray(csvArrayOfArrays)) || (!Array.isArray(csvArrayOfArrays[0]))) {LOG.error("Bad CSV data"); return;}	// bad CSV data
+	
 	const numOfColumnsInCSV = csvArrayOfArrays[0].length, numOfRowsInCSV = csvArrayOfArrays.length;
 	const host = spread_sheet.getHostElementByID(hostID), data = await _createElementData(host, 
 		numOfRowsInCSV>_getActiveTabObject(host)[ROW_PROP]?numOfRowsInCSV:_getActiveTabObject(host)[ROW_PROP], 
@@ -163,6 +184,7 @@ async function _setSpreadSheetFromCSV(value, hostID) {	// will set data for the 
 	
 	await spread_sheet.bindData(data, host.id);	// adjust the sheet size to match the data, this will called elementRendered
 
+	// fill in the data
 	const shadowRoot = spread_sheet.getShadowRootByHost(host), rows = Array.prototype.slice.call(shadowRoot.querySelectorAll("tr"));
 	for (let [rowNumber, row] of rows.entries()) {
 		const column = Array.prototype.slice.call(row.children);
@@ -183,15 +205,12 @@ async function _createElementData(host, rows=host.getAttribute("rows")||6, colum
 	for (let i = 0; i < rows; i++) data.rows.push(' ');
 	if (host.getAttribute("styleBody")) data.styleBody = `<style>${host.getAttribute("styleBody")}</style>`;
 
-	data.tabs = []; const tabs = host.getAttribute("tabs"); if (tabs) for (const tabTuple of tabs.split(",")) 
-		data.tabs.push( {name: tabTuple.trim().split(":")[1].trim(), id: tabTuple.trim().split(":")[0].trim(), 
-			active: tabTuple.trim().split(":")[0].trim() == _getActiveTab(host)?"true":undefined} );
+	data.tabs = []; const allTabs = _getAllTabs(host); for (const tabID in allTabs) if (tabID != DEFAULT_TAB)
+		data.tabs.push( {name: allTabs[tabID].name, id: tabID, active: tabID == _getActiveTab(host)?"true":undefined} );
 
 	// expand toolbar plugin HTML now that data object is complete, as it may need expansion
 	if (data.toolbarPluginHTML) data.toolbarPluginHTML = await router.expandPageData(data.toolbarPluginHTML, undefined, data);
 	
-	_getActiveTabObject(host)[ROW_PROP] = parseInt(rows), _getActiveTabObject(host)[COLUMN_PROP] = parseInt(columns);
-
 	return data;
 }
 
@@ -204,6 +223,10 @@ function _getTabObject(hostOrHostID, tabID) {
 function _getAllTabs(hostOrHostID) {
 	const memory = spread_sheet[hostOrHostID instanceof HTMLElement ? "getMemoryByHost":"getMemory"](hostOrHostID);
 	if (!memory.tabs) memory.tabs = {}; return memory.tabs;
+}
+function _setAllTabs(hostOrHostID, tabs) {
+	const memory = spread_sheet[hostOrHostID instanceof HTMLElement ? "getMemoryByHost":"getMemory"](hostOrHostID);
+	memory.tabs = util.clone(tabs);
 }
 
 // convert this all into a WebComponent so we can use it

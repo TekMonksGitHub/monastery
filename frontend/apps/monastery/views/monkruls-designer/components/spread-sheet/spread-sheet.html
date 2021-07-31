@@ -14,6 +14,8 @@ table {
     table-layout: fixed;
     width: 100%;
     border-spacing: 0px;
+    border-radius: 5px 5px 5px 5px;
+    border: 0.5px solid #444444;
 }
 
 td {
@@ -22,6 +24,7 @@ td {
     background-color: white;
     width: 5em;
     padding: 0px;
+    overflow: hidden;
 }
 
 td > textarea {
@@ -34,6 +37,8 @@ td > textarea {
     width: 100%;
     overflow: hidden;
     font-family: inherit;
+    display: block;
+    box-sizing: border-box;
 }
 
 tr:first-child > td {
@@ -42,7 +47,8 @@ tr:first-child > td {
     border-right-color: white;
 }
 
-tr:first-child > td:last-child.head {border-right-color: #444444}
+tr:first-child > td:last-child {border-color: #444444; border-top-right-radius: 4px;}
+tr:last-child > td:last-child {border-color: #444444; border-bottom-right-radius: 4px;}
 
 td:focus-within {background-color: yellow; color: #444444;}
 td > textarea:focus {background-color: yellow; color: #444444;}
@@ -129,7 +135,7 @@ img.button {width: 20px;}
     {{#tabs}}
     <span id="{{id}}" class="tabbutton{{#active}} active{{/active}}" 
         onclick='monkshu_env.components["spread-sheet"].switchSheet(this, "{{id}}")'
-        oncontextmenu='monkshu_env.components["spread-sheet"].tabMenuClicked(event, this, "{{id}}")'>{{name}}</span>
+        oncontextmenu='event.stopPropagation(); monkshu_env.components["spread-sheet"].tabMenuClicked(event, this, "{{id}}"); return false;'>{{name}}</span>
     {{/tabs}}
 {{#tabs}}</span>{{/tabs}}
 
