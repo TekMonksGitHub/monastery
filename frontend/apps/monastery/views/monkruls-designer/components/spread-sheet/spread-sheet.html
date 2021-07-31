@@ -86,18 +86,27 @@ span#toolbar span#middleitems {margin-left: 5vw; margin-right: 5vw;}
 
 span#toolbar > span > span.button:last-child {margin-right: 0vw;}
 
-span#tabbar {display: flex; font-size: x-small; user-select: none;}
+span#tabbar {display: flex; user-select: none;}
 
 span#tabbar > span.tabbutton {
     border-radius: 0px 0px 10px 10px;
     background-color: #E5E5E5;
     margin-right: 10px;
-    padding: 5px;
+    padding: 0px 5px 5px 5px;
     min-width: 5vw;
     border: 1px solid #828283;
     border-top: transparent;
+    height: fit-content;
 }
 span#tabbar > span.tabbutton.active {background-color: #ffffff}
+span#tabbar > span > input {
+    outline: none;
+    font-size: x-small; 
+    user-select: none;
+    border: 0px;
+    background: transparent;
+    cursor: default;
+}
 
 img.button {width: 20px;}
 </style>
@@ -135,7 +144,9 @@ img.button {width: 20px;}
     {{#tabs}}
     <span id="{{id}}" class="tabbutton{{#active}} active{{/active}}" 
         onclick='monkshu_env.components["spread-sheet"].switchSheet(this, "{{id}}")'
-        oncontextmenu='event.stopPropagation(); monkshu_env.components["spread-sheet"].tabMenuClicked(event, this, "{{id}}"); return false;'>{{name}}</span>
+        oncontextmenu='event.stopPropagation(); monkshu_env.components["spread-sheet"].tabMenuClicked(event, this, "{{id}}"); return false;'>
+            <input id="tabLabel" type="text" value="{{name}}" size="5" readonly>
+    </span>
     {{/tabs}}
 {{#tabs}}</span>{{/tabs}}
 

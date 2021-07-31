@@ -9,7 +9,7 @@ import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 const COMPONENT_PATH = util.getModulePath(import.meta), MENU_BREAK_INDICATOR = "menubreak";
 
 /**
- * 
+ * Shows the given menu.
  * @param hostID The host ID of the context-menu element which should be used to display this menu
  * @param menuItems The object of menuitmes of format -> {"text to display":function() {function called when clicked}}
  * @param x The X coordinates (pageX) where to display the menu
@@ -41,6 +41,11 @@ async function showMenu(hostID, menuItems, x, y, adjustX, adjustY, data) {
 	context_menu.bindData(dataForMenu, hostID); 
 }
 
+/**
+ * Called when menu clicked. Internal function don't call directly.
+ * @param containedElement The contained element which caused this event
+ * @param functionIndex The function index of the function to call.
+ */
 async function menuClicked(containedElement, functionIndex) {
 	const memory = context_menu.getMemoryByContainedElement(containedElement);
 	await hideMenu(context_menu.getHostElementID(containedElement));
@@ -48,6 +53,10 @@ async function menuClicked(containedElement, functionIndex) {
 	if (memory.menuFunctions[functionIndex]) setTimeout(_=>memory.menuFunctions[functionIndex].function(),1);	// ensures menu is hidden before action is called :)
 }
 
+/**
+ * Hides the context menu
+ * @param hostID The host ID of the context menu element.
+ */
 async function hideMenu(hostID) {
 	const dataForMenu = {}; await context_menu.bindData(dataForMenu, hostID); 
 }

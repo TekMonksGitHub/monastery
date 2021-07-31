@@ -27,7 +27,7 @@ async function elementConnected(element) {
 	const tabs = element.getAttribute("tabs"); if (tabs) for (const tabTuple of tabs.split(",")) {	// setup tabs in element attr
 		const tabReadableName = tabTuple.trim().split(":")[1].trim(), tabID = tabTuple.trim().split(":")[0].trim();
 		const tabObject = _getTabObject(element, tabID); tabObject[ROW_PROP] = rows; tabObject[COLUMN_PROP] = columns; tabObject.data = "";
-		tabObject.name = tabReadableName; tabObject.data = "";
+		tabObject.name = tabReadableName; tabObject.data = ""; tabObject.id = tabID;
 	} else {	// setup default tab object otherwise
 		const tabObject = _getTabObject(element, DEFAULT_TAB); tabObject[ROW_PROP] = rows; tabObject[COLUMN_PROP] = columns; tabObject.data = "";
 		tabObject.name = DEFAULT_TAB; tabObject.data = "";
@@ -115,36 +115,46 @@ async function switchSheet(elementOrHostID, sheetID, forceReload) {
 function tabMenuClicked(event, element, sheetID) {
 	const host = spread_sheet.getHostElement(element);
 	const _renameTab = newName => {
-		const allTabs = _getAllTabs(host); allTabs[newName] = allTabs[sheetID]; allTabs[newName].name = newName; 
-		delete allTabs[sheetID]; _setAllTabs(host, allTabs);
+		const allTabs = _getAllTabs(host); if (allTabs[newName]) return;	// name already exists
+		const newTabs = {}; for (const tabID in allTabs) {
+			if (tabID == sheetID) {newTabs[newName] = allTabs[sheetID]; newTabs[newName].name = newName; newTabs[newName].id = newName;}
+			else newTabs[tabID] = allTabs[tabID];
+		}; _setAllTabs(host, newTabs);
 		
 		if (_getActiveTab(host) == sheetID) _setActiveTab(host, newName); _reload(host);
 	}
-	context_menu.showMenu(CONTEXT_MENU_ID, {"Rename":_=>_renameTab("kakaTab")}, event.pageX, event.pageY, 2, 2);
+	const _editTab = _ => {
+		const inputBox = element.querySelector("input#tabLabel");
+		inputBox.onchange = _=>_renameTab(inputBox.value);
+		inputBox.readOnly = false; inputBox.select(); 
+		inputBox.addEventListener("focusout", _=>inputBox.readOnly = true);
+	}
+	context_menu.showMenu(CONTEXT_MENU_ID, {"Rename":_=>_editTab()}, event.pageX, event.pageY, 2, 2);
 }
 
 const _reload = host => switchSheet(host.id, _getActiveTab(host), true)
 
 function _getValue(host) {
-	const activeSheetValue = _getSpreadSheetAsCSV(host.id, true), shadowRoot = spread_sheet.getShadowRootByHost(host);
+	const activeSheetValue = _getSpreadSheetAsCSV(host.id, true);
 	if (host.getAttribute("needPluginValues") || Object.keys(_getAllTabs(host)).length) {
-		const retValue = {}; for (const tabID in _getAllTabs(host))
-			retValue[tabID] = tabID == _getActiveTab(host) ? activeSheetValue : _getTabObject(host, tabID).data;
+		const retValue = [], shadowRoot = spread_sheet.getShadowRootByHost(host); 
+		_getActiveTabObject(host).data = activeSheetValue;	// update active tab so its value is correct
+		for (const tabID in _getAllTabs(host)) retValue.push({type: "tab", ..._getTabObject(host, tabID)});
 		if (host.getAttribute("needPluginValues")) for (const pluginValueID of host.getAttribute("needPluginValues").split(","))
-			retValue[pluginValueID] = shadowRoot.querySelector(`#${pluginValueID}`)?.value;
-		return JSON.stringify(retValue);
+			retValue.push({type:"plugin", id: pluginValueID, data: shadowRoot.querySelector(`#${pluginValueID}`)?.value});
+		return JSON.stringify(retValue, null, 4);
 	} else return activeSheetValue;
 }
 
 function _setValue(value, host) {
 	const shadowRoot = spread_sheet.getShadowRootByHost(host); let isJSONValue = true; try {JSON.parse(value)} catch (err) {isJSONValue  = false;}
 	if (isJSONValue) {
-		const parsedObject = JSON.parse(value), pluginIDs = host.getAttribute("needPluginValues")?host.getAttribute("needPluginValues").split(","):[];
-		for (const key in parsedObject) if (pluginIDs.includes(key)) {
-			if (shadowRoot.querySelector(`#${key}`)) shadowRoot.querySelector(`#${key}`).value = parsedObject[key] }
-		else _getTabObject(host, key).data = parsedObject[key];
+		const parsedObjects = JSON.parse(value), allTabs = {}; 
+		for (const object of parsedObjects) if (object.type == "tab") { allTabs[object.id] = util.clone(object, ["type"]); } 
+		else if (object.data && shadowRoot.querySelector(`#${object.id}`)) shadowRoot.querySelector(`#${object.id}`).value = object.data; 
 		
-		const activeTab = _getActiveTab(host); _setSpreadSheetFromCSV(parsedObject[activeTab], host.id);
+		_setAllTabs(host, allTabs); const firstTabID = Object.keys(allTabs)[0]; 
+		_setActiveTab(host, firstTabID); _setSpreadSheetFromCSV(allTabs[firstTabID].data, host.id);
 	} else _setSpreadSheetFromCSV(value, host.id);
 }
 
