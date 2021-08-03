@@ -8,14 +8,15 @@ import {util} from "/framework/js/util.mjs";
 import {router} from "/framework/js/router.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
-const DEFAULT_HOST_ID = "__org_monkshu_dialog_box";
+const DEFAULT_HOST_ID = "__org_monkshu_dialog_box", COMPONENT_PATH = util.getModulePath(import.meta);
+const DEFAULT_THEME = {showOKIcon: true, showCancelIcon: true, showOKButton: true, showCancelButton: true};
 let _pendingRenderResolves;
 
 /**
  * Shows the dialog box
- * @param themePath The theme path
- * @param templatePath The HTML template path as a URL class, or a string that contains HTML
- * @param templateData Data to pass to expand the template, if the incoming template path is a URL
+ * @param themeOrThemePath The theme path or theme data as a JSON Object
+ * @param templateOrTemplateURL The HTML template path as a URL object, or a string that contains HTML
+ * @param templateData Data to pass to expand the template
  * @param retValIDs The IDs of elements (inside the template) whose value should be returned when dialog is closed
  * @param callback Callback method when dialog is closed via an OK or cancel. Returns -> "cancel"||"submit", retVals, element
  *                 For submit, the dialog is kept open, and hide dialog must be called manually. For cancel, it is closed automatically.
@@ -23,19 +24,51 @@ let _pendingRenderResolves;
  *                 element is the element inside the dialog content, which caused this event.
  * @param hostID Optional: The ID to host the custom component inside the main HTML, only needed if default ID clashes
  */
-async function showDialog(themePath, templatePath, templateData, retValIDs, callback, hostID=DEFAULT_HOST_ID) {
+async function showDialog(themeOrThemePath, templateOrTemplateURL, templateData, retValIDs, callback, hostID=DEFAULT_HOST_ID) {
     await _initDialogFramework(hostID); 
-    if (themePath) await dialog_box.bindData(await _processTheme(await $$.requireJSON(themePath)), hostID);    // bind the theme data
+    await dialog_box.bindData(await _processTheme((typeof themeOrThemePath == "string" || themeOrThemePath instanceof URL) ?
+        await $$.requireJSON(themeOrThemePath) : themeOrThemePath||DEFAULT_THEME), hostID );   // bind the theme data
 
     const shadowRoot = dialog_box.getShadowRootByHostId(hostID); _resetUI(shadowRoot);
-    const templateHTML = typeof templatePath == "string" ? templatePath : await router.loadHTML(templatePath, templateData, false);
+    const templateHTML = typeof templateOrTemplateURL == "string" ? (templateData ? await router.expandPageData(
+        templateOrTemplateURL, undefined, templateData) : templateOrTemplateURL) : await router.loadHTML(templateOrTemplateURL, templateData, false);
     const templateRoot = new DOMParser().parseFromString(templateHTML, "text/html").documentElement;
     router.runShadowJSScripts(templateRoot, shadowRoot);
     shadowRoot.querySelector("div#dialogcontent").appendChild(templateRoot);    // add dialog content
 
     const memory = dialog_box.getMemory(hostID); memory.retValIDs = retValIDs; memory.callback = callback; 
     document.querySelector(`#${hostID}`).style.display = "block";   // show the dialog
-    shadowRoot.querySelector("html").style.height = "0px";  // for some reason this otherwise adds in a visible block if the <!doctype HTML> is declared in the parent document, and transitions don't work if this is defined in HTML file 
+    // for some reason this otherwise adds in a visible block if the <!doctype HTML> is declared in the parent document, and transitions don't work if this is defined in HTML file 
+    shadowRoot.querySelector("html").style.height = "0px";  shadowRoot.querySelector("html").style.width = "0px"; 
+}
+
+/**
+ * Shows an info, error or any other message to the user
+ * @param message The message to show
+ * @param type Optional: Should be one of the following - "info", "error", "warning", Default is "info"
+ * @param callback Optional: Callback to call when user dismisses the dialog
+ * @param icon Optional: The icon to display along with the message
+ * @param okLabel Optional: Label for the OK button
+ * @param hostID Optional: The hostID to use for the dialog
+ */
+function showMessage(message, type="info", callback, icon, okLabel, hostID) {
+    const theme = {showOKIcon: false, showCancelIcon: false, showCancelButton: false, showOKButton: true, okLabel};
+    showDialog(theme, new URL(`${COMPONENT_PATH}/templates/message.html`), {message, 
+        icon: icon||`${COMPONENT_PATH}/img/${type}.svg`}, [], callback, hostID);
+}
+
+/**
+ * Shows an selection box prompt
+ * @param message The message to show and choices. Object. Format {message: string, choices:[array of choices as strings]}
+ * @param callback Callback to call when user dismisses the dialog, contains the selected choice or null if it was cancelled
+ * @param okLabel Optional: Label for the OK button
+ * @param cancelLabel Optional: Label for the cancel button
+ * @param hostID Optional: The hostID to use for the dialog
+ */
+ function showChoice(message, callback, okLabel, cancelLabel, hostID) {
+    const theme = {showOKIcon: false, showCancelIcon: false, showCancelButton: true, showOKButton: true, okLabel, cancelLabel};
+    showDialog(theme, new URL(`${COMPONENT_PATH}/templates/choice.html`), message, ["choice"], (result, retVals)=>{
+        if (result=="cancel")callback(null); else callback(retVals.choice)}, hostID);
 }
 
 /**
@@ -80,7 +113,7 @@ function hideDialog(element) {
 function error(element, msg) {
     const shadowRoot = element instanceof Element ? dialog_box.getShadowRootByContainedElement(element): 
         dialog_box.getShadowRootByHostId(element);
-    const divError = shadowRoot.querySelector("div#error");
+    const divError = shadowRoot.querySelector("div#error"); if (!divError) return;
     divError.innerHTML = msg; divError.style.visibility = "visible";
 }
 
@@ -90,7 +123,7 @@ function error(element, msg) {
  */
 function hideError(element) {
     const shadowRoot = dialog_box.getShadowRootByContainedElement(element);
-    const divError = shadowRoot.querySelector("div#error");
+    const divError = shadowRoot.querySelector("div#error"); if (!divError) return;
     divError.style.visibility = "hidden";
 }
 
@@ -116,7 +149,7 @@ function _initDialogFramework(hostID) {
 } 
 
 function _resetUI(shadowRoot) {
-    shadowRoot.querySelector("div#error").style.visibility = "hidden";
+    const divError = shadowRoot.querySelector("div#error"); if (divError) divError.style.visibility = "hidden";
     if (shadowRoot.querySelector("span#ok")) shadowRoot.querySelector("span#ok").style.display = "inline";
     if (shadowRoot.querySelector("span#cancel")) shadowRoot.querySelector("span#cancel").style.display = "inline";
 }
@@ -130,8 +163,11 @@ async function _processTheme(theme) {
     clone.componentPath = util.getModulePath(import.meta);
     if (theme.showOKIcon) clone.showOKIcon = true; else delete clone.showOKIcon;
     if (theme.showCancelIcon) clone.showCancelIcon = true; else delete clone.showCancelIcon;
+    if (theme.showOKButton) clone.showOKButton = true; else delete clone.showOKButton;
+    if (theme.showCancelButton) clone.showCancelButton = true; else delete clone.showCancelButton;
     return clone;
 }
 
-export const dialog_box = {showDialog, trueWebComponentMode: true, hideDialog, error, hideError, submit, cancel, elementRendered}
+export const dialog_box = {showDialog, trueWebComponentMode: true, hideDialog, error, hideError, 
+    submit, cancel, elementRendered, showMessage, showChoice}
 monkshu_component.register("dialog-box", `${util.getModulePath(import.meta)}/dialog-box.html`, dialog_box);

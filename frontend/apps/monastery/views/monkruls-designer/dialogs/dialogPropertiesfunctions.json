@@ -1,6 +1,6 @@
 {
-    "okButton": false,
-    "cancelButton": false,
+    "showOKButton": false,
+    "showCancelButton": false,
     "modal": false,
     "okIcon": "./views/{{url.view}}/dialogs/ok.svg",
     "closeIcon": "./views/{{url.view}}/dialogs/close.svg",

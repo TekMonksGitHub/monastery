@@ -5,7 +5,7 @@
  */
 import {blackboard} from "/framework/js/blackboard.mjs";
 
-const EMPTY_MODEL = {rule_bundles:[], functions:[], data:[], rule_parameters: [], outputs:[]}, DEFAULT_BUNDLE="rules";
+const EMPTY_MODEL = {rule_bundles:[], functions:[], data:[], rule_parameters: [], outputs:[], objects:[]}, DEFAULT_BUNDLE="rules";
 let monkrulsModel = EMPTY_MODEL, idCache = {}, current_rule_bundle = DEFAULT_BUNDLE;
 const MSG_NODES_MODIFIED = "NODES_MODIFIED", MSG_CONNECTORS_MODIFIED = "CONNECTORS_MODIFIED", 
     MSG_NODE_DESCRIPTION_CHANGED = "NODE_DESCRIPTION_CHANGED", MSG_ARE_NODES_CONNECTABLE = "ARE_NODES_CONNECTABLE",
@@ -74,6 +74,12 @@ function loadModel(jsonModel) {
         const id = output.id||_getUniqueID(); idCache[id] = output;
         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: output.nodeName||"output", id, description: output.description, properties: {...output}, connectable: false});
     }
+
+    // add objects
+    for (const object of monkrulsModel.objects) {
+        const id = object.id||_getUniqueID(); idCache[id] = object;
+        blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: object.nodeName||"object", id, description: object.description, properties: {...object}, connectable: false});
+    }
 }
 
 function modelNodesModified(type, nodeName, id, properties) {
@@ -132,6 +138,7 @@ function _nodeAdded(nodeName, id, properties) {
     else if (nodeName == "data") {node.name = node.description; monkrulsModel.data.push(node);}
     else if (nodeName == "functions") {node.name = node.description; monkrulsModel.functions.push(node);}
     else if (nodeName == "output") monkrulsModel.outputs.push(node);
+    else if (nodeName == "object") {node.name = node.description; monkrulsModel.objects.push(node);}
     
     node.id = id; idCache[id] = node;   // transfer ID and cache the node
     
@@ -148,21 +155,29 @@ function _nodeRemoved(nodeName, id) {
     else if (nodeName == "data") _arrayDelete(monkrulsModel.data, node);
     else if (nodeName == "functions") _arrayDelete(monkrulsModel.functions, node);
     else if (nodeName == "functions") _arrayDelete(monkrulsModel.outputs, node);
+    else if (nodeName == "object") _arrayDelete(monkrulsModel.objects, node);
 
     delete idCache[id]; // uncache
     return true;
 }
 
-function _nodeModified(_nodeName, id, properties) {
+function _nodeModified(nodeName, id, properties) {
     if (!idCache[id]) return false; // we don't know of this node
     for (const key in properties) { // transfer the new properties, CSVs need the CSV scheme added
-        if (key == "decisiontable") idCache[id][key] = CSVSCHEME+JSON.parse(properties[key]).Rules;
-        else if (key == "data") {
-            const parsedProperties = JSON.parse(properties[key]);
-            idCache[id][key] = (parsedProperties.isLookupTable.toLowerCase()=="true"?CSVLOOKUPTABLESCHEME:CSVSCHEME)+parsedProperties.default;
+        if (key == "decisiontable") idCache[id][key] = CSVSCHEME+_getSheetTabData(properties.decisiontable, "Rules");
+        else if (key == "data" && nodeName == "data") {
+            idCache[id][key] = _getSheetTabData(properties.data, "isLookupTable").toLowerCase()=="true"?CSVLOOKUPTABLESCHEME:CSVSCHEME+_getSheetTabData(properties.data, "default");
+        } else if (key == "data" && nodeName == "object") {
+            try {idCache[id][key] = properties.type == "CSV" ? CSVSCHEME+properties.data : JSON.parse(properties.data);}
+            catch (err) {idCache[id][key] = properties.data}    // most probably bad JSON
         } else idCache[id][key] = properties[key];   
     }
     return true;
+}
+
+function _getSheetTabData(sheetProperties, tabName) {
+    for (const object of JSON.parse(sheetProperties)) if (object.id == tabName) return object.data;
+    return null;
 }
 
 const _arrayDelete = (array, element) => {if (array.includes(element)) array.splice(array.indexOf(element), 1);}

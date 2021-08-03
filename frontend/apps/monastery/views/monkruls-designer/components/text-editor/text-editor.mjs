@@ -16,7 +16,8 @@ async function elementConnected(element) {
 	Object.defineProperty(element, "value", {get: _=>_getValue(element), set: value=>_setValue(value, element)});
 	
 	const data = { componentPath: COMPONENT_PATH, styleBody:element.getAttribute("styleBody")?
-		`<style>${element.getAttribute("styleBody")}</style>`:undefined };
+		`<style>${element.getAttribute("styleBody")}</style>`:undefined, 
+		showToolbar:element.getAttribute("showToolbar")?.toLowerCase() == "false"?undefined:true };
 
 	if (element.id) if (!text_editor.datas) {text_editor.datas = {}; text_editor.datas[element.id] = data;} 
 	else text_editor.data = data;

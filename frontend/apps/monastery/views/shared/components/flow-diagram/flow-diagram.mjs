@@ -113,7 +113,7 @@ async function addLabel(hostID, nodeID, value) {
 async function _getGraph(hostID) {
 	if (GRAPHS[hostID]) return GRAPHS[hostID];	// already done
 
-	window.mxBasePath = `${COMPONENT_PATH}/3p/mxGraph`;	await $$.require(`${window.mxBasePath}/mxClient.js`); 
+	window.mxLoadResources = false; window.mxBasePath = `${COMPONENT_PATH}/3p/mxGraph`; await $$.require(`${window.mxBasePath}/mxClient.js`); 
 
 	if (!mxClient.isBrowserSupported()) {mxUtils.error("Browser is not supported!", 200, false); return false;}
 	mxGraphHandler.prototype.guidesEnabled = true; mxEdgeHandler.prototype.snapToTerminals = true;

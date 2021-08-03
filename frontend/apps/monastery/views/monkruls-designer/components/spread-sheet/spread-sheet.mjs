@@ -30,7 +30,7 @@ async function elementConnected(element) {
 		tabObject.name = tabReadableName; tabObject.data = ""; tabObject.id = tabID;
 	} else {	// setup default tab object otherwise
 		const tabObject = _getTabObject(element, DEFAULT_TAB); tabObject[ROW_PROP] = rows; tabObject[COLUMN_PROP] = columns; tabObject.data = "";
-		tabObject.name = DEFAULT_TAB; tabObject.data = "";
+		tabObject.name = DEFAULT_TAB; tabObject.data = ""; tabObject.id = DEFAULT_TAB;
 	}
 
 	const data = await _createElementData(element, rows, columns);
@@ -136,7 +136,7 @@ const _reload = host => switchSheet(host.id, _getActiveTab(host), true)
 
 function _getValue(host) {
 	const activeSheetValue = _getSpreadSheetAsCSV(host.id, true);
-	if (host.getAttribute("needPluginValues") || Object.keys(_getAllTabs(host)).length) {
+	if (host.getAttribute("needPluginValues") || Object.keys(_getAllTabs(host)).length > 1) {
 		const retValue = [], shadowRoot = spread_sheet.getShadowRootByHost(host); 
 		_getActiveTabObject(host).data = activeSheetValue;	// update active tab so its value is correct
 		for (const tabID in _getAllTabs(host)) retValue.push({type: "tab", ..._getTabObject(host, tabID)});

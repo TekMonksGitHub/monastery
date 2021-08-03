@@ -1,0 +1,16 @@
+<style>
+    span#container {
+        display: flex; 
+        flex-direction: row; 
+        align-items: center; 
+        min-width: 25vw; 
+        max-width: 50vw;
+    }
+    span#img {display: inline-block; margin-right: 20px;}
+    span#text {width: 100%; text-align: left;}
+</style>
+
+<span id="container">
+{{#icon}}<span id="img"><img src="{{.}}"></span>{{/icon}}
+<span id="text">{{message}}</span>
+</span>

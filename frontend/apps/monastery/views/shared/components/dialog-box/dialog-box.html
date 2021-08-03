@@ -52,11 +52,14 @@ div#dialog {
     padding: var(--dialog-padding, 40px);
     position: var(--dialog-position, fixed);
     z-index: 105;
-    box-shadow: var(--box-shadow, 0px 10px 0px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23));
+    box-shadow: var(--box-shadow, 0 0 5px #ccc);
     animation: var(--animation-name, flyincenter) var(--animation-duration, 0.18s) linear forwards;
     overflow-y: auto;
     color: #444444;
-    border: var(--dialog-border, none);
+    border: var(--dialog-border, 1px solid #444444);
+    border-radius: var(--dialog-border-radius, 20px);
+    display: flex; 
+    flex-direction: column;
 }
 
 @keyframes flyincenter {
@@ -110,6 +113,8 @@ span#ok:hover, span#cancel:hover {
     transition: all 0.3s ease;
 }
 
+span#cancel {margin-left: var(--button-margin, 15px);}
+
 div#buttonbar {
     display: flex;
     flex-direction: row;
@@ -154,12 +159,12 @@ span#close > img#ok {padding-right: 10px;}
         {{#showCancelIcon}}<img id="close" src="{{closeIcon}}{{^closeIcon}}{{componentPath}}/img/close.svg{{/closeIcon}}" onclick="monkshu_env.components['dialog-box'].cancel(this)">{{/showCancelIcon}}
     {{/componentPath}}</span>
 
-    <div id="error">bad input</div>
+    {{#showErrorNotifier}}<div id="error">bad input</div>{{/showErrorNotifier}}
 
     <div id="dialogcontent"><!-- The dialog content will go here --></div>
 
     <div id="buttonbar">
-        {{#okButton}}<span id="ok" onclick="monkshu_env.components['dialog-box'].submit(this)">{{i18n.OK}}</span>{{/okButton}}
-        {{#cancelButton}}<span id="cancel" onclick="monkshu_env.components['dialog-box'].cancel(this)">{{i18n.Cancel}}</span>{{/cancelButton}}
+        {{#showOKButton}}<span id="ok" onclick="monkshu_env.components['dialog-box'].submit(this)">{{#okLabel}}{{.}}{{/okLabel}}{{^okLabel}}{{i18n.OK}}{{/okLabel}}</span>{{/showOKButton}}
+        {{#showCancelButton}}<span id="cancel" onclick="monkshu_env.components['dialog-box'].cancel(this)">{{#cancelLabel}}{{.}}{{/cancelLabel}}{{^cancelLabel}}{{i18n.Cancel}}{{/cancelLabel}}</span>{{/showCancelButton}}
     </div>
 </div>
