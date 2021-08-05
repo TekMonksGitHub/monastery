@@ -5,7 +5,8 @@
  */
 import {util} from "/framework/js/util.mjs";
 import {monkrulsmodel} from "../model/monkrulsmodel.mjs";
-const SPREAD_SHEET = monkshu_env.components["spread-sheet"], MODULE_PATH = util.getModulePath(import.meta);
+const SPREAD_SHEET = monkshu_env.components["spread-sheet"], MODULE_PATH = util.getModulePath(import.meta), 
+    HIGHLIGHT_BACKGROUND_COLOR = "#FDEDEC", HIGHLIGHT_TEXT_COLOR = "#444444";
 
 async function test(callingSheetElement) {
     const hostElement = SPREAD_SHEET.getHostElement(callingSheetElement), sheetValue = hostElement.value;
@@ -30,8 +31,21 @@ async function test(callingSheetElement) {
     LOG.info(`Output of the rules engine follows\n\n${JSON.stringify(results, null, 4)}`);
 
     // highlight failed rules in the spreadsheet
-    const rowsFailed = []; for (const failed_rule of results.__com_monastery_monkruls_decisiontabletester_failed_rules) rowsFailed.push(failed_rule.index);
+    const rowsFailed = []; for (const failed_rule of results.__com_monastery_monkruls_decisiontabletester_failed_rules) rowsFailed.push(failed_rule.index+1);
     LOG.info(`Failed rule rows are ${rowsFailed.join(", ")}`);
+    _highlightFailedRows(rowsFailed, hostElement);
+}
+
+async function _highlightFailedRows(rowsToHighlight, host) {
+    await SPREAD_SHEET.switchSheet(host.id, "Rules"); // switch to the rules tab
+    const shadowRoot = SPREAD_SHEET.getShadowRootByHost(host); const rows = Array.prototype.slice.call(shadowRoot.querySelectorAll("table#spreadsheet tr"));
+    for (const [index, row] of rows.entries()) if (rowsToHighlight.includes(index)) {
+        const tds = row.querySelectorAll("td"), textareas = row.querySelectorAll("td>textarea"), elementsToHighlight = [...tds, ...textareas];
+        for (const element of elementsToHighlight) {
+            element.dataset["oldbackgroundColor"] = element.style.backgroundColor; element.style.backgroundColor = HIGHLIGHT_BACKGROUND_COLOR; 
+            element.dataset["oldcolor"] = element.style.color; element.style.color = HIGHLIGHT_TEXT_COLOR;
+        }
+    }
 }
 
 function _getSheetTabData(sheetProperties, tabName) {

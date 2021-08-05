@@ -109,7 +109,7 @@ async function switchSheet(elementOrHostID, sheetID, forceReload) {
 	_getActiveTabObject(host).data = _getSpreadSheetAsCSV(host.id, true);	// save active data etc.
 
 	// set this sheet as active and switch data
-	_setActiveTab(host, sheetID); _setSpreadSheetFromCSV(_getTabObject(host, sheetID).data, host.id);	
+	_setActiveTab(host, sheetID); await _setSpreadSheetFromCSV(_getTabObject(host, sheetID).data, host.id);	
 }
 
 function tabMenuClicked(event, element, sheetID) {
