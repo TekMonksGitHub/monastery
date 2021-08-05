@@ -13,7 +13,9 @@ export const i18n = {
         "Data": "Data",
         "Test": "Test",
         "OutputObject": "Output name",
-        "OutputInternalObject": "Internal object name"
+        "OutputInternalObject": "Internal object name",
+        "PickOption": "Pick an option",
+        "IsLookupTable": "Is Lookup Table?"
     },
 
     hi: {
@@ -30,7 +32,9 @@ export const i18n = {
         "Data": "डेटा",
         "Test": "परीक्षण करें",
         "OutputObject": "आउटपुट नाम",
-        "OutputInternalObject": "आंतरिक वस्तु का नाम"
+        "OutputInternalObject": "आंतरिक वस्तु का नाम",
+        "PickOption": "विकल्प चुनें",
+        "IsLookupTable": "लुकअप टेबल है?"
     }, 
 
     ja: {
@@ -47,6 +51,8 @@ export const i18n = {
         "Data": "データ",
         "Test": "試す",
         "OutputObject": "出力名",
-        "OutputInternalObject": "内部オブジェクト名"
+        "OutputInternalObject": "内部オブジェクト名",
+        "PickOption": "オプションを選択",
+        "IsLookupTable": "ルックアップテーブルですか？"
     }
 }

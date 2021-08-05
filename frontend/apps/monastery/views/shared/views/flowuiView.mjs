@@ -75,7 +75,7 @@ function shapeAdded(shapeName, id, label, connectable=true) {
 async function _shapeObjectClickedOnFlowDiagram(shapeName, id, shapelabel) {
     const pageSelector = await _returnFirstFileThatExists([`${VIEW_PATH}/dialogs/dialog_${shapeName}.page.mjs`,
         `${VIEW_PATH}/dialogs/dialog_${shapeName}.page`]);
-    let pageFile; if (pageSelector.endsWith(".mjs")) try {pageFile = new URL(await (await import(pageSelector)).page.getPage(VIEW_PATH, ID_CACHE[id]||{}))} catch (err) {return;}
+    let pageFile; if (pageSelector.endsWith(".mjs")) try {pageFile = new URL(await (await import(pageSelector)).page.getPage(VIEW_PATH, ID_CACHE[id]||{}))} catch (err) {LOG.error(`Error in page selector ${err}`); return;}
     else pageFile = new URL(`${VIEW_PATH}/dialogs/dialog_${shapeName}.page`);
     
     let html = await page_generator.getHTML(pageFile, null, {description: shapelabel});

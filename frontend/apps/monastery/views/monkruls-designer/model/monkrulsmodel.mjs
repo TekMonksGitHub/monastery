@@ -165,9 +165,9 @@ function _nodeModified(nodeName, id, properties) {
     if (!idCache[id]) return false; // we don't know of this node
     for (const key in properties) { // transfer the new properties, CSVs need the CSV scheme added
         if (key == "decisiontable") idCache[id][key] = CSVSCHEME+_getSheetTabData(properties.decisiontable, "Rules");
-        else if (key == "data" && nodeName == "data") {
-            idCache[id][key] = _getSheetTabData(properties.data, "isLookupTable").toLowerCase()=="true"?CSVLOOKUPTABLESCHEME:CSVSCHEME+_getSheetTabData(properties.data, "default");
-        } else if (key == "data" && nodeName == "object") {
+        else if (key == "data" && nodeName == "data") idCache[id][key] = 
+            _getSheetTabData(properties.data, "isLookupTable").toLowerCase()=="true"?CSVLOOKUPTABLESCHEME:CSVSCHEME+_getSheetTabData(properties.data, "default");
+        else if (key == "data" && nodeName == "object") {
             try {idCache[id][key] = properties.type == "CSV" ? CSVSCHEME+properties.data : JSON.parse(properties.data);}
             catch (err) {idCache[id][key] = properties.data}    // most probably bad JSON
         } else idCache[id][key] = properties[key];   
