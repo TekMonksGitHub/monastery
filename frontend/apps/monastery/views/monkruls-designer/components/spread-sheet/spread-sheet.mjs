@@ -106,7 +106,7 @@ function resizeRowInputsForLargestScroll(element) {
 async function switchSheet(elementOrHostID, sheetID, forceReload) {
 	const host = elementOrHostID instanceof Element?spread_sheet.getHostElement(elementOrHostID):spread_sheet.getHostElementByID(elementOrHostID);  	
 	if (sheetID == _getActiveTab(host) && (!forceReload)) return;	// no need to switch
-	_getActiveTabObject(host).data = _getSpreadSheetAsCSV(host.id, true);	// save active data etc.
+	_getActiveTabObject(host).data = _getSpreadSheetAsCSV(host.id);	// save active data etc.
 
 	// set this sheet as active and switch data
 	_setActiveTab(host, sheetID); await _setSpreadSheetFromCSV(_getTabObject(host, sheetID).data, host.id);	
@@ -121,7 +121,7 @@ function tabMenuClicked(event, element, sheetID) {
 			else newTabs[tabID] = allTabs[tabID];
 		}; _setAllTabs(host, newTabs);
 		
-		if (_getActiveTab(host) == sheetID) _setActiveTab(host, newName); _reload(host);
+		if (_getActiveTab(host) == sheetID) _setActiveTab(host, newName); reloadSheets(host);
 	}
 	const _editTab = _ => {
 		const inputBox = element.querySelector("input#tabLabel");
@@ -132,10 +132,10 @@ function tabMenuClicked(event, element, sheetID) {
 	context_menu.showMenu(CONTEXT_MENU_ID, {"Rename":_=>_editTab()}, event.pageX, event.pageY, 2, 2);
 }
 
-const _reload = host => switchSheet(host.id, _getActiveTab(host), true)
+const reloadSheets = host => switchSheet(host.id, _getActiveTab(host), true)
 
 function _getValue(host) {
-	const activeSheetValue = _getSpreadSheetAsCSV(host.id, true);
+	const activeSheetValue = _getSpreadSheetAsCSV(host.id);
 	if (host.getAttribute("needPluginValues") || Object.keys(_getAllTabs(host)).length > 1) {
 		const retValue = [], shadowRoot = spread_sheet.getShadowRootByHost(host); 
 		_getActiveTabObject(host).data = activeSheetValue;	// update active tab so its value is correct
@@ -241,5 +241,5 @@ function _setAllTabs(hostOrHostID, tabs) {
 
 // convert this all into a WebComponent so we can use it
 export const spread_sheet = {trueWebComponentMode: true, elementConnected, elementRendered, cellpastedon, 
-	rowop, columnop, open, save, resizeRowInputsForLargestScroll, switchSheet, tabMenuClicked}
+	rowop, columnop, open, save, resizeRowInputsForLargestScroll, switchSheet, tabMenuClicked, reloadSheets}
 monkshu_component.register("spread-sheet", `${COMPONENT_PATH}/spread-sheet.html`, spread_sheet);

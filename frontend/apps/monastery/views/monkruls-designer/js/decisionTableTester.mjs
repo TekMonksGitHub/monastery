@@ -3,10 +3,16 @@
  * (C) 2021 TekMonks. All rights reserved.
  * License: See enclosed LICENSE file.
  */
+import {i18n} from "/framework/js/i18n.mjs";
 import {util} from "/framework/js/util.mjs";
 import {monkrulsmodel} from "../model/monkrulsmodel.mjs";
-const SPREAD_SHEET = monkshu_env.components["spread-sheet"], MODULE_PATH = util.getModulePath(import.meta), 
-    HIGHLIGHT_BACKGROUND_COLOR = "#FDEDEC", HIGHLIGHT_TEXT_COLOR = "#444444";
+const SPREAD_SHEET = monkshu_env.components["spread-sheet"], FLOATING_WINDOW = monkshu_env.components["floating-window"],
+    MODULE_PATH = util.getModulePath(import.meta), HIGHLIGHT_BACKGROUND_COLOR = "#FDEDEC", HIGHLIGHT_TEXT_COLOR = "#444444", 
+    CONSOLE_HTML_FILE = `${MODULE_PATH}/../dialogs/dialog_decision.console.html`, CONSOLE_THEME = {
+        title: await i18n.get("RulesOutput"), "var--window-top": "25vh", "var--window-left": "75vh",
+        "var--window-width": "40vw", "var--window-height": "40vh", "var--window-background": "#DFF0FE",
+        "var--window-border": "1px solid #4788C7", closeIcon: `${MODULE_PATH}/../dialogs/close.svg`};
+let openConsoleID;
 
 async function test(callingSheetElement) {
     const hostElement = SPREAD_SHEET.getHostElement(callingSheetElement), sheetValue = hostElement.value;
@@ -28,12 +34,16 @@ async function test(callingSheetElement) {
     // ready to test now
     await $$.require(`${MODULE_PATH}/monkrulsBrowserified.min.js`); 
     const webRuls = require("webRuls"); const {results} = await webRuls.runRules(model);
-    LOG.info(`Output of the rules engine follows\n\n${JSON.stringify(results, null, 4)}`);
+    _showConsole(`Output of the rules engine follows\n\n${JSON.stringify(results, null, 4)}`);
 
     // highlight failed rules in the spreadsheet
     const rowsFailed = []; for (const failed_rule of results.__com_monastery_monkruls_decisiontabletester_failed_rules) rowsFailed.push(failed_rule.index+1);
-    LOG.info(`Failed rule rows are ${rowsFailed.join(", ")}`);
     _highlightFailedRows(rowsFailed, hostElement);
+}
+
+function refresh(callingSheetElement) {
+    const hostElement = SPREAD_SHEET.getHostElement(callingSheetElement);
+    SPREAD_SHEET.reloadSheets(hostElement); if (openConsoleID) FLOATING_WINDOW.hideWindow(openConsoleID);
 }
 
 async function _highlightFailedRows(rowsToHighlight, host) {
@@ -58,4 +68,9 @@ function _getSheetTabNames(sheetProperties) {
     return tabNames;
 }
 
-export const decisionTableTester = {test};
+async function _showConsole(message) {
+    const floatingWindowHTML = await $$.requireText(CONSOLE_HTML_FILE);
+    openConsoleID = await FLOATING_WINDOW.showWindow(CONSOLE_THEME, Mustache.render(floatingWindowHTML, {message}));
+}
+
+export const decisionTableTester = {test, refresh};

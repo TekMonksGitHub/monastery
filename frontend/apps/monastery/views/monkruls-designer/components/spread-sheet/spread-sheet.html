@@ -133,7 +133,7 @@ img.button {width: 20px;}
         {{#columns}}<td onclick='this.querySelector("textarea").focus()'><textarea rows="1" 
             onpaste='monkshu_env.components["spread-sheet"].cellpastedon(this, event)'
             oninput='monkshu_env.components["spread-sheet"].resizeRowInputsForLargestScroll(this)'
-            onchange="this.oninput()" onfocus="this.oninput()"
+            onchange="this.oninput()" onfocus="this.oninput()" spellcheck="false"
             onkeypress="if (event.keyCode == 13) event.preventDefault();"></textarea>
         </td>{{/columns}}
     </tr>
