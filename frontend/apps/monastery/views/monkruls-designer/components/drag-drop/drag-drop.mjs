@@ -17,7 +17,9 @@ const COMPONENT_PATH = util.getModulePath(import.meta), DEFAULT_LABEL = i18n.Def
 
 async function elementConnected(element) {
 	Object.defineProperty(element, "value", {get: _=>JSON.stringify(drag_drop.getData(element.id).items), 
-		set: value=>drag_drop.bindData({...drag_drop.getData(element.id),items:JSON.parse(value)}, host.id)} );
+		set: value=>{
+			const newData = drag_drop.getData(element.id); newData.items = JSON.parse(value);
+			drag_drop.bindData(newData, element.id) } });
 
 	const data = {items: JSON.parse(element.getAttribute("value")||"[]"), 
 		styleBody: element.getAttribute("styleBody")?`<style>${element.getAttribute("styleBody")}</style>`:undefined,

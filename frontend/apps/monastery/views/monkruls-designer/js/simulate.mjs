@@ -35,11 +35,17 @@ async function test() {
 }
 
 async function openFile() {
-
+    const file = await util.uploadAFile("application/json"); let props;
+    if (!file.data) return; try {props=JSON.parse(file.data)} catch (err) {LOG.error(`Error uploading simulation: ${err}`);}
+    window.monkshu_env.components["drag-drop"].getHostElementByID("allTestObjects").value = props.allTestObjects;
+    window.monkshu_env.components["drag-drop"].getHostElementByID("doTestWithObjects").value = props.doTestWithObjects;
 }
 
 async function saveFile() {
-    
+    const props = {allTestObjects:[], doTestWithObjects: []};
+    props.allTestObjects = window.monkshu_env.components["drag-drop"].getHostElementByID("allTestObjects").value;
+    props.doTestWithObjects = window.monkshu_env.components["drag-drop"].getHostElementByID("doTestWithObjects").value;
+    util.downloadFile(JSON.stringify(props), "application/json", "simulate.json");
 }
 
 async function open() {
