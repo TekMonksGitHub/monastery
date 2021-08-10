@@ -32,3 +32,5 @@ div#ribbon > div >  span {
     color: #444444;
     cursor: copy;
 }
+
+div#ribbon > div:last-child > span {padding-bottom: 0px;}

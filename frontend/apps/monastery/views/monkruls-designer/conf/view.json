@@ -7,7 +7,9 @@
         "pluggable-ribbon": "components/pluggable-ribbon",
         "spread-sheet": "components/spread-sheet",
         "text-editor": "components/text-editor",
-        "floating-window": "components/floating-window"
+        "floating-window": "components/floating-window",
+        "drag-drop": "components/drag-drop",
+        "html-fragment": "../shared/components/html-fragment"
     },
     "initModules": {"monkrulsmodel": "model/monkrulsmodel.mjs"}
 }

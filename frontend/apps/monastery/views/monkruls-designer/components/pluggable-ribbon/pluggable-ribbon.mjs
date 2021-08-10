@@ -36,7 +36,8 @@ async function _instantiatePlugins(element) {
 		if (pluginModule && await pluginModule.init(`${COMPONENT_PATH}/${element.id}/${plugin}`)) {
 			pluggable_ribbon.extensions[element.id][plugin] = pluginModule;
 			const pluginObj = {img: pluginModule.getImage(), title: pluginModule.getHelpText(session.get($$.MONKSHU_CONSTANTS.LANG_ID)), 
-				id: element.id||"null", pluginName: plugin, name: pluginModule.getDescriptiveName(session.get($$.MONKSHU_CONSTANTS.LANG_ID))};
+				id: element.id||"null", pluginName: plugin, name: pluginModule.getDescriptiveName(session.get($$.MONKSHU_CONSTANTS.LANG_ID)),
+				pluginCursor: pluginModule.getCursor?pluginModule.getCursor():undefined};
 			if (pluginModule.customEvents) {	// plug in custom event handlers if the plugin supports it
 				pluginObj.customEvents = []; for (const event of pluginModule.customEvents) 
 					pluginObj.customEvents.push({event, id: element.id||"null", pluginName: plugin}); 

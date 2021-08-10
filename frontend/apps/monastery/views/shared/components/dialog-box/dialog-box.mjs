@@ -40,6 +40,7 @@ async function showDialog(themeOrThemePath, templateOrTemplateURL, templateData,
     document.querySelector(`#${hostID}`).style.display = "block";   // show the dialog
     // for some reason this otherwise adds in a visible block if the <!doctype HTML> is declared in the parent document, and transitions don't work if this is defined in HTML file 
     shadowRoot.querySelector("html").style.height = "0px";  shadowRoot.querySelector("html").style.width = "0px"; 
+    document.querySelector(`#${hostID}`).style.height = "0px"; document.querySelector(`#${hostID}`).style.width = "0px";
 }
 
 /**

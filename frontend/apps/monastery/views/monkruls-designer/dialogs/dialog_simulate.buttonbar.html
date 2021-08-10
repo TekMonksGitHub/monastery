@@ -1,0 +1,59 @@
+<style>
+body {
+    margin: 0%;
+    height: 100%;
+}
+
+span#toolbar {
+    padding-bottom: 10px; 
+    display: inline-flex;
+    align-items: center;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    max-width: calc(100vw - 192px);
+}
+
+span#toolbar > span > span {
+    align-items: center;
+    display: inline-flex;
+    font-size: smaller;
+    font-family: 'Red Hat Text';
+    padding-right: 4vw;
+}
+
+span#toolbar > span > span:last-child {padding-right: 0vw;}
+
+span#toolbar > span > span.button {
+    padding: 5px 10px 5px 10px;
+    border: 1px solid #C6E3FF;
+    border-radius: 5px;
+    background-color: #D6EFFF;
+    cursor: default;
+    margin-right: 4vw;
+}
+
+span#toolbar > span > span.button:last-child {margin-right: 0vw;}
+
+img.button {width: 20px;}
+</style>
+
+<script type="module">
+    import {simulate} from "./views/{{url.view}}/js/simulate.mjs"; window.monkshu_env.__simulate = simulate;
+</script>
+
+<span id="toolbar">
+    <span id="leftitems">
+        <span class="button" onclick="window.monkshu_env.__simulate.test(this)">
+            <img class="button" src="./views/{{url.view}}/dialogs/test.svg">&nbsp;&nbsp;{{i18n.Simulate}}
+        </span>
+    </span>
+    <span id="rightitems">
+        <span class="button" onclick="window.monkshu_env.__simulate.openFile(this)">
+            <img class="button" src="./views/{{url.view}}/dialogs/open.svg">&nbsp;&nbsp;{{i18n.Load}}
+        </span>
+        <span class="button" onclick="window.monkshu_env.__simulate.saveFile(this)">
+            <img class="button" src="./views/{{url.view}}/dialogs/save.svg">&nbsp;&nbsp;{{i18n.Save}}
+        </span>
+    </span>
+</span>

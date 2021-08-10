@@ -59,7 +59,7 @@ function loadModel(jsonModel) {
 
     // add data
     for (const data of monkrulsModel.data) {
-        const id = data.id||_getUniqueID(); idCache[id] = data;
+        const id = data.id||_getUniqueID(); idCache[id] = data; if (data.data?.startsWith(CSVSCHEME)) data.data = data.data.substring(CSVSCHEME.length);
         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: data.nodeName||"data", id, description: data.description, properties: {...data}, connectable: false});
     }
 
@@ -77,7 +77,7 @@ function loadModel(jsonModel) {
 
     // add objects
     for (const object of monkrulsModel.objects) {
-        const id = object.id||_getUniqueID(); idCache[id] = object;
+        const id = object.id||_getUniqueID(); idCache[id] = object; if (object.data?.startsWith(CSVSCHEME)) object.data = object.data.substring(CSVSCHEME.length);
         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: object.nodeName||"object", id, description: object.description, properties: {...object}, connectable: false});
     }
 }
@@ -116,8 +116,14 @@ function isConnectable(sourceName, targetName, sourceID, targetID) {    // are t
     return true;
 }
 
-const nodeDescriptionChanged = (_nodeName, id, description) => {
-    if (!idCache[id]) return; else idCache[id].description = description; }
+function nodeDescriptionChanged(_nodeName, id, description) {
+    if (!idCache[id]) return; 
+    
+    const oldNameTracksDescription = _getNameFromDescription(idCache[id].description) == idCache[id].name;
+    if (idCache[id].name && oldNameTracksDescription) {
+        idCache[id].name = _getNameFromDescription(description); idCache[id].description = description;
+    } else idCache[id].description = description;
+}
 
 const getModelAsFile = _ => {return {data: JSON.stringify(monkrulsModel, null, 4), mime: "application/json", filename: "ruls.json"}}
 
@@ -132,13 +138,15 @@ function _nodeAdded(nodeName, id, properties) {
     const node = idCache[id] ? idCache[id] : JSON.parse(JSON.stringify(properties)); node.nodeName = nodeName;
     if (idCache[id]) {_nodeModified(nodeName, id, properties); return;}  // node properties modified
 
-    if (nodeName == "rule") _findOrCreateRuleBundle().rules.push(node);
+    const name = _getNameFromDescription(node.description);
+
+    if (nodeName == "rule") _findOrCreateRuleBundle().rules.push(node); 
     else if (nodeName == "variable") monkrulsModel.rule_parameters.push(node);
-    else if (nodeName == "decision") _findOrCreateRuleBundle(properties.description).rules.push(node);
-    else if (nodeName == "data") {node.name = node.description; monkrulsModel.data.push(node);}
-    else if (nodeName == "functions") {node.name = node.description; monkrulsModel.functions.push(node);}
+    else if (nodeName == "decision") _findOrCreateRuleBundle(name).rules.push(node);
+    else if (nodeName == "data") {node.name = name; monkrulsModel.data.push(node);}
+    else if (nodeName == "functions") {node.name = name; monkrulsModel.functions.push(node);}
     else if (nodeName == "output") monkrulsModel.outputs.push(node);
-    else if (nodeName == "object") {node.name = node.description; monkrulsModel.objects.push(node);}
+    else if (nodeName == "object") {node.name = name; monkrulsModel.objects.push(node);}
     
     node.id = id; idCache[id] = node;   // transfer ID and cache the node
     
@@ -181,6 +189,8 @@ function _getSheetTabData(sheetProperties, tabName) {
 }
 
 const _arrayDelete = (array, element) => {if (array.includes(element)) array.splice(array.indexOf(element), 1);}
+
+const _getNameFromDescription = description => description.split(" ")[0].split("\n")[0];
 
 export const monkrulsmodel = {init, loadModel, modelNodesModified, modelConnectorsModified, isConnectable, 
     nodeDescriptionChanged, getModelAsFile, ADDED: "added", REMOVED: "removed", MODIFIED: "modified"};

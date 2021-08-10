@@ -16,7 +16,11 @@ export const i18n = {
         "OutputInternalObject": "Internal object name",
         "PickOption": "Pick an option",
         "IsLookupTable": "Is Lookup Table?",
-        "RulesOutput": "Rules Engine Output"
+        "RulesOutput": "Rules Engine Output",
+        "Load":"Load",
+        "Save":"Save",
+        "Simulate":"Simulate",
+        "Output":"Output"
     },
 
     hi: {
@@ -36,7 +40,11 @@ export const i18n = {
         "OutputInternalObject": "आंतरिक वस्तु का नाम",
         "PickOption": "विकल्प चुनें",
         "IsLookupTable": "लुकअप टेबल है?",
-        "RulesOutput": "नियम इंजन आउटपुट"
+        "RulesOutput": "नियम इंजन आउटपुट",
+        "Load":"फ़ाइल लोड करें",
+        "Save":"फाइल सुरक्षित करें",
+        "Simulate":"अनुकरण",
+        "Output":"आउटपुट"
     }, 
 
     ja: {
@@ -56,6 +64,10 @@ export const i18n = {
         "OutputInternalObject": "内部オブジェクト名",
         "PickOption": "オプションを選択",
         "IsLookupTable": "ルックアップテーブルですか？",
-        "RulesOutput": "ルールエンジンの出力"
+        "RulesOutput": "ルールエンジンの出力",
+        "Load":"Load",
+        "Save":"Save",
+        "Simulate":"テスト",
+        "Output":"出力"
     }
 }
