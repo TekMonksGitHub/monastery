@@ -1,5 +1,9 @@
 /**
  * A universal drag and drop Monkshu web component. 
+ * Item format is {id, img, label}. Type is "application/json/dnditem"
+ * 
+ * Value attribute returns or expects an array of items in the format
+ * listed above.
  *  
  * (C) 2020 TekMonks. All rights reserved.
  * License: See enclosed LICENSE file.
@@ -41,14 +45,14 @@ function dragEnded(event, elementBeingDragged, _item) {
 }
 
 function dropped(event, elementFromComponentDroppedInto) {
-	event.preventDefault();
+	if (event.dataTransfer.getData("application/json/dnditem") == "") return; else event.preventDefault();
 	const droppedItem = JSON.parse(event.dataTransfer.getData("application/json/dnditem"));
 
 	// drop to same component not allowed
 	const inHostID = drag_drop.getHostElementID(elementFromComponentDroppedInto), outHostID = droppedItem.hostID;
 	if (inHostID == outHostID) return;
 
-	// remove from the component we are leaving, it it was one of ours
+	// remove from the component we are leaving, if it was one of ours
 	if (outHostID && droppedItem.isDNDComponent) {
 		const trimmedOutItems = [], outComponentsData = drag_drop.getData(outHostID); 
 		for (const item of outComponentsData.items) if (item.id != droppedItem.id) trimmedOutItems.push(item);

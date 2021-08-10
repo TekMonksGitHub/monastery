@@ -20,7 +20,8 @@ export const i18n = {
         "Load":"Load",
         "Save":"Save",
         "Simulate":"Simulate",
-        "Output":"Output"
+        "Output":"Output",
+        "RulesOutputLabel": "Rules engine output"
     },
 
     hi: {
@@ -44,7 +45,8 @@ export const i18n = {
         "Load":"फ़ाइल लोड करें",
         "Save":"फाइल सुरक्षित करें",
         "Simulate":"अनुकरण",
-        "Output":"आउटपुट"
+        "Output":"आउटपुट",
+        "RulesOutputLabel": "नियम इंजन आउटपुट"
     }, 
 
     ja: {
@@ -68,6 +70,7 @@ export const i18n = {
         "Load":"Load",
         "Save":"Save",
         "Simulate":"テスト",
-        "Output":"出力"
+        "Output":"出力",
+        "RulesOutputLabel": "ルールエンジンの出力"
     }
 }

@@ -3,6 +3,7 @@
  * (C) 2021 TekMonks. All rights reserved.
  * License: See enclosed LICENSE file.
  */
+import {util} from "/framework/js/util.mjs";
 import {blackboard} from "/framework/js/blackboard.mjs";
 
 const EMPTY_MODEL = {rule_bundles:[], functions:[], data:[], rule_parameters: [], outputs:[], objects:[]}, DEFAULT_BUNDLE="rules";
@@ -38,9 +39,10 @@ function loadModel(jsonModel) {
 
     // first add all the rules and bundles and decision tables
     for (const bundle of monkrulsModel.rule_bundles) for (const rule of bundle.rules) {
-        const id = rule.id||_getUniqueID(), nodeName = rule.nodeName || rule.decisiontable?"decision":"rule"; 
-        idCache[id] = rule; if (rule.decisiontable) rule.decisiontable = rule.decisiontable.substring(CSVSCHEME.length);
-        blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName, id, description: rule.description, properties: {...rule}});
+        const id = rule.id||_getUniqueID(); idCache[id] = rule; const clone = util.clone(rule);
+        const nodeName = clone.nodeName || clone.decisiontable?"decision":"rule"; 
+        if (clone.decisiontable) clone.decisiontable = clone.decisiontable.substring(CSVSCHEME.length);
+        blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName, id, description: clone.description, properties: {...clone}});
     }
 
     // add connections
@@ -59,8 +61,8 @@ function loadModel(jsonModel) {
 
     // add data
     for (const data of monkrulsModel.data) {
-        const id = data.id||_getUniqueID(); idCache[id] = data; if (data.data?.startsWith(CSVSCHEME)) data.data = data.data.substring(CSVSCHEME.length);
-        blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: data.nodeName||"data", id, description: data.description, properties: {...data}, connectable: false});
+        const id = data.id||_getUniqueID(); idCache[id] = data; const clone = util.clone(data); if (clone.data?.startsWith(CSVSCHEME)) clone.data = clone.data.substring(CSVSCHEME.length);
+        blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: clone.nodeName||"data", id, description: clone.description, properties: {...clone}, connectable: false});
     }
 
     // add functions
@@ -77,8 +79,9 @@ function loadModel(jsonModel) {
 
     // add objects
     for (const object of monkrulsModel.objects) {
-        const id = object.id||_getUniqueID(); idCache[id] = object; if (object.data?.startsWith(CSVSCHEME)) object.data = object.data.substring(CSVSCHEME.length);
-        blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: object.nodeName||"object", id, description: object.description, properties: {...object}, connectable: false});
+        const id = object.id||_getUniqueID(); idCache[id] = object; const clone = util.clone(object);
+        if (clone.data?.startsWith(CSVSCHEME)) clone.data = clone.data.substring(CSVSCHEME.length);
+        blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: clone.nodeName||"object", id, description: clone.description, properties: {...clone}, connectable: false});
     }
 }
 
