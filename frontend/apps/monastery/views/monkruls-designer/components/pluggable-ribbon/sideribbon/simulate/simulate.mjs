@@ -2,10 +2,8 @@
  * (C) 2020 TekMonks. All rights reserved.
  */
 import {util} from "/framework/js/util.mjs";
-import {newRibbonButton} from "../../lib/ribbonButton.mjs";
-import {simulate as simulateModule} from "../../../../js/simulate.mjs";
+import {newFlowNode} from "../../lib/flowNode.mjs";
 
-const parentNode = newRibbonButton();
-const init = async _ => { await parentNode.init("simulate", util.getModulePath(import.meta),  
-    {click: _=>simulateModule.open()}); return true; }
+const parentNode = newFlowNode();
+const init = async _ => {await parentNode.init("simulate", util.getModulePath(import.meta)); return true;}
 export const simulate = {init, ...parentNode};

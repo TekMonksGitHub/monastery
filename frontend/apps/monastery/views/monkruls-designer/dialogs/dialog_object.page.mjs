@@ -6,14 +6,14 @@
 
 import {i18n} from "/framework/js/i18n.mjs";
 
-function getPage(viewPath, savedDialogProperties) {
-    if (savedDialogProperties?.type == "JSON") return `${viewPath}/dialogs/dialog_object.code.page`;
-    if (savedDialogProperties?.type == "CSV") return `${viewPath}/dialogs/dialog_object.sheet.page`;
+function getPage(viewPath, dialogProperties) {
+    if (dialogProperties?.type == "JSON") return {page: `${viewPath}/dialogs/dialog_object.code.page`, dialogProperties};
+    if (savedDialogProperties?.type == "CSV") return {page: `${viewPath}/dialogs/dialog_object.sheet.page`, dialogProperties};
     
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async resolve => {
         window.monkshu_env.components["dialog-box"].showChoice( {message: await i18n.get("PickOption"), choices:["JSON", "CSV"]}, 
-            option => { if (option) resolve(`${viewPath}/dialogs/dialog_object.${option=="CSV"?"sheet":"code"}.page`);
-                else reject(); } );
+            option => { if (option) resolve({page: `${viewPath}/dialogs/dialog_object.${option=="CSV"?"sheet":"code"}.page`, dialogProperties});
+                else resolve(); } );
     });
 }
 

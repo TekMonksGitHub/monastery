@@ -19,7 +19,7 @@ const MSG_REGISTER_SHAPE = "REGISTER_SHAPE", MSG_SHAPE_INIT = "SHAPE_INIT_ON_RIB
     MSG_MODEL_LOAD_MODEL = "LOAD_MODEL", MSG_RESET = "RESET", MSG_FILE_UPLOADED = "FILE_UPLOADED", GRAPH_ID = "flowui", MODEL_OP_ADDED = "added", 
     MODEL_OP_REMOVED = "removed", MODEL_OP_MODIFIED = "modified";
 const PAGE_GENERATOR_GRID_ITEM_CLASS = "grid-item-extension", HTML_INPUT_ELEMENTS = ["input","select",
-    "textarea","spread-sheet","text-editor"];
+    "textarea","spread-sheet","text-editor", "drag-drop"];
 let ID_CACHE = {}, CONF, VIEW_PATH;
 
 const _generateShapeName = name => name.toLowerCase(), _generateShapeX = _ => 30, _generateShapeY = _ => 30;
@@ -73,14 +73,16 @@ function shapeAdded(shapeName, id, label, connectable=true) {
 }
 
 async function _shapeObjectClickedOnFlowDiagram(shapeName, id, shapelabel) {
-    const pageSelector = await _returnFirstFileThatExists([`${VIEW_PATH}/dialogs/dialog_${shapeName}.page.mjs`,
+    let savedDialogProperties = ID_CACHE[id]||{}, pageSelector = await _returnFirstFileThatExists([`${VIEW_PATH}/dialogs/dialog_${shapeName}.page.mjs`,
         `${VIEW_PATH}/dialogs/dialog_${shapeName}.page`]);
-    let pageFile; if (pageSelector.endsWith(".mjs")) try {pageFile = new URL(await (await import(pageSelector)).page.getPage(VIEW_PATH, ID_CACHE[id]||{}))} catch (err) {LOG.error(`Error in page selector ${err}`); return;}
-    else pageFile = new URL(`${VIEW_PATH}/dialogs/dialog_${shapeName}.page`);
+    let pageFile, pageModule; if (pageSelector.endsWith(".mjs")) {
+        pageModule = await import(pageSelector); 
+        const {page, dialogProperties} = await pageModule.page.getPage(VIEW_PATH, savedDialogProperties);
+        if (!page) return; else {pageFile = new URL(page); savedDialogProperties = dialogProperties;}
+    } else pageFile = new URL(pageSelector);
     
     let html = await page_generator.getHTML(pageFile, null, {description: shapelabel});
 
-    const savedDialogProperties = ID_CACHE[id]||{};
     // figure out IDs for all input items on the dialog and fill their defaults, if saved previously
     const dom = new DOMParser().parseFromString(html, "text/html"), items = dom.getElementsByClassName(PAGE_GENERATOR_GRID_ITEM_CLASS);
     const idsNeeded = []; for (const item of items) for (const child of item.childNodes) if (
@@ -89,13 +91,15 @@ async function _shapeObjectClickedOnFlowDiagram(shapeName, id, shapelabel) {
             if (savedDialogProperties[child.id]) if (child.nodeName.toLowerCase() == "textarea") child.innerHTML = savedDialogProperties[child.id];
             else child.setAttribute("value", savedDialogProperties[child.id]);
     }
+    if (pageModule && pageModule.page.dialogConnected) dom = await pageModule.page.dialogConnected(dom, savedDialogProperties);
     html = dom.documentElement.outerHTML;   // this creates HTML with default values set from the previous run
 
     // now show and run the dialog
     const dialogPropertiesPath = await _returnFirstFileThatExists([`${VIEW_PATH}/dialogs/dialogProperties${shapeName}.json`,
         `${VIEW_PATH}/dialogs/${DEFAULT_DIALOG_PROPERTIES}`]);
     window.monkshu_env.components["dialog-box"].showDialog(dialogPropertiesPath, html, null, idsNeeded, 
-        (typeOfClose, result) => { if (typeOfClose == "submit") {
+        async (typeOfClose, result) => { if (typeOfClose == "submit") {
+                if (pageModule && pageModule.page.dialogEnded) result = await pageModule.page.dialogEnded(result);
                 ID_CACHE[id] = result; const listeners = blackboard.getListeners(MSG_MODEL_NODES_MODIFIED); // inform model
                 for (const listener of listeners) if (!listener({type: MODEL_OP_MODIFIED, nodeName: shapeName, id, properties: result})) return false;
                 return true;

@@ -6,7 +6,7 @@
 import {util} from "/framework/js/util.mjs";
 import {blackboard} from "/framework/js/blackboard.mjs";
 
-const EMPTY_MODEL = {rule_bundles:[], functions:[], data:[], rule_parameters: [], outputs:[], objects:[]}, DEFAULT_BUNDLE="rules";
+const EMPTY_MODEL = {rule_bundles:[], functions:[], data:[], rule_parameters: [], outputs:[], objects:[], simulations: []}, DEFAULT_BUNDLE="rules";
 let monkrulsModel = EMPTY_MODEL, idCache = {}, current_rule_bundle = DEFAULT_BUNDLE;
 const MSG_NODES_MODIFIED = "NODES_MODIFIED", MSG_CONNECTORS_MODIFIED = "CONNECTORS_MODIFIED", 
     MSG_NODE_DESCRIPTION_CHANGED = "NODE_DESCRIPTION_CHANGED", MSG_ARE_NODES_CONNECTABLE = "ARE_NODES_CONNECTABLE",
@@ -83,6 +83,12 @@ function loadModel(jsonModel) {
         if (clone.data?.startsWith(CSVSCHEME)) clone.data = clone.data.substring(CSVSCHEME.length);
         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: clone.nodeName||"object", id, description: clone.description, properties: {...clone}, connectable: false});
     }
+
+    // add simulations
+    for (const simulation of monkrulsModel.simulations) {
+        const id = simulation.id||_getUniqueID(); idCache[id] = simulation;
+        blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: simulation.nodeName||"simulate", id, description: simulation.description, properties: {...simulation}, connectable: false});
+    }
 }
 
 function modelNodesModified(type, nodeName, id, properties) {
@@ -150,6 +156,7 @@ function _nodeAdded(nodeName, id, properties) {
     else if (nodeName == "functions") {node.name = name; monkrulsModel.functions.push(node);}
     else if (nodeName == "output") monkrulsModel.outputs.push(node);
     else if (nodeName == "object") {node.name = name; monkrulsModel.objects.push(node);}
+    else if (nodeName == "simulate") monkrulsModel.simulations.push(node);
     
     node.id = id; idCache[id] = node;   // transfer ID and cache the node
     
@@ -167,6 +174,7 @@ function _nodeRemoved(nodeName, id) {
     else if (nodeName == "functions") _arrayDelete(monkrulsModel.functions, node);
     else if (nodeName == "functions") _arrayDelete(monkrulsModel.outputs, node);
     else if (nodeName == "object") _arrayDelete(monkrulsModel.objects, node);
+    else if (nodeName == "simulate") _arrayDelete(monkrulsModel.simulations, node);
 
     delete idCache[id]; // uncache
     return true;
