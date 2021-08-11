@@ -8,7 +8,7 @@ import {i18n} from "/framework/js/i18n.mjs";
 
 function getPage(viewPath, dialogProperties) {
     if (dialogProperties?.type == "JSON") return {page: `${viewPath}/dialogs/dialog_object.code.page`, dialogProperties};
-    if (savedDialogProperties?.type == "CSV") return {page: `${viewPath}/dialogs/dialog_object.sheet.page`, dialogProperties};
+    if (dialogProperties?.type == "CSV") return {page: `${viewPath}/dialogs/dialog_object.sheet.page`, dialogProperties};
     
     return new Promise(async resolve => {
         window.monkshu_env.components["dialog-box"].showChoice( {message: await i18n.get("PickOption"), choices:["JSON", "CSV"]}, 

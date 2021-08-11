@@ -41,7 +41,7 @@ function loadModel(jsonModel) {
     for (const bundle of monkrulsModel.rule_bundles) for (const rule of bundle.rules) {
         const id = rule.id||_getUniqueID(); idCache[id] = rule; const clone = util.clone(rule);
         const nodeName = clone.nodeName || clone.decisiontable?"decision":"rule"; 
-        if (clone.decisiontable) clone.decisiontable = clone.decisiontable.substring(CSVSCHEME.length);
+        if (clone.decisiontable) clone.decisiontable = clone.decisiontable_raw||clone.decisiontable.substring(CSVSCHEME.length);
         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName, id, description: clone.description, properties: {...clone}});
     }
 
@@ -61,7 +61,8 @@ function loadModel(jsonModel) {
 
     // add data
     for (const data of monkrulsModel.data) {
-        const id = data.id||_getUniqueID(); idCache[id] = data; const clone = util.clone(data); if (clone.data?.startsWith(CSVSCHEME)) clone.data = clone.data.substring(CSVSCHEME.length);
+        const id = data.id||_getUniqueID(); idCache[id] = data; const clone = util.clone(data); 
+        clone.data = clone.data_raw||(clone.data.startsWith?.(CSVSCHEME)?clone.data.substring(CSVSCHEME.length):clone.data);
         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: clone.nodeName||"data", id, description: clone.description, properties: {...clone}, connectable: false});
     }
 
@@ -80,7 +81,7 @@ function loadModel(jsonModel) {
     // add objects
     for (const object of monkrulsModel.objects) {
         const id = object.id||_getUniqueID(); idCache[id] = object; const clone = util.clone(object);
-        if (clone.data?.startsWith(CSVSCHEME)) clone.data = clone.data.substring(CSVSCHEME.length);
+        clone.data = clone.data_raw||(clone.data.startsWith?.(CSVSCHEME)?clone.data.substring(CSVSCHEME.length):clone.data);
         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: clone.nodeName||"object", id, description: clone.description, properties: {...clone}, connectable: false});
     }
 
@@ -183,12 +184,17 @@ function _nodeRemoved(nodeName, id) {
 function _nodeModified(nodeName, id, properties) {
     if (!idCache[id]) return false; // we don't know of this node
     for (const key in properties) { // transfer the new properties, CSVs need the CSV scheme added
-        if (key == "decisiontable") idCache[id][key] = CSVSCHEME+_getSheetTabData(properties.decisiontable, "Rules");
-        else if (key == "data" && nodeName == "data") idCache[id][key] = 
-            _getSheetTabData(properties.data, "isLookupTable").toLowerCase()=="true"?CSVLOOKUPTABLESCHEME:CSVSCHEME+_getSheetTabData(properties.data, "default");
-        else if (key == "data" && nodeName == "object") {
-            try {idCache[id][key] = properties.type == "CSV" ? CSVSCHEME+properties.data : JSON.parse(properties.data);}
-            catch (err) {idCache[id][key] = properties.data}    // most probably bad JSON
+        if (key == "decisiontable") {   // decision table must be CSV
+            idCache[id][key] = CSVSCHEME+_getSheetTabData(properties.decisiontable, "Rules");
+            idCache[id].decisiontable_raw = properties[key]; 
+        } else if (key == "data" && nodeName == "data") {   // data sheet can be CSV or Lookup table
+            idCache[id][key] = (_getSheetTabData(properties.data, "isLookupTable").toLowerCase()=="true"?CSVLOOKUPTABLESCHEME:CSVSCHEME)+_getSheetTabData(properties.data, "default");
+            idCache[id].data_raw = properties[key]; 
+        } else if (key == "data" && nodeName == "object") { // object sheet can be JSON or CSV
+            try {
+                idCache[id][key] = properties.type == "CSV" ? CSVSCHEME+properties.data : JSON.parse(properties.data);
+                idCache[id].data_raw = properties[key]; 
+            } catch (err) {idCache[id][key] = properties.data}    // most probably bad JSON
         } else idCache[id][key] = properties[key];   
     }
     return true;

@@ -16,7 +16,7 @@ const COMPONENT_PATH = util.getModulePath(import.meta), ROW_PROP = "__org_monksh
 
 async function elementConnected(element) {
 	Object.defineProperty(element, "value", {get: _=>_getValue(element), set: value=>_setValue(value, element)});
-	$$.require(`${COMPONENT_PATH}/3p/papaparse.min.js`);	// we need this to export and import data as CSV
+	await $$.require(`${COMPONENT_PATH}/3p/papaparse.min.js`);	// we need this to export and import data as CSV
 
 	// first tab in the attribute is active, or default (hidden) tab is active if multiple tabs are not being used
 	_setActiveTab(element, element.getAttribute("tabs") ? 
@@ -63,7 +63,7 @@ function cellpastedon(element, event) {
 
 async function rowop(op, element) {
 	const host = spread_sheet.getHostElement(element);
-	let numOfRows = _getActiveTabObject(host)[ROW_PROP]; const numOfColumns = _getActiveTabObject(host)[COLUMN_PROP];
+	let numOfRows = parseInt(_getActiveTabObject(host)[ROW_PROP], 10); const numOfColumns = _getActiveTabObject(host)[COLUMN_PROP];
 	numOfRows = op=="add"?numOfRows+1:numOfRows-1; _getActiveTabObject(host)[ROW_PROP] = numOfRows;
 	const data = await _createElementData(host, numOfRows, numOfColumns);
 	const currentData = _getSpreadSheetAsCSV(host.id); await spread_sheet.bindData(data, host.id); _setSpreadSheetFromCSV(currentData, host.id);
@@ -71,7 +71,7 @@ async function rowop(op, element) {
 
 async function columnop(op, element) {
 	const host = spread_sheet.getHostElement(element);
-	const numOfRows = _getActiveTabObject(host)[ROW_PROP]; let numOfColumns = _getActiveTabObject(host)[COLUMN_PROP];
+	const numOfRows = _getActiveTabObject(host)[ROW_PROP]; let numOfColumns = parseInt(_getActiveTabObject(host)[COLUMN_PROP], 10);
 	numOfColumns = op=="add"?numOfColumns+1:numOfColumns-1; _getActiveTabObject(host)[COLUMN_PROP] = numOfColumns;
 	const data = await _createElementData(host, numOfRows, numOfColumns); 
 	const currentData = _getSpreadSheetAsCSV(host.id); await spread_sheet.bindData(data, host.id); _setSpreadSheetFromCSV(currentData, host.id);
@@ -151,7 +151,7 @@ function _setValue(value, host) {
 	if (isJSONValue) {
 		const parsedObjects = JSON.parse(value), allTabs = {}; 
 		for (const object of parsedObjects) if (object.type == "tab") { allTabs[object.id] = util.clone(object, ["type"]); } 
-		else if (object.data && shadowRoot.querySelector(`#${object.id}`)) shadowRoot.querySelector(`#${object.id}`).value = object.data; 
+		else if (object.data && shadowRoot.querySelector(`#${object.id}`)) _setHTMLElementValue(shadowRoot.querySelector(`#${object.id}`), object.data); 
 		
 		_setAllTabs(host, allTabs); const firstTabID = Object.keys(allTabs)[0]; 
 		_setActiveTab(host, firstTabID); _setSpreadSheetFromCSV(allTabs[firstTabID].data, host.id);
@@ -192,7 +192,7 @@ async function _setSpreadSheetFromCSV(value, hostID) {	// will set data for the 
 		numOfRowsInCSV>_getActiveTabObject(host)[ROW_PROP]?numOfRowsInCSV:_getActiveTabObject(host)[ROW_PROP], 
 		numOfColumnsInCSV>_getActiveTabObject(host)[COLUMN_PROP]?numOfColumnsInCSV:_getActiveTabObject(host)[COLUMN_PROP]);
 	
-	await spread_sheet.bindData(data, host.id);	// adjust the sheet size to match the data, this will called elementRendered
+	await spread_sheet.bindData(data, host.id);	// adjust the sheet size to match the data, this will call elementRendered
 
 	// fill in the data
 	const shadowRoot = spread_sheet.getShadowRootByHost(host), rows = Array.prototype.slice.call(shadowRoot.querySelectorAll("tr"));
@@ -207,8 +207,9 @@ async function _setSpreadSheetFromCSV(value, hostID) {	// will set data for the 
 }
 
 async function _createElementData(host, rows=host.getAttribute("rows")||6, columns=host.getAttribute("columns")||2) {
+	const existingToolbarPluginHTML = spread_sheet.getShadowRootByHost(host)?spread_sheet.getShadowRootByHost(host).querySelector("span#middleitems").innerHTML:null;
 	const data = {componentPath: COMPONENT_PATH, i18n: {}, CONTEXT_MENU_ID,
-		toolbarPluginHTML: host.getAttribute("toolbarPluginHTML")?decodeURIComponent(host.getAttribute("toolbarPluginHTML")):undefined};
+		toolbarPluginHTML: existingToolbarPluginHTML||(host.getAttribute("toolbarPluginHTML")?decodeURIComponent(host.getAttribute("toolbarPluginHTML")):undefined)};
 	for (const i18nKey in i18n) data.i18n[i18nKey] = i18n[i18nKey][session.get($$.MONKSHU_CONSTANTS.LANG_ID)];
 
 	data.rows = []; data.columns = []; for (let j = 0; j < columns; j++) data.columns.push(' ');
@@ -219,7 +220,7 @@ async function _createElementData(host, rows=host.getAttribute("rows")||6, colum
 		data.tabs.push( {name: allTabs[tabID].name, id: tabID, active: tabID == _getActiveTab(host)?"true":undefined} );
 
 	// expand toolbar plugin HTML now that data object is complete, as it may need expansion
-	if (data.toolbarPluginHTML) data.toolbarPluginHTML = await router.expandPageData(data.toolbarPluginHTML, undefined, data);
+	if ((!existingToolbarPluginHTML) && data.toolbarPluginHTML) data.toolbarPluginHTML = await router.expandPageData(data.toolbarPluginHTML, undefined, data);
 	
 	return data;
 }
@@ -237,6 +238,13 @@ function _getAllTabs(hostOrHostID) {
 function _setAllTabs(hostOrHostID, tabs) {
 	const memory = spread_sheet[hostOrHostID instanceof HTMLElement ? "getMemoryByHost":"getMemory"](hostOrHostID);
 	memory.tabs = util.clone(tabs);
+}
+function _setHTMLElementValue(element, value) {
+	if (element.tagName.toLowerCase() == "input" && element.type.toLowerCase() == "checkbox") {
+		if (value.toLowerCase() == "true") element.setAttribute("checked", undefined);
+		element.setAttribute("value", value);
+	} else if (element.tagName.toLowerCase() == "textarea") element.innerHTML = value;
+	else element.setAttribute("value", value);
 }
 
 // convert this all into a WebComponent so we can use it
