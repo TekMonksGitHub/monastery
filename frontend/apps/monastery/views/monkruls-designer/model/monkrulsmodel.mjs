@@ -62,7 +62,10 @@ function loadModel(jsonModel) {
     // add data
     for (const data of monkrulsModel.data) {
         const id = data.id||_getUniqueID(); idCache[id] = data; const clone = util.clone(data); 
-        clone.data = clone.data_raw||(clone.data.startsWith?.(CSVSCHEME)?clone.data.substring(CSVSCHEME.length):clone.data);
+        clone.data = clone.data_raw||(clone.data.startsWith?.(CSVSCHEME)?clone.data.substring(CSVSCHEME.length):
+            clone.data.startsWith?.(CSVLOOKUPTABLESCHEME)?clone.data.substring(CSVLOOKUPTABLESCHEME.length) : clone.data);
+        if (!clone.type && (clone.data.startsWith?.(CSVSCHEME)||clone.data.startsWith?.(CSVLOOKUPTABLESCHEME))) clone.type = "CSV";
+        else clone.type = "JSON/Javascript";
         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: clone.nodeName||"data", id, description: clone.description, properties: {...clone}, connectable: false});
     }
 
@@ -82,6 +85,7 @@ function loadModel(jsonModel) {
     for (const object of monkrulsModel.objects) {
         const id = object.id||_getUniqueID(); idCache[id] = object; const clone = util.clone(object);
         clone.data = clone.data_raw||(clone.data.startsWith?.(CSVSCHEME)?clone.data.substring(CSVSCHEME.length):clone.data);
+        if (!clone.type && clone.data.startsWith?.(CSVSCHEME)) clone.type = "CSV"; else clone.type = "JSON/Javascript";
         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: clone.nodeName||"object", id, description: clone.description, properties: {...clone}, connectable: false});
     }
 
@@ -188,13 +192,13 @@ function _nodeModified(nodeName, id, properties) {
             idCache[id][key] = CSVSCHEME+_getSheetTabData(properties.decisiontable, "Rules");
             idCache[id].decisiontable_raw = properties[key]; 
         } else if (key == "data" && nodeName == "data") {   // data sheet can be CSV or Lookup table
-            idCache[id][key] = (_getSheetTabData(properties.data, "isLookupTable").toLowerCase()=="true"?CSVLOOKUPTABLESCHEME:CSVSCHEME)+_getSheetTabData(properties.data, "default");
+            idCache[id][key] = properties.type == "CSV" ? 
+                (_getSheetTabData(properties.data, "isLookupTable").toLowerCase()=="true"?CSVLOOKUPTABLESCHEME:CSVSCHEME)+_getSheetTabData(properties.data, "default") :
+                properties.data;
             idCache[id].data_raw = properties[key]; 
         } else if (key == "data" && nodeName == "object") { // object sheet can be JSON or CSV
-            try {
-                idCache[id][key] = properties.type == "CSV" ? CSVSCHEME+properties.data : JSON.parse(properties.data);
-                idCache[id].data_raw = properties[key]; 
-            } catch (err) {idCache[id][key] = properties.data}    // most probably bad JSON
+            idCache[id][key] = properties.type == "CSV" ? CSVSCHEME+properties.data : properties.data;
+            idCache[id].data_raw = properties[key]; 
         } else idCache[id][key] = properties[key];   
     }
     return true;
