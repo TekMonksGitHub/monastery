@@ -4,11 +4,14 @@
  * (C) 2020 TekMonks. All rights reserved.
  * License: See enclosed LICENSE file.
  */
+import {i18n} from "./dialog-box.i18n.mjs";
 import {util} from "/framework/js/util.mjs";
 import {router} from "/framework/js/router.mjs";
+import {i18n as frameworki18n} from "/framework/js/i18n.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
-const DEFAULT_HOST_ID = "__org_monkshu_dialog_box", COMPONENT_PATH = util.getModulePath(import.meta);
+const DEFAULT_HOST_ID = "__org_monkshu_dialog_box", COMPONENT_PATH = util.getModulePath(import.meta), 
+    LANG = frameworki18n.getSessionLang();
 const DEFAULT_THEME = {showOKIcon: true, showCancelIcon: true, showOKButton: true, showCancelButton: true};
 let _pendingRenderResolves;
 
@@ -52,24 +55,25 @@ async function showDialog(themeOrThemePath, templateOrTemplateURL, templateData,
  * @param okLabel Optional: Label for the OK button
  * @param hostID Optional: The hostID to use for the dialog
  */
-function showMessage(message, type="info", callback, icon, okLabel, hostID) {
-    const theme = {showOKIcon: false, showCancelIcon: false, showCancelButton: false, showOKButton: true, okLabel};
-    showDialog(theme, new URL(`${COMPONENT_PATH}/templates/message.html`), {message, 
-        icon: icon||`${COMPONENT_PATH}/img/${type}.svg`}, [], callback, hostID);
+function showMessage(message, type, callback, theme, hostID) {
+    const themeOut = {...(theme||{}), showOKIcon: false, showCancelIcon: false, showCancelButton: false, 
+        showOKButton: true, okLabel: theme?.okLabel||i18n.OK[LANG]};
+    showDialog(themeOut, new URL(`${COMPONENT_PATH}/templates/message.html`), {message, 
+        icon: themeOut.icon||`${COMPONENT_PATH}/img/${type||"info"}.svg`}, [], callback, hostID);
 }
 
 /**
  * Shows an selection box prompt
  * @param message The message to show and choices. Object. Format {message: string, choices:[array of choices as strings]}
  * @param callback Callback to call when user dismisses the dialog, contains the selected choice or null if it was cancelled
- * @param okLabel Optional: Label for the OK button
- * @param cancelLabel Optional: Label for the cancel button
+ * @param theme Optional: The theme to show
  * @param hostID Optional: The hostID to use for the dialog
  */
- function showChoice(message, callback, okLabel, cancelLabel, hostID) {
-    const theme = {showOKIcon: false, showCancelIcon: false, showCancelButton: true, showOKButton: true, okLabel, cancelLabel};
-    showDialog(theme, new URL(`${COMPONENT_PATH}/templates/choice.html`), message, ["choice"], (result, retVals)=>{
-        if (result=="cancel")callback(null); else callback(retVals.choice)}, hostID);
+ function showChoice(message, callback, theme, hostID) {
+    const themeOut = {...(theme||{}), showOKIcon: false, showCancelIcon: false, showCancelButton: true, 
+        showOKButton: true, okLabel: theme?.okLabel||i18n.OK[LANG], cancelLabel: theme?.cancelLabel||i18n.CANCEL[LANG]};
+    showDialog(themeOut, new URL(`${COMPONENT_PATH}/templates/choice.html`), message, ["choice"], (result, retVals) => {
+        if (result=="cancel") callback(null); else callback(retVals.choice) }, hostID);
 }
 
 /**
@@ -77,14 +81,15 @@ function showMessage(message, type="info", callback, icon, okLabel, hostID) {
  * @param element The element inside the dialog or ID of the dialog host element (if custom hostID was used in showDialog), else null
  */
 function cancel(element) {
-    const memory = dialog_box.getMemoryByContainedElement(element);
+    const memory = element instanceof Element ? dialog_box.getMemoryByContainedElement(element) : 
+        dialog_box.getMemory(element||DEFAULT_HOST_ID);
     const retVals = _getRetVals(memory, dialog_box.getShadowRootByContainedElement(element));
-    hideDialog(element); memory.callback?.("cancel", retVals, element);
+    hideDialog(element); if (memory.callback) memory.callback("cancel", retVals, element);
 }
 
 /**
  * Hides the dialog
- * @param element The element inside the dialog or ID of the dialog host element (if custom hostID was used in showDialog), else null
+ * @param element The element inside the dialog or ID of the dialog host element, else null
  */
 function hideDialog(element) {
     const shadowRoot = element instanceof Element ? dialog_box.getShadowRootByContainedElement(element): 
@@ -92,7 +97,7 @@ function hideDialog(element) {
     const hostElement = shadowRoot.querySelector("div#dialogcontent");
     while (hostElement && hostElement.firstChild) hostElement.removeChild(hostElement.firstChild);  // deletes everything
     dialog_box.getHostElement(hostElement).style.display = "none"; // hide the dialog itself
- }
+}
 
 /**
  * Submits the dialog and calls the callback in showDialog. If callback returns false the dialog will stay 
@@ -100,20 +105,22 @@ function hideDialog(element) {
  * @param element The element inside the dialog or ID of the dialog host element (if custom hostID was used in showDialog), else null
  * @returns The values of elements whose IDs were passed as retValIDs in showDialog function
  */
- function submit(element) {
-    const memory = dialog_box.getMemoryByContainedElement(element);
+async function submit(element) {
+    const memory = element instanceof Element ? dialog_box.getMemoryByContainedElement(element) : 
+        dialog_box.getMemory(element||DEFAULT_HOST_ID);
     const retVals = _getRetVals(memory, dialog_box.getShadowRootByContainedElement(element));
-    if (memory.callback?.("submit", retVals, element)) hideDialog(element);
+    if (memory.callback && await memory.callback("submit", retVals, element)) hideDialog(element);
+    else if (!memory.callback) hideDialog(element);
 } 
 
- /**
-  * Shows the given error message on the dialog
-  * @param element The element inside the dialog or ID of the dialog host element (if custom hostID was used in showDialog), else null
-  * @param msg The error message
-  */
-function error(element, msg) {
+/**
+ * Shows the given error message on the dialog
+ * @param element The element inside the dialog or ID of the dialog host element (if custom hostID was used in showDialog), else null
+ * @param msg The error message
+ */
+function showError(element, msg) {
     const shadowRoot = element instanceof Element ? dialog_box.getShadowRootByContainedElement(element): 
-        dialog_box.getShadowRootByHostId(element);
+        dialog_box.getShadowRootByHostId(element||DEFAULT_HOST_ID);
     const divError = shadowRoot.querySelector("div#error"); if (!divError) return;
     divError.innerHTML = msg; divError.style.visibility = "visible";
 }
@@ -123,7 +130,8 @@ function error(element, msg) {
  * @param element The element inside the dialog or ID of the dialog host element (if custom hostID was used in showDialog), else null
  */
 function hideError(element) {
-    const shadowRoot = dialog_box.getShadowRootByContainedElement(element);
+    const shadowRoot = element instanceof Element ? dialog_box.getShadowRootByContainedElement(element): 
+        dialog_box.getShadowRootByHostId(element||DEFAULT_HOST_ID);
     const divError = shadowRoot.querySelector("div#error"); if (!divError) return;
     divError.style.visibility = "hidden";
 }
@@ -169,6 +177,6 @@ async function _processTheme(theme) {
     return clone;
 }
 
-export const dialog_box = {showDialog, trueWebComponentMode: true, hideDialog, error, hideError, 
+export const dialog_box = {showDialog, trueWebComponentMode: true, hideDialog, showError, hideError, 
     submit, cancel, elementRendered, showMessage, showChoice}
 monkshu_component.register("dialog-box", `${util.getModulePath(import.meta)}/dialog-box.html`, dialog_box);

@@ -21,7 +21,17 @@ export const i18n = {
         "Save":"Save",
         "Simulate":"Simulate",
         "Output":"Output",
-        "RulesOutputLabel": "Rules engine output"
+        "RulesOutputLabel": "Rules engine output",
+        "Server": "Server",
+        "Port": "Port",
+        "AdminID": "Admin ID",
+        "AdminPassword": "Admin Password",
+        "PackageName": "Package Name",
+        "PublishServerIssue": "Publishing issue at the server, check server logs",
+        "PublishLoginIssue": "Unable to login to the server",
+        "PublishConnectIssue": "Unable to connect to the server",
+        "PublishSecureConnectFailed": "Server secure login failed, trying insecure",
+        "PublishSuccess": "Published successfully"
     },
 
     hi: {
@@ -46,7 +56,17 @@ export const i18n = {
         "Save":"फाइल सुरक्षित करें",
         "Simulate":"अनुकरण",
         "Output":"आउटपुट",
-        "RulesOutputLabel": "नियम इंजन आउटपुट"
+        "RulesOutputLabel": "नियम इंजन आउटपुट",
+        "Server": "सर्वर",
+        "Port": "आईपी पोर्ट",
+        "AdminID": "व्यवस्थापक का नाम",
+        "AdminPassword": "व्यवस्थापक का पासवर्ड",
+        "PackageName": "पैकेज का नाम",
+        "PublishServerIssue": "सर्वर पर प्रकाशन की समस्या, सर्वर लॉग की जाँच करें",
+        "PublishLoginIssue": "सर्वर में लॉगिन करने में असमर्थ",
+        "PublishConnectIssue": "सर्वर से कनेक्ट करने में अक्षम",
+        "PublishSecureConnectFailed": "सर्वर सुरक्षित लॉगिन विफल, असुरक्षित प्रयास कर रहा है",
+        "PublishSuccess": "सफलतापूर्वक प्रकाशित"
     }, 
 
     ja: {
@@ -71,6 +91,16 @@ export const i18n = {
         "Save":"Save",
         "Simulate":"テスト",
         "Output":"出力",
-        "RulesOutputLabel": "ルールエンジンの出力"
+        "RulesOutputLabel": "ルールエンジンの出力",
+        "Server": "サーバ",
+        "Port": "IPポート",
+        "AdminID": "管理者の名前",
+        "AdminPassword": "管理者のパスワード",
+        "PackageName": "パッケージ名",
+        "PublishServerIssue": "サーバーでの問題の公開、サーバーログの確認",
+        "PublishLoginIssue": "サーバーにログインできません",
+        "PublishConnectIssue": "サーバーに接続できません",
+        "PublishSecureConnectFailed": "サーバーの安全なログインに失敗し、安全でないことを試みました",
+        "PublishSuccess": "正常に公開されました"
     }
 }

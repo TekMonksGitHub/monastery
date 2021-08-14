@@ -139,7 +139,8 @@ function nodeDescriptionChanged(_nodeName, id, description) {
     } else idCache[id].description = description;
 }
 
-const getModelAsFile = _ => {return {data: JSON.stringify(monkrulsModel, null, 4), mime: "application/json", filename: "ruls.json"}}
+const getModel = _ => monkrulsModel;
+const getModelAsFile = _ => {return {data: JSON.stringify(monkrulsModel, null, 4), mime: "application/json", filename: "monkruls.json"}}
 
 function _findOrCreateRuleBundle(name=current_rule_bundle) {
     for (const bundle of monkrulsModel.rule_bundles) if (bundle.name == name) return bundle;
@@ -214,4 +215,4 @@ const _arrayDelete = (array, element) => {if (array.includes(element)) array.spl
 const _getNameFromDescription = description => description.split(" ")[0].split("\n")[0];
 
 export const monkrulsmodel = {init, loadModel, modelNodesModified, modelConnectorsModified, isConnectable, 
-    nodeDescriptionChanged, getModelAsFile, ADDED: "added", REMOVED: "removed", MODIFIED: "modified"};
+    nodeDescriptionChanged, getModelAsFile, getModel, ADDED: "added", REMOVED: "removed", MODIFIED: "modified"};

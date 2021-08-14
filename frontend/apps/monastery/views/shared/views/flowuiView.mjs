@@ -77,8 +77,9 @@ async function _shapeObjectClickedOnFlowDiagram(shapeName, id, shapelabel) {
         `${VIEW_PATH}/dialogs/dialog_${shapeName}.page`]);
     let pageFile, pageModule; if (pageSelector.endsWith(".mjs")) {
         pageModule = await import(pageSelector); 
-        const {page, dialogProperties} = await pageModule.page.getPage(VIEW_PATH, savedDialogProperties);
-        if (!page) return; else {pageFile = new URL(page); savedDialogProperties = dialogProperties;}
+        const result = await pageModule.page.getPage(VIEW_PATH, savedDialogProperties);
+        if (!result) return; const {page, dialogProperties} = result;
+        pageFile = new URL(page); savedDialogProperties = dialogProperties;
     } else pageFile = new URL(pageSelector);
     
     let html = await page_generator.getHTML(pageFile, null, {description: shapelabel});
