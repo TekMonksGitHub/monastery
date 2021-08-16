@@ -12,5 +12,6 @@ export const i18n = {
 "PasswordTooShort" : "पासवर्ड बहुत छोटा है",
 "Search":"खोजिए",
 "OK": "ओके",
-"Cancel": "रद्द करो"
+"Cancel": "रद्द करो",
+"ExitMessage" : "धन्यवाद। कृपया इस विंडो को बंद करें।"
 }

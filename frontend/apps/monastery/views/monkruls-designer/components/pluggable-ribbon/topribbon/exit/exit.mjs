@@ -2,6 +2,7 @@
  * (C) 2020 TekMonks. All rights reserved.
  */
 import {util} from "/framework/js/util.mjs";
+import {application} from "../../../../../../js/application.mjs";
 
 const PLUGIN_PATH = util.getModulePath(import.meta);
 let IMAGE, I18N;
@@ -13,9 +14,7 @@ async function init() {
     return true;
 }
 
-async function clicked(_element) {
-    window.close();
-}
+const clicked = _=> application.exit();
 
 const getImage = _ => IMAGE;
 

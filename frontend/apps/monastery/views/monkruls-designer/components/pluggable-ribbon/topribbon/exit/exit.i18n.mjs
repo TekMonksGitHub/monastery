@@ -1,6 +1,6 @@
 export const i18n = {
     HELP_TEXTS: {
-        en:"Exit\nExit the tool", 
+        en:"Exit\nExit the IDE", 
         hi: "बाहर निकलें\nइससे बाहर निकलें", 
         ja: "出口\nこれを終了します"
     },

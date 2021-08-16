@@ -26,7 +26,7 @@ function init() {
     blackboard.registerListener(MSG_ARE_NODES_CONNECTABLE, message => isConnectable(message.sourceName, 
         message.targetName, message.sourceID, message.targetID), true);
     blackboard.registerListener(MSG_GET_MODEL, message => getModelAsFile(message.name), true);
-    blackboard.registerListener(MSG_RESET, _ => {monkrulsModel = EMPTY_MODEL, idCache = {}, current_rule_bundle = DEFAULT_BUNDLE;}, true)
+    blackboard.registerListener(MSG_RESET, _ => {monkrulsModel = EMPTY_MODEL, idCache = {}, current_rule_bundle = DEFAULT_BUNDLE;}, true);
     blackboard.registerListener(MSG_LOAD_MODEL, message => loadModel(message.data));
 }
 

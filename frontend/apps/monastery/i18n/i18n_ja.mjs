@@ -12,5 +12,6 @@ export const i18n = {
 "PasswordTooShort" : "パスワードが短すぎます",
 "Search": "サーチ",
 "OK": "はい",
-"Cancel": "キャンセル"
+"Cancel": "キャンセル",
+"ExitMessage" : "ありがとうございました。 このウィンドウを閉じてください。"
 }

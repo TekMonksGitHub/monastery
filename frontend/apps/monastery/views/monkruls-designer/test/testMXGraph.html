@@ -1,0 +1,38 @@
+<html>
+<head><script src="/framework/js/$$.js"></script></head>
+<body>
+
+<html>
+<head>
+<script>
+    async function demo() {
+        window.mxBasePath = `./views/shared/components/flow-diagram/3p/mxGraph`;
+        await $$.require(`${window.mxBasePath}/mxClient.js`); 
+    
+        if (!mxClient.isBrowserSupported()) {mxUtils.error("Browser is not supported!", 200, false); return;}
+    
+        const container = document.querySelector("#diagram");
+        const graph = new mxGraph(container); 
+        const parent = graph.getDefaultParent();
+        
+        graph.getModel().beginUpdate();
+        
+        const v1 = graph.insertVertex(parent, null, 'Hello', 20, 20, 80, 30, "rounded;strokeColor=red;fillColor=green");
+        const v2 = graph.insertVertex(parent, null, 'World!', -1, -1, 80, 30);
+        graph.insertEdge(parent, null, '', v1, v2);
+        const layout = new mxHierarchicalLayout(graph, mxConstants.DIRECTION_WEST);
+        layout.execute(graph.getDefaultParent());
+        
+        graph.getModel().endUpdate();
+    } 
+</script>
+</head>
+<body style="margin: 0" onload="demo();">
+<div id="diagram" style="width: 100vw; height: 100vh; background-color: aqua;">
+
+</div>
+</body>
+
+</body>
+</html>
+

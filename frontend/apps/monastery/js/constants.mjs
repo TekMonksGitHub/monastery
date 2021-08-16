@@ -11,6 +11,7 @@ export const APP_CONSTANTS = {
     FRONTEND, BACKEND, APP_PATH, APP_NAME,
     COMPONENTS_PATH: `${APP_PATH}/components`,
     MAIN_HTML: `${APP_PATH}/main.html?view=monkruls-designer`,
+    EXIT_HTML: `${APP_PATH}/exit.html`,
 
     MSG_OBJECT_DRAGGED: "OBJECT_BEING_DRAGGED", 
     MSG_OBJECT_DROPPED: "OBJECT_DROPPED",
@@ -18,7 +19,7 @@ export const APP_CONSTANTS = {
     USER_ROLE: "user",
     GUEST_ROLE: "guest",
     PERMISSIONS_MAP: {
-        user:[APP_PATH+"/main.html", $$.MONKSHU_CONSTANTS.ERROR_HTML], 
-        guest:[APP_PATH+"/main.html", $$.MONKSHU_CONSTANTS.ERROR_HTML]
+        user:[APP_PATH+"/main.html", APP_PATH+"/exit.html", $$.MONKSHU_CONSTANTS.ERROR_HTML], 
+        guest:[APP_PATH+"/main.html", APP_PATH+"/exit.html", $$.MONKSHU_CONSTANTS.ERROR_HTML]
     }
 }
