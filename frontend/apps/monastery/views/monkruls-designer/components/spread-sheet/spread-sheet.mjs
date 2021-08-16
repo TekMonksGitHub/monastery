@@ -112,7 +112,7 @@ async function switchSheet(elementOrHostID, sheetID, forceReload) {
 	_setActiveTab(host, sheetID); await _setSpreadSheetFromCSV(_getTabObject(host, sheetID).data, host.id);	
 }
 
-function tabMenuClicked(event, element, sheetID) {
+async function tabMenuClicked(event, element, sheetID) {
 	const host = spread_sheet.getHostElement(element);
 	const _renameTab = newName => {
 		const allTabs = _getAllTabs(host); if (allTabs[newName]) return;	// name already exists
@@ -129,7 +129,8 @@ function tabMenuClicked(event, element, sheetID) {
 		inputBox.readOnly = false; inputBox.select(); 
 		inputBox.addEventListener("focusout", _=>inputBox.readOnly = true);
 	}
-	context_menu.showMenu(CONTEXT_MENU_ID, {"Rename":_=>_editTab()}, event.pageX, event.pageY, 2, 2);
+	const renameMenuItem = i18n.Rename[session.get($$.MONKSHU_CONSTANTS.LANG_ID)], menus = {}; menus[renameMenuItem] = _=>_editTab();
+	context_menu.showMenu(CONTEXT_MENU_ID, menus, event.pageX, event.pageY, 2, 2);
 }
 
 const reloadSheets = host => switchSheet(host.id, _getActiveTab(host), true)

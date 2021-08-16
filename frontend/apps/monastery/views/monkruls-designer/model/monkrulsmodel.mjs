@@ -25,7 +25,7 @@ function init() {
         message.id, message.description));
     blackboard.registerListener(MSG_ARE_NODES_CONNECTABLE, message => isConnectable(message.sourceName, 
         message.targetName, message.sourceID, message.targetID), true);
-    blackboard.registerListener(MSG_GET_MODEL, _ => getModelAsFile(), true);
+    blackboard.registerListener(MSG_GET_MODEL, message => getModelAsFile(message.name), true);
     blackboard.registerListener(MSG_RESET, _ => {monkrulsModel = EMPTY_MODEL, idCache = {}, current_rule_bundle = DEFAULT_BUNDLE;}, true)
     blackboard.registerListener(MSG_LOAD_MODEL, message => loadModel(message.data));
 }
@@ -140,7 +140,7 @@ function nodeDescriptionChanged(_nodeName, id, description) {
 }
 
 const getModel = _ => monkrulsModel;
-const getModelAsFile = _ => {return {data: JSON.stringify(monkrulsModel, null, 4), mime: "application/json", filename: "monkruls.json"}}
+const getModelAsFile = name => {return {data: JSON.stringify(monkrulsModel, null, 4), mime: "application/json", filename: `${name||""}.monkruls.json`}}
 
 function _findOrCreateRuleBundle(name=current_rule_bundle) {
     for (const bundle of monkrulsModel.rule_bundles) if (bundle.name == name) return bundle;

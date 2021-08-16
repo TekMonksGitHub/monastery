@@ -18,5 +18,10 @@ export const i18n = {
         en:"Save", 
         hi: "फाइल सुरक्षित करें", 
         ja: "ファイルを保存"
+    },
+    Rename : {
+        en: "Rename",
+        hi: "नाम बदलें",
+        ja: "名前を変更"
     }
 }

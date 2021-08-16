@@ -36,8 +36,8 @@ async function showDialog(themeOrThemePath, templateOrTemplateURL, templateData,
     const templateHTML = typeof templateOrTemplateURL == "string" ? (templateData ? await router.expandPageData(
         templateOrTemplateURL, undefined, templateData) : templateOrTemplateURL) : await router.loadHTML(templateOrTemplateURL, templateData, false);
     const templateRoot = new DOMParser().parseFromString(templateHTML, "text/html").documentElement;
-    router.runShadowJSScripts(templateRoot, shadowRoot);
     shadowRoot.querySelector("div#dialogcontent").appendChild(templateRoot);    // add dialog content
+    router.runShadowJSScripts(templateRoot, shadowRoot);
 
     const memory = dialog_box.getMemory(hostID); memory.retValIDs = retValIDs; memory.callback = callback; 
     document.querySelector(`#${hostID}`).style.display = "block";   // show the dialog

@@ -10,7 +10,7 @@ import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 const API_KEYS = {"*":"fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389"}, KEY_HEADER = "X-API-Key";
 
 async function init() {
-    flowuiView.init(util.getModulePath(import.meta));
+    await flowuiView.init(util.getModulePath(import.meta));
     apiman.registerAPIKeys(API_KEYS, KEY_HEADER);
 }
 

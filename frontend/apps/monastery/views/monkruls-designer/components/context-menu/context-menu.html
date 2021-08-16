@@ -26,6 +26,7 @@ div#menu {
     display: flex;
     flex-direction: column;
     box-shadow: 0 0 5px #ccc;
+    z-index: 1000;
 }
 
 div#menu > span.menuitem {
@@ -77,4 +78,5 @@ span.menubreak > hr {
         </span>
         {{/menubreak}}
     {{/items}}
+    {{{htmlContent}}}
 </div>

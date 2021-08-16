@@ -5,7 +5,8 @@ SCHEMA
     "topribbon": {"html":"pluggable-ribbon", "styleBody":"url(./views/{{url.view}}/page/topribbon.styleBody.css)", "ribbonTitle":"{{i18n.MonkrulsView}}", "ribbonLogo":"./views/{{url.view}}/page/logo.png"},
     "sideribbon": {"html":"pluggable-ribbon", "styleBody":"url(./views/{{url.view}}/page/sideribbon.styleBody.css)"},
     "flowui": {"html":"flow-diagram", "id":"flowui", "styleBody":"url(./views/{{url.view}}/page/flowui.styleBody.css)",
-        "mxGraphStyleBody":"url(./views/{{url.view}}/page/flowui.mxGraph.styleBody.css)"}
+        "mxGraphStyleBody":"url(./views/{{url.view}}/page/flowui.mxGraph.styleBody.css)"},
+    "contextmenumain": {"html":"context-menu", "styleBody":"body{font-family: Raleway; font-size: smaller;} span.menuicon{display:none;} span.menutext{font-size: small !important;} span.menuitem{padding-bottom: 5px;}"}
 }
 ======
 
@@ -17,8 +18,10 @@ LAYOUT
 -----------------------------
 | sideribbon  |  flowui     |
 -----------------------------
+|        contextmenumain    |
+-----------------------------
 =================
-Row Heights = 70px, calc(100vh - 70px)
+Row Heights = 70px, calc(100vh - 70px), 0px
 Col Widths = 80px, calc(100% - 80px)
 =================
 

@@ -1,15 +1,16 @@
 /** 
  * Publish rules to the rules engine.
- * (C) 2021 TekMonks. All rights reserved.
+ * (C) 2020 TekMonks. All rights reserved.
  * License: See enclosed LICENSE file.
  */
 import {i18n} from "/framework/js/i18n.mjs";
 import {util} from "/framework/js/util.mjs";
+import {blackboard} from "/framework/js/blackboard.mjs";
 import {monkrulsmodel} from "../model/monkrulsmodel.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 import {page_generator} from "/framework/components/page-generator/page-generator.mjs";
 
-const MODULE_PATH = util.getModulePath(import.meta), VIEW_PATH=`${MODULE_PATH}/..`, 
+const MODULE_PATH = util.getModulePath(import.meta), VIEW_PATH=`${MODULE_PATH}/..`, MSG_GET_MODEL_NAME = "GET_MODEL_NAME",
     DIALOG_RET_PROPS = ["name", "server", "port", "adminid", "adminpassword"], DIALOG = window.monkshu_env.components["dialog-box"];
 
 let saved_props;
@@ -17,7 +18,7 @@ let saved_props;
 async function openDialog() {
     let pageFile =  `${VIEW_PATH}/dialogs/dialog_publish.page`;
 
-    let html = await page_generator.getHTML(new URL(pageFile));
+    let html = await page_generator.getHTML(new URL(pageFile), null, {modelName: blackboard.getListeners(MSG_GET_MODEL_NAME)[0]({})||""});
 
     const dom = new DOMParser().parseFromString(html, "text/html");
     if (saved_props) for (const id in saved_props) dom.querySelector(`#${id}`).setAttribute("value", saved_props[id]);

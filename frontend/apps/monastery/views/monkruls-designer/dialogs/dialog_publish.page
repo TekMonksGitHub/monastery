@@ -1,7 +1,7 @@
 SCHEMA
 ======
 {
-    "name": {"html":"input", "type":"text", "placeholder":"{{i18n.PackageName}}", "required":"true"},
+    "name": {"html":"input", "type":"text", "placeholder":"{{i18n.PackageName}}", "required":"true", "value":"{{modelName}}"},
     "server": {"html":"input", "type":"text", "placeholder":"{{i18n.Server}}", "required":"true"},
     "port": {"html":"input", "type":"number", "placeholder":"{{i18n.Port}}", "required":"true"},
     "adminid": {"html":"input", "type":"text", "placeholder":"{{i18n.AdminID}}", "required":"true"},
