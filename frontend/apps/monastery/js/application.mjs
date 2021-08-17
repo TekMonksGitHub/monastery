@@ -2,7 +2,7 @@
  * (C) 2015 TekMonks. All rights reserved.
  * License: See enclosed LICENSE file.
  */
- 
+import {loginmanager} from "./loginmanager.mjs";
 import {router} from "/framework/js/router.mjs";
 import {session} from "/framework/js/session.mjs";
 import {securityguard} from "/framework/js/securityguard.mjs";
@@ -17,20 +17,29 @@ async function init() {
 	securityguard.setCurrentRole(securityguard.getCurrentRole() || APP_CONSTANTS.GUEST_ROLE);	
 }
 
-async function main() {
+async function main(page) {
 	if (session.get(APP_EXIT_FLAG)) {	// exit check, once exited, can't reload
 		router.loadPage(APP_CONSTANTS.EXIT_HTML);	
 		return;
 	}
 
-	const location = window.location.href;
-	if (!router.isInHistory(location) || !session.get(APP_CONSTANTS.USERID)) router.loadPage(APP_CONSTANTS.MAIN_HTML);
-	else router.loadPage(location);
+	if (securityguard.getCurrentRole() != APP_CONSTANTS.USER_ROLE) {
+		router.loadPage(APP_CONSTANTS.LOGIN_HTML);
+		return;
+	}
+
+	const location = page||window.location.href;
+	router.loadPage(location);
+}
+
+function loggedIn() {
+	main(APP_CONSTANTS.CHOOSER_HTML);
 }
 
 function exit() {
+	loginmanager.logout();
 	session.set(APP_EXIT_FLAG, true);
 	router.loadPage(APP_CONSTANTS.EXIT_HTML);
 }
 
-export const application = {init, main, exit};
+export const application = {init, main, exit, loggedIn};

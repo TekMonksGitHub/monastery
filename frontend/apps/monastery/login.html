@@ -1,0 +1,80 @@
+<!doctype html>
+
+<html>
+<head>
+<style>
+    @import url('https://fonts.googleapis.com/css?family=Raleway:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&amp;display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Text&display=swap');
+
+    body {
+        background-color: #DFF0FE;
+        font-family: 'Red Hat Text';
+        color: #444444;
+    }
+
+    div {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        align-items: center;
+    }
+
+    input {
+        margin: 2em 4em 0em 0em;
+        border-radius: 10px;
+        padding: 1em 1em 1em 4em;
+        font: inherit;
+        border: none;
+        outline: none;
+        box-sizing: border-box;
+        width: 100%;
+        color: inherit;
+    }
+
+    span.button {
+        padding: 1em;
+        box-sizing: border-box;
+        background-color: #B6DCFE;
+        border-radius: 10px;
+        width: 100%;
+        margin-top: 2em;
+        text-align: center;
+        cursor: default;
+        user-select: none;
+    }
+    span.button:hover {filter: brightness(101%); transition: all 0.5s ease;}
+    span.button:active{filter: brightness(150%);}
+
+    img#logo {
+        width: 10em;
+    }
+
+    span.input {
+        position: relative;
+    }
+    img.inputimg {
+        position: absolute;
+        top: 2.6em;
+        left: 0.5em;
+        width: 2.2em;
+    }
+</style>
+<title>{{i18n.Title}}</title>
+</head>
+
+<script type="module">
+    import {login} from "./js/login.mjs"; window.monkshu_env.__login = login;
+</script>
+
+<body style="margin:0px" onload="document.querySelector('input#id').focus()">
+<div>
+<img id="logo" src="./img/monastery.svg">
+<span class="input"><input id="id" type="text" placeholder="User ID"><img class="inputimg" src="./img/user.svg"></span>
+<span class="input"><input id="pw" type="password" placeholder="Password"><img class="inputimg" src="./img/lock.svg"></span>
+<span class="button" onclick="window.monkshu_env.__login.signin(this.parentNode.querySelector('input#id').value, this.parentNode.querySelector('input#pw').value)">Login</span>
+</div>
+</body>
+</html>
