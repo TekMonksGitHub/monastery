@@ -74,6 +74,12 @@
         margin-right: 2em;
         cursor: pointer;
     }
+
+    span#error {
+        margin-top: 2em;
+        color: #D1251A;
+        display: none;
+    }
 </style>
 <title>{{i18n.Title}}</title>
 </head>
@@ -87,6 +93,7 @@
 <body style="margin:0px" onload="document.querySelector('input#id').focus()">
 <div>
 <img id="logo" src="./img/monastery.svg">
+<span id="error">{{i18n.LoginError}}</span>
 <span class="input"><input id="id" type="text" placeholder="{{i18n.UserID}}"
         onkeyup="if (event.keyCode == 13) {event.preventDefault(); document.querySelector('input#pw').focus();}">
     <img class="inputimg" src="./img/user.svg"></span>

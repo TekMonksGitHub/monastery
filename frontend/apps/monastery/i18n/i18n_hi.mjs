@@ -21,5 +21,6 @@ export const i18n = {
 "Login": "लॉग इन करें",
 "UserID": "यूज़र आईडी",
 "Password": "पासवर्ड",
-"NotAuthorized": "अधिकृत नहीं"
+"NotAuthorized": "अधिकृत नहीं",
+"LoginError": "लॉगिन त्रुटि"
 }

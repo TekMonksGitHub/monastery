@@ -21,5 +21,6 @@ export const i18n = {
 "Login": "Login",
 "UserID": "User ID",
 "Password": "Password",
-"NotAuthorized": "Not Authorized"
+"NotAuthorized": "Not Authorized",
+"LoginError": "Login error"
 }

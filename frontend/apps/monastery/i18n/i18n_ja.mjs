@@ -21,5 +21,6 @@ export const i18n = {
 "Login": "ログインする",
 "UserID": "ユーザーID",
 "Password": "パスワード",
-"NotAuthorized": "許可されていません"
+"NotAuthorized": "許可されていません",
+"LoginError": "ログインエラー"
 }

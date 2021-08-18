@@ -8,6 +8,7 @@ import {loginmanager} from "./loginmanager.mjs";
 
 async function signin(id, pw) {
     if (await loginmanager.signin(id, pw)) application.loggedIn();
+    else document.querySelector("span#error").style.display = "inline";
 }
  
 export const login = {signin};

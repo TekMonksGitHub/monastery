@@ -11,7 +11,7 @@ let logoutListeners = [];
 async function signin(id, pass) {
     logoutListeners = [];   // reset listeners on sign in
         
-    const resp = await apiman.rest(APP_CONSTANTS.API_LOGIN, "POST", {id, pw: pass}, false, true);
+    let resp = null; try{resp = await apiman.rest(APP_CONSTANTS.API_LOGIN, "POST", {id, pw: pass}, false, true);} catch (err) {}
     if (resp && resp.result) {
         session.set(APP_CONSTANTS.USERID, resp.id); 
         session.set(APP_CONSTANTS.USERNAME, resp.name);
@@ -22,7 +22,7 @@ async function signin(id, pass) {
 }
 
 async function changepassword(id, newpass) {        
-    const resp = await apiman.rest(APP_CONSTANTS.API_CHANGEPW, "POST", {id, newpass}, true, false);
+    let resp = null; try{resp = await apiman.rest(APP_CONSTANTS.API_CHANGEPW, "POST", {id, newpass}, true, false);} catch (err) {}
     if (resp && resp.result) return true;
     else {LOG.error(`Password change failed for ${id}`); return false;}
 }
