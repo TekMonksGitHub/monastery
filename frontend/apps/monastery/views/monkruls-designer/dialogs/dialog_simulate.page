@@ -4,9 +4,9 @@ SCHEMA
     "buttonbar": {"html":"html-fragment", 
         "htmlcontent":"encodeURIComponent(url(./views/{{url.view}}/dialogs/dialog_simulate.buttonbar.html))",
         "style":"width: 100%", "data":"{{buttonbarData}}"},
-    "allTestObjects": {"html":"drag-drop", "label":"All test objects", "style":"width: 100%"},
+    "allTestObjects": {"html":"drag-drop", "label":"{{i18n.AllTestObjects}}", "style":"width: 100%"},
     "dragDropImage": {"html":"img", "src":"./views/{{url.view}}/dialogs/drag.svg", "style":"width: 5vw;"},
-    "doTestWithObjects": {"html":"drag-drop", "label":"Objects to simulate", "style":"width: 100%"},
+    "doTestWithObjects": {"html":"drag-drop", "label":"{{i18n.ObjectsToSimulate}}", "style":"width: 100%"},
     "output": {"html":"html-fragment", 
         "htmlcontent":"encodeURIComponent(url(./views/{{url.view}}/dialogs/dialog_simulate.output.html))",
         "style":"width: 100%"}

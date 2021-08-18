@@ -32,7 +32,9 @@ export const i18n = {
         "PublishConnectIssue": "Unable to connect to the server",
         "PublishSecureConnectFailed": "Server secure login failed, trying insecure",
         "PublishSuccess": "Published successfully",
-        "Description": "Develop business rules"
+        "Description": "Develop business rules",
+        "AllTestObjects": "All test objects",
+        "ObjectsToSimulate": "Objects to simulate"
     },
 
     hi: {
@@ -68,7 +70,9 @@ export const i18n = {
         "PublishConnectIssue": "सर्वर से कनेक्ट करने में अक्षम",
         "PublishSecureConnectFailed": "सर्वर सुरक्षित लॉगिन विफल, असुरक्षित प्रयास कर रहा है",
         "PublishSuccess": "सफलतापूर्वक प्रकाशित",
-        "Description": "व्यापार के नियम विकसित करें"
+        "Description": "व्यापार के नियम विकसित करें",
+        "AllTestObjects": "सभी परीक्षण वस्तुएं",
+        "ObjectsToSimulate": "अनुकरण करने के लिए वस्तुएं"
     }, 
 
     ja: {
@@ -104,6 +108,8 @@ export const i18n = {
         "PublishConnectIssue": "サーバーに接続できません",
         "PublishSecureConnectFailed": "サーバーの安全なログインに失敗し、安全でないことを試みました",
         "PublishSuccess": "正常に公開されました",
-        "Description": "ビジネスルールを作成する"
+        "Description": "ビジネスルールを作成する",
+        "AllTestObjects": "すべてのテストオブジェクト",
+        "ObjectsToSimulate": "シミュレートするオブジェクト"
     }
 }
