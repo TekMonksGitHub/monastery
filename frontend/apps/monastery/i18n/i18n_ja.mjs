@@ -13,5 +13,13 @@ export const i18n = {
 "Search": "サーチ",
 "OK": "はい",
 "Cancel": "キャンセル",
-"ExitMessage" : "ありがとうございました。 このウィンドウを閉じてください。"
+"ExitMessage" : "ありがとうございました。 このウィンドウを閉じてください。",
+"IDEH1": "修道院はTekMonksクラウド統合開発環境です",
+"IDEH2": "開始するには、このページにリストされているタスクの1つをダブルクリックして選択してください。",
+"CopyRight": "（C）TekMonks-無断複写・転載を禁じます",
+"Exit": "出口",
+"Login": "ログインする",
+"UserID": "ユーザーID",
+"Password": "パスワード",
+"NotAuthorized": "許可されていません"
 }

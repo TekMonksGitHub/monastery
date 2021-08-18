@@ -4,7 +4,8 @@ export const i18n = {
         "DonePath": "Path to move the file to once detected",
         "Dependencies": "Prerequisite nodes",
         "Encoding": "File encoding",
-        "ASBView": "ASB Flow Designer"
+        "ASBView": "ASB Flow Designer",
+        "Description": "Develop system integrations"
     },
 
     hi: {
@@ -12,7 +13,8 @@ export const i18n = {
         "DonePath": "फ़ाइल को यहां ले जाने का पथ",
         "Dependencies": "आवश्यक शर्तें",
         "Encoding": "फ़ाइल एन्कोडिंग",
-        "ASBView": "एएसबी फ्लो डिजाइनर"
+        "ASBView": "एएसबी फ्लो डिजाइनर",
+        "Description": "सिस्टम एकीकरण विकसित करें"
     }, 
 
     ja: {
@@ -20,6 +22,7 @@ export const i18n = {
         "DonePath": "ファイルを移動するパス",
         "Dependencies": "前提条件",
         "Encoding": "ファイルエンコーディング",
-        "ASBView": "ASBフローデザイナー"
+        "ASBView": "ASBフローデザイナー",
+        "Description": "システム統合を開発する"
     }
 }

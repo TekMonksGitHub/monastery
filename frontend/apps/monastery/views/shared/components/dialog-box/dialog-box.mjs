@@ -51,8 +51,7 @@ async function showDialog(themeOrThemePath, templateOrTemplateURL, templateData,
  * @param message The message to show
  * @param type Optional: Should be one of the following - "info", "error", "warning", Default is "info"
  * @param callback Optional: Callback to call when user dismisses the dialog
- * @param icon Optional: The icon to display along with the message
- * @param okLabel Optional: Label for the OK button
+ * @param theme Optional: Theme for the dialog
  * @param hostID Optional: The hostID to use for the dialog
  */
 function showMessage(message, type, callback, theme, hostID) {

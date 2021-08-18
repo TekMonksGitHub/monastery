@@ -3,8 +3,112 @@
 <html>
 <head>
 	<script type="module">
-		import {router} from "/framework/js/router.mjs";
-		router.loadPage(APP_CONSTANTS.MAIN_HTML);
+		import {chooser} from "./js/chooser.mjs"; window.monkshu_env.__chooser = chooser;
 	</script>
+
+	<style>
+    	@import url('https://fonts.googleapis.com/css?family=Raleway:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&amp;display=swap');
+		body {
+			background-color: #DFF0FE;
+			display: flex;
+			flex-direction: row;
+			font-family: Raleway;
+			margin: 0px;
+			padding: 10vh 5vw;
+			justify-content: center;
+			align-items: center;
+		}
+
+		div#left {
+			height: calc(100vh - 20vh);
+			width: 50%;
+			padding: 5%;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			box-sizing: border-box;
+			background-color: #E8F4FF;
+			justify-content: space-between;
+			border-radius: 20px;
+			overflow: hidden;
+		}
+		div#left > img {
+			width: 6em;
+		}
+		div#left > span {text-align: center; overflow: hidden; text-overflow: ellipsis;}
+		div#left > span#copyright {font-size: x-small;}
+
+		div#right {
+			height: calc(100vh - 20vh);
+			width: 50%;
+			padding: 5% 0 5% 5%;
+			box-sizing: border-box;
+			background-color: transparent;
+			justify-content: space-around;
+			overflow: hidden;
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+		}
+		div#right > div.idebutton {
+			width: 40%;
+			margin: 5%;
+			height: 40%;
+			cursor: default;
+			user-select: none;
+		}
+		div#right > div.idebutton {
+			background-color: white;
+			border-radius: 20px;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			padding: 5%;
+			box-sizing: border-box;
+			justify-content: space-between;
+			border: 1px solid #98CCFD;
+			overflow: hidden;
+		}
+		div#right > div.idebutton > div#img {
+			width: 80%; 
+			min-height: 60%;
+			height: 60%;
+			align-items: center;
+			display: flex;
+			flex-direction: row;
+			justify-content: space-around;
+			overflow: hidden;
+		}
+		div#right > div.idebutton > div#img > img {width: 80%}
+		div#right > div.idebutton > span {
+			display: block;
+    		text-align: center;
+		}
+
+		div#topright {
+			position: absolute;
+			top: 1%;
+			right: 1%;
+		}
+	</style>
+
+	<title>{{i18n.Title}}</title>
 </head>
+
+<body>
+	<div id="topright"><img src="./img/exit.svg" title="{{i18n.Exit}}" onclick="window.monkshu_env.__chooser.exitClicked()"></div>
+	<div id="left">
+		<img src="./img/monastery.svg">
+		<span id="text"><p>{{i18n.IDEH1}}</p><p>&nbsp;</p> <p>{{i18n.IDEH2}}</p></span>
+		<span id="copyright">{{i18n.CopyRight}}</span>
+	</div>
+	<div id="right">
+		{{#views}}
+		<div class="idebutton" ondblclick="window.monkshu_env.__chooser.loadView('{{{name}}}')">
+			<div id="img"><img src="./views/{{name}}/page/logo.png"></div>
+			<span>{{description}}</span>
+		</div>
+		{{/views}}
+	</div>
+</body>
 </html>

@@ -13,5 +13,13 @@ export const i18n = {
 "Search": "Search",
 "OK": "OK",
 "Cancel": "Cancel",
-"ExitMessage" : "Thank you. Please close this window."
+"ExitMessage" : "Thank you. Please close this window.",
+"IDEH1": "Monastery is TekMonks' Cloud integrated development environment.",
+"IDEH2": "To start please pick one of the tasks listed on this page by double-clicking it.",
+"CopyRight": "(C) TekMonks - All Rights Reserved",
+"Exit": "Exit",
+"Login": "Login",
+"UserID": "User ID",
+"Password": "Password",
+"NotAuthorized": "Not Authorized"
 }

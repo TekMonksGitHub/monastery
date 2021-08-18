@@ -31,7 +31,8 @@ export const i18n = {
         "PublishLoginIssue": "Unable to login to the server",
         "PublishConnectIssue": "Unable to connect to the server",
         "PublishSecureConnectFailed": "Server secure login failed, trying insecure",
-        "PublishSuccess": "Published successfully"
+        "PublishSuccess": "Published successfully",
+        "Description": "Develop business rules"
     },
 
     hi: {
@@ -66,7 +67,8 @@ export const i18n = {
         "PublishLoginIssue": "सर्वर में लॉगिन करने में असमर्थ",
         "PublishConnectIssue": "सर्वर से कनेक्ट करने में अक्षम",
         "PublishSecureConnectFailed": "सर्वर सुरक्षित लॉगिन विफल, असुरक्षित प्रयास कर रहा है",
-        "PublishSuccess": "सफलतापूर्वक प्रकाशित"
+        "PublishSuccess": "सफलतापूर्वक प्रकाशित",
+        "Description": "व्यापार के नियम विकसित करें"
     }, 
 
     ja: {
@@ -101,6 +103,7 @@ export const i18n = {
         "PublishLoginIssue": "サーバーにログインできません",
         "PublishConnectIssue": "サーバーに接続できません",
         "PublishSecureConnectFailed": "サーバーの安全なログインに失敗し、安全でないことを試みました",
-        "PublishSuccess": "正常に公開されました"
+        "PublishSuccess": "正常に公開されました",
+        "Description": "ビジネスルールを作成する"
     }
 }

@@ -61,20 +61,41 @@
         left: 0.5em;
         width: 2.2em;
     }
+
+    div#langchooser {
+        left: 50%;
+        top: calc(100% - 2em);
+        transform: translateX(-50%);
+        font-size: x-small;
+        display: inline;
+        font-family: sans-serif;
+    }
+    div#langchooser > span {
+        margin-right: 2em;
+        cursor: pointer;
+    }
 </style>
 <title>{{i18n.Title}}</title>
 </head>
 
 <script type="module">
     import {login} from "./js/login.mjs"; window.monkshu_env.__login = login;
+    import {i18n} from "/framework/js/i18n.mjs"; window.monkshu_env.__i18n = i18n;
+    import {router} from "/framework/js/router.mjs"; window.monkshu_env.__router = router;
 </script>
 
 <body style="margin:0px" onload="document.querySelector('input#id').focus()">
 <div>
 <img id="logo" src="./img/monastery.svg">
-<span class="input"><input id="id" type="text" placeholder="User ID"><img class="inputimg" src="./img/user.svg"></span>
-<span class="input"><input id="pw" type="password" placeholder="Password"><img class="inputimg" src="./img/lock.svg"></span>
-<span class="button" onclick="window.monkshu_env.__login.signin(this.parentNode.querySelector('input#id').value, this.parentNode.querySelector('input#pw').value)">Login</span>
+<span class="input"><input id="id" type="text" placeholder="{{i18n.UserID}}"><img class="inputimg" src="./img/user.svg"></span>
+<span class="input"><input id="pw" type="password" placeholder="{{i18n.Password}}"><img class="inputimg" src="./img/lock.svg"></span>
+<span class="button" onclick="window.monkshu_env.__login.signin(this.parentNode.querySelector('input#id').value, this.parentNode.querySelector('input#pw').value)">{{i18n.Login}}</span>
+</div>
+
+<div id="langchooser">
+    <span onclick="window.monkshu_env.__i18n.setSessionLang('en'); window.monkshu_env.__router.reload();">English</span>
+    <span onclick="window.monkshu_env.__i18n.setSessionLang('ja'); window.monkshu_env.__router.reload();">日本</span>
+    <span onclick="window.monkshu_env.__i18n.setSessionLang('hi'); window.monkshu_env.__router.reload();">हिंदी</span>
 </div>
 </body>
 </html>
