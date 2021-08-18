@@ -87,8 +87,12 @@
 <body style="margin:0px" onload="document.querySelector('input#id').focus()">
 <div>
 <img id="logo" src="./img/monastery.svg">
-<span class="input"><input id="id" type="text" placeholder="{{i18n.UserID}}"><img class="inputimg" src="./img/user.svg"></span>
-<span class="input"><input id="pw" type="password" placeholder="{{i18n.Password}}" onkeyup="if (event.keyCode == 13) {event.preventDefault(); document.querySelector('span#login').click();}"><img class="inputimg" src="./img/lock.svg"></span>
+<span class="input"><input id="id" type="text" placeholder="{{i18n.UserID}}"
+        onkeyup="if (event.keyCode == 13) {event.preventDefault(); document.querySelector('input#pw').focus();}">
+    <img class="inputimg" src="./img/user.svg"></span>
+<span class="input"><input id="pw" type="password" placeholder="{{i18n.Password}}" 
+        onkeyup="if (event.keyCode == 13) {event.preventDefault(); document.querySelector('span#login').click();}">
+    <img class="inputimg" src="./img/lock.svg"></span>
 <span id="login" class="button" onclick="window.monkshu_env.__login.signin(this.parentNode.querySelector('input#id').value, this.parentNode.querySelector('input#pw').value)">{{i18n.Login}}</span>
 </div>
 
