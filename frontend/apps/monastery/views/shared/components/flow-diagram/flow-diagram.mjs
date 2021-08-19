@@ -6,7 +6,7 @@ import {util} from "/framework/js/util.mjs";
 import {blackboard} from "/framework/js/blackboard.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
-const GRAPHS = {}, STYLE_CACHE = {}, SELECTED_CELLS = {};
+const GRAPHS = {}, STYLE_CACHE = {};
 const GRAPH_CONNECTABLE = true, COMPONENT_PATH = util.getModulePath(import.meta);
 const MSG_REGISTER_SHAPE = "REGISTER_SHAPE", MSG_ADD_SHAPE = "ADD_SHAPE", MSG_SHAPE_CLICKED = "SHAPE_CLICKED",
 	MSG_SHAPE_REMOVED = "SHAPE_REMOVED", MSG_SHAPES_DISCONNECTED = "SHAPES_DISCONNECTED", 
@@ -208,7 +208,7 @@ async function _getGraph(hostID) {
  */
 function _createNonWebComponentDiagramContainer(container) {
     const diagramContainer = window.document.createElement("div"); diagramContainer.id = "diagram";
-    diagramContainer.style.cssText = window.getComputedStyle(container).cssText; diagramContainer.style.visibility = "hidden";
+    diagramContainer.setAttribute("style", container.getAttribute("style")); diagramContainer.style.visibility = "hidden";
     window.document.body.appendChild(diagramContainer);
     const rect = container.getBoundingClientRect();
     diagramContainer.style.position = "absolute";
