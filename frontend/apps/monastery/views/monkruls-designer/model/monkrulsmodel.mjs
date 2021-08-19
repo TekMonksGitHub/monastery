@@ -3,6 +3,7 @@
  * (C) 2021 TekMonks. All rights reserved.
  * License: See enclosed LICENSE file.
  */
+import {algos} from "./algos.mjs";
 import {util} from "/framework/js/util.mjs";
 import {blackboard} from "/framework/js/blackboard.mjs";
 
@@ -40,7 +41,7 @@ function loadModel(jsonModel) {
     // first add all the rules and bundles and decision tables
     for (const bundle of monkrulsModel.rule_bundles) for (const rule of bundle.rules) {
         const id = rule.id||_getUniqueID(); idCache[id] = rule; const clone = util.clone(rule);
-        const nodeName = clone.nodeName || clone.decisiontable?"decision":"rule"; 
+        const nodeName = clone.nodeName || (clone.decisiontable?"decision":"rule"); 
         if (clone.decisiontable) clone.decisiontable = clone.decisiontable_raw||clone.decisiontable.substring(CSVSCHEME.length);
         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName, id, description: clone.description, properties: {...clone}});
     }
@@ -48,8 +49,8 @@ function loadModel(jsonModel) {
     // add connections
     for (const bundle of monkrulsModel.rule_bundles) if (!bundle.rules.decisiontable) for (const rule of bundle.rules) if (rule.dependencies) for (const dependency of rule.dependencies) { 
         const sourceID = dependency, targetID = rule.id; 
-        if (!idCache[sourceNodeID]) {LOG.error(`Bad dependency in the model ${sourceNodeKey}, skipping.`); break;}
-        const sourceName = _getNodeType(sourceNodeKey), targetName = _getNodeType(targetNodeKey);
+        if ((!idCache[sourceID])||(!idCache[targetID])) {LOG.error(`Bad dependency in the model ${sourceID}, skipping.`); break;}
+        const sourceName = idCache[sourceID].nodeName, targetName = idCache[targetID].nodeName;
         blackboard.broadcastMessage(MSG_CONNECT_NODES, {sourceName, targetName, sourceID, targetID});
     }
 
@@ -62,10 +63,10 @@ function loadModel(jsonModel) {
     // add data
     for (const data of monkrulsModel.data) {
         const id = data.id||_getUniqueID(); idCache[id] = data; const clone = util.clone(data); 
-        clone.data = clone.data_raw||(clone.data.startsWith?.(CSVSCHEME)?clone.data.substring(CSVSCHEME.length):
-            clone.data.startsWith?.(CSVLOOKUPTABLESCHEME)?clone.data.substring(CSVLOOKUPTABLESCHEME.length) : clone.data);
-        if (!clone.type && (clone.data.startsWith?.(CSVSCHEME)||clone.data.startsWith?.(CSVLOOKUPTABLESCHEME))) clone.type = "CSV";
-        else clone.type = "JSON/Javascript";
+        clone.data = clone.data_raw||((clone.data.startsWith?.(CSVSCHEME)?clone.data.substring(CSVSCHEME.length):
+            clone.data.startsWith?.(CSVLOOKUPTABLESCHEME)?clone.data.substring(CSVLOOKUPTABLESCHEME.length) : clone.data));
+        if (!clone.type) { if (clone.data.startsWith?.(CSVSCHEME)||clone.data.startsWith?.(CSVLOOKUPTABLESCHEME)) clone.type = "CSV";
+            else clone.type = "JSON/Javascript"; }
         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: clone.nodeName||"data", id, description: clone.description, properties: {...clone}, connectable: false});
     }
 
@@ -84,8 +85,9 @@ function loadModel(jsonModel) {
     // add objects
     for (const object of monkrulsModel.objects) {
         const id = object.id||_getUniqueID(); idCache[id] = object; const clone = util.clone(object);
-        clone.data = clone.data_raw||(clone.data.startsWith?.(CSVSCHEME)?clone.data.substring(CSVSCHEME.length):clone.data);
-        if (!clone.type && clone.data.startsWith?.(CSVSCHEME)) clone.type = "CSV"; else clone.type = "JSON/Javascript";
+        clone.data = clone.data_raw||((clone.data.startsWith?.(CSVSCHEME)?clone.data.substring(CSVSCHEME.length):clone.data));
+        if (!clone.type) { if (clone.data.startsWith?.(CSVSCHEME)) clone.type = "CSV"; 
+         else clone.type = "JSON/Javascript"; }
         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: clone.nodeName||"object", id, description: clone.description, properties: {...clone}, connectable: false});
     }
 
@@ -108,10 +110,10 @@ function modelConnectorsModified(type, sourceName, targetName, sourceID, targetI
     if ((!idCache[sourceID]) || (!idCache[targetID])) return;   // not connected
 
     if (sourceName == "rule" && targetName == "rule") { // add rules being connected here
-        if (type == model.ADDED) {
+        if (type == monkrulsmodel.ADDED) {
             if (!idCache[targetID].dependencies) idCache[targetID].dependencies = []; 
             idCache[targetID].dependencies.push(idCache[sourceID].id);
-        } else if (type == model.REMOVED && idCache[targetID]) {
+        } else if (type == monkrulsmodel.REMOVED && idCache[targetID]) {
             const dependencies = idCache[targetID].dependencies;
             if ((!dependencies)||(!dependencies.length)||dependencies.indexOf(idCache[sourceID].id)==-1) return;
             else dependencies.splice(dependencies.indexOf(idCache[sourceID].id), 1);
@@ -122,7 +124,7 @@ function modelConnectorsModified(type, sourceName, targetName, sourceID, targetI
 
 function isConnectable(sourceName, targetName, sourceID, targetID) {    // are these nodes connectable
     if (sourceID == targetID) return false; // can't loop from same node to itself
-    if ((sourceName != "rule")||(targetName == "rule")) return false;   // currently only rules support connections
+    if ((sourceName != "rule")||(targetName != "rule")) return false;   // currently only rules support connections
 
     const targetDependencies = idCache[targetID].dependencies;
     if (targetDependencies && targetDependencies.includes(idCache[sourceID].id)) return false;   // can't reconnect same nodes again
@@ -139,8 +141,12 @@ function nodeDescriptionChanged(_nodeName, id, description) {
     } else idCache[id].description = description;
 }
 
-const getModel = _ => monkrulsModel;
-const getModelAsFile = name => {return {data: JSON.stringify(monkrulsModel, null, 4), mime: "application/json", filename: `${name||""}.monkruls.json`}}
+function getModel(){
+    const retModel = util.clone(monkrulsModel); 
+    for (const rules_bundle of retModel.rule_bundles) rules_bundle.rules = algos.sortDependencies(rules_bundle.rules); 
+    return retModel;
+}
+const getModelAsFile = name => {return {data: JSON.stringify(getModel(), null, 4), mime: "application/json", filename: `${name||"rules"}.monkruls.json`}}
 
 function _findOrCreateRuleBundle(name=current_rule_bundle) {
     for (const bundle of monkrulsModel.rule_bundles) if (bundle.name == name) return bundle;
@@ -210,7 +216,7 @@ function _getSheetTabData(sheetProperties, tabName) {
     return null;
 }
 
-const _arrayDelete = (array, element) => {if (array.includes(element)) array.splice(array.indexOf(element), 1);}
+const _arrayDelete = (array, element) => {if (array.includes(element)) array.splice(array.indexOf(element), 1); return element;}
 
 const _getNameFromDescription = description => description.split(" ")[0].split("\n")[0];
 

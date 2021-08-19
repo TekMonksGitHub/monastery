@@ -38,8 +38,8 @@ async function elementConnected(element) {
 		spread_sheet.datas = {}; spread_sheet.datas[element.id] = data; } else spread_sheet.data = data;
 }
 
-function elementRendered(element, initialRender) {
-	if (element.getAttribute("value") && initialRender) _setValue(element.getAttribute("value"), element);
+async function elementRendered(element, initialRender) {
+	if (element.getAttribute("value") && initialRender) await _setValue(element.getAttribute("value"), element);
 
 	// make table resizable and all elements to auto-resize when the columns are resized
 	const _getAllTextAreasForThisColumn = td => {
@@ -80,7 +80,7 @@ async function columnop(op, element) {
 async function open(element) {
 	try {
 		const sheetData = (await util.uploadAFile(".csv,.json")).data;
-		if (sheetData) _setValue(sheetData, spread_sheet.getHostElement(element));
+		if (sheetData) await _setValue(sheetData, spread_sheet.getHostElement(element));
 	} catch (err) {LOG.error(`Error opening file, ${err}`);}
 }
 
@@ -147,16 +147,22 @@ function _getValue(host) {
 	} else return activeSheetValue;
 }
 
-function _setValue(value, host) {
+async function _setValue(value, host) {
 	const shadowRoot = spread_sheet.getShadowRootByHost(host); let isJSONValue = true; try {JSON.parse(value)} catch (err) {isJSONValue  = false;}
 	if (isJSONValue) {
 		const parsedObjects = JSON.parse(value), allTabs = {}; 
+
+		// setup tabs
 		for (const object of parsedObjects) if (object.type == "tab") { allTabs[object.id] = util.clone(object, ["type"]); } 
-		else if (object.data && shadowRoot.querySelector(`#${object.id}`)) _setHTMLElementValue(shadowRoot.querySelector(`#${object.id}`), object.data); 
-		
-		_setAllTabs(host, allTabs); const firstTabID = Object.keys(allTabs)[0]; 
-		_setActiveTab(host, firstTabID); _setSpreadSheetFromCSV(allTabs[firstTabID].data, host.id);
-	} else _setSpreadSheetFromCSV(value, host.id);
+		_setAllTabs(host, allTabs); const firstTabID = Object.keys(allTabs)[0]; _setActiveTab(host, firstTabID);
+
+		// fill in the active sheet
+		await _setSpreadSheetFromCSV(allTabs[firstTabID].data, host.id);
+
+		// plug in plugin values
+		for (const object of parsedObjects) if (object.type != "tab") if (object.data && shadowRoot.querySelector(
+			`#${object.id}`)) _setHTMLElementValue(shadowRoot.querySelector(`#${object.id}`), object.data); 
+	} else await _setSpreadSheetFromCSV(value, host.id);
 }
 
 function _getSpreadSheetAsCSV(hostID, dontTrim) {
@@ -208,9 +214,8 @@ async function _setSpreadSheetFromCSV(value, hostID) {	// will set data for the 
 }
 
 async function _createElementData(host, rows=host.getAttribute("rows")||6, columns=host.getAttribute("columns")||2) {
-	const existingToolbarPluginHTML = spread_sheet.getShadowRootByHost(host)?spread_sheet.getShadowRootByHost(host).querySelector("span#middleitems").innerHTML:null;
 	const data = {componentPath: COMPONENT_PATH, i18n: {}, CONTEXT_MENU_ID,
-		toolbarPluginHTML: existingToolbarPluginHTML||(host.getAttribute("toolbarPluginHTML")?decodeURIComponent(host.getAttribute("toolbarPluginHTML")):undefined)};
+		toolbarPluginHTML: host.getAttribute("toolbarPluginHTML")?decodeURIComponent(host.getAttribute("toolbarPluginHTML")):undefined};
 	for (const i18nKey in i18n) data.i18n[i18nKey] = i18n[i18nKey][session.get($$.MONKSHU_CONSTANTS.LANG_ID)];
 
 	data.rows = []; data.columns = []; for (let j = 0; j < columns; j++) data.columns.push(' ');
@@ -221,7 +226,7 @@ async function _createElementData(host, rows=host.getAttribute("rows")||6, colum
 		data.tabs.push( {name: allTabs[tabID].name, id: tabID, active: tabID == _getActiveTab(host)?"true":undefined} );
 
 	// expand toolbar plugin HTML now that data object is complete, as it may need expansion
-	if ((!existingToolbarPluginHTML) && data.toolbarPluginHTML) data.toolbarPluginHTML = await router.expandPageData(data.toolbarPluginHTML, undefined, data);
+	if (data.toolbarPluginHTML) data.toolbarPluginHTML = await router.expandPageData(data.toolbarPluginHTML, undefined, data);
 	
 	return data;
 }
