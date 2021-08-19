@@ -17,7 +17,7 @@ const MSG_REGISTER_SHAPE = "REGISTER_SHAPE", MSG_SHAPE_INIT = "SHAPE_INIT_ON_RIB
     MSG_MODEL_NODES_MODIFIED = "NODES_MODIFIED", MSG_MODEL_CONNECTORS_MODIFIED = "CONNECTORS_MODIFIED", 
     MSG_MODEL_NODE_DESCRIPTION_CHANGED = "NODE_DESCRIPTION_CHANGED", MSG_MODEL_ARE_NODES_CONNECTABLE = "ARE_NODES_CONNECTABLE",
     MSG_MODEL_LOAD_MODEL = "LOAD_MODEL", MSG_RESET = "RESET", MSG_FILE_UPLOADED = "FILE_UPLOADED", GRAPH_ID = "flowui", MODEL_OP_ADDED = "added", 
-    MODEL_OP_REMOVED = "removed", MODEL_OP_MODIFIED = "modified";
+    MODEL_OP_REMOVED = "removed", MODEL_OP_MODIFIED = "modified", MSG_SHAPE_MOVED = "SHAPE_MOVED";
 const PAGE_GENERATOR_GRID_ITEM_CLASS = "grid-item-extension", HTML_INPUT_ELEMENTS = ["input","select",
     "textarea","spread-sheet","text-editor", "drag-drop"];
 let ID_CACHE = {}, CONF, VIEW_PATH;
@@ -48,10 +48,13 @@ async function init(viewPath) {
         {graphID: GRAPH_ID, shapeid: message.shapeid, label: message.label}));
     blackboard.registerListener(MSG_MODEL_ADD_NODE, message => { ID_CACHE[message.id] = message.properties; 
         blackboard.broadcastMessage(MSG_ADD_SHAPE, {name: _generateShapeName(message.nodeName), id: message.id, 
-            graphID: GRAPH_ID, label: message.description, x:_generateShapeX(), y:_generateShapeY(), width:IMG_SIZE.width, 
-            height:IMG_SIZE.height, connectable:message.connectable||true}); }); 
+            graphID: GRAPH_ID, label: message.description, x:message.properties.x||_generateShapeX(), 
+            y:message.properties.y||_generateShapeY(), width:IMG_SIZE.width, height:IMG_SIZE.height, 
+            connectable:message.connectable||true}); }); 
     blackboard.registerListener(MSG_FILE_UPLOADED, async message => { await reset(); blackboard.broadcastMessage(MSG_MODEL_LOAD_MODEL,
         {data: message.data, name: message.name}) });
+    blackboard.registerListener(MSG_SHAPE_MOVED, message => blackboard.broadcastMessage(MSG_MODEL_NODES_MODIFIED, 
+        {type: MODEL_OP_MODIFIED, nodeName: message.name, id: message.id, properties: {...(ID_CACHE[message.id]||{}), x: message.x, y: message.y}}));
 
     const i18NForView = await import(`${VIEW_PATH}/page/i18n.mjs`); // merge the view's i18ns into the global i18n
     for (const lang in i18NForView.i18n) i18n.setI18NObject(lang, {...await i18n.getI18NObject(lang, true), ...i18NForView.i18n[lang]});

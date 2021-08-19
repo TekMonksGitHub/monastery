@@ -12,7 +12,8 @@ const MSG_REGISTER_SHAPE = "REGISTER_SHAPE", MSG_ADD_SHAPE = "ADD_SHAPE", MSG_SH
 	MSG_SHAPE_REMOVED = "SHAPE_REMOVED", MSG_SHAPES_DISCONNECTED = "SHAPES_DISCONNECTED", 
 	MSG_SHAPES_CONNECTED = "SHAPES_CONNECTED", GRAPH_MONASTERY_ID = "__org_monkshu_monastery_id",
 	MSG_VALIDATE_CONNECTION = "VALIDATE_FLOW_CONNECTION", MSG_LABEL_CHANGED = "LABEL_CHANGED",
-	MSG_CONNECT_SHAPES = "CONNECT_SHAPES", MSG_LABEL_SHAPE = "LABEL_SHAPE", MSG_RESET = "RESET";
+	MSG_CONNECT_SHAPES = "CONNECT_SHAPES", MSG_LABEL_SHAPE = "LABEL_SHAPE", MSG_RESET = "RESET",
+	MSG_SHAPE_MOVED = "SHAPE_MOVED";
 
 function elementConnected(element) {
     let data = {};
@@ -110,6 +111,15 @@ async function addLabel(hostID, nodeID, value) {
 	cell.setValue(value); return true;
 }
 
+/**
+ * Performs auto layout on the given graph
+ * @param hostID The graph ID of the graph to use
+ */
+async function autoLayout(hostID) {
+	const graph = await _getGraph(hostID); if (!graph) return;
+    const layout = new mxHierarchicalLayout(graph); layout.execute(graph.getDefaultParent());
+}
+
 async function _getGraph(hostID) {
 	if (GRAPHS[hostID]) return GRAPHS[hostID];	// already done
 
@@ -151,6 +161,13 @@ async function _getGraph(hostID) {
 			else if (cell.edge) blackboard.broadcastMessage(	// arrow connecting shapes deleted
 				MSG_SHAPES_DISCONNECTED, {sourceID: cell.source.id, sourceName: cell.source.style, 
 				targetName: cell.target.style, targetID: cell.target.id, graphID:_findGraphID(sender)} );
+	});
+	graph.addListener(mxEvent.CELLS_MOVED, (sender, evt) => {	// cells moved
+		const cells = evt.getProperty("cells");
+		const dx = evt.getProperty("dx"), dy = evt.getProperty("dy");
+		for (const cell of cells) if (cell.vertex) blackboard.broadcastMessage(	// cell moved
+			MSG_SHAPE_MOVED, {name:cell.style, id:cell.id, graphID:_findGraphID(sender), 
+				x: cell.getGeometry().x+dx, y: cell.getGeometry().y+dy} );
 	});
 
 	const mxConnectionHandlerInsertEdge = mxConnectionHandler.prototype.insertEdge;
@@ -213,5 +230,6 @@ function _createNonWebComponentDiagramContainer(container) {
 const _findGraphID = graph => {for (const key in GRAPHS) if (GRAPHS[key][GRAPH_MONASTERY_ID] == graph[GRAPH_MONASTERY_ID]) return key; return null;}
 
 // convert this all into a WebComponent so we can use it
-export const flow_diagram = {trueWebComponentMode: true, registerShape, elementConnected, insertNode, connectNodes, addLabel}
+export const flow_diagram = {trueWebComponentMode: true, registerShape, elementConnected, insertNode, 
+	connectNodes, addLabel, autoLayout}
 monkshu_component.register("flow-diagram", `${COMPONENT_PATH}/flow-diagram.html`, flow_diagram);
