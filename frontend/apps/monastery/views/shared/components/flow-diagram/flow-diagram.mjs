@@ -164,10 +164,9 @@ async function _getGraph(hostID) {
 	});
 	graph.addListener(mxEvent.CELLS_MOVED, (sender, evt) => {	// cells moved
 		const cells = evt.getProperty("cells");
-		const dx = evt.getProperty("dx"), dy = evt.getProperty("dy");
 		for (const cell of cells) if (cell.vertex) blackboard.broadcastMessage(	// cell moved
 			MSG_SHAPE_MOVED, {name:cell.style, id:cell.id, graphID:_findGraphID(sender), 
-				x: cell.getGeometry().x+dx, y: cell.getGeometry().y+dy} );
+				x: cell.getGeometry().x, y: cell.getGeometry().y} );
 	});
 
 	const mxConnectionHandlerInsertEdge = mxConnectionHandler.prototype.insertEdge;
