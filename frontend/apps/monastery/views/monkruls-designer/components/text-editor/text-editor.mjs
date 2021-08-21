@@ -25,13 +25,15 @@ async function elementConnected(element) {
 
 async function elementRendered(element) {
 	for (const p3lib of P3_LIBS) await $$.require(p3lib);	// load all the libs we need
-	const editorElement = text_editor.getShadowRootByHost(element).querySelector("textarea#texteditor");
-	const cm = CodeMirror(cmElement => editorElement.parentNode.replaceChild(cmElement, editorElement), 
-		{lineNumbers:true, gutter:true, lineWrapping:true, styleActiveLine: true, styleActiveSelected: true, 
-			mode: "javascript", lint: {selfContain: true}, gutters: ["CodeMirror-lint-markers"], matchBrackets: true}); 
-	text_editor.getMemoryByHost(element).editor = cm; cm.setSize("100%", "100%"); 
+	setTimeout(_=>{	// apparently we need timeout for CM to load properly
+		const editorElement = text_editor.getShadowRootByHost(element).querySelector("textarea#texteditor");
+		const cm = CodeMirror(cmElement => editorElement.parentNode.replaceChild(cmElement, editorElement), 
+			{lineNumbers:true, gutter:true, lineWrapping:true, styleActiveLine: true, styleActiveSelected: true, 
+				mode: "javascript", lint: {selfContain: true}, gutters: ["CodeMirror-lint-markers"], matchBrackets: true}); 
+		text_editor.getMemoryByHost(element).editor = cm; cm.setSize("100%", "100%"); 
 
-	if (element.getAttribute("value")) _setValue(element.getAttribute("value"), element);
+		if (element.getAttribute("value")) _setValue(element.getAttribute("value"), element);
+	}, 10);
 }
 
 async function open(element) {
