@@ -43,7 +43,7 @@ function loadModel(jsonModel) {
         const id = rule.id||_getUniqueID(); idCache[id] = rule; const clone = util.clone(rule);
         const nodeName = clone.nodeName || (clone.decisiontable?"decision":"rule"); 
         if (clone.decisiontable) clone.decisiontable = clone.decisiontable_raw||clone.decisiontable.substring(CSVSCHEME.length);
-        blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName, id, description: clone.description, properties: {...clone}});
+        blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName, id, description: clone.description, properties: {...clone}, connectable: !clone.decisiontable});
     }
 
     // add connections

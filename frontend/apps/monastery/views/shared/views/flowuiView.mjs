@@ -50,7 +50,7 @@ async function init(viewPath) {
         blackboard.broadcastMessage(MSG_ADD_SHAPE, {name: _generateShapeName(message.nodeName), id: message.id, 
             graphID: GRAPH_ID, label: message.description, x:message.properties.x||_generateShapeX(), 
             y:message.properties.y||_generateShapeY(), width:IMG_SIZE.width, height:IMG_SIZE.height, 
-            connectable:message.connectable||true}); }); 
+            connectable:message.connectable==undefined?true:message.connectable}); }); 
     blackboard.registerListener(MSG_FILE_UPLOADED, async message => { await reset(); blackboard.broadcastMessage(MSG_MODEL_LOAD_MODEL,
         {data: message.data, name: message.name}) });
     blackboard.registerListener(MSG_SHAPE_MOVED, message => blackboard.broadcastMessage(MSG_MODEL_NODES_MODIFIED, 
