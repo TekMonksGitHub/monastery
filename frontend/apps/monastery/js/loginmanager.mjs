@@ -32,9 +32,8 @@ const addLogoutListener = listener => logoutListeners.push(listener);
 async function logout() {
     for (const listener of logoutListeners) await listener();
 
-    const savedLang = session.get($$.MONKSHU_CONSTANTS.LANG_ID);
-    _stopAutoLogoutTimer(); session.destroy(); 
-    securityguard.setCurrentRole(APP_CONSTANTS.GUEST_ROLE);
+    const savedLang = session.get($$.MONKSHU_CONSTANTS.LANG_ID); 
+    session.destroy(); securityguard.setCurrentRole(APP_CONSTANTS.GUEST_ROLE);
     session.set($$.MONKSHU_CONSTANTS.LANG_ID, savedLang);
 }
 
