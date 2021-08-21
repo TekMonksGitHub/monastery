@@ -9,8 +9,8 @@ import {monkrulsmodel} from "../model/monkrulsmodel.mjs";
 const SPREAD_SHEET = monkshu_env.components["spread-sheet"], FLOATING_WINDOW = monkshu_env.components["floating-window"],
     MODULE_PATH = util.getModulePath(import.meta), HIGHLIGHT_BACKGROUND_COLOR = "#FDEDEC", HIGHLIGHT_TEXT_COLOR = "#444444", 
     CONSOLE_HTML_FILE = `${MODULE_PATH}/../dialogs/dialog_decision.console.html`, CONSOLE_THEME = {
-        title: await i18n.get("RulesOutput"), "var--window-top": "25vh", "var--window-left": "75vh",
-        "var--window-width": "40vw", "var--window-height": "40vh", "var--window-background": "#DFF0FE",
+        "var--window-top": "25vh", "var--window-left": "75vh","var--window-width": "40vw", 
+        "var--window-height": "40vh", "var--window-background": "#DFF0FE", 
         "var--window-border": "1px solid #4788C7", closeIcon: `${MODULE_PATH}/../dialogs/close.svg`};
 let openConsoleID;
 
@@ -69,7 +69,7 @@ function _getSheetTabNames(sheetProperties) {
 }
 
 async function _showConsole(message) {
-    const floatingWindowHTML = await $$.requireText(CONSOLE_HTML_FILE);
+    const floatingWindowHTML = await $$.requireText(CONSOLE_HTML_FILE); CONSOLE_THEME.title = await i18n.get("RulesOutput");
     openConsoleID = await FLOATING_WINDOW.showWindow(CONSOLE_THEME, Mustache.render(floatingWindowHTML, {message}));
 }
 

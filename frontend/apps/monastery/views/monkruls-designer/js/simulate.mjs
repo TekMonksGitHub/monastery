@@ -7,7 +7,7 @@ import {i18n} from "/framework/js/i18n.mjs";
 import {util} from "/framework/js/util.mjs";
 import {monkrulsmodel} from "../model/monkrulsmodel.mjs";
 
-const MODULE_PATH = util.getModulePath(import.meta), OUTPUT_LABEL = await i18n.get("RulesOutputLabel");
+const MODULE_PATH = util.getModulePath(import.meta);
 
 async function test() {
     const model = JSON.parse(monkrulsmodel.getModelAsFile().data); 
@@ -25,7 +25,7 @@ async function test() {
     const webRuls = require("webRuls"); const {results} = await webRuls.runRules(model);
 
     // update output
-    const output = `${OUTPUT_LABEL}\n\n${JSON.stringify(results, null, 4)}`; LOG.console(output);
+    const output = `${await i18n.get("RulesOutputLabel")}\n\n${JSON.stringify(results, null, 4)}`; LOG.console(output);
     const textareaOutput = window.monkshu_env.components["html-fragment"].getShadowRootByHostId("output").querySelector("textarea");
     textareaOutput.value = output;
 }
