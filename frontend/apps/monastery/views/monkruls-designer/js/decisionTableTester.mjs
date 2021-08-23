@@ -28,8 +28,8 @@ async function test(callingSheetElement) {
     const tabNames = _getSheetTabNames(sheetValue);
     for (const tabName of tabNames) if (tabName == "Rules") continue; else {
         const object = _getSheetTabData(sheetValue, tabName); if (!object || object.trim() == "") continue;
-        model.objects.unshift({name: tabName, data: `csv://${object}`});
-        model.outputs.unshift({name: tabName, output: tabName});
+        model.objects.push({name: tabName, data: `csv://${object}`});
+        model.outputs.push({name: tabName, output: tabName});
     }
 
     // ready to test now
