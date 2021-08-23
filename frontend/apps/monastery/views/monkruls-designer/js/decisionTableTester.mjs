@@ -17,7 +17,7 @@ let openConsoleID;
 async function test(callingSheetElement) {
     const hostElement = SPREAD_SHEET.getHostElement(callingSheetElement), sheetValue = hostElement.value;
     const rulesCSV = _getSheetTabData(sheetValue, "Rules");  if (!rulesCSV) return; // nothing to test
-    const model = JSON.parse(monkrulsmodel.getModelAsFile().data); model.objects = [];
+    const model = JSON.parse(monkrulsmodel.getModelAsFile().data); 
 
     // this model now has everything except rules is just the rules bundle for this decision table, and we do want
     // the failed_rules object back as output
@@ -27,8 +27,9 @@ async function test(callingSheetElement) {
     // add in the objects and we want all objects back as outputs as well
     const tabNames = _getSheetTabNames(sheetValue);
     for (const tabName of tabNames) if (tabName == "Rules") continue; else {
-        model.objects.push({name: tabName, data: `csv://${_getSheetTabData(sheetValue, tabName)}`});
-        model.outputs.push({name: tabName, output: tabName});
+        const object = _getSheetTabData(sheetValue, tabName); if (!object || object.trim() == "") continue;
+        model.objects.unshift({name: tabName, data: `csv://${object}`});
+        model.outputs.unshift({name: tabName, output: tabName});
     }
 
     // ready to test now

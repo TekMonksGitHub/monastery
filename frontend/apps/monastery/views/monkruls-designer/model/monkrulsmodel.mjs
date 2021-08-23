@@ -63,8 +63,9 @@ function loadModel(jsonModel) {
     // add data
     for (const data of monkrulsModel.data) {
         const id = data.id||_getUniqueID(); idCache[id] = data; const clone = util.clone(data); 
-        clone.data = clone.data_raw||((clone.data.startsWith?.(CSVSCHEME)?clone.data.substring(CSVSCHEME.length):
-            clone.data.startsWith?.(CSVLOOKUPTABLESCHEME)?clone.data.substring(CSVLOOKUPTABLESCHEME.length) : clone.data));
+        clone.data = clone.data_raw||(clone.data.startsWith?.(CSVSCHEME)?clone.data.substring(CSVSCHEME.length):
+            clone.data.startsWith?.(CSVLOOKUPTABLESCHEME)?clone.data.substring(CSVLOOKUPTABLESCHEME.length) : 
+            typeof clone.data == "object" ? JSON.stringify(clone.data) : clone.data);
         if (!clone.type) { if (clone.data.startsWith?.(CSVSCHEME)||clone.data.startsWith?.(CSVLOOKUPTABLESCHEME)) clone.type = "CSV";
             else clone.type = "JSON/Javascript"; }
         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: clone.nodeName||"data", id, description: clone.description, properties: {...clone}, connectable: false});
@@ -85,9 +86,9 @@ function loadModel(jsonModel) {
     // add objects
     for (const object of monkrulsModel.objects) {
         const id = object.id||_getUniqueID(); idCache[id] = object; const clone = util.clone(object);
-        clone.data = clone.data_raw||((clone.data.startsWith?.(CSVSCHEME)?clone.data.substring(CSVSCHEME.length):clone.data));
-        if (!clone.type) { if (clone.data.startsWith?.(CSVSCHEME)) clone.type = "CSV"; 
-         else clone.type = "JSON/Javascript"; }
+        clone.data = clone.data_raw||(clone.data.startsWith?.(CSVSCHEME)?clone.data.substring(CSVSCHEME.length):
+            typeof clone.data == "object" ? JSON.stringify(clone.data) : clone.data);
+        if (!clone.type) { if (clone.data.startsWith?.(CSVSCHEME)) clone.type = "CSV"; else clone.type = "JSON/Javascript"; }
         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: clone.nodeName||"object", id, description: clone.description, properties: {...clone}, connectable: false});
     }
 
@@ -201,10 +202,10 @@ function _nodeModified(nodeName, id, properties) {
         } else if (key == "data" && nodeName == "data") {   // data sheet can be CSV or Lookup table
             idCache[id][key] = properties.type == "CSV" ? 
                 (_getSheetTabData(properties.data, "isLookupTable").toLowerCase()=="true"?CSVLOOKUPTABLESCHEME:CSVSCHEME)+_getSheetTabData(properties.data, "default") :
-                properties.data;
+                _tryJSONParse(properties.data);
             idCache[id].data_raw = properties[key]; 
         } else if (key == "data" && nodeName == "object") { // object sheet can be JSON or CSV
-            idCache[id][key] = properties.type == "CSV" ? CSVSCHEME+properties.data : properties.data;
+            idCache[id][key] = properties.type == "CSV" ? CSVSCHEME+properties.data : _tryJSONParse(properties.data);
             idCache[id].data_raw = properties[key]; 
         } else idCache[id][key] = properties[key];   
     }
@@ -219,6 +220,8 @@ function _getSheetTabData(sheetProperties, tabName) {
 const _arrayDelete = (array, element) => {if (array.includes(element)) array.splice(array.indexOf(element), 1); return element;}
 
 const _getNameFromDescription = description => description.split(" ")[0].split("\n")[0];
+
+const _tryJSONParse = object => { try{return JSON.parse(object)} catch (err) {return object} }
 
 export const monkrulsmodel = {init, loadModel, modelNodesModified, modelConnectorsModified, isConnectable, 
     nodeDescriptionChanged, getModelAsFile, getModel, ADDED: "added", REMOVED: "removed", MODIFIED: "modified"};

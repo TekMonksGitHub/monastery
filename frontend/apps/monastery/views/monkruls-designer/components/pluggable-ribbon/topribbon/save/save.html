@@ -39,11 +39,11 @@
 
 <div id="container">
     <span>
-        <input type="text" id="diskname" onclick="this.focus(); event.stopPropagation();" placeholder="{{i18n.ENTERNAME}}">
+        <input type="text" id="diskname" onclick="this.focus(); event.stopPropagation();" placeholder="{{i18n.ENTERNAME}}" spellcheck="false">
         <span class="button" onclick='monkshu_env.components["pluggable-ribbon"].extensions.topribbon.save.saveToDisk(this.parentNode.querySelector("input#diskname").value, this, event)'>{{i18n.SAVEDISK}}</span>
     </span>
     <span>
-        <input type="text" id="servername" onclick="this.focus(); event.stopPropagation();" placeholder="{{i18n.ENTERNAME}}">
+        <input type="text" id="servername" onclick="this.focus(); event.stopPropagation();" placeholder="{{i18n.ENTERNAME}}" spellcheck="false">
         <span class="button" onclick='monkshu_env.components["pluggable-ribbon"].extensions.topribbon.save.saveToServer(this.parentNode.querySelector("input#servername").value, this, event)'>{{i18n.SAVESERVER}}</span>
     </span>
 </div>
