@@ -47,7 +47,8 @@ div#dialog {
     top: 50%;
     left: var(--dialog-left, 50%);
     width: var(--dialog-width, auto);
-    max-height: 80vh;
+    max-height: var(--dialog-max-height, 80vh);
+    height: var(--dialog-height, auto);
     background: var(--dialog-background, white);
     padding: var(--dialog-padding, 40px);
     position: var(--dialog-position, fixed);

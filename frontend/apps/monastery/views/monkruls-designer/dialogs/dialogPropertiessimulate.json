@@ -21,5 +21,6 @@
     "var--dialog-position": "absolute",
     "var--box-shadow": "none",
     "var--dialog-border": "1px solid #98CCFD",
-    "var--dialog-border-radius": "40px 0px 0px 0px"
+    "var--dialog-border-radius": "40px 0px 0px 0px",
+    "var--dialog-max-height": "calc(100vh - 151px)"
 }
