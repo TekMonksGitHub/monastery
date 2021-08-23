@@ -5,7 +5,7 @@
  */
 const fspromises = require("fs").promises; 
 const cryptMod = require(CONSTANTS.LIBDIR+"/crypt.js");
-const LOGIN_REG_DISTM_KEY = "__org_monkshu_loginregistry_key";
+const LOGIN_REG_DISTM_KEY = "__org_monastery_loginregistry_key";
 const USERS_JSON = `${APP_CONSTANTS.MONASTERY.CONF_DIR}/users.json`;
 
 exports.doService = async jsonReq => {

@@ -7,8 +7,7 @@ import {util} from "/framework/js/util.mjs";
 import {blackboard} from "/framework/js/blackboard.mjs";
 
 const PLUGIN_PATH = util.getModulePath(import.meta), MSG_FILE_UPLOADED = "FILE_UPLOADED", 
-    CONTEXT_MENU = window.monkshu_env.components["context-menu"], CONTEXT_MENU_ID = "contextmenumain",
-    LANG = i18n.getSessionLang();
+    CONTEXT_MENU = window.monkshu_env.components["context-menu"], CONTEXT_MENU_ID = "contextmenumain";
 let IMAGE, I18N;
 
 async function init() {
@@ -19,9 +18,9 @@ async function init() {
 }
 
 async function clicked(element, event) {
-    event.stopPropagation();
+    event.stopPropagation(); const lang = i18n.getSessionLang();
     const boundingRect = element.getBoundingClientRect(), x = boundingRect.x, y = boundingRect.bottom;
-    const menus = {}; menus[`${I18N.NEW[LANG]}`] = _=>view.reset(); menus[`${I18N.OPEN_FROM_DISK[LANG]}`] = _=>_uploadFile();
+    const menus = {}; menus[`${I18N.NEW[lang]}`] = _=>view.reset(); menus[`${I18N.OPEN_FROM_DISK[lang]}`] = _=>_uploadFile();
     CONTEXT_MENU.showMenu(CONTEXT_MENU_ID, menus, x, y, 0, 5);
 }
 

@@ -34,7 +34,8 @@ export const i18n = {
         "PublishSuccess": "Published successfully",
         "Description": "Develop business rules",
         "AllTestObjects": "All test objects",
-        "ObjectsToSimulate": "Objects to simulate"
+        "ObjectsToSimulate": "Objects to simulate",
+        "Drag": "Drag"
     },
 
     hi: {
@@ -72,7 +73,8 @@ export const i18n = {
         "PublishSuccess": "सफलतापूर्वक प्रकाशित",
         "Description": "व्यापार के नियम विकसित करें",
         "AllTestObjects": "सभी परीक्षण वस्तुएं",
-        "ObjectsToSimulate": "अनुकरण करने के लिए वस्तुएं"
+        "ObjectsToSimulate": "अनुकरण करने के लिए वस्तुएं",
+        "Drag": "खींचें"
     }, 
 
     ja: {
@@ -110,6 +112,7 @@ export const i18n = {
         "PublishSuccess": "正常に公開されました",
         "Description": "ビジネスルールを作成する",
         "AllTestObjects": "すべてのテストオブジェクト",
-        "ObjectsToSimulate": "シミュレートするオブジェクト"
+        "ObjectsToSimulate": "シミュレートするオブジェクト",
+        "Drag": "引っ張る"
     }
 }

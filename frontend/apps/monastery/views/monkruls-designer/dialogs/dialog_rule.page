@@ -1,9 +1,9 @@
 SCHEMA
 ======
 {
-    "condition": {"html":"textarea", "placeholder":"{{i18n.Condition}}", "wrap":"soft"},
-    "iftruedo": {"html":"input", "type":"text", "placeholder":"{{i18n.IfTrueDo}}"},
-    "elsedo": {"html":"input", "type":"text", "placeholder":"{{i18n.ElseDo}}"},
+    "condition": {"html":"textarea", "placeholder":"{{i18n.Condition}}", "wrap":"soft", "spellcheck":"false"},
+    "iftruedo": {"html":"input", "type":"text", "placeholder":"{{i18n.IfTrueDo}}", "spellcheck":"false"},
+    "elsedo": {"html":"input", "type":"text", "placeholder":"{{i18n.ElseDo}}", "spellcheck":"false"},
     "reason": {"html":"input", "type":"text", "placeholder":"{{i18n.Reason}}"}
 }
 ======

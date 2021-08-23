@@ -141,9 +141,9 @@ async function _getGraph(hostID) {
 	GRAPHS[hostID] = new mxGraph(mxgraphContainer, null, "fastest"); GRAPHS[hostID].setConnectable(GRAPH_CONNECTABLE);
 	GRAPHS[hostID][GRAPH_MONASTERY_ID] = hostID; const graph = GRAPHS[hostID]; 	
 
-	graph.popupMenuHandler.factoryMethod = (menu, cell, _evt) => { if (cell?.vertex) {
-		menu.addItem('Rename', null, _=>graph.startEditingAtCell(cell) ); 
-		menu.addSeparator();
+	graph.popupMenuHandler.factoryMethod = (menu, cell, _evt) => { if (cell?.vertex || cell?.edge) {
+		if (cell.vertex) menu.addItem('Rename', null, _=>graph.startEditingAtCell(cell) ); 
+		if (cell.vertex) menu.addSeparator();
 		menu.addItem('Delete', null, _=>graph.removeCells([cell]) ); 
 	} };
 
