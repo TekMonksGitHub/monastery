@@ -42,9 +42,12 @@ div#console > textarea#consoleText {
     cursor: default;
     border-radius: 5px;
     border: 1px solid #4788C7;
+    color: #444444;
 }
+
+div#console > textarea#consoleText.error {color: #D1251A;}
 </style>
 
 <div id="console">
-    <textarea id="consoleText" readonly>{{message}}</textarea>
+    <textarea id="consoleText" {{#error}}class="error"{{/error}} readonly>{{message}}</textarea>
 </div>

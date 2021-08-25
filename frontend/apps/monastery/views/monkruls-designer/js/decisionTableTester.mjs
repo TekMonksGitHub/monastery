@@ -34,12 +34,16 @@ async function test(callingSheetElement) {
 
     // ready to test now
     await $$.require(`${MODULE_PATH}/monkrulsBrowserified.min.js`); 
-    const webRuls = require("webRuls"); const {results} = await webRuls.runRules(model);
-    _showConsole(`Output of the rules engine follows\n\n${JSON.stringify(results, null, 4)}`);
+    try {
+        const webRuls = require("webRuls"); const {results} = await webRuls.runRules(model);
+        _showConsole(`Output of the rules engine follows\n\n${JSON.stringify(results, null, 4)}`);
 
-    // highlight failed rules in the spreadsheet
-    const rowsFailed = []; for (const failed_rule of results.__com_monastery_monkruls_decisiontabletester_failed_rules) rowsFailed.push(failed_rule.index+1);
-    _highlightFailedRows(rowsFailed, hostElement);
+        // highlight failed rules in the spreadsheet
+        const rowsFailed = []; for (const failed_rule of results.__com_monastery_monkruls_decisiontabletester_failed_rules) rowsFailed.push(failed_rule.index+1);
+        _highlightFailedRows(rowsFailed, hostElement);
+    } catch (err) {
+        _showConsole(`Error running the rules engine\n\n${err}`, true);
+    }
 }
 
 function refresh(callingSheetElement) {
@@ -69,9 +73,9 @@ function _getSheetTabNames(sheetProperties) {
     return tabNames;
 }
 
-async function _showConsole(message) {
+async function _showConsole(message, isError) {
     const floatingWindowHTML = await $$.requireText(CONSOLE_HTML_FILE); CONSOLE_THEME.title = await i18n.get("RulesOutput");
-    openConsoleID = await FLOATING_WINDOW.showWindow(CONSOLE_THEME, Mustache.render(floatingWindowHTML, {message}));
+    openConsoleID = await FLOATING_WINDOW.showWindow(CONSOLE_THEME, Mustache.render(floatingWindowHTML, {message, error:isError?"true":undefined}));
 }
 
 export const decisionTableTester = {test, refresh};
