@@ -10,8 +10,9 @@ import {monkrulsmodel} from "../model/monkrulsmodel.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 import {page_generator} from "/framework/components/page-generator/page-generator.mjs";
 
-const MODULE_PATH = util.getModulePath(import.meta), VIEW_PATH=`${MODULE_PATH}/..`, MSG_GET_MODEL_NAME = "GET_MODEL_NAME",
-    DIALOG_RET_PROPS = ["name", "server", "port", "adminid", "adminpassword"], DIALOG = window.monkshu_env.components["dialog-box"];
+const MODULE_PATH = util.getModulePath(import.meta), VIEW_PATH=`${MODULE_PATH}/..`, MSG_GET_MODEL_NAME = "GET_MODEL_NAME", 
+    MSG_RENAME_MODEL = "RENAME_MODEL", DIALOG_RET_PROPS = ["name", "server", "port", "adminid", "adminpassword"], 
+    DIALOG = window.monkshu_env.components["dialog-box"];
 
 let saved_props;
 
@@ -32,6 +33,7 @@ async function openDialog() {
             saved_props = util.clone(result, ["adminpassword"]); // don't save password, for security
             const model = monkrulsmodel.getModel(); 
             const pubResult = await _publishModel(model, result.name, result.server, result.port, result.adminid, result.adminpassword);
+            blackboard.broadcastMessage(MSG_RENAME_MODEL, {name: result.name});
             if (!pubResult.result) DIALOG.showError(dialogElement, await i18n.get(pubResult.key)); 
             else {DIALOG.showMessage(await i18n.get("PublishSuccess"), null, null, messageTheme, "MSG_DIALOG");  return true;}
         } });

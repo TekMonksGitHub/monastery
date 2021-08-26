@@ -8,7 +8,8 @@ import {publish as publishMod} from "../../../../js/publish.mjs"
 
 const PLUGIN_PATH = util.getModulePath(import.meta), MSG_MODEL_GET_MODEL = "GET_MODEL", 
     CONTEXT_MENU = window.monkshu_env.components["context-menu"], CONTEXT_MENU_ID = "contextmenumain",
-    MSG_GET_MODEL_NAME = "GET_MODEL_NAME", MSG_RESET = "RESET", MSG_MODEL_LOAD_MODEL = "LOAD_MODEL";
+    MSG_GET_MODEL_NAME = "GET_MODEL_NAME", MSG_RESET = "RESET", MSG_MODEL_LOAD_MODEL = "LOAD_MODEL",
+    MSG_RENAME_MODEL = "RENAME_MODEL";
 let IMAGE, I18N, HTML_CONTENT, MODEL_NAME;
 
 async function init() {
@@ -19,6 +20,7 @@ async function init() {
     blackboard.registerListener(MSG_GET_MODEL_NAME, _=>MODEL_NAME, true);
     blackboard.registerListener(MSG_RESET, _=>MODEL_NAME=null, true);
     blackboard.registerListener(MSG_MODEL_LOAD_MODEL, message=>MODEL_NAME=_nomalizeName(message.name));
+    blackboard.registerListener(MSG_RENAME_MODEL, message=>MODEL_NAME=_nomalizeName(message.name));
     return true;
 }
 
