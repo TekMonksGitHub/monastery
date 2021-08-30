@@ -17,4 +17,4 @@ td.mxPopupMenuIcon {background-color: #98CCFD;}
 
 tr.mxPopupMenuItemHover {background-color: #bedffd;}
 
-table.mxPopupMenu hr {border: 0.5px solid #98CCFD;}
+table.mxPopupMenu hr {border-top: 0.5px solid #98CCFD; border-bottom: 0px;}

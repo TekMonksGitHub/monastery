@@ -5,5 +5,5 @@ import {util} from "/framework/js/util.mjs";
 import {newFlowNode} from "../../lib/flowNode.mjs";
 
 const parentNode = newFlowNode();
-const init = async _ => {await parentNode.init("decision", util.getModulePath(import.meta), false); return true;}
+const init = async _ => {await parentNode.init("decision", util.getModulePath(import.meta)); return true;}
 export const decision = {init, ...parentNode};

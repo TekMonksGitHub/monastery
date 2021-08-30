@@ -36,14 +36,12 @@ function loadModel(jsonModel) {
     catch (err) {LOG.error(`Bad Monkruls model, error ${err}, skipping.`); return;}
     if (!(monkrulsModel.rule_bundles && monkrulsModel.functions && monkrulsModel.data && monkrulsModel.rule_parameters)) {LOG.error(`Bad Monkruls model, not in right format.`); return;}
 
-    const _getUniqueID = _ => `${Date.now()}${Math.random()*100}`;    
-
     // first add all the rules and bundles and decision tables
     for (const bundle of monkrulsModel.rule_bundles) for (const rule of bundle.rules) {
         const id = rule.id||_getUniqueID(); idCache[id] = rule; const clone = util.clone(rule);
         const nodeName = clone.nodeName || (clone.decisiontable?"decision":"rule"); 
         if (clone.decisiontable) clone.decisiontable = clone.decisiontable_raw||clone.decisiontable.substring(CSVSCHEME.length);
-        blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName, id, description: clone.description, properties: {...clone}, connectable: !clone.decisiontable});
+        blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName, id, description: clone.description, properties: {...clone}, connectable: true});
     }
 
     // add connections
@@ -110,27 +108,41 @@ function modelNodesModified(type, nodeName, id, properties) {
 function modelConnectorsModified(type, sourceName, targetName, sourceID, targetID) {
     if ((!idCache[sourceID]) || (!idCache[targetID])) return;   // not connected
 
-    if (sourceName == "rule" && targetName == "rule") { // add rules being connected here
+    const addOrRemoveDependencies = (sourceNode, targetNode, type) => {
         if (type == monkrulsmodel.ADDED) {
-            if (!idCache[targetID].dependencies) idCache[targetID].dependencies = []; 
-            idCache[targetID].dependencies.push(idCache[sourceID].id);
-        } else if (type == monkrulsmodel.REMOVED && idCache[targetID]) {
-            const dependencies = idCache[targetID].dependencies;
-            if ((!dependencies)||(!dependencies.length)||dependencies.indexOf(idCache[sourceID].id)==-1) return;
-            else dependencies.splice(dependencies.indexOf(idCache[sourceID].id), 1);
-            if (dependencies.length == 0) delete idCache[targetID].dependencies;    // no longer required
+            if (!targetNode.dependencies) targetNode.dependencies = []; 
+            targetNode.dependencies.push(sourceNode.id);
+        } else if (type == monkrulsmodel.REMOVED && targetNode) {
+            const dependencies = targetNode.dependencies;
+            if ((!dependencies)||(!dependencies.length)||dependencies.indexOf(sourceNode.id)==-1) return;
+            else _arrayDelete(dependencies, sourceNode.id);
+            if (dependencies.length == 0) delete targetNode.dependencies;    // no longer required
         }
+    }
+
+    if (sourceName == "rule" && targetName == "rule") addOrRemoveDependencies(idCache[sourceID], idCache[targetID], type);  // rule to riule
+    else {    // rule to decision or decision to rule or decision to decision, so add dependency between bundles instead
+        const sourceBundle = _findRuleBundleWithThisRule(idCache[sourceID]), targetBundle = _findRuleBundleWithThisRule(idCache[targetID]);
+        if ((!sourceBundle) || (!targetBundle)) {LOG.error("Rules bundle for rules being connected not found."); return;}
+        addOrRemoveDependencies(sourceBundle, targetBundle, type);
     }
 }
 
 function isConnectable(sourceName, targetName, sourceID, targetID) {    // are these nodes connectable
     if (sourceID == targetID) return false; // can't loop from same node to itself
-    if ((sourceName != "rule")||(targetName != "rule")) return false;   // currently only rules support connections
+    if (((sourceName != "rule") && (sourceName != "decision")) || ((targetName != "rule") && 
+        (targetName != "decision"))) return false;   // currently only rules and decision tables support connections
 
-    const targetDependencies = idCache[targetID].dependencies;
-    if (targetDependencies && targetDependencies.includes(idCache[sourceID].id)) return false;   // can't reconnect same nodes again
-    
-    return true;
+    const _checkCycles = (sourceNode, targetNode) => {
+        const targetDependencies = targetNode.dependencies, sourceDependencies = sourceNode.dependencies;
+        if (targetDependencies && targetDependencies.includes(sourceNode.id)) return false;   // can't reconnect same nodes again
+        if (sourceDependencies && sourceDependencies.includes(targetNode.id)) return false;   // cycle
+        return true;
+    }
+
+    // don't allow cycles or reconnections
+    if (sourceName == "rule" && targetName == "rule") return _checkCycles(idCache[sourceID], idCache[targetID]);
+    else return _checkCycles(_findRuleBundleWithThisRule(idCache[sourceID]), _findRuleBundleWithThisRule(idCache[targetID]));
 }
 
 function nodeDescriptionChanged(_nodeName, id, description) {
@@ -142,16 +154,24 @@ function nodeDescriptionChanged(_nodeName, id, description) {
     } else idCache[id].description = description;
 }
 
-function getModel(){
+function getModel() {
     const retModel = util.clone(monkrulsModel); 
-    for (const rules_bundle of retModel.rule_bundles) rules_bundle.rules = algos.sortDependencies(rules_bundle.rules); 
+    retModel.rule_bundles = algos.sortDependencies(retModel.rule_bundles);  // sort rule bundles in the order of dependencies
+    for (const rules_bundle of retModel.rule_bundles) rules_bundle.rules = algos.sortDependencies(rules_bundle.rules);  // sort rules within a bundle in the order of dependencies
     return retModel;
 }
 const getModelAsFile = name => {return {data: JSON.stringify(getModel(), null, 4), mime: "application/json", filename: `${name||"rules"}.monkruls.json`}}
 
+const _getUniqueID = _ => `${Date.now()}${Math.random()*100}`;    
+
+function _findRuleBundleWithThisRule(rule) {
+    for (const bundle of monkrulsModel.rule_bundles) if (bundle.rules.includes(rule)) return bundle;
+    return null;
+}
+
 function _findOrCreateRuleBundle(name=current_rule_bundle) {
     for (const bundle of monkrulsModel.rule_bundles) if (bundle.name == name) return bundle;
-    const newBundle = {name, rules:[]}; monkrulsModel.rule_bundles.push(newBundle); return newBundle;
+    const newBundle = {name, rules:[], id:_getUniqueID()}; monkrulsModel.rule_bundles.push(newBundle); return newBundle;
 }
 
 const _findAndDeleteRuleBundle = (name=current_rule_bundle) => _arrayDelete(monkrulsModel.rule_bundles, _findOrCreateRuleBundle(name));
