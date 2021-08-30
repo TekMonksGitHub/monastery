@@ -120,7 +120,7 @@ function modelConnectorsModified(type, sourceName, targetName, sourceID, targetI
         }
     }
 
-    if (sourceName == "rule" && targetName == "rule") addOrRemoveDependencies(idCache[sourceID], idCache[targetID], type);  // rule to riule
+    if (sourceName == "rule" && targetName == "rule") addOrRemoveDependencies(idCache[sourceID], idCache[targetID], type);  // rule to rule
     else {    // rule to decision or decision to rule or decision to decision, so add dependency between bundles instead
         const sourceBundle = _findRuleBundleWithThisRule(idCache[sourceID]), targetBundle = _findRuleBundleWithThisRule(idCache[targetID]);
         if ((!sourceBundle) || (!targetBundle)) {LOG.error("Rules bundle for rules being connected not found."); return;}
