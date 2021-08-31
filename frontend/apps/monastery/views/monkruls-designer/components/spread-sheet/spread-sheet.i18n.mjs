@@ -23,5 +23,10 @@ export const i18n = {
         en: "Rename",
         hi: "नाम बदलें",
         ja: "名前を変更"
+    },
+    PasteWarning: {
+        en: "CSV content detected. Pasting as CSV will replace all current content, paste as CSV?",
+        hi: "CSV सामग्री का पता चला। CSV के रूप में चिपकाने से सभी वर्तमान सामग्री बदल जाएगी, CSV के रूप में चिपकाई जाए?",
+        ja: "CSVコンテンツが検出されました。 CSVとして貼り付けると、現在のすべてのコンテンツが置き換えられます。CSVとして貼り付けますか？"
     }
 }

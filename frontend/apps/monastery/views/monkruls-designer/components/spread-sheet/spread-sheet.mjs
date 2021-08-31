@@ -1,18 +1,20 @@
 /** 
- * Spread sheet component
- * (C) 2019 TekMonks. All rights reserved.
+ * Spread sheet component. This component is dependent
+ * on two other components - context-menu and dialog-box.
+ * (C) 2020 TekMonks. All rights reserved.
  * License: See enclosed LICENSE file.
  */
 import {util} from "/framework/js/util.mjs";
 import {i18n} from "./spread-sheet.i18n.mjs";
 import {resizable} from "./lib/resizable.mjs";
 import {router} from "/framework/js/router.mjs";
-import {session} from "/framework/js/session.mjs";
-import {context_menu} from "../context-menu/context-menu.mjs";
+import {i18n as i18nFramework} from "/framework/js/i18n.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
 const COMPONENT_PATH = util.getModulePath(import.meta), ROW_PROP = "__org_monkshu_components_spreadsheet_rows",
-	COLUMN_PROP = "__org_monkshu_components_spreadsheet_columns", DEFAULT_TAB="default", CONTEXT_MENU_ID = "spreadsheetContextMenu";
+	COLUMN_PROP = "__org_monkshu_components_spreadsheet_columns", DEFAULT_TAB="default", CONTEXT_MENU_ID = "spreadsheetContextMenu",
+	DIALOG = window.monkshu_env.components["dialog-box"], CONTEXT_MENU = window.monkshu_env.components["context-menu"],
+	DIALOG_HOST_ID = "org_monkshu_spreadsheet_component_dialog";
 
 async function elementConnected(element) {
 	Object.defineProperty(element, "value", {get: _=>_getValue(element), set: value=>_setValue(value, element)});
@@ -58,7 +60,10 @@ function cellpastedon(element, event) {
 	const hostElement = spread_sheet.getHostElement(element);
 	const textPasted = event.clipboardData.getData("text"); if ((!textPasted || textPasted == "") && hostElement.getAttribute("onlyText")?.toLowerCase() == "true") return;	
 	const asCSV = Papa.parse(textPasted||"", {header: false, skipEmptyLines: true}).data, isCSV = asCSV.length > 1 || asCSV[0]?.length > 1;
-	if (isCSV) {_setSpreadSheetFromCSV(asCSV, spread_sheet.getHostElementID(element)); event.preventDefault();}
+	const pasteAsCSV = (content, event) => {_setSpreadSheetFromCSV(content, spread_sheet.getHostElementID(element)); event.preventDefault();};
+	let dialogThemeProvided = hostElement.getAttribute("dialogTheme"); if (dialogThemeProvided) dialogThemeProvided = decodeURIComponent(dialogThemeProvided); else dialogThemeProvided = "{}";
+	if (isCSV) DIALOG.showConfirm(i18n.PasteWarning[i18nFramework.getSessionLang()], result => {if (result) pasteAsCSV(asCSV, event)} , 
+		JSON.parse(dialogThemeProvided), DIALOG_HOST_ID);
 }
 
 async function rowop(op, element) {
@@ -129,8 +134,8 @@ async function tabMenuClicked(event, element, sheetID) {
 		inputBox.readOnly = false; inputBox.select(); 
 		inputBox.addEventListener("focusout", _=>inputBox.readOnly = true);
 	}
-	const renameMenuItem = i18n.Rename[session.get($$.MONKSHU_CONSTANTS.LANG_ID)], menus = {}; menus[renameMenuItem] = _=>_editTab();
-	context_menu.showMenu(CONTEXT_MENU_ID, menus, event.pageX, event.pageY, 2, 2);
+	const renameMenuItem = i18n.Rename[i18nFramework.getSessionLang()], menus = {}; menus[renameMenuItem] = _=>_editTab();
+	CONTEXT_MENU.showMenu(CONTEXT_MENU_ID, menus, event.pageX, event.pageY, 2, 2);
 }
 
 const reloadSheets = host => switchSheet(host.id, _getActiveTab(host), true)
@@ -216,10 +221,10 @@ async function _setSpreadSheetFromCSV(value, hostID) {	// will set data for the 
 async function _createElementData(host, rows=host.getAttribute("rows")||6, columns=host.getAttribute("columns")||2) {
 	const data = {componentPath: COMPONENT_PATH, i18n: {}, CONTEXT_MENU_ID,
 		toolbarPluginHTML: host.getAttribute("toolbarPluginHTML")?decodeURIComponent(host.getAttribute("toolbarPluginHTML")):undefined};
-	for (const i18nKey in i18n) data.i18n[i18nKey] = i18n[i18nKey][session.get($$.MONKSHU_CONSTANTS.LANG_ID)];
+	for (const i18nKey in i18n) data.i18n[i18nKey] = i18n[i18nKey][i18nFramework.getSessionLang()];
 
 	data.rows = []; data.columns = []; for (let j = 0; j < columns; j++) data.columns.push(' ');
-	for (let i = 0; i < rows; i++) data.rows.push(' ');
+	for (let i = 0; i < rows; i++) data.rows.push(' '); 
 	if (host.getAttribute("styleBody")) data.styleBody = `<style>${host.getAttribute("styleBody")}</style>`;
 
 	data.tabs = []; const allTabs = _getAllTabs(host); for (const tabID in allTabs) if (tabID != DEFAULT_TAB)

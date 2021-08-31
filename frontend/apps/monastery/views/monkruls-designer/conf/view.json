@@ -10,7 +10,8 @@
         "floating-window": "components/floating-window",
         "drag-drop": "components/drag-drop",
         "html-fragment": "../shared/components/html-fragment",
-        "image-button": "../shared/components/image-button"
+        "image-button": "../shared/components/image-button",
+        "context-menu": "components/context-menu"
     },
     "initModules": {"monkrulsmodel": "model/monkrulsmodel.mjs"}
 }

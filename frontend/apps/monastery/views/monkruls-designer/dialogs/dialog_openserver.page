@@ -1,0 +1,77 @@
+SCHEMA
+======
+{
+    "server": {"html":"input", "type":"text", "placeholder":"{{i18n.Server}}", "required":"true", "spellcheck":"false"},
+    "port": {"html":"input", "type":"number", "placeholder":"{{i18n.Port}}", "required":"true"},
+    "adminid": {"html":"input", "type":"text", "placeholder":"{{i18n.AdminID}}", "required":"true", "spellcheck":"false"},
+    "adminpassword": {"html":"input", "type":"password", "placeholder":"{{i18n.AdminPassword}}", "required":"true"},
+    "connect": {"html":"image-button", "img":"url(./views/{{url.view}}/dialogs/connect.svg)", "text":"{{i18n.Connect}}", "onclick":"server.connect()", "type":"column"},
+    "packages": {"html":"item-list", "img":"url(./views/{{url.view}}/dialogs/rulespackage.svg)", "title":"{{i18n.DoubleClickToOpen}}", "ondblclick":"server.open(this.value)"},
+}
+======
+
+
+LAYOUT
+=================
+
+------------------------------------------------
+|   server    |     port           |  connect  |
+------------------------------------------------
+|   adminid   |    adminpassword   |  connect  |
+------------------------------------------------
+|                    packages                  |
+------------------------------------------------
+=================
+Row Heights = 4em, 4em, calc(100% - 8em)
+Col Widths = 45%, 45%, 10%
+=================
+
+
+CSS CLASSES
+===========
+CONTAINER CLASSES = grid-container-extension
+ITEM CLASSES = grid-item-extension
+PER ITEM CLASS = class
+===========
+
+CSS
+=======
+.grid-container-extension {
+    height: 100%;
+}
+
+.grid-item-extension {
+    background-color: var(--dialog-background, white);
+    padding: 10px 20px 10px 20px;
+    display: flex;
+    flex-flow: row;
+    box-sizing: border-box;
+}
+
+.grid-item-extension > input, .grid-item-extension > input:focus {
+    width: 100%;
+    border-radius: 10px;
+    border: 0px;
+    outline: none;
+    padding: 10px;
+    resize: none;
+    font-family: inherit;
+}
+
+::placeholder {opacity: 0.8;}
+
+body {
+    margin: 0%;
+    display: inline-block;
+    width: 100%;
+}
+
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+=======

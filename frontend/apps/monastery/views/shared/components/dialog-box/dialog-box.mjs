@@ -62,6 +62,21 @@ function showMessage(message, type, callback, theme, hostID) {
 }
 
 /**
+ * Shows an confirmation dialog with OK, and Cancel options. Returns true if OK was pressed, else false.
+ * @param message The message to show.
+ * @param callback Callback to call when user dismisses the dialog, returns true if OK was pressed, else false.
+ * @param theme Optional: The theme to show
+ * @param hostID Optional: The hostID to use for the dialog
+ */
+function showConfirm(message, callback, theme, hostID) {
+    const themeOut = {...(theme||{}), showOKIcon: false, showCancelIcon: false, showCancelButton: true, 
+        showOKButton: true, okLabel: theme?.okLabel||i18n.OK[LANG], cancelLabel: theme?.cancelLabel||i18n.CANCEL[LANG]};
+    showDialog(themeOut, new URL(`${COMPONENT_PATH}/templates/message.html`), {message, 
+        icon: themeOut.icon||`${COMPONENT_PATH}/img/warning.svg`}, [], result => {
+            if (result=="submit") hideDialog(hostID); callback(result=="submit") }, hostID);
+}
+
+/**
  * Shows an selection box prompt
  * @param message The message to show and choices. Object. Format {message: string, choices:[array of choices as strings]}
  * @param callback Callback to call when user dismisses the dialog, contains the selected choice or null if it was cancelled
@@ -72,7 +87,7 @@ function showMessage(message, type, callback, theme, hostID) {
     const themeOut = {...(theme||{}), showOKIcon: false, showCancelIcon: false, showCancelButton: true, 
         showOKButton: true, okLabel: theme?.okLabel||i18n.OK[LANG], cancelLabel: theme?.cancelLabel||i18n.CANCEL[LANG]};
     showDialog(themeOut, new URL(`${COMPONENT_PATH}/templates/choice.html`), message, ["choice"], (result, retVals) => {
-        if (result=="cancel") callback(null); else callback(retVals.choice) }, hostID);
+        if (result=="cancel") callback(null); else {hideDialog(hostID); callback(retVals.choice)} }, hostID);
 }
 
 /**
@@ -177,5 +192,5 @@ async function _processTheme(theme) {
 }
 
 export const dialog_box = {showDialog, trueWebComponentMode: true, hideDialog, showError, hideError, 
-    submit, cancel, elementRendered, showMessage, showChoice}
+    submit, cancel, elementRendered, showMessage, showChoice, showConfirm}
 monkshu_component.register("dialog-box", `${util.getModulePath(import.meta)}/dialog-box.html`, dialog_box);
