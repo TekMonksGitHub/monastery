@@ -20,14 +20,19 @@ async function test() {
     const objectsToTest = []; for (const object of model.objects) if (objectIDsToTest.includes(object.id)) objectsToTest.push(object);
     model.objects = objectsToTest; for (const object of objectsToTest) model.outputs.push({name: object.name, output: object.name});
 
-    // run the rules engine 
-    await $$.require(`${MODULE_PATH}/monkrulsBrowserified.min.js`); 
-    const webRuls = require("webRuls"); const {results} = await webRuls.runRules(model);
-
-    // update output
-    const output = `${await i18n.get("RulesOutputLabel")}\n\n${JSON.stringify(results, null, 4)}`; LOG.console(output);
-    const textareaOutput = window.monkshu_env.components["html-fragment"].getShadowRootByHostId("output").querySelector("textarea");
-    textareaOutput.value = output;
+    let output; const textareaOutput = window.monkshu_env.components["html-fragment"].getShadowRootByHostId("output").querySelector("textarea");
+    try {
+        // run the rules engine 
+        await $$.require(`${MODULE_PATH}/monkrulsBrowserified.min.js`); 
+        const webRuls = require("webRuls"); const {results} = await webRuls.runRules(model);
+        output = `${await i18n.get("RulesOutputLabel")}\n\n${JSON.stringify(results, null, 4)}`; LOG.console(output);
+        // update output
+        textareaOutput.classList.remove("error"); textareaOutput.value = output;
+    } catch (err) {
+        output = `Error running the rules engine\n\n${err}`;
+        // update output
+        textareaOutput.classList.add("error"); textareaOutput.value = output;
+    }
 }
 
 export const simulate = {test};
