@@ -11,6 +11,7 @@ import {util} from "/framework/js/util.mjs";
  * @returns The sorted list as an array, or null if there are cycles in the graph
  */
 function sortDependencies(nodes) { 
+    if ((!nodes.length) || (nodes.length == 1)) return [...nodes];  // already sorted or an empty set
     const setOfNoDependencies = [], nodesToWorkOn = util.clone(nodes), sortedSet = [];
     for (const node of nodesToWorkOn) if ((!node.dependencies) || (!node.dependencies.length)) setOfNoDependencies.push(_arrayDelete(nodesToWorkOn, node));
 

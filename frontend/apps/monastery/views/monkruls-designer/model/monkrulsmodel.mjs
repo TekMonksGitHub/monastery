@@ -44,13 +44,14 @@ function loadModel(jsonModel) {
         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName, id, description: clone.description, properties: {...clone}, connectable: true});
     }
 
-    // add connections
-    for (const bundle of monkrulsModel.rule_bundles) if (!bundle.rules.decisiontable) for (const rule of bundle.rules) if (rule.dependencies) for (const dependency of rule.dependencies) { 
-        const sourceID = dependency, targetID = rule.id; 
-        if ((!idCache[sourceID])||(!idCache[targetID])) {LOG.error(`Bad dependency in the model ${sourceID}, skipping.`); break;}
+    const connectNodes = (sourceID, targetID) => {
+        if ((!idCache[sourceID])||(!idCache[targetID])) {LOG.error(`Bad dependency in the model ${sourceID}, skipping.`); return;}
         const sourceName = idCache[sourceID].nodeName, targetName = idCache[targetID].nodeName;
         blackboard.broadcastMessage(MSG_CONNECT_NODES, {sourceName, targetName, sourceID, targetID});
     }
+    // add connections between rules
+    for (const bundle of monkrulsModel.rule_bundles) if (!bundle.rules.decisiontable) 
+        for (const rule of bundle.rules) if (rule.dependencies) for (const dependency of rule.dependencies) connectNodes(dependency, rule.id);
 
     // add variables
     for (const variable of monkrulsModel.rule_parameters) {
@@ -125,6 +126,7 @@ function modelConnectorsModified(type, sourceName, targetName, sourceID, targetI
         const sourceBundle = _findRuleBundleWithThisRule(idCache[sourceID]), targetBundle = _findRuleBundleWithThisRule(idCache[targetID]);
         if ((!sourceBundle) || (!targetBundle)) {LOG.error("Rules bundle for rules being connected not found."); return;}
         addOrRemoveDependencies(sourceBundle, targetBundle, type);
+        addOrRemoveDependencies(idCache[sourceID], idCache[targetID], type);    // also visually connect the rule nodes
     }
 }
 

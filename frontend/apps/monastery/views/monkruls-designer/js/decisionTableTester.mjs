@@ -22,7 +22,7 @@ async function test(callingSheetElement) {
     // this model now has everything except rules is just the rules bundle for this decision table, and we do want
     // the failed_rules object back as output
     model.rule_bundles = [{ name: "testDecisionTable", "rules":[{decisiontable:`csv://${rulesCSV}`}] }];
-    model.outputs.push({"name":"$failed_rules", "output":"__com_monastery_monkruls_decisiontabletester_failed_rules"});
+    model.outputs.push({"name":"$failed_rules", "output":"$failed_rules"});
 
     // add in the objects and we want all objects back as outputs as well
     const tabNames = _getSheetTabNames(sheetValue);
@@ -39,7 +39,7 @@ async function test(callingSheetElement) {
         _showConsole(`Output of the rules engine follows\n\n${JSON.stringify(results, null, 4)}`);
 
         // highlight failed rules in the spreadsheet
-        const rowsFailed = []; for (const failed_rule of results.__com_monastery_monkruls_decisiontabletester_failed_rules) rowsFailed.push(failed_rule.index+1);
+        const rowsFailed = []; for (const failed_rule of results.$failed_rules) rowsFailed.push(failed_rule.index+1);
         _highlightFailedRows(rowsFailed, hostElement);
     } catch (err) {
         _showConsole(`Error running the rules engine\n\n${err}`, true);
