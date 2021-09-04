@@ -22,8 +22,6 @@ function init() {
         message.sourceNode, message.targetNode, message.sourceID, message.targetID));
     blackboard.registerListener(MSG_NODE_DESCRIPTION_CHANGED, message => nodeDescriptionChanged(message.nodeName, 
         message.id, message.description));
-    blackboard.registerListener(MSG_NODE_DESCRIPTION_CHANGED, message => nodeDescriptionChanged(message.nodeName, 
-        message.id, message.description));
     blackboard.registerListener(MSG_ARE_NODES_CONNECTABLE, message => isConnectable(message.sourceName, 
         message.targetName, message.sourceID, message.targetID), true);
     blackboard.registerListener(MSG_GET_MODEL, message => getModelAsFile(message.name), true);
@@ -154,6 +152,9 @@ function nodeDescriptionChanged(_nodeName, id, description) {
     if (idCache[id].name && oldNameTracksDescription) {
         idCache[id].name = _getNameFromDescription(description); idCache[id].description = description;
     } else idCache[id].description = description;
+
+    // rule bundle name is alaways same as description for decision tables
+    if (idCache[id].nodeName == "decision") _findRuleBundleWithThisRule(idCache[id]).name = _getNameFromDescription(description);    
 }
 
 function getModel() {
@@ -171,8 +172,8 @@ function _findRuleBundleWithThisRule(rule) {
     return null;
 }
 
-function _findOrCreateRuleBundle(name=current_rule_bundle) {
-    for (const bundle of monkrulsModel.rule_bundles) if (bundle.name == name) return bundle;
+function _findOrCreateRuleBundle(name=current_rule_bundle, forceNew) {
+    if (!forceNew) for (const bundle of monkrulsModel.rule_bundles) if (bundle.name == name) return bundle;
     const newBundle = {name, rules:[], id:_getUniqueID()}; monkrulsModel.rule_bundles.push(newBundle); return newBundle;
 }
 
@@ -186,7 +187,7 @@ function _nodeAdded(nodeName, id, properties) {
 
     if (nodeName == "rule") _findOrCreateRuleBundle().rules.push(node); 
     else if (nodeName == "variable") monkrulsModel.rule_parameters.push(node);
-    else if (nodeName == "decision") _findOrCreateRuleBundle(name).rules.push(node);
+    else if (nodeName == "decision") _findOrCreateRuleBundle(name, true).rules.push(node);
     else if (nodeName == "data") {node.name = name; monkrulsModel.data.push(node);}
     else if (nodeName == "functions") {node.name = name; monkrulsModel.functions.push(node);}
     else if (nodeName == "output") monkrulsModel.outputs.push(node);
@@ -203,7 +204,7 @@ function _nodeRemoved(nodeName, id) {
     const node = idCache[id];
 
     if (nodeName == "rule") {const bundle = _findOrCreateRuleBundle(); _arrayDelete(bundle.rules, node); if (!bundle.rules.length) _findAndDeleteRuleBundle();}
-    else if (nodeName == "decision") _arrayDelete(monkrulsModel.rule_bundles, _findOrCreateRuleBundle(node.description));
+    else if (nodeName == "decision") _arrayDelete(monkrulsModel.rule_bundles, _findRuleBundleWithThisRule(node));
     else if (nodeName == "variable") _arrayDelete(monkrulsModel.rule_parameters, node);
     else if (nodeName == "data") _arrayDelete(monkrulsModel.data, node);
     else if (nodeName == "functions") _arrayDelete(monkrulsModel.functions, node);
