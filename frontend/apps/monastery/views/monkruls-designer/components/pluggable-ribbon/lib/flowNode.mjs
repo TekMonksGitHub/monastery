@@ -2,13 +2,12 @@
  * Base module for flow nodes inside pluggable ribbon 
  * (C) 2020 TekMonks. All rights reserved.
  */
-
 import {blackboard} from "/framework/js/blackboard.mjs";
 
 const MSG_SHAPE_INIT = "SHAPE_INIT_ON_RIBBON", MSG_SHAPE_CLICKED_ON_RIBBON = "SHAPE_CLICKED_ON_RIBBON";
 
 class FlowNode {
-    DIAG_ELEMENT_ID; PLUGIN_PATH; I18N; SHAPE_NAME; IMAGE; SHAPE_CONNECTABLE; ID_MAP = {}; COUNTER = 0;
+    DIAG_ELEMENT_ID; PLUGIN_PATH; I18N; SHAPE_NAME; IMAGE; SHAPE_CONNECTABLE; ID_MAP = {}; 
 
     async init(pluginName, pluginPath, connectable=true) {
         this.SHAPE_NAME = pluginName; this.PLUGIN_PATH = pluginPath; this.SHAPE_CONNECTABLE = connectable;
@@ -34,8 +33,11 @@ class FlowNode {
     // Private Members    
     #clicked() {
         const uniqueID = FlowNode.#getUniqueID(); this.ID_MAP[uniqueID] = this.PLUGIN_PATH;
+        const NODE_REPOSITORY = window.monkshu_env.NODE_REPOSITORY;
+        const name = FlowNode.#capitalizeFirstChar(this.SHAPE_NAME)+NODE_REPOSITORY.getNodeUniquePrefix(this.SHAPE_NAME);
+        NODE_REPOSITORY.registerNode(name, this.SHAPE_NAME);
         blackboard.broadcastMessage(MSG_SHAPE_CLICKED_ON_RIBBON, {name:this.SHAPE_NAME, id:uniqueID, 
-            connectable: this.SHAPE_CONNECTABLE, label: FlowNode.#capitalizeFirstChar(this.SHAPE_NAME)+(++this.COUNTER)});
+            connectable: this.SHAPE_CONNECTABLE, label: name});
     }
 
     static #getUniqueID = _ => `${Date.now()}${Math.random()*100}`;
