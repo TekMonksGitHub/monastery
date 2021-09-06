@@ -13,5 +13,5 @@
         "image-button": "../shared/components/image-button",
         "context-menu": "components/context-menu"
     },
-    "initModules": {"monkrulsmodel": "model/monkrulsmodel.mjs"}
+    "initModules": {"monkrulsmodel": "model/monkrulsmodel.mjs", "nodeRepository": "components/pluggable-ribbon/lib/nodeRepository.mjs"}
 }

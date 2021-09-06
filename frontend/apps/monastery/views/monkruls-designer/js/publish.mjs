@@ -5,9 +5,9 @@
  */
 import {i18n} from "/framework/js/i18n.mjs";
 import {util} from "/framework/js/util.mjs";
+import {serverManager} from "./serverManager.js";
 import {blackboard} from "/framework/js/blackboard.mjs";
 import {monkrulsmodel} from "../model/monkrulsmodel.mjs";
-import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 import {page_generator} from "/framework/components/page-generator/page-generator.mjs";
 
 const MODULE_PATH = util.getModulePath(import.meta), VIEW_PATH=`${MODULE_PATH}/..`, MSG_GET_MODEL_NAME = "GET_MODEL_NAME", 
@@ -32,31 +32,11 @@ async function openDialog() {
         async (typeOfClose, result, dialogElement) => { if (typeOfClose == "submit") {
             saved_props = util.clone(result, ["adminpassword"]); // don't save password, for security
             const model = monkrulsmodel.getModel(); 
-            const pubResult = await _publishModel(model, result.name, result.server, result.port, result.adminid, result.adminpassword);
+            const pubResult = await serverManager.publishModel(model, result.name, result.server, result.port, result.adminid, result.adminpassword);
             blackboard.broadcastMessage(MSG_RENAME_MODEL, {name: result.name});
             if (!pubResult.result) DIALOG.showError(dialogElement, await i18n.get(pubResult.key)); 
             else {DIALOG.showMessage(await i18n.get("PublishSuccess"), null, null, messageTheme, "MSG_DIALOG");  return true;}
         } });
-}
-
-async function _publishModel(input, name, server, port, adminid, adminpassword) {
-    const API_LOGIN_SECURE = `https://${server}:${port}/apps/monkruls/login`;
-    const API_LOGIN_INSECURE = `http://${server}:${port}/apps/monkruls/login`;
-    const API_PUBLISH_SECURE = `https://${server}:${port}/apps/monkruls/admin`;
-    const API_PUBLISH_INSECURE = `http://${server}:${port}/apps/monkruls/admin`;
-
-    try {   // try secure first
-        const result = await apiman.rest(API_LOGIN_SECURE, "GET", {id: adminid, pw: adminpassword}, false, true);
-        if (result.result) return {result: (await apiman.rest(API_PUBLISH_SECURE, "POST", {name, op: "update", input}, true)).result, err: "Publishing failed at the server", raw_err: "Publishing failed at the server", key: "PublishServerIssue"};
-        else throw `Server secure login failed, trying insecure, ${await i18n.get(PublishSecureConnectFailed)}`;
-    } catch (err)  {    // try insecure else give up
-        try {
-            LOG.debug(err);
-            const result = await apiman.rest(API_LOGIN_INSECURE, "GET", {id: adminid, pw: adminpassword}, false, true);
-            if (result.result) return {result: (await apiman.rest(API_PUBLISH_INSECURE, "POST", {name, op: "update", input}, true)).result, err: "Publishing failed at the server", raw_err: "Publishing failed at the server", key: "PublishServerIssue"};
-            else return {result: false, err: "Login failed at the server", raw_err: "Login failed at the server", key: "PublishLoginIssue"};
-        } catch (err)  {return {result: false, err: "Server connection issue", raw_err: err, key: "PublishConnectIssue"} }
-    }
 }
 
 export const publish = {openDialog};

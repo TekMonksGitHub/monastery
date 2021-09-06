@@ -91,7 +91,7 @@ async function open(element) {
 
 async function save(element) {
 	const host = spread_sheet.getHostElement(element), sheetData = _getValue(host); let isJSON = true; try{JSON.parse(sheetData)} catch (err) {isJSON=false};
-	util.downloadFile(sheetData, isJSON?"application/json":"text/csv", `${host.getAttribute("downloadfilename")||"spreadsheet"}${isJSON?".json":".csv"}`);
+	util.downloadFile(sheetData, isJSON?"application/json":"text/csv", `${decodeURIComponent(host.getAttribute("downloadfilename")||"spreadsheet")}${isJSON?".json":".csv"}`);
 }
 
 function resizeRowInputsForLargestScroll(element) {

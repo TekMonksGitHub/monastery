@@ -86,7 +86,7 @@ async function _shapeObjectClickedOnFlowDiagram(shapeName, id, shapelabel) {
         pageFile = new URL(page); savedDialogProperties = dialogProperties;
     } else pageFile = new URL(pageSelector);
     
-    let html = await page_generator.getHTML(pageFile, null, {description: shapelabel});
+    let html = await page_generator.getHTML(pageFile, null, {description: shapelabel, uriEncodedDescription: encodeURIComponent(shapelabel)});
 
     // figure out IDs for all input items on the dialog and fill their defaults, if saved previously
     const dom = new DOMParser().parseFromString(html, "text/html"), items = dom.getElementsByClassName(PAGE_GENERATOR_GRID_ITEM_CLASS);

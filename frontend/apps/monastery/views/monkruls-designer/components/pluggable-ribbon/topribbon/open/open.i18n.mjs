@@ -18,5 +18,10 @@ export const i18n = {
         en:"Open from disk...", 
         hi: "डिस्क से खोलें...", 
         ja: "ディスクから開く..."
+    },
+    OPEN_FROM_SERVER: {
+        en:"Open from server...", 
+        hi: "सर्वर से खोलें...", 
+        ja: "サーバーから開く..."
     }
 }

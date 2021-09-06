@@ -5,8 +5,10 @@ SCHEMA
     "port": {"html":"input", "type":"number", "placeholder":"{{i18n.Port}}", "required":"true"},
     "adminid": {"html":"input", "type":"text", "placeholder":"{{i18n.AdminID}}", "required":"true", "spellcheck":"false"},
     "adminpassword": {"html":"input", "type":"password", "placeholder":"{{i18n.AdminPassword}}", "required":"true"},
-    "connect": {"html":"image-button", "img":"url(./views/{{url.view}}/dialogs/connect.svg)", "text":"{{i18n.Connect}}", "onclick":"server.connect()", "type":"column"},
-    "packages": {"html":"item-list", "img":"url(./views/{{url.view}}/dialogs/rulespackage.svg)", "title":"{{i18n.DoubleClickToOpen}}", "ondblclick":"server.open(this.value)"},
+    "connect": {"html":"image-button", "img":"./views/{{url.view}}/dialogs/connect.svg", "text":"{{i18n.Connect}}", 
+        "style":"width:100%; height: 100%;", "onclick":"helper.connectServerClicked()", "type":"column", 
+        "color":"#444444", "border":"0.5px solid #98CCFD", "background-color":"#B6DCFE"},
+    "packages": {"html":"textarea", "img":"url(./views/{{url.view}}/dialogs/rulespackage.svg)", "title":"{{i18n.DoubleClickToOpen}}", "ondblclick":"helper.openClicked()"}
 }
 ======
 
@@ -22,8 +24,8 @@ LAYOUT
 |                    packages                  |
 ------------------------------------------------
 =================
-Row Heights = 4em, 4em, calc(100% - 8em)
-Col Widths = 45%, 45%, 10%
+Row Heights = 4em, 4em, calc(100vh - 8em - 152px - 30px - 1em)
+Col Widths = 42.5%, 42.5%, 15%
 =================
 
 
@@ -56,6 +58,7 @@ CSS
     padding: 10px;
     resize: none;
     font-family: inherit;
+    box-sizing: border-box;
 }
 
 ::placeholder {opacity: 0.8;}

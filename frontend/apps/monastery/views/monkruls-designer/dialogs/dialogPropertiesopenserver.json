@@ -1,6 +1,6 @@
 {
     "showOKButton": true,
-    "okLabel": "{{i18n.Publish}}",
+    "okLabel": "{{i18n.Open}}",
     "showCancelButton": false,
     "modal": false,
     "okIcon": "./views/{{url.view}}/dialogs/ok.svg",
@@ -13,14 +13,17 @@
     
     "var--dialog-font": "Raleway",
     "var--dialog-background": "#DFF0FE",
-    "var--dialog-left": "120px",
-    "var--dialog-width": "calc(100vw - 240px)",
+    "var--dialog-left": "80px",
+    "var--dialog-width": "calc(100% - 162px)",
     "var--animation-name": "flyinbottom",
     "var--animation-duration": "0.18s",
     "var--animation-left-transform": "0%",
     "var--button-background-color": "#B6DCFE",
     "var--button-text-color": "black",
     "var--margin-bottom": "0px",
-    "var--box-shadow": "0px 10px 0px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)",
-    "var--dialog-border": "none"
+    "var--error-display": "none",
+    "var--dialog-position": "absolute",
+    "var--box-shadow": "none",
+    "var--dialog-border": "1px solid #98CCFD",
+    "var--dialog-border-radius": "40px 0px 0px 0px"
 }

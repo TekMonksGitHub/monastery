@@ -1,0 +1,76 @@
+<!--
+/* Image button component
+ * (C) 2021 TekMonks. All rights reserved.
+ * License: See enclosed LICENSE file.
+ */
+ -->
+<style>
+    html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        user-select: none;
+        cursor: default;
+    }
+
+    :host {
+        --background-color: {{background-color}};
+        --border: {{border}};
+        --color: {{color}};
+    }
+
+    div#button {
+        border-radius: 10px;
+        background-color: var(--background-color, white);
+        border: var(--border, 1px solid #444444);
+        color: var(--color, black);
+        display: flex;
+        width: 100%;
+        height: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        overflow: hidden;
+        font-size: smaller;
+    }
+
+    div#button > img.column {
+        width: 100%;
+        height: 50%;
+    }
+
+    div#button > img.row {
+        width: 50%;
+        height: 100%;
+    }
+
+    div#button.column {
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    div#button.row {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    div#button > span.column {
+        text-align: center;
+        margin-top: 1em;
+    }
+
+    div#button > span.row {
+        text-align: center;
+        align-items: center;
+        display: flex;
+        width: 50%;
+        overflow: hidden;
+    }
+</style>
+
+{{{styleBody}}}
+
+<div id="button" {{#column}}class="column"{{/column}} {{#row}}class="row"{{/row}} onclick="{{onclick}}"
+        alt="{{alt}}" title="{{title}}">
+    <img src="{{{img}}}" {{#column}}class="column"{{/column}} {{#row}}class="row"{{/row}}>
+    <span {{#column}}class="column"{{/column}} {{#row}}class="row"{{/row}}>{{text}}</span>
+</div>
