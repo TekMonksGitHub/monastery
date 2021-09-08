@@ -17,6 +17,7 @@
         --background-color: {{background-color}};
         --border: {{border}};
         --color: {{color}};
+        --active-background-color: {{active-background-color}};
     }
 
     div#button {
@@ -31,6 +32,10 @@
         box-sizing: border-box;
         overflow: hidden;
         font-size: smaller;
+    }
+
+    div#button:active {
+        background-color: var(--active-background-color, white);
     }
 
     div#button > img.column {
@@ -53,13 +58,17 @@
         justify-content: space-between;
     }
 
-    div#button > span.column {
+    div#button > span {
+        overflow: hidden;
+        text-overflow: ellipsis;
         text-align: center;
+    }
+
+    div#button > span.column {
         margin-top: 1em;
     }
 
     div#button > span.row {
-        text-align: center;
         align-items: center;
         display: flex;
         width: 50%;

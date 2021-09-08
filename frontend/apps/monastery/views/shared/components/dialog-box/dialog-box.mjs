@@ -150,6 +150,29 @@ function hideError(element) {
     divError.style.visibility = "hidden";
 }
 
+/**
+ * Returns the value of the element requested
+ * @param elementID The element ID
+ * @param hostID The host ID
+ * @returns The element's value or null on error
+ */
+function getElementValue(elementID, hostID) {
+    const shadowRoot = dialog_box.getShadowRootByHostId(hostID||DEFAULT_HOST_ID);
+    if (shadowRoot.querySelector(`#${elementID}`)) return shadowRoot.querySelector(`#${elementID}`).value; 
+    else return null;
+}
+
+/**
+ * Returns the element requested
+ * @param elementID The element ID
+ * @param hostID The host ID
+ * @returns The element's or null on error
+ */
+ function getElement(elementID, hostID) {
+    const shadowRoot = dialog_box.getShadowRootByHostId(hostID||DEFAULT_HOST_ID);
+    return shadowRoot.querySelector(`#${elementID}`); 
+}
+
 function _getRetVals(memory, shadowRoot) {
     const ret = {};
     if (memory.retValIDs) for (const retValId of memory.retValIDs) 
@@ -192,5 +215,5 @@ async function _processTheme(theme) {
 }
 
 export const dialog_box = {showDialog, trueWebComponentMode: true, hideDialog, showError, hideError, 
-    submit, cancel, elementRendered, showMessage, showChoice, showConfirm}
+    submit, cancel, elementRendered, showMessage, showChoice, showConfirm, getElementValue, getElement}
 monkshu_component.register("dialog-box", `${util.getModulePath(import.meta)}/dialog-box.html`, dialog_box);

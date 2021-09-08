@@ -16,12 +16,12 @@ import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 async function getModelList(server, port, adminid, adminpassword) {
     const API_ADMIN_URL_FRAGMENT = `://${server}:${port}/apps/monkruls/admin`;
 
-    const loginResult = _loginToServer(server, port, adminid, adminpassword);
+    const loginResult = await _loginToServer(server, port, adminid, adminpassword);
     if (!loginResult.result) return loginResult;    // failed to connect or login
 
     try {   // try to get the list now
-        const result = (await apiman.rest(loginResult.scheme+API_ADMIN_URL_FRAGMENT, "POST", 
-        {op: "list"}, true));
+        const result = await apiman.rest(loginResult.scheme+API_ADMIN_URL_FRAGMENT, "POST", 
+        {op: "list"}, true);
         return {result: result.result, models: result.result?result.list:null, err: "List fetch failed at the server", 
             raw_err: "Model list fetch failed at the server", key: "ModelListServerIssue"};
     } catch (err)  {return {result: false, err: "Server connection issue", raw_err: err, key: "ConnectIssue"} }
@@ -39,14 +39,14 @@ async function getModelList(server, port, adminid, adminpassword) {
  async function getModel(name, server, port, adminid, adminpassword) {
     const API_ADMIN_URL_FRAGMENT = `://${server}:${port}/apps/monkruls/admin`;
 
-    const loginResult = _loginToServer(server, port, adminid, adminpassword);
+    const loginResult = await _loginToServer(server, port, adminid, adminpassword);
     if (!loginResult.result) return loginResult;    // failed to connect or login
 
     try {   // try to read the model now
-        const result = (await apiman.rest(loginResult.scheme+API_ADMIN_URL_FRAGMENT, "POST", 
-        {op: "read", name}, true));
+        const result = await apiman.rest(loginResult.scheme+API_ADMIN_URL_FRAGMENT, "POST", 
+        {op: "read", name}, true);
         return {result: result.result, model: result.result?result.data:null, err: "Model read failed at the server", 
-            raw_err: "Model read failed at the server", key: "ModelReadServerIssue"};
+            name: result.result?result.name:null, raw_err: "Model read failed at the server", key: "ModelReadServerIssue"};
     } catch (err)  {return {result: false, err: "Server connection issue", raw_err: err, key: "ConnectIssue"} }
 }
 
@@ -62,12 +62,12 @@ async function getModelList(server, port, adminid, adminpassword) {
  async function unpublishModel(name, server, port, adminid, adminpassword) {
     const API_ADMIN_URL_FRAGMENT = `://${server}:${port}/apps/monkruls/admin`;
 
-    const loginResult = _loginToServer(server, port, adminid, adminpassword);
+    const loginResult = await _loginToServer(server, port, adminid, adminpassword);
     if (!loginResult.result) return loginResult;    // failed to connect or login
 
     try {   // try to delete
-        const result = (await apiman.rest(loginResult.scheme+API_ADMIN_URL_FRAGMENT, "POST", 
-        {op: "delete", name}, true));
+        const result = await apiman.rest(loginResult.scheme+API_ADMIN_URL_FRAGMENT, "POST", 
+        {op: "delete", name}, true);
         return {result: result.result, err: "Mode unpublish failed at the server", 
             raw_err: "Model unpublish failed at the server", key: "ModelUnpublishServerIssue"};
     } catch (err)  {return {result: false, err: "Server connection issue", raw_err: err, key: "ConnectIssue"} }
@@ -86,7 +86,7 @@ async function getModelList(server, port, adminid, adminpassword) {
 async function publishModel(model, name, server, port, adminid, adminpassword) {
     const API_ADMIN_URL_FRAGMENT = `://${server}:${port}/apps/monkruls/admin`;
 
-    const loginResult = _loginToServer(server, port, adminid, adminpassword);
+    const loginResult = await _loginToServer(server, port, adminid, adminpassword);
     if (!loginResult.result) return loginResult;    // failed to connect or login
 
     try {   // try to publish now

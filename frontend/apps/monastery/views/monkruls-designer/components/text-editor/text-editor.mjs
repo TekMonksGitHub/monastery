@@ -46,7 +46,7 @@ async function open(element) {
 async function save(element) {
 	const host = text_editor.getHostElement(element);
 	const jsContents = _getValue(host);
-	util.downloadFile(jsContents, "text/javascript", host.getAttribute("downloadfilename")||"code.js");
+	util.downloadFile(jsContents, "text/javascript", decodeURIComponent(host.getAttribute("downloadfilename"))||"code.js");
 }
 
 function _getValue(host) {

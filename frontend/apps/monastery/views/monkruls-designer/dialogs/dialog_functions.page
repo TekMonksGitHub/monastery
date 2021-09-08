@@ -1,7 +1,7 @@
 SCHEMA
 ======
 {
-    "code": {"html":"text-editor", "downloadfilename":"{{{description}}}.js"}
+    "code": {"html":"text-editor", "downloadfilename":"{{{uriEncodedDescription}}}.js"}
 }
 ======
 

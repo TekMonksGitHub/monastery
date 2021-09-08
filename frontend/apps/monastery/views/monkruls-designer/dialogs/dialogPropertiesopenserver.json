@@ -1,6 +1,5 @@
 {
-    "showOKButton": true,
-    "okLabel": "{{i18n.Open}}",
+    "showOKButton": false,
     "showCancelButton": false,
     "modal": false,
     "okIcon": "./views/{{url.view}}/dialogs/ok.svg",
@@ -21,7 +20,7 @@
     "var--button-background-color": "#B6DCFE",
     "var--button-text-color": "black",
     "var--margin-bottom": "0px",
-    "var--error-display": "none",
+    "var--error-display": "block",
     "var--dialog-position": "absolute",
     "var--box-shadow": "none",
     "var--dialog-border": "1px solid #98CCFD",

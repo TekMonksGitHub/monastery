@@ -11,7 +11,10 @@
         "drag-drop": "components/drag-drop",
         "html-fragment": "../shared/components/html-fragment",
         "image-button": "../shared/components/image-button",
-        "context-menu": "components/context-menu"
+        "context-menu": "components/context-menu",
+        "item-list": "components/item-list"
     },
-    "initModules": {"monkrulsmodel": "model/monkrulsmodel.mjs", "nodeRepository": "components/pluggable-ribbon/lib/nodeRepository.mjs"}
+    "initModules": { "monkrulsmodel": "model/monkrulsmodel.mjs", 
+        "nodeRepository": "components/pluggable-ribbon/lib/nodeRepository.mjs",
+        "openserverhelper": "js/openserverhelper.mjs" }
 }

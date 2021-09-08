@@ -2,7 +2,7 @@ SCHEMA
 ======
 {
     "data": { "html":"spread-sheet", "rows":15, "columns":5, "onlyText": "true", "barstyle": "0px solid #4788C7",
-        "downloadfilename":"{{{description}}}.csv", "styleBody":"url(./views/{{url.view}}/dialogs/monkrulsTable.styleBody.data.css)",
+        "downloadfilename":"{{{uriEncodedDescription}}}", "styleBody":"url(./views/{{url.view}}/dialogs/monkrulsTable.styleBody.data.css)",
         "dialogTheme": "encodeURIComponent(url(./views/{{url.view}}/dialogs/dialogPropertiesPrompt.json))" },
     "type": { "html":"input", "type":"hidden", "value":"CSV" }
 }

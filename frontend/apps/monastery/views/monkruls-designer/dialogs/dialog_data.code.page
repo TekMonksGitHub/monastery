@@ -1,7 +1,7 @@
 SCHEMA
 ======
 {
-    "data": { "html":"text-editor", "downloadfilename":"{{{description}}}.json" },
+    "data": { "html":"text-editor", "downloadfilename":"{{{uriEncodedDescription}}}.json" },
     "type": { "html":"input", "type":"hidden", "value":"JSON/Javascript" }
 }
 ======

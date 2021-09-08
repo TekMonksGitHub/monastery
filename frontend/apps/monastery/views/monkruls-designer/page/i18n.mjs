@@ -41,7 +41,8 @@ export const i18n = {
         "Description": "Develop business rules",
         "AllTestObjects": "All test objects",
         "ObjectsToSimulate": "Objects to simulate",
-        "Drag": "Drag"
+        "Drag": "Drag",
+        "DoubleClickToOpen": "Double click to open"
     },
 
     hi: {
@@ -86,7 +87,8 @@ export const i18n = {
         "Description": "व्यापार के नियम विकसित करें",
         "AllTestObjects": "सभी परीक्षण वस्तुएं",
         "ObjectsToSimulate": "अनुकरण करने के लिए वस्तुएं",
-        "Drag": "खींचें"
+        "Drag": "खींचें",
+        "DoubleClickToOpen": "खोलने के लिए डबल क्लिक करें"
     }, 
 
     ja: {
@@ -131,6 +133,7 @@ export const i18n = {
         "Description": "ビジネスルールを作成する",
         "AllTestObjects": "すべてのテストオブジェクト",
         "ObjectsToSimulate": "シミュレートするオブジェクト",
-        "Drag": "引っ張る"
+        "Drag": "引っ張る",
+        "DoubleClickToOpen": "ダブルクリックして開きます"
     }
 }
