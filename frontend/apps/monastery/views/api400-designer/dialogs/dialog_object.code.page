@@ -1,0 +1,51 @@
+SCHEMA
+======
+{
+    "data": { "html":"text-editor", "downloadfilename":"{{{uriEncodedDescription}}}.json" },
+    "type": { "html":"input", "type":"hidden", "value":"JSON/Javascript" }
+}
+======
+
+
+LAYOUT
+=================
+---------------------  
+|       data        |      
+---------------------
+|       type        |
+---------------------
+=================
+Row Heights = calc(100vh - 152px), 0px
+Col Widths = 100%
+=================
+
+
+CSS CLASSES
+===========
+CONTAINER CLASSES = grid-container-extension
+ITEM CLASSES = grid-item-extension
+PER ITEM CLASS = class
+===========
+
+CSS
+=======
+.grid-container-extension {
+    height: 100%;
+}
+
+.grid-item-extension {
+    background-color: var(--dialog-background, white);
+    padding: 10px 20px 10px 20px;
+    display: flex;
+    flex-flow: row;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0%;
+    display: inline-block;
+    width: 100%;
+}
+
+text-editor#data {position: relative;}
+=======

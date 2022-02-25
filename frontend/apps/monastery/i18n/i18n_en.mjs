@@ -22,5 +22,15 @@ export const i18n = {
 "UserID": "User ID",
 "Password": "Password",
 "NotAuthorized": "Not Authorized",
-"LoginError": "Login error"
+"LoginError": "Login error",
+"Parameters":"Parameters",
+"Message":"Message to Send in API Response",
+"PackageName":"Package Name",
+"Server":"Server",
+"Port":"Port",
+"AdminID":"AdminID",
+"AdminPassword":"AdminPassword",
+"Publish":"Publish",
+"Variables":"Variables"
+
 }

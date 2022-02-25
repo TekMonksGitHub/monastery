@@ -1,0 +1,82 @@
+SCHEMA
+======
+{
+    "name": {"html":"input", "type":"text", "placeholder":"{{i18n.PackageName}}", "required":"true", "value":"{{modelName}}", "spellcheck":"false"},
+    "server": {"html":"input", "type":"text", "placeholder":"{{i18n.Server}}", "required":"true", "spellcheck":"false"},
+    "port": {"html":"input", "type":"number", "placeholder":"{{i18n.Port}}", "required":"true"},
+    "adminid": {"html":"input", "type":"text", "placeholder":"{{i18n.AdminID}}", "required":"true", "spellcheck":"false"},
+    "adminpassword": {"html":"input", "type":"password", "placeholder":"{{i18n.AdminPassword}}", "required":"true"}
+}
+======
+
+
+LAYOUT
+=================
+------------------------------------
+|              name                |
+------------------------------------
+|   server    |     port           |
+------------------------------------
+|   adminid   |    adminpassword   |      
+------------------------------------
+=================
+Row Heights = 3.7em, 3.7em, 3.7em
+Col Widths = 50%, 50%
+=================
+
+
+CSS CLASSES
+===========
+CONTAINER CLASSES = grid-container-extension
+ITEM CLASSES = grid-item-extension
+PER ITEM CLASS = class
+===========
+
+CSS
+=======
+.grid-container-extension {
+    height: 100%;
+}
+
+.grid-item-extension {
+    background-color: var(--dialog-background, white);
+    padding: 10px 20px 10px 20px;
+    display: flex;
+    flex-flow: row;
+    box-sizing: border-box;
+}
+
+.grid-item-extension > input, .grid-item-extension > input:focus, 
+        .grid-item-extension > select, .grid-item-extension > select:focus, 
+        .grid-item-extension > textarea, .grid-item-extension > textarea:focus {
+    width: 100%;
+    border-radius: 5px;
+    border: 0px;
+    outline: none;
+    padding: 10px;
+    resize: none;
+    margin-bottom:10px; 
+    font-family: inherit;
+}
+input[type="text"]::placeholder { 
+opacity:0.6;              
+}
+
+body {
+    margin: 0%;
+    display: inline-block;
+    width: 100%;
+}
+div#buttonbar{
+    margin-right:30px;
+}
+
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+=======
