@@ -1,0 +1,38 @@
+table {
+    font-size: smaller;
+    font-family: sans-serif;
+    border-radius: 5px;
+    border: 0.5px solid #4788C7;
+    overflow: hidden;
+}
+
+td {
+    border: 0.5px solid #4788C7;
+    background-color: white;
+    color: #444444;
+    padding: 0px;
+    width: 10em;
+    overflow: hidden;
+}
+
+tr:first-child > td {
+    background-color: #4788C7; 
+    color: white;
+}
+
+tr:first-child > td:last-child {border-color: #4788C7; border-top-right-radius: 4px;}
+tr:last-child > td:last-child {border-color: #4788C7; border-bottom-right-radius: 4px;}
+tr:last-child > td:first-child {border-bottom-left-radius: 4px;}
+
+td > textarea:focus {
+    background-color: #DFF0FE;
+    outline: none;
+    color: #444444;
+}
+td:focus-within {background-color: #DFF0FE; color: #444444;}
+
+span#tabbar > span.tabbutton {
+    background-color: #D6EFFF;
+    border: 1px solid #4788C7;
+    border-top: transparent;
+}

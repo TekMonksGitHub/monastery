@@ -1,0 +1,90 @@
+<!--
+/** 
+ * Floating Window hosting component.
+ * (C) 2020 TekMonks. All rights reserved.
+ * License: See enclosed LICENSE file.
+ */
+ -->
+<style>
+body, html {
+    margin: 0; 
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+div#container::-webkit-scrollbar {
+    width: 0.5em !important;
+    height: 0.5em !important;
+    scroll-behavior: smooth !important;
+}
+
+div#container::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    margin: 20px;
+    border-radius: 10px !important;
+}
+
+div#container::-webkit-scrollbar-thumb {
+    background-color: darkgrey !important;
+    border-radius: 10px !important;
+    background-clip: padding-box;
+}
+
+div#container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    overflow-y: auto;
+    background-color: white;
+    border-radius: 10px;
+    border: 1px solid #C6E3FF;
+    height: 100%;
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+div#container > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 5px;
+    width: 7.5em;
+    min-width: 2.5em;
+    box-sizing: border-box;
+}
+div#container > div > span {
+    text-align: center;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.75em;
+}
+
+div#container > div > img {
+    width: 50%;
+}
+
+span#label {
+    font-size: smaller;
+    margin: 4px;
+}
+
+.beingDragged {opacity: 0.5;}
+</style>
+
+{{{styleBody}}}
+
+<span id="label">{{label}}</span>
+<div id="container">
+    {{#items}}
+    <div id="{{id}}" {{#ondblclick}}ondblclick="{{ondblclick}}"{{/ondblclick}}>
+        <img src="{{img}}"><span>{{label}}</span>
+    </div>
+    {{/items}}
+</div>
