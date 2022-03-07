@@ -2,11 +2,9 @@ import { monkshu_component } from "/framework/js/monkshu_component.mjs";
 import { util } from "/framework/js/util.mjs";
 const COMPONENT_PATH = util.getModulePath(import.meta);
 
-async function addTextBox(renderingParent, renderingContainer,id) {
+async function addTextBox(renderingParent, renderingContainer,id,renderingElementName) {
   const parent = window.monkshu_env.components[renderingParent];
-  const shadowRoot = parent.getShadowRootByHostId(
-    parent.elements.listbox.id
-  );
+  const shadowRoot = parent.shadowRoots[`${renderingElementName}`];
   const parentContainer = shadowRoot.querySelector(`#${renderingContainer}`);
   //Creating a text box element
   const inputElement = document.createElement("input");
@@ -15,11 +13,9 @@ async function addTextBox(renderingParent, renderingContainer,id) {
   inputElement.setAttribute("placeholder", `${id}-${parentContainer.children.length+1}`);
   parentContainer.appendChild(inputElement);
 }
-async function addTwoTextBox(renderingParent, renderingContainer,id1,id2) {
+async function addTwoTextBox(renderingParent, renderingContainer,id1,id2,renderingElementName) {
   const parent = window.monkshu_env.components[renderingParent];
-  const shadowRoot = parent.getShadowRootByHostId(
-    parent.elements.listbox.id
-  );
+  const shadowRoot = parent.shadowRoots[`${renderingElementName}`]
   const parentContainer = shadowRoot.querySelector(`#${renderingContainer}`);
 
   //Creating a div element having two text box

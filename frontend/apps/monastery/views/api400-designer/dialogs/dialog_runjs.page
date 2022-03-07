@@ -1,7 +1,7 @@
 SCHEMA
 ======
 {
-    "code": {"html":"code-editor","showToolbar":"false"}
+    "code": {"html":"text-editor","showToolbar":"false","mode":"javascript"}
 }
 ======
 
@@ -43,6 +43,6 @@ body {
     display: inline-block;
     width: 100%;
 }
+text-editor#code {position: relative;}
 
-code-editor#code {position: relative;}
 =======

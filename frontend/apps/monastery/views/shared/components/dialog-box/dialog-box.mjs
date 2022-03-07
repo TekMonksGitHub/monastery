@@ -28,14 +28,19 @@ let _pendingRenderResolves;
  * @param hostID Optional: The ID to host the custom component inside the main HTML, only needed if default ID clashes
  */
 async function showDialog(themeOrThemePath, templateOrTemplateURL, templateData, retValIDs, callback, hostID=DEFAULT_HOST_ID) {
+   
     await _initDialogFramework(hostID); 
     await dialog_box.bindData(await _processTheme((typeof themeOrThemePath == "string" || themeOrThemePath instanceof URL) ?
         await $$.requireJSON(themeOrThemePath) : themeOrThemePath||DEFAULT_THEME), hostID );   // bind the theme data
 
+    
     const shadowRoot = dialog_box.getShadowRootByHostId(hostID); _resetUI(shadowRoot);
+   
     const templateHTML = typeof templateOrTemplateURL == "string" ? (templateData ? await router.expandPageData(
         templateOrTemplateURL, undefined, templateData) : templateOrTemplateURL) : await router.loadHTML(templateOrTemplateURL, templateData, false);
+        
     const templateRoot = new DOMParser().parseFromString(templateHTML, "text/html").documentElement;
+    
     shadowRoot.querySelector("div#dialogcontent").appendChild(templateRoot);    // add dialog content
     router.runShadowJSScripts(templateRoot, shadowRoot);
 
@@ -120,9 +125,14 @@ function hideDialog(element) {
  * @returns The values of elements whose IDs were passed as retValIDs in showDialog function
  */
 async function submit(element) {
+  
+    console.log(dialog_box.getMemoryByContainedElement(element));
+    console.log(dialog_box.getMemory(element||DEFAULT_HOST_ID));
     const memory = element instanceof Element ? dialog_box.getMemoryByContainedElement(element) : 
         dialog_box.getMemory(element||DEFAULT_HOST_ID);
+        
     const retVals = _getRetVals(memory, dialog_box.getShadowRootByContainedElement(element));
+    console.log(retVals);
     if (memory.callback && await memory.callback("submit", retVals, element)) hideDialog(element);
     else if (!memory.callback) hideDialog(element);
 } 
@@ -175,8 +185,12 @@ function getElementValue(elementID, hostID) {
 
 function _getRetVals(memory, shadowRoot) {
     const ret = {};
+    console.log(memory,1);
+    console.log(shadowRoot,2);
+    console.log(shadowRoot.querySelector(`#decisiontable`));
     if (memory.retValIDs) for (const retValId of memory.retValIDs) 
         ret[retValId] = shadowRoot.querySelector(`#${retValId}`)?shadowRoot.querySelector(`#${retValId}`).value:null;
+        console.log(ret);
     return ret;
 }
 
@@ -211,7 +225,9 @@ async function _processTheme(theme) {
     if (theme.showCancelIcon) clone.showCancelIcon = true; else delete clone.showCancelIcon;
     if (theme.showOKButton) clone.showOKButton = true; else delete clone.showOKButton;
     if (theme.showCancelButton) clone.showCancelButton = true; else delete clone.showCancelButton;
+    console.log(clone);
     return clone;
+   
 }
 
 export const dialog_box = {showDialog, trueWebComponentMode: true, hideDialog, showError, hideError, 

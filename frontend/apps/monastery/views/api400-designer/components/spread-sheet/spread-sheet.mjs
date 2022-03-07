@@ -16,7 +16,8 @@ const COMPONENT_PATH = util.getModulePath(import.meta), ROW_PROP = "__org_monksh
 	DIALOG = window.monkshu_env.components["dialog-box"], CONTEXT_MENU = window.monkshu_env.components["context-menu"],
 	DIALOG_HOST_ID = "org_monkshu_spreadsheet_component_dialog";
 
-async function elementConnected(element) {
+	
+	async function elementConnected(element) {
 	
 	Object.defineProperty(element, "value", {get: _=>_getValue(element), set: value=>_setValue(value, element)});
 	await $$.require(`${COMPONENT_PATH}/3p/papaparse.min.js`);	// we need this to export and import data as CSV
@@ -68,7 +69,7 @@ function cellpastedon(element, event) {
 }
 
 async function rowop(op, element) {
-	console.log(element);
+	
 	const host = spread_sheet.getHostElement(element);
 	let numOfRows = parseInt(_getActiveTabObject(host)[ROW_PROP], 10); const numOfColumns = _getActiveTabObject(host)[COLUMN_PROP];
 	numOfRows = op=="add"?numOfRows+1:numOfRows-1; _getActiveTabObject(host)[ROW_PROP] = numOfRows;
@@ -144,18 +145,23 @@ const reloadSheets = host => switchSheet(host.id, _getActiveTab(host), true)
 
 function _getValue(host) {
 	const activeSheetValue = _getSpreadSheetAsCSV(host.id);
+	console.log("activeSheetValue");
+	console.log(activeSheetValue);
 	if (host.getAttribute("needPluginValues") || Object.keys(_getAllTabs(host)).length > 1) {
 		const retValue = [], shadowRoot = spread_sheet.getShadowRootByHost(host); 
 		_getActiveTabObject(host).data = activeSheetValue;	// update active tab so its value is correct
 		for (const tabID in _getAllTabs(host)) retValue.push({type: "tab", ..._getTabObject(host, tabID)});
 		if (host.getAttribute("needPluginValues")) for (const pluginValueID of host.getAttribute("needPluginValues").split(","))
 			retValue.push({type:"plugin", id: pluginValueID, data: shadowRoot.querySelector(`#${pluginValueID}`)?.value});
+			
 		return JSON.stringify(retValue, null, 4);
 	} else return activeSheetValue;
 }
 
 async function _setValue(value, host) {
-	const shadowRoot = spread_sheet.getShadowRootByHost(host); let isJSONValue = true; try {JSON.parse(value)} catch (err) {isJSONValue  = false;}
+	const shadowRoot = spread_sheet.getShadowRootByHost(host);
+	
+	 let isJSONValue = true; try {JSON.parse(value)} catch (err) {isJSONValue  = false;}
 	if (isJSONValue) {
 		const parsedObjects = JSON.parse(value), allTabs = {}; 
 
@@ -197,15 +203,17 @@ function _getSpreadSheetAsCSV(hostID, dontTrim) {
 }
 
 async function _setSpreadSheetFromCSV(value, hostID) {	// will set data for the active sheet only
+	
 	const csvArrayOfArrays = value == "" ? [[]] : Array.isArray(value) ?
 		value : Papa.parse(value.trim(), {header: false, skipEmptyLines: true}).data;
 	if ((!Array.isArray(csvArrayOfArrays)) || (!Array.isArray(csvArrayOfArrays[0]))) {LOG.error("Bad CSV data"); return;}	// bad CSV data
 	
 	const numOfColumnsInCSV = csvArrayOfArrays[0].length, numOfRowsInCSV = csvArrayOfArrays.length;
+	
 	const host = spread_sheet.getHostElementByID(hostID), data = await _createElementData(host, 
 		numOfRowsInCSV>_getActiveTabObject(host)[ROW_PROP]?numOfRowsInCSV:_getActiveTabObject(host)[ROW_PROP], 
 		numOfColumnsInCSV>_getActiveTabObject(host)[COLUMN_PROP]?numOfColumnsInCSV:_getActiveTabObject(host)[COLUMN_PROP]);
-	
+
 	await spread_sheet.bindData(data, host.id);	// adjust the sheet size to match the data, this will call elementRendered
 
 	// fill in the data

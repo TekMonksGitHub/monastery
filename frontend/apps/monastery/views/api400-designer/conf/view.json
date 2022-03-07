@@ -16,7 +16,9 @@
         "list-box":"components/list-box",
         "tool-box":"components/tool-box",
         "text-box":"components/text-box",
-        "code-editor":"components/code-editor"
+        "code-editor":"components/code-editor",
+        "sql-editor":"components/sql-editor"
+
     },
     "initModules": { "api400model": "model/api400model.mjs", 
         "nodeRepository": "components/pluggable-ribbon/lib/nodeRepository.mjs",
