@@ -1,0 +1,67 @@
+SCHEMA
+======
+{
+     "result": {"html":"input", "type":"text", "placeholder":"{{i18n.Result}}", "required":"true", "spellcheck":"false"},
+     "sql": {"html":"text-editor","showToolbar":"false","mode":"sql"}
+}
+======
+
+LAYOUT
+=================
+----------------
+|   result     |
+----------------
+|    sql       |
+----------------
+=================
+Row Heights = 6em,calc(100vh - 152px - 6em )
+Col Widths = 100%
+=================
+
+
+CSS CLASSES
+===========
+CONTAINER CLASSES = grid-container-extension
+ITEM CLASSES = grid-item-extension
+PER ITEM CLASS = class
+===========
+
+CSS
+=======
+.grid-container-extension {
+    height100%;
+    width:100%;
+}
+
+.grid-item-extension {
+    background-color: var(--dialog-background, white);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-flow: row;
+    box-sizing: border-box;
+}
+
+::placeholder {opacity: 0.4;}
+
+body {
+    margin: 0%;
+    display: inline-block;
+    width: 100%;
+}
+input[type=text]#result {
+    width: 19%;
+    margin: 3.5em 0px 20px 6px;
+    outline: none;
+    padding: 6px;
+    resize: none;
+    border: none;
+    border-radius: 2px;
+    font-family: inherit;
+}
+text-editor#sql{position: relative;}
+
+
+
+
+=======

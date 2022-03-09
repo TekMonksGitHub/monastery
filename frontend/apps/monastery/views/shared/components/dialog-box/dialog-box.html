@@ -148,14 +148,17 @@ span#close > img {
     height: 20px;
 }
 span#close > img#ok {padding-right: 10px;}
-
+div#extra{
+    overflow: auto;
+}
 </style>
 
 {{{styleBody}}}
 
 {{#modal}}<div id="modalcurtain"></div>{{/modal}}
+
 <div id="dialog">
-    <span id="close">{{#componentPath}}
+    <div id="extra">  <span id="close">{{#componentPath}}
         {{#showOKIcon}}<img id="ok" src="{{okIcon}}{{^okIcon}}{{componentPath}}/img/ok.svg{{/okIcon}}" onclick="monkshu_env.components['dialog-box'].submit(this)">{{/showOKIcon}}
         {{#showCancelIcon}}<img id="close" src="{{closeIcon}}{{^closeIcon}}{{componentPath}}/img/close.svg{{/closeIcon}}" onclick="monkshu_env.components['dialog-box'].cancel(this)">{{/showCancelIcon}}
     {{/componentPath}}</span>
@@ -167,5 +170,6 @@ span#close > img#ok {padding-right: 10px;}
     <div id="buttonbar">
         {{#showOKButton}}<span id="ok" onclick="monkshu_env.components['dialog-box'].submit(this)">{{#okLabel}}{{.}}{{/okLabel}}{{^okLabel}}{{i18n.OK}}{{/okLabel}}</span>{{/showOKButton}}
         {{#showCancelButton}}<span id="cancel" onclick="monkshu_env.components['dialog-box'].cancel(this)">{{#cancelLabel}}{{.}}{{/cancelLabel}}{{^cancelLabel}}{{i18n.Cancel}}{{/cancelLabel}}</span>{{/showCancelButton}}
-    </div>
+    </div></div>
+  
 </div>

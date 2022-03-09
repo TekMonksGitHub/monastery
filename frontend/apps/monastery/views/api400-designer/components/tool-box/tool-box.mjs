@@ -10,7 +10,7 @@ import { text_box } from "../text-box/text-box.mjs";
 
 const COMPONENT_PATH = util.getModulePath(import.meta);
 const elementConnected = async (element) => {
-  console.log(element);
+  
   const data = {
     text: element.getAttribute("text"),
     onclick: element.getAttribute("onclickHandler"),
@@ -23,28 +23,30 @@ const elementConnected = async (element) => {
 
   tool_box.setData(element.id, data);
 };
-async function addElement(renderingParent, renderingContainer, idText) {
+async function addElement(renderingParent, renderingContainer, idText,renderingElementName) {
   
   text_box.addTextBox(
     `${renderingParent}`,
     `${renderingContainer}`,
-    `${idText}`
+    `${idText}`,
+    `${renderingElementName}`
   );
  
 }
-async function addChgvarElement(renderingParent, renderingContainer, idFirstBox,idSecondBox) {
+async function addChgvarElement(renderingParent, renderingContainer, idFirstBox,idSecondBox,renderingElementName) {
   
   text_box.addTwoTextBox(
     `${renderingParent}`,
     `${renderingContainer}`,
     `${idFirstBox}`,
-    `${idSecondBox}`
+    `${idSecondBox}`,
+    `${renderingElementName}`
   );
  
 }
-async function removeElement(renderingParent, renderingContainer, elementName) {
+async function removeElement(renderingParent, renderingContainer, renderingElementName) {
   const box = window.monkshu_env.components[`${renderingParent}`];
-  const shadowRoot = box.getShadowRootByHostId(box.elements[elementName].id);
+  const shadowRoot =  box.shadowRoots[renderingElementName];
   const parent = shadowRoot.querySelector(`#${renderingContainer}`);
   parent.removeChild(parent.lastChild);
 }
