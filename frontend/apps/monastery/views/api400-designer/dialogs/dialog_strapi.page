@@ -6,7 +6,7 @@ SCHEMA
             "onclickRemoveHandler":"window.monkshu_env.components['tool-box'].removeElement('list-box','page-contents','listbox')",
             "text":"{{i18n.Parameters}}",
             "style":"width:100%; height: 100%;"},
-  "listbox":{"html":"list-box","style":"width:100%; height: 100%;"}
+  "listbox":{"html":"list-box","style":"width:100%; height: 100%;","type":"Parameter"}
  
 }
 ======

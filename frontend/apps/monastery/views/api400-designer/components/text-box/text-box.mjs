@@ -37,10 +37,10 @@ async function addTextBox(renderingParent, renderingContainer,id,renderingElemen
   if(value!="undefined"){ inputElement.setAttribute("value", `${value}`);}
   parentContainer.appendChild(inputElement);
 }
-async function addTwoTextBox(renderingParent, renderingContainer,id1,id2,renderingElementName) {
+async function addTwoTextBox(renderingParent, renderingContainer,id1,id2,renderingElementName,values) {
   const parent = window.monkshu_env.components[renderingParent];
   const shadowRoot = parent.shadowRoots[`${renderingElementName}`];
-  const parentContainer = shadowRoot.querySelectorAll(`#${renderingContainer}`);
+  const parentContainer = shadowRoot.querySelector(`#${renderingContainer}`);
 
   //Creating a div element having two text box
   const divElement = document.createElement("div");
@@ -50,11 +50,13 @@ async function addTwoTextBox(renderingParent, renderingContainer,id1,id2,renderi
   inputElement1.classList.add("firstbox");
   inputElement1.setAttribute("id", `${id1}${parentContainer.children.length+1}`);
   inputElement1.setAttribute("placeholder", `${id1}${parentContainer.children.length+1}`);
+ // if(values!="undefined"){ inputElement1.setAttribute("value", `${values.Variable}`);}
   const inputElement2 = document.createElement("input");
   inputElement2.setAttribute("type", "text");
   inputElement2.classList.add("secondbox");
   inputElement2.setAttribute("id", `${id2}${parentContainer.children.length+1}`);
   inputElement2.setAttribute("placeholder", `${id2}${parentContainer.children.length+1}`);
+ // if(values!="undefined"){ inputElement2.setAttribute("value", `${values.Value}`);}
   divElement.append(inputElement1,inputElement2);
   parentContainer.appendChild(divElement);
 }
