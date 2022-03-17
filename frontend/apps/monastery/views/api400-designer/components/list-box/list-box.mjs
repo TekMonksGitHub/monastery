@@ -8,12 +8,14 @@ const DEFAULT_HOST_ID = "__org_monkshu_list_box";
 const DIALOG_HOST_ID = "__org_monkshu_dialog_box";
 
 const elementConnected = async (element) => {
-  Object.defineProperty(element, "value", { get: (_) => _getValue(element),set: (value) => _setValue(value, element),});
+  console.log(element.getAttribute("type"));
+  Object.defineProperty(element, "value", { get: (_) => _getValue(element,element.getAttribute("type")),set: (value) => _setValue(value, element),});
   const data = { styleBody: element.getAttribute("styleBody") ? `<style>${element.getAttribute("styleBody")}</style>` : undefined, };
 
   const memory = list_box.getMemoryByHost(DEFAULT_HOST_ID);
-  if (memory.box && memory.box.length) { _setValue(memory.box,element) }
-  else { memory.box = {}; }
+  if (memory.Parameter && memory.Parameter.length&&element.getAttribute("type")=="Parameter") { _setValue(memory,element,element.getAttribute("type")) }
+  else if(memory.Message && memory.Message.length&&element.getAttribute("type")=="Message"){ _setValue(memory,element,element.getAttribute("type"))}
+ // else { memory.Parameter = {};memory.Message = {}; }
 };
 
 async function elementRendered(element) {
@@ -23,18 +25,23 @@ async function elementRendered(element) {
 
 }
 
-function _getValue(host) {
+function _getValue(host,type) {
+  console.log(type);
+  console.log(host);
   const shadowRoot = dialog_box.getShadowRootByContainedElement(host);
   if(shadowRoot.querySelector("list-box#listbox").children.length>1){
     {
       const textBoxContainer =shadowRoot.querySelector("div#page-contents");
       const textBoxValues = [];
   for (const textBox of textBoxContainer.children) {
-    const retValue = shadowRoot.querySelector(`#${textBox.getAttribute("id")}`).value;
+    const retValue = shadowRoot.querySelector(`#${textBox.getAttribute('id')}`).value;
     textBoxValues.push(retValue);
   }
   const memory = list_box.getMemoryByHost(DEFAULT_HOST_ID);
-  memory.box = textBoxValues;
+
+  memory[`${type}`] = textBoxValues;
+  console.log(memory);
+
   return textBoxValues;
     }}
     
@@ -45,15 +52,38 @@ function _getValue(host) {
     textBoxValues.push(retValue);
   }
   const memory = list_box.getMemoryByHost(DEFAULT_HOST_ID);
-  memory.box = textBoxValues;
+  memory[`${type}`] = textBoxValues;
+  console.log(memory);
   return textBoxValues;
 }
 
-function _setValue(textBoxValues,host) {
+function _setValue(memory,host,type) {
+  console.log(host);
+  const textBoxValues = memory[`${type}`]
    // removing previous elements
    list_box.shadowRoots.listbox.querySelector("#page-contents").innerHTML = '';
    for (const textBoxValue of textBoxValues) {
-     window.monkshu_env.components['tool-box'].addElement('list-box','page-contents','Parameter','listbox',`${textBoxValue}`);
+     window.monkshu_env.components['tool-box'].addElement('list-box','page-contents',`${type}`,'listbox',`${textBoxValue}`);
+   }
+   if(type=="variable"){
+    for (const textBoxValue of textBoxValues) {
+      window.monkshu_env.components['tool-box'].addChgvarElement('list-box','page-contents',`${type}`,'Value','listbox',`${textBoxValue}`)
+    }
+   }
+   const shadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
+    const textBoxes = list_box.shadowRoots.listbox.querySelector("body").innerHTML;
+    const templateRoot = new DOMParser().parseFromString(textBoxes, "text/html").documentElement;
+    shadowRoot.querySelector("list-box#listbox").appendChild(templateRoot); 
+    router.runShadowJSScripts(templateRoot, shadowRoot)
+
+}
+function _setMessageValue(memory,host,type) {
+  console.log(host);
+  const textBoxValues = memory[`${type}`]
+   // removing previous elements
+   list_box.shadowRoots.listbox.querySelector("#sndapimsg-contents").innerHTML = '';
+   for (const textBoxValue of textBoxValues) {
+     window.monkshu_env.components['tool-box'].addElement('list-box','sndapimsg-contents',`${type}`,'listbox',`${textBoxValue}`);
    }
    const shadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
     const textBoxes = list_box.shadowRoots.listbox.querySelector("body").innerHTML;
