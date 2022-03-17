@@ -6,7 +6,8 @@
 import { util } from "/framework/js/util.mjs";
 import { monkshu_component } from "/framework/js/monkshu_component.mjs";
 import { text_box } from "../text-box/text-box.mjs";
-
+const DIALOG_HOST_ID = "__org_monkshu_dialog_box";
+import { dialog_box } from "../../../shared/components/dialog-box/dialog-box.mjs";
 
 const COMPONENT_PATH = util.getModulePath(import.meta);
 const elementConnected = async (element) => {
@@ -23,13 +24,14 @@ const elementConnected = async (element) => {
 
   tool_box.setData(element.id, data);
 };
-async function addElement(renderingParent, renderingContainer, idText,renderingElementName) {
+async function addElement(renderingParent, renderingContainer, idText,renderingElementName,value) {
   
   text_box.addTextBox(
     `${renderingParent}`,
     `${renderingContainer}`,
     `${idText}`,
-    `${renderingElementName}`
+    `${renderingElementName}`,
+    `${value}`
   );
  
 }
@@ -45,7 +47,15 @@ async function addChgvarElement(renderingParent, renderingContainer, idFirstBox,
  
 }
 async function removeElement(renderingParent, renderingContainer, renderingElementName) {
+  const shadowRoot1 = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
+  if(shadowRoot1.querySelector("list-box#listbox").children.length>1)
+    {
+      const parentContainer =shadowRoot1.querySelector("div#page-contents");
+      parentContainer.removeChild(parentContainer.lastChild);
+      return true;
+    }
   const box = window.monkshu_env.components[`${renderingParent}`];
+
   const shadowRoot =  box.shadowRoots[renderingElementName];
   const parent = shadowRoot.querySelector(`#${renderingContainer}`);
   parent.removeChild(parent.lastChild);
@@ -64,18 +74,3 @@ monkshu_component.register(
   `${COMPONENT_PATH}/tool-box.html`,
   tool_box
 );
-/*const list_box = window.monkshu_env.components["list-box"];
-  const shadowRoot = list_box.getShadowRootByHostId(
-    list_box.elements.listbox.id
-  );
-  const text_box = window.monkshu_env.components["text-box"];
-  console.log(text_box);
-  const parent = shadowRoot.querySelector("#page-contents");
-  const inputElement = document.createElement("input");
-  inputElement.setAttribute("type", "text");
-  inputElement.setAttribute("id", `Parameter${parent.children.length+1}`);
-  inputElement.setAttribute("placeholder", `Parameter${parent.children.length+1}`);
-  parent.appendChild(inputElement);
-
- */
-//const textBoxComponent = window.monkshu_env.components["text-box"];
