@@ -11,7 +11,7 @@ import { dialog_box } from "../../../shared/components/dialog-box/dialog-box.mjs
 
 const COMPONENT_PATH = util.getModulePath(import.meta);
 const elementConnected = async (element) => {
-  
+
   const data = {
     text: element.getAttribute("text"),
     onclick: element.getAttribute("onclickHandler"),
@@ -24,8 +24,8 @@ const elementConnected = async (element) => {
 
   tool_box.setData(element.id, data);
 };
-async function addElement(renderingParent, renderingContainer, idText,renderingElementName,value) {
-  
+async function addElement(renderingParent, renderingContainer, idText, renderingElementName, value) {
+
   text_box.addTextBox(
     `${renderingParent}`,
     `${renderingContainer}`,
@@ -33,30 +33,30 @@ async function addElement(renderingParent, renderingContainer, idText,renderingE
     `${renderingElementName}`,
     `${value}`
   );
- 
+
 }
-async function addChgvarElement(renderingParent, renderingContainer, idFirstBox,idSecondBox,renderingElementName) {
-  
+async function addChgvarElement(renderingParent, renderingContainer, idFirstBox, idSecondBox, renderingElementName, chgvarVariable, chgvarValue) {
+
   text_box.addTwoTextBox(
     `${renderingParent}`,
     `${renderingContainer}`,
     `${idFirstBox}`,
     `${idSecondBox}`,
-    `${renderingElementName}`
+    `${renderingElementName}`,
+    `${chgvarVariable}`,
+    `${chgvarValue}`
   );
- 
+
 }
 async function removeElement(renderingParent, renderingContainer, renderingElementName) {
-  const shadowRoot1 = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
-  if(shadowRoot1.querySelector("list-box#listbox").children.length>1)
-    {
-      const parentContainer =shadowRoot1.querySelector("div#page-contents");
-      parentContainer.removeChild(parentContainer.lastChild);
-      return true;
-    }
+  const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
+  if (dialogShadowRoot.querySelector("list-box#listbox").children.length > 1) {
+    const parentContainer = dialogShadowRoot.querySelector("div#page-contents");
+    parentContainer.removeChild(parentContainer.lastChild);
+    return null;
+  }
   const box = window.monkshu_env.components[`${renderingParent}`];
-
-  const shadowRoot =  box.shadowRoots[renderingElementName];
+  const shadowRoot = box.shadowRoots[renderingElementName];
   const parent = shadowRoot.querySelector(`#${renderingContainer}`);
   parent.removeChild(parent.lastChild);
 }
