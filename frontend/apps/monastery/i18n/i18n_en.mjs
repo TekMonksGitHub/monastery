@@ -32,6 +32,7 @@ export const i18n = {
 "AdminPassword":"AdminPassword",
 "Publish":"Publish",
 "Variables":"Variables",
-"Result":"Query Result Variable"
+"Result":"Query Result Variable",
+"Condition":"Condition"
 
 }

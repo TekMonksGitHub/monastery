@@ -1,0 +1,62 @@
+SCHEMA
+======
+{
+"condition": {"html":"textarea", "placeholder":"{{i18n.Condition}}", "wrap":"soft", "spellcheck":"false"}
+
+}
+======
+
+
+LAYOUT
+=================
+----------------------------  
+|       condition          |      
+----------------------------
+=================
+Row Heights = 9em
+Col Widths = 100%
+=================
+
+
+CSS CLASSES
+===========
+CONTAINER CLASSES = grid-container-extension
+ITEM CLASSES = grid-item-extension
+PER ITEM CLASS = class
+===========
+
+CSS
+=======
+.grid-container-extension {
+    height: 100%;
+}
+
+.grid-item-extension {
+    background-color: var(--dialog-background, white);
+    padding: 10px 20px 10px 20px;
+    display: flex;
+    flex-flow: row;
+    box-sizing: border-box;
+}
+
+
+.grid-item-extension > textarea, .grid-item-extension > textarea:focus {
+    width: 100%;
+    border-radius: 10px;
+    border: 0px;
+    outline: none;
+    padding: 10px;
+    resize: none;
+    margin-top:15px;
+    font-family: inherit;
+}
+
+::placeholder {opacity: 0.8;}
+
+body {
+    margin: 0%;
+    display: inline-block;
+    width: 100%;
+}
+
+=======
