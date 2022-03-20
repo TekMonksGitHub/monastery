@@ -1,7 +1,6 @@
 import { monkshu_component } from "/framework/js/monkshu_component.mjs";
 import { dialog_box } from "../../../shared/components/dialog-box/dialog-box.mjs";
 
-const DEFAULT_HOST_ID = "__org_monkshu_list_box";
 const DIALOG_HOST_ID = "__org_monkshu_dialog_box";
 async function addTextBox(renderingParent, renderingContainer, id, renderingElementName, value) {
 
@@ -11,7 +10,7 @@ async function addTextBox(renderingParent, renderingContainer, id, renderingElem
   const parentContainer = shadowRoot.querySelector(`#${renderingContainer}`);
 
   if (dialogShadowRoot.querySelector("list-box#listbox").children.length > 1) {
-    const parentContainer = dialogShadowRoot.querySelector("div#page-contents")
+    const parentContainer = dialogShadowRoot.querySelector("div#page-contents");
     const inputElement = _createElement(parentContainer, id, value)
     parentContainer.appendChild(inputElement);
     return null

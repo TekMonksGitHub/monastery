@@ -12,14 +12,22 @@ const elementConnected = async (element) => {
   const data = { styleBody: element.getAttribute("styleBody") ? `<style>${element.getAttribute("styleBody")}</style>` : undefined, };
 
   const memory = list_box.getMemoryByHost(DEFAULT_HOST_ID);
-  if (memory.Parameter && memory.Parameter.length && element.getAttribute("type") == "Parameter") { _setValue(memory, element, element.getAttribute("type")) }
-  else if (memory.Message && memory.Message.length && element.getAttribute("type") == "Message") { _setValue(memory, element, element.getAttribute("type")) }
-  else if (memory.Variable && memory.Variable.length && element.getAttribute("type") == "Variable") { _setValue(memory, element, element.getAttribute("type")) }
+  if (memory.Parameter && memory.Parameter.length && element.getAttribute("type") == "Parameter") { _setValue(memory,  element.getAttribute("type")) }
+  else if (memory.Message && memory.Message.length && element.getAttribute("type") == "Message") { _setValue(memory,  element.getAttribute("type")) }
+  else if (memory.Variable && memory.Variable.length && element.getAttribute("type") == "Variable") { _setValue(memory, element.getAttribute("type")) }
 
 };
 
 async function elementRendered(element) {
   dialog_box.getMemoryByContainedElement(element).retValIDs = ["listbox"];
+  const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
+  const parentContainer = dialogShadowRoot.querySelector("div#page-contents");
+  const noOfElements=parentContainer.children.length;
+
+  if ( element.getAttribute("type") == "Parameter" && noOfElements<1) { window.monkshu_env.components['tool-box'].addElement('list-box', 'page-contents',element.getAttribute('type'),'listbox');}
+  else if ( element.getAttribute("type") == "Message" && noOfElements<1) { window.monkshu_env.components['tool-box'].addElement('list-box', 'page-contents',element.getAttribute('type'),'listbox'); }
+  else if ( element.getAttribute("type") == "Variable" &&noOfElements<1){ window.monkshu_env.components['tool-box'].addChgvarElement('list-box', 'page-contents', 'Variable', 'Value', 'listbox');}
+
 }
 
 function _getValue(host, type) {
@@ -33,7 +41,7 @@ function _getValue(host, type) {
   return _setValuesToMemory(textBoxContainer, shadowRoot, type);
 }
 
-function _setValue(memory, host, type) {
+function _setValue(memory, type) {
 
   const textBoxValues = memory[`${type}`]
   // removing previous elements
