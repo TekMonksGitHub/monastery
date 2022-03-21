@@ -33,6 +33,8 @@ export const i18n = {
 "Publish":"Publish",
 "Variables":"Variables",
 "Result":"Query Result Variable",
-"Condition":"Condition"
+"Condition":"Condition",
+"iftrue":"True Statement",
+"iffalse":"False Statement"
 
 }
