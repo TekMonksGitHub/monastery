@@ -11,9 +11,8 @@
    
     "var--dialog-font": "Raleway",
     "var--dialog-background": "#DFF0FE",
-    "var--dialog-left": "190px",
-    "var--dialog-width": "calc(100% - 360px)",
-    "var--dialog-height":"26%",
+    "var--dialog-left": "200px",
+    "var--dialog-width": "calc(100% - 400px)",
     "var--animation-name": "flyinbottom",
     "var--animation-duration": "0.18s",
     "var--animation-left-transform": "0%",
@@ -24,6 +23,6 @@
     "var--dialog-position": "absolute",
     "var--box-shadow": "0px 10px 0px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);",
     "var--dialog-border": "1px solid #98CCFD",
-    "var--dialog-border-radius": "20px 20px 0px 0px",
+    "var--dialog-border-radius": "20px 20px 0px 0px ",
     "var--dialog-max-height": "calc(100vh )"
 }

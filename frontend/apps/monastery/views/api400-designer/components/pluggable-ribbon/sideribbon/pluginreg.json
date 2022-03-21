@@ -1,1 +1,1 @@
-["strapi","runsql","runjs","chgvar","sndapimsg","publish"]
+["strapi","runsql","runjs","condition","goto","True","False","chgvar","sndapimsg","publish"]
