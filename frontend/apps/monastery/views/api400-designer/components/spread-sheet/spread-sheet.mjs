@@ -145,8 +145,7 @@ const reloadSheets = host => switchSheet(host.id, _getActiveTab(host), true)
 
 function _getValue(host) {
 	const activeSheetValue = _getSpreadSheetAsCSV(host.id);
-	console.log("activeSheetValue");
-	console.log(activeSheetValue);
+
 	if (host.getAttribute("needPluginValues") || Object.keys(_getAllTabs(host)).length > 1) {
 		const retValue = [], shadowRoot = spread_sheet.getShadowRootByHost(host); 
 		_getActiveTabObject(host).data = activeSheetValue;	// update active tab so its value is correct
