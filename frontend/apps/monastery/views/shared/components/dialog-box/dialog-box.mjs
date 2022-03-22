@@ -125,14 +125,9 @@ function hideDialog(element) {
  * @returns The values of elements whose IDs were passed as retValIDs in showDialog function
  */
 async function submit(element) {
-  
-    console.log(dialog_box.getMemoryByContainedElement(element));
-    console.log(dialog_box.getMemory(element||DEFAULT_HOST_ID));
     const memory = element instanceof Element ? dialog_box.getMemoryByContainedElement(element) : 
-        dialog_box.getMemory(element||DEFAULT_HOST_ID);
-        
+        dialog_box.getMemory(element||DEFAULT_HOST_ID);   
     const retVals = _getRetVals(memory, dialog_box.getShadowRootByContainedElement(element));
-    console.log(retVals);
     if (memory.callback && await memory.callback("submit", retVals, element)) hideDialog(element);
     else if (!memory.callback) hideDialog(element);
 } 
@@ -185,12 +180,8 @@ function getElementValue(elementID, hostID) {
 
 function _getRetVals(memory, shadowRoot) {
     const ret = {};
-    console.log(memory,1);
-    console.log(shadowRoot,2);
-    console.log(shadowRoot.querySelector(`#decisiontable`));
     if (memory.retValIDs) for (const retValId of memory.retValIDs) 
         ret[retValId] = shadowRoot.querySelector(`#${retValId}`)?shadowRoot.querySelector(`#${retValId}`).value:null;
-        console.log(ret);
     return ret;
 }
 
@@ -225,7 +216,6 @@ async function _processTheme(theme) {
     if (theme.showCancelIcon) clone.showCancelIcon = true; else delete clone.showCancelIcon;
     if (theme.showOKButton) clone.showOKButton = true; else delete clone.showOKButton;
     if (theme.showCancelButton) clone.showCancelButton = true; else delete clone.showCancelButton;
-    console.log(clone);
     return clone;
    
 }
