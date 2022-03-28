@@ -133,9 +133,11 @@ function modelConnectorsModified(type, sourceName, targetName, sourceID, targetI
 }
 
 function isConnectable(sourceName, targetName, sourceID, targetID) {    // are these nodes connectable
-    if (sourceID == targetID) return false; 
+  if (sourceID == targetID) return false; 
     if (((sourceName == "condition")&&!((targetName == "iftrue")||(targetName == "iffalse")))) return false;   
     if (((sourceName != "condition")&&((targetName == "iftrue")||(targetName == "iffalse")))) return false;  
+    if((targetName == "condition")&&(idCache[targetID].dependencies)&&(sourceName != "goto")) return false;
+    
     return true
   
 }
@@ -178,7 +180,6 @@ function _findOrCreateRuleBundle(name=current_rule_bundle, forceNew) {
 }
 
 const _findAndDeleteRuleBundle = (name=current_rule_bundle) => _arrayDelete(api400modelObj.rule_bundles, _findOrCreateRuleBundle(name));
-
 function _nodeAdded(nodeName, id, properties) {
     const node = idCache[id] ? idCache[id] : JSON.parse(JSON.stringify(properties)); node.nodeName = nodeName;
     if (idCache[id]) {_nodeModified(nodeName, id, properties); return;}  // node properties modified
@@ -187,6 +188,14 @@ function _nodeAdded(nodeName, id, properties) {
 
     if (nodeName == "rule") _findOrCreateRuleBundle().commands.push(node); 
     else if (nodeName == "strapi") _findOrCreateRuleBundle().commands.push(node);
+    else if (nodeName == "runsql") _findOrCreateRuleBundle().commands.push(node);
+    else if (nodeName == "runjs") _findOrCreateRuleBundle().commands.push(node);
+    else if (nodeName == "goto") _findOrCreateRuleBundle().commands.push(node);
+    else if (nodeName == "chgvar") _findOrCreateRuleBundle().commands.push(node);
+    else if (nodeName == "sndapimsg") _findOrCreateRuleBundle().commands.push(node);
+    else if (nodeName == "condition") _findOrCreateRuleBundle().commands.push(node);
+    else if (nodeName == "iftrue") _findOrCreateRuleBundle().commands.push(node);
+    else if (nodeName == "iffalse") _findOrCreateRuleBundle().commands.push(node);
     else if (nodeName == "variable") api400modelObj.rule_parameters.push(node);
     else if (nodeName == "decision") _findOrCreateRuleBundle(name, true).commands.push(node);
     else if (nodeName == "data") {node.name = name; api400modelObj.data.push(node);}
@@ -196,7 +205,7 @@ function _nodeAdded(nodeName, id, properties) {
     else if (nodeName == "simulate") api400modelObj.simulations.push(node);
     
     node.id = id; idCache[id] = node;   // transfer ID and cache the node
-    
+    console.log(api400modelObj);
     return true;
 }
 
@@ -212,6 +221,15 @@ function _nodeRemoved(nodeName, id) {
     else if (nodeName == "functions") _arrayDelete(api400modelObj.outputs, node);
     else if (nodeName == "object") _arrayDelete(api400modelObj.objects, node);
     else if (nodeName == "simulate") _arrayDelete(api400modelObj.simulations, node);
+    else if (nodeName == "strapi") _arrayDelete(api400modelObj.commands, node);
+    else if (nodeName == "runsql") _arrayDelete(api400modelObj.commands, node);
+    else if (nodeName == "runjs") _arrayDelete(api400modelObj.commands, node);
+    else if (nodeName == "goto") _arrayDelete(api400modelObj.commands, node);
+    else if (nodeName == "chgvar") _arrayDelete(api400modelObj.commands, node);
+    else if (nodeName == "sndapimsg") _arrayDelete(api400modelObj.commands, node);
+    else if (nodeName == "condition") _arrayDelete(api400modelObj.commands, node);
+    else if (nodeName == "iftrue") _arrayDelete(api400modelObj.commands, node);
+    else if (nodeName == "iffalse") _arrayDelete(api400modelObj.commands, node);
 
     delete idCache[id]; // uncache
     return true;
