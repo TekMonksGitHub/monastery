@@ -6,10 +6,11 @@
 import { util } from "/framework/js/util.mjs";
 import { monkshu_component } from "/framework/js/monkshu_component.mjs";
 import { text_box } from "../text-box/text-box.mjs";
-const DIALOG_HOST_ID = "__org_monkshu_dialog_box";
 import { dialog_box } from "../../../shared/components/dialog-box/dialog-box.mjs";
 
 const COMPONENT_PATH = util.getModulePath(import.meta);
+const DIALOG_HOST_ID = "__org_monkshu_dialog_box";
+
 const elementConnected = async (element) => {
 
   const data = {
@@ -19,7 +20,7 @@ const elementConnected = async (element) => {
     componentPath: COMPONENT_PATH,
     styleBody: element.getAttribute("styleBody")
       ? `<style>${element.getAttribute("styleBody")}</style>`
-      : undefined,
+      : undefined
   };
 
   tool_box.setData(element.id, data);
@@ -53,7 +54,7 @@ async function removeElement(renderingParent, renderingContainer, renderingEleme
   if (dialogShadowRoot.querySelector("list-box#listbox").children.length > 1) {
     const parentContainer = dialogShadowRoot.querySelector("div#page-contents");
     parentContainer.removeChild(parentContainer.lastChild);
-    return null;
+    return true
   }
   const box = window.monkshu_env.components[`${renderingParent}`];
   const shadowRoot = box.shadowRoots[renderingElementName];

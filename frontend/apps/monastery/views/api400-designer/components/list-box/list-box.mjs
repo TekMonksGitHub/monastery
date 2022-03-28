@@ -7,14 +7,14 @@ const COMPONENT_PATH = util.getModulePath(import.meta);
 const DEFAULT_HOST_ID = "__org_monkshu_list_box";
 const DIALOG_HOST_ID = "__org_monkshu_dialog_box";
 
-const elementConnected = async (element) => {
-  Object.defineProperty(element, "value", { get: (_) => _getValue(element, element.getAttribute("type")), set: (value) => _setValue(value, element), });
-  const data = { styleBody: element.getAttribute("styleBody") ? `<style>${element.getAttribute("styleBody")}</style>` : undefined, };
 
+const elementConnected = async (element) => {
+  Object.defineProperty(element, "value", { get: (_) => _getValue(element, element.getAttribute("type"),element.getAttribute("nodeID")), set: (value) => _setValue(value, element) });
   const memory = list_box.getMemoryByHost(DEFAULT_HOST_ID);
-  if (memory.Parameter && memory.Parameter.length && element.getAttribute("type") == "Parameter") { _setValue(memory,  element.getAttribute("type")) }
-  else if (memory.Message && memory.Message.length && element.getAttribute("type") == "Message") { _setValue(memory,  element.getAttribute("type")) }
-  else if (memory.Variable && memory.Variable.length && element.getAttribute("type") == "Variable") { _setValue(memory, element.getAttribute("type")) }
+  const nodeID=element.getAttribute('nodeID');
+  if (memory[`${nodeID}`]&& memory[`${nodeID}`].length && element.getAttribute("type") == "Parameter")  _setValue(memory,  element.getAttribute("type"),nodeID);
+  else if (memory[`${nodeID}`]&& memory[`${nodeID}`].length && element.getAttribute("type") == "Message")  _setValue(memory,  element.getAttribute("type"),nodeID);
+  else if (memory[`${nodeID}`]&& memory[`${nodeID}`].length && element.getAttribute("type") == "Variable")  _setValue(memory, element.getAttribute("type"),nodeID); 
 
 };
 
@@ -23,37 +23,35 @@ async function elementRendered(element) {
   const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
   const parentContainer = dialogShadowRoot.querySelector("div#page-contents");
   const noOfElements=parentContainer.children.length;
-
-  if ( element.getAttribute("type") == "Parameter" && noOfElements<1) { window.monkshu_env.components['tool-box'].addElement('list-box', 'page-contents',element.getAttribute('type'),'listbox');}
-  else if ( element.getAttribute("type") == "Message" && noOfElements<1) { window.monkshu_env.components['tool-box'].addElement('list-box', 'page-contents',element.getAttribute('type'),'listbox'); }
-  else if ( element.getAttribute("type") == "Variable" &&noOfElements<1){ window.monkshu_env.components['tool-box'].addChgvarElement('list-box', 'page-contents', 'Variable', 'Value', 'listbox');}
-
+  if ( element.getAttribute("type") == "Parameter" && noOfElements<1)  window.monkshu_env.components['tool-box'].addElement('list-box', 'page-contents',element.getAttribute('type'),'listbox');
+  else if ( element.getAttribute("type") == "Message" && noOfElements<1)  window.monkshu_env.components['tool-box'].addElement('list-box', 'page-contents',element.getAttribute('type'),'listbox'); 
+  else if ( element.getAttribute("type") == "Variable" &&noOfElements<1) window.monkshu_env.components['tool-box'].addChgvarElement('list-box', 'page-contents', 'Variable', 'Value', 'listbox');
 }
 
-function _getValue(host, type) {
+function _getValue(host, type,nodeID) {
   const shadowRoot = dialog_box.getShadowRootByContainedElement(host);
   if (shadowRoot.querySelector("list-box#listbox").children.length > 1) {
     const textBoxContainer = shadowRoot.querySelector("div#page-contents");
-    return _setValuesToMemory(textBoxContainer, shadowRoot, type);
+    return _setValuesToMemory(textBoxContainer, shadowRoot, type,nodeID);
   }
-
   const textBoxContainer = list_box.shadowRoots.listbox.querySelector("#page-contents");
-  return _setValuesToMemory(textBoxContainer, shadowRoot, type);
+  return _setValuesToMemory(textBoxContainer, shadowRoot, type,nodeID);
 }
 
-function _setValue(memory, type) {
+function _setValue(memory, type,nodeID) {
 
-  const textBoxValues = memory[`${type}`]
+  const textBoxValues = memory[`${nodeID}`];
   // removing previous elements
   list_box.shadowRoots.listbox.querySelector("#page-contents").innerHTML = '';
-
   if (type == "Variable") {
     for (const textBoxValue of textBoxValues) {
+      if(textBoxValue[0]!=''&& textBoxValue[1]!='')
       window.monkshu_env.components['tool-box'].addChgvarElement('list-box', 'page-contents', 'Variable', 'Value', 'listbox', `${textBoxValue[0]}`, `${textBoxValue[1]}`);
     }
   }
   else {
     for (const textBoxValue of textBoxValues) {
+      if(textBoxValue!='')
       window.monkshu_env.components['tool-box'].addElement('list-box', 'page-contents', `${type}`, 'listbox', `${textBoxValue}`);
     }
   }
@@ -61,13 +59,13 @@ function _setValue(memory, type) {
   const textBoxes = list_box.shadowRoots.listbox.querySelector("body").innerHTML;
   const templateRoot = new DOMParser().parseFromString(textBoxes, "text/html").documentElement;
   shadowRoot.querySelector("list-box#listbox").appendChild(templateRoot);
-  router.runShadowJSScripts(templateRoot, shadowRoot)
+  router.runShadowJSScripts(templateRoot, shadowRoot);
 
 }
-function _setValuesToMemory(textBoxContainer, shadowRoot, type) {
+
+function _setValuesToMemory(textBoxContainer, shadowRoot, type,nodeID) {
   const memory = list_box.getMemoryByHost(DEFAULT_HOST_ID);
   const textBoxValues = [];
-
   if (type == "Variable") {
     for (const divBox of textBoxContainer.children) {
       const variableValues = [];
@@ -77,7 +75,7 @@ function _setValuesToMemory(textBoxContainer, shadowRoot, type) {
       }
       textBoxValues.push(variableValues);
     }
-    memory[`${type}`] = textBoxValues;
+    memory[`${nodeID}`] = textBoxValues;
     return textBoxValues;
   }
 
@@ -85,15 +83,13 @@ function _setValuesToMemory(textBoxContainer, shadowRoot, type) {
     const retValue = shadowRoot.querySelector(`#${textBox.getAttribute("id")}`).value;
     textBoxValues.push(retValue);
   }
-  memory[`${type}`] = textBoxValues;
+  memory[`${nodeID}`] = textBoxValues;
   return textBoxValues;
 }
-
-
 export const list_box = {
   trueWebComponentMode: false,
   elementConnected,
-  elementRendered,
+  elementRendered
 };
 
 monkshu_component.register(
@@ -101,3 +97,4 @@ monkshu_component.register(
   `${COMPONENT_PATH}/list-box.html`,
   list_box
 );
+
