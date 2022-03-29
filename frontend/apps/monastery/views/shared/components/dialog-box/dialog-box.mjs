@@ -100,10 +100,14 @@ function showConfirm(message, callback, theme, hostID) {
  * @param element The element inside the dialog or ID of the dialog host element (if custom hostID was used in showDialog), else null
  */
 function cancel(element) {
+    
     const memory = element instanceof Element ? dialog_box.getMemoryByContainedElement(element) : 
         dialog_box.getMemory(element||DEFAULT_HOST_ID);
+    if(memory.retValIDs[0]!="listbox"){
     const retVals = _getRetVals(memory, dialog_box.getShadowRootByContainedElement(element));
-    hideDialog(element); if (memory.callback) memory.callback("cancel", retVals, element);
+    if (memory.callback) memory.callback("cancel", retVals, element);}
+    hideDialog(element); 
+
 }
 
 /**

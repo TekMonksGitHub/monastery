@@ -1,3 +1,8 @@
+/**
+ *
+ * (C) 2022 TekMonks. All rights reserved.
+ * License: See enclosed LICENSE file.
+ */
 import { monkshu_component } from "/framework/js/monkshu_component.mjs";
 import { util } from "/framework/js/util.mjs";
 import { router } from "/framework/js/router.mjs";

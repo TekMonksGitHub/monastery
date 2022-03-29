@@ -1,3 +1,9 @@
+/**
+ *
+ * (C) 2022 TekMonks. All rights reserved.
+ * License: See enclosed LICENSE file.
+ */
+
 import { monkshu_component } from "/framework/js/monkshu_component.mjs";
 import { dialog_box } from "../../../shared/components/dialog-box/dialog-box.mjs";
 
@@ -6,7 +12,7 @@ const DIALOG_HOST_ID = "__org_monkshu_dialog_box";
 async function addTextBox(renderingParent, renderingContainer, id, renderingElementName, value) {
 
   const parent = window.monkshu_env.components[renderingParent];
-  const shadowRoot = parent.shadowRoots[`${renderingElementName}`];
+  const shadowRoot = parent.shadowRoots[renderingElementName];
   const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
   const parentContainer = shadowRoot.querySelector(`#${renderingContainer}`);
 
@@ -20,12 +26,12 @@ async function addTextBox(renderingParent, renderingContainer, id, renderingElem
   //Creating a text box element
   const inputElement = _createElement(parentContainer, id, value);
   parentContainer.appendChild(inputElement);
-  return null
+  return true
 
 }
 async function addTwoTextBox(renderingParent, renderingContainer, id1, id2, renderingElementName, chgvarVariable, chgvarValue) {
   const parent = window.monkshu_env.components[renderingParent];
-  const shadowRoot = parent.shadowRoots[`${renderingElementName}`];
+  const shadowRoot = parent.shadowRoots[renderingElementName];
   const parentContainer = shadowRoot.querySelector(`#${renderingContainer}`);
   const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
   if (dialogShadowRoot.querySelector("list-box#listbox").children.length > 1) {
@@ -46,7 +52,7 @@ function _createElement(parentContainer, id, value, className) {
   inputElement.setAttribute("type", "text");
   inputElement.setAttribute("id", `${id}-${parentContainer.children.length + 1}`);
   inputElement.setAttribute("placeholder", `${id}-${parentContainer.children.length + 1}`);
-  if (value != "undefined")  inputElement.setAttribute("value", `${value}`); 
+  if (value != undefined)  inputElement.setAttribute("value", `${value}`); 
   if (className != undefined)  inputElement.setAttribute("class",`${className}`); 
   return inputElement
 };
