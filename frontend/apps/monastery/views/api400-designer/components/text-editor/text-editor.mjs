@@ -26,7 +26,6 @@ const P3_LIBS_SQL = [
 ];
 
 async function elementConnected(element) {
-  console.log("elementConnected");
   Object.defineProperty(element, "value", {
     get: (_) => _getValue(element),
     set: (value) => _setValue(value, element),
@@ -51,8 +50,6 @@ async function elementConnected(element) {
 }
 
 async function elementRendered(element) {
-  console.log("elementRendered");
-  console.log(text_editor);
   const MODE = element.getAttribute("mode");
   if (MODE == "javascript") {
     for (const p3lib of P3_LIBS) await $$.require(p3lib); // load all the comman libs we need
@@ -77,7 +74,6 @@ async function elementRendered(element) {
           matchBrackets: true,
         }
       );
-      console.log(cm);
       text_editor.getMemoryByHost(element).editor = cm;
       cm.setSize("100%", "100%");
       cm.setValue("// JS script");
@@ -136,14 +132,12 @@ async function save(element) {
 }
 
 function _getValue(host) {
-  console.log("getVAlue");
   const cm = text_editor.getMemoryByHost(host).editor;
   const value = cm.getDoc().getValue();
   return value;
 }
 
 function _setValue(value, host) {
-  console.log("setValue");
   const cm = text_editor.getMemoryByHost(host).editor;
   cm.getDoc().setValue(value);
 }

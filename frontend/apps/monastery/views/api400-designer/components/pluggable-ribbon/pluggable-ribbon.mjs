@@ -10,7 +10,7 @@ const COMPONENT_PATH = util.getModulePath(import.meta);
 
 async function elementConnected(element) {
     const data = await _instantiatePlugins(element);
-    console.log(element)
+  
 	if (element.getAttribute("styleBody")) data.styleBody = `<style>${element.getAttribute("styleBody")}</style>`;
 
 	if (element.getAttribute("ribbonTitle")) data.ribbonTitle = element.getAttribute("ribbonTitle");
@@ -28,15 +28,10 @@ async function elementRendered(element) {
 async function _instantiatePlugins(element) {
 	let plugins; try{plugins = await $$.requireJSON(`${COMPONENT_PATH}/${element.id}/pluginreg.json`);} catch (err) {LOG.error(`Can't read plugin registry, error is ${err}`); return {};};
 	const data = {plugins:[]}; pluggable_ribbon.extensions = pluggable_ribbon.extensions||{}; pluggable_ribbon.extensions[element.id||"null"] = {};
-	console.log(plugins)
-	console.log(pluggable_ribbon.extensions);
+	
 	for (const plugin of plugins) {
 		const moduleSrc = `${COMPONENT_PATH}/${element.id}/${plugin}/${plugin}.mjs`;
-		
 		const pluginModule = (await import(moduleSrc))[plugin]; 
-		console.log(`${moduleSrc}`);
-		console.log(`${pluginModule}`);
-		console.log(`${COMPONENT_PATH}/${element.id}/${plugin}`);
 		if (pluginModule && await pluginModule.init(`${COMPONENT_PATH}/${element.id}/${plugin}`)) {
 			pluggable_ribbon.extensions[element.id][plugin] = pluginModule;
 			const pluginObj = {img: pluginModule.getImage(), title: pluginModule.getHelpText(session.get($$.MONKSHU_CONSTANTS.LANG_ID)), 

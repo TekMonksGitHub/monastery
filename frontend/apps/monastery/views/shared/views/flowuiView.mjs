@@ -26,7 +26,7 @@ const _generateShapeName = name => name.toLowerCase(), _generateShapeX = _ => 30
 
 async function init(viewPath) {
     VIEW_PATH = viewPath; CONF = await $$.requireJSON(`${VIEW_PATH}/conf/view.json`);
-
+  
     blackboard.registerListener(MSG_SHAPE_INIT, message => blackboard.broadcastMessage(MSG_REGISTER_SHAPE, 
         {name: _generateShapeName(message.name), imgURL: message.imgURL, graphID: GRAPH_ID, rounded: true}));
     blackboard.registerListener(MSG_SHAPE_CLICKED_ON_RIBBON, message => shapeAdded(message.name, message.id, message.label, message.connectable));
@@ -85,20 +85,21 @@ async function _shapeObjectClickedOnFlowDiagram(shapeName, id, shapelabel) {
         if (!result) return; const {page, dialogProperties} = result;
         pageFile = new URL(page); savedDialogProperties = dialogProperties;
     } else pageFile = new URL(pageSelector);
-    
     let html = await page_generator.getHTML(pageFile, null, {description: shapelabel, uriEncodedDescription: encodeURIComponent(shapelabel)});
-
     // figure out IDs for all input items on the dialog and fill their defaults, if saved previously
     const dom = new DOMParser().parseFromString(html, "text/html"), items = dom.getElementsByClassName(PAGE_GENERATOR_GRID_ITEM_CLASS);
-    const idsNeeded = []; for (const item of items) for (const child of item.childNodes) if (
-        HTML_INPUT_ELEMENTS.includes(child.nodeName.toLowerCase()) && child.id ) {
+    const idsNeeded = []; for (const item of items) for (const child of item.childNodes){
+        //we are setting the nodeID , to be memorized uniquely for dynamic elements which is being added inside the dialog-box. 
+        //So that, it can be available when someone revisit the dialog-box of node.
+        if(child.nodeName.toLowerCase()=="list-box")  child.setAttribute("nodeID",`${id}`);
+        if (HTML_INPUT_ELEMENTS.includes(child.nodeName.toLowerCase()) && child.id ) {
             idsNeeded.push(child.id); 
             if (savedDialogProperties[child.id]) if (child.nodeName.toLowerCase() == "textarea") child.innerHTML = savedDialogProperties[child.id];
-            else child.setAttribute("value", savedDialogProperties[child.id]);
-    }
+            else child.setAttribute("value", savedDialogProperties[child.id]);     
+        }
+        }
     if (pageModule && pageModule.page.dialogConnected) dom = await pageModule.page.dialogConnected(dom, savedDialogProperties);
     html = dom.documentElement.outerHTML;   // this creates HTML with default values set from the previous run
-
     // now show and run the dialog
     const dialogPropertiesPath = await _returnFirstFileThatExists([`${VIEW_PATH}/dialogs/dialogProperties${shapeName}.json`,
         `${VIEW_PATH}/dialogs/${DEFAULT_DIALOG_PROPERTIES}`]);
