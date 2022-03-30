@@ -107,7 +107,9 @@ const _convertForRunsql = function(node) {
     let cmdString = `RUNSQL SQL(${node.sql||''})`;
     if(node.sql && node.sql.includes("SELECT"))
         cmdString += ` TRIM(TRUE)`;
-    return cmdString
+    if(node.result && node.result!='')
+        cmdString = `CHGVAR     VAR(&${node.result})   VALUE(${cmdString})`;
+    return cmdString;
 };
 
 const _convertForRunjs = function(node) { return `RUNJS JS(${node.code||''})`; };
