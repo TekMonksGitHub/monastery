@@ -185,7 +185,7 @@
      retModel.apicl = algos.sortDependencies(retModel.apicl[0]);  // sort apicl commands in the order of dependencies
      // for (const rules_bundle of retModel.rule_bundles) rules_bundle.commands = algos.sortDependencies(rules_bundle.commands);  // sort rules within a bundle in the order of dependencies
      const APICL = algos.convertIntoAPICL(retModel.apicl);
-     return { ...APICL };
+     return APICL;
  }
  const getModelAsFile = name => { 
      return {data: JSON.stringify(getModel(), null, 4), mime: "application/json", filename: `${name||"api400api"}.apicl`}}
@@ -222,6 +222,7 @@
      else if (nodeName == "condition") _findOrCreateRuleBundle().commands.push(node);
      else if (nodeName == "iftrue") _findOrCreateRuleBundle().commands.push(node);
      else if (nodeName == "iffalse") _findOrCreateRuleBundle().commands.push(node);
+     else if (nodeName == "endapi") _findOrCreateRuleBundle().commands.push(node);
      else if (nodeName == "variable") api400modelObj.rule_parameters.push(node);
      else if (nodeName == "decision") _findOrCreateRuleBundle(name, true).commands.push(node);
      else if (nodeName == "data") {node.name = name; api400modelObj.data.push(node);}
@@ -256,6 +257,7 @@
      else if (nodeName == "condition") _arrayDelete(api400modelObj.commands, node);
      else if (nodeName == "iftrue") _arrayDelete(api400modelObj.commands, node);
      else if (nodeName == "iffalse") _arrayDelete(api400modelObj.commands, node);
+     else if (nodeName == "endapi") _arrayDelete(api400modelObj.commands, node);
 
      delete idCache[id]; // uncache
      return true;
@@ -264,7 +266,7 @@
  function _nodeModified(nodeName, id, properties) {
      console.log("_nodeModified");
      console.log(nodeName, id, properties,idCache);
-     let parameters = [];
+     let parameters,variables = [];
      if (!idCache[id]) return false; // we don't know of this node
      for (const key in properties) { // transfer the new properties, CSVs need the CSV scheme added
          if (key == "decisiontable") {   // decision table must be CSV
@@ -278,13 +280,15 @@
          } else if (key == "data" && nodeName == "object") { // object sheet can be JSON or CSV
              idCache[id][key] = properties.type == "CSV" ? CSVSCHEME+properties.data : _tryJSONParse(properties.data);
              idCache[id].data_raw = properties[key]; 
-         } else if (key.includes("listbox") && nodeName == "strapi") { 
-             if (properties[key]!='') { parameters = properties[key]; }
-         } else idCache[id][key] = properties[key];   
+        } else if (key.includes("listbox") && (nodeName == "strapi" || nodeName == "sndapimsg")) { 
+            if (properties[key]!='') { parameters = properties[key]; }
+        } else if (key.includes("listbox") && (nodeName == "chgvar" )) { 
+            if (properties[key]!='') { variables = properties[key]; }
+        } else idCache[id][key] = properties[key];   
      }
-     if (parameters.length!=0) { idCache[id].parameters = parameters; }
-     console.log("after adding parameters");
-     console.log(properties,idCache);
+     if (parameters && parameters.length!=0) { idCache[id].parameters = parameters; }
+     if (variables && variables.length!=0) { idCache[id].variables = variables; }
+
      return true;
  }
  
