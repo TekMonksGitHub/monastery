@@ -27,26 +27,11 @@ const elementConnected = async (element) => {
 };
 async function addElement(renderingParent, renderingContainer, idText, renderingElementName, value) {
 
-  text_box.addTextBox(
-    `${renderingParent}`,
-    `${renderingContainer}`,
-    `${idText}`,
-    `${renderingElementName}`,
-    `${value}`
-  );
-
+text_box.addTextBox(renderingParent, renderingContainer, idText, renderingElementName, value);
 }
 async function addChgvarElement(renderingParent, renderingContainer, idFirstBox, idSecondBox, renderingElementName, chgvarVariable, chgvarValue) {
 
-  text_box.addTwoTextBox(
-    `${renderingParent}`,
-    `${renderingContainer}`,
-    `${idFirstBox}`,
-    `${idSecondBox}`,
-    `${renderingElementName}`,
-    `${chgvarVariable}`,
-    `${chgvarValue}`
-  );
+ text_box.addTwoTextBox(renderingParent, renderingContainer, idFirstBox, idSecondBox, renderingElementName, chgvarVariable, chgvarValue);
 
 }
 async function removeElement(renderingParent, renderingContainer, renderingElementName) {
@@ -56,7 +41,7 @@ async function removeElement(renderingParent, renderingContainer, renderingEleme
     parentContainer.removeChild(parentContainer.lastChild);
     return true
   }
-  const box = window.monkshu_env.components[`${renderingParent}`];
+  const box = window.monkshu_env.components[renderingParent];
   const shadowRoot = box.shadowRoots[renderingElementName];
   const parent = shadowRoot.querySelector(`#${renderingContainer}`);
   parent.removeChild(parent.lastChild);
