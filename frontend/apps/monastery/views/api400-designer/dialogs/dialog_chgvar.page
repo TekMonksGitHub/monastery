@@ -19,7 +19,7 @@ LAYOUT
 |   listbox    |      
 ----------------
 =================
-Row Heights = 5%,95%
+Row Heights = 2.2em,calc(100% - 2.2em)
 Col Widths = 100%
 =================
 
