@@ -112,7 +112,7 @@
  
  function modelNodesModified(type, nodeName, id, properties) {
      console.log("modelNodesModified");
-     console.log(properties);
+     console.log(type, nodeName, id, properties);
      if (type == api400model.ADDED) return _nodeAdded(nodeName, id, properties);
      if (type == api400model.REMOVED) return _nodeRemoved(nodeName, id);
      if (type == api400model.MODIFIED) return _nodeModified(nodeName, id, properties);
@@ -237,6 +237,7 @@
  }
  
  function _nodeRemoved(nodeName, id) {
+     console.log(api400modelObj)
      if (!idCache[id]) return;   // we don't know of this node
      const node = idCache[id];
  
@@ -248,16 +249,16 @@
      else if (nodeName == "functions") _arrayDelete(api400modelObj.outputs, node);
      else if (nodeName == "object") _arrayDelete(api400modelObj.objects, node);
      else if (nodeName == "simulate") _arrayDelete(api400modelObj.simulations, node);
-     else if (nodeName == "strapi") _arrayDelete(api400modelObj.commands, node);
-     else if (nodeName == "runsql") _arrayDelete(api400modelObj.commands, node);
-     else if (nodeName == "runjs") _arrayDelete(api400modelObj.commands, node);
-     else if (nodeName == "goto") _arrayDelete(api400modelObj.commands, node);
-     else if (nodeName == "chgvar") _arrayDelete(api400modelObj.commands, node);
-     else if (nodeName == "sndapimsg") _arrayDelete(api400modelObj.commands, node);
-     else if (nodeName == "condition") _arrayDelete(api400modelObj.commands, node);
-     else if (nodeName == "iftrue") _arrayDelete(api400modelObj.commands, node);
-     else if (nodeName == "iffalse") _arrayDelete(api400modelObj.commands, node);
-     else if (nodeName == "endapi") _arrayDelete(api400modelObj.commands, node);
+     else if (nodeName == "strapi") _arrayDelete(api400modelObj.apicl[0].commands, node);
+     else if (nodeName == "runsql") _arrayDelete(api400modelObj.apicl[0].commands, node);
+     else if (nodeName == "runjs") _arrayDelete(api400modelObj.apicl[0].commands, node);
+     else if (nodeName == "goto") _arrayDelete(api400modelObj.apicl[0].commands, node);
+     else if (nodeName == "chgvar") _arrayDelete(api400modelObj.apicl[0].commands, node);
+     else if (nodeName == "sndapimsg") _arrayDelete(api400modelObj.apicl[0].commands, node);
+     else if (nodeName == "condition") _arrayDelete(api400modelObj.apicl[0].commands, node);
+     else if (nodeName == "iftrue") _arrayDelete(api400modelObj.apicl[0].commands, node);
+     else if (nodeName == "iffalse") _arrayDelete(api400modelObj.apicl[0].commands, node);
+     else if (nodeName == "endapi") _arrayDelete(api400modelObj.apicl[0].commands, node);
 
      delete idCache[id]; // uncache
      return true;
