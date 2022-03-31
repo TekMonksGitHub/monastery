@@ -27,12 +27,10 @@ function sortDependencies(nodes) {
         dependencyCheck = 0;
         currentNodeId = (nextCurrentNodeId ? nextCurrentNodeId : currentNodeId);
         if (stopNodeIds && stopNodeIds.length>0 && stopNodeIds.includes(currentNodeId) && futureCurrentNode && futureCurrentNode.length>0) { 
-            console.log("___InStopNodeIds__"); 
             sortedSet.push(futureCurrentNode[0]);
             currentNodeId = futureCurrentNode[0].id; 
             _arrayDelete(futureCurrentNode,futureCurrentNode[0]);  
         } 
-        console.log("======================");
         for (let nodeIn of nodesToWorkOn) {
             console.log("currentNodeId : ",currentNodeId, " | nodeName : " , nodeIn.nodeName," | dependencies : ",nodeIn.dependencies , " | nodeIn.id : ", nodeIn.id );
             console.log("icopunter", icounter , "dependencyCheck", dependencyCheck );
@@ -53,10 +51,7 @@ function sortDependencies(nodes) {
             nextCurrentNodeId = futureCurrentNode[0].id; 
             _arrayDelete(futureCurrentNode,futureCurrentNode[0]);  
         }
-
     }
-    
-    console.log(sortedSet);
     return sortedSet;
 }
 
@@ -76,7 +71,7 @@ const convertIntoAPICL = function(nodes) {
         console.log(node);
         console.log(node.nodeName);
         if (node.nodeName=='strapi') { apicl[node.id] = _convertForStrapi(node) }
-        else if (node.nodeName=='runsql') { apicl[node.id] = _convertForRunsql(node) }
+        else if (node.nodeName=='runsql' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForRunsql(node) }
         else if (node.nodeName=='runjs') { apicl[node.id] = _convertForRunjs(node) }
         else if (node.nodeName=='sndapimsg') { apicl[node.id] = _convertForSndapimsg(node) }
         else if (node.nodeName=='chgvar') { _convertForChgvar(node) }
@@ -137,28 +132,33 @@ const _convertForChgvar = function(node) {
 
 const _convertForCondition = function(node,nodes) { 
 
-    let gotoNodeObj,gotoNextNode;
+    let nextIdentifiedNodeObj;
     let cmdString = `IF COND(${node.condition||''})`;
     for (const nodeObj of nodes) {
         if (nodeObj.dependencies && nodeObj.dependencies.length>0){
             if(nodeObj.dependencies.includes(node.id)) {
                 if (nodeObj.nodeName=='iftrue') { 
-                    gotoNodeObj = _checkNodeInAllNodes(nodeObj,nodes);
-                    if (gotoNodeObj && gotoNodeObj.nodeName=='goto') {
-                        gotoNextNode = _checkNodeInAllNodes(gotoNodeObj,nodes);
-                        cmdString = cmdString.concat(` THEN( GOTO ${gotoNextNode.id||''})`); 
-                        nodeAlreadyAdded.push(gotoNodeObj.id);
+                    nextIdentifiedNodeObj = _checkNodeInAllNodes(nodeObj,nodes);
+                    if (nextIdentifiedNodeObj && nextIdentifiedNodeObj.nodeName=='runsql') {
+                        cmdString = cmdString.concat(` THEN( ${_convertForRunsql(nextIdentifiedNodeObj)})`); 
+                        nodeAlreadyAdded.push(nextIdentifiedNodeObj.id);
                     }
+                    else if (nextIdentifiedNodeObj && nextIdentifiedNodeObj.nodeName=='goto') {
+                        cmdString = cmdString.concat(` THEN( ${_convertForGoto(nextIdentifiedNodeObj,nodes)})`); 
+                        nodeAlreadyAdded.push(nextIdentifiedNodeObj.id);
+                    } 
                     else
                         cmdString = cmdString.concat(` THEN(${nodeObj.true||''})`); 
                 }
                 else if (nodeObj.nodeName=='iffalse') { 
-                    gotoNodeObj = _checkNodeInAllNodes(nodeObj,nodes);
-                    if (gotoNodeObj && gotoNodeObj.nodeName=='goto'){
-                        gotoNextNode = _checkNodeInAllNodes(gotoNodeObj,nodes);
-                        cmdString = cmdString.concat(` ELSE( GOTO ${gotoNextNode.id||''})`); 
-                        nodeAlreadyAdded.push(gotoNodeObj.id);
-                    }
+                    nextIdentifiedNodeObj = _checkNodeInAllNodes(nodeObj,nodes);
+                    if (nextIdentifiedNodeObj && nextIdentifiedNodeObj.nodeName=='runsql') {
+                        cmdString = cmdString.concat(` ELSE( ${_convertForRunsql(nextIdentifiedNodeObj)})`); 
+                        nodeAlreadyAdded.push(nextIdentifiedNodeObj.id);
+                    } else if (nextIdentifiedNodeObj && nextIdentifiedNodeObj.nodeName=='goto'){
+                        cmdString = cmdString.concat(` ELSE( ${_convertForGoto(nextIdentifiedNodeObj,nodes)})`); 
+                        nodeAlreadyAdded.push(nextIdentifiedNodeObj.id);
+                    } 
                     else
                         cmdString = cmdString.concat(` ELSE(${nodeObj.false||''})`); 
                 }

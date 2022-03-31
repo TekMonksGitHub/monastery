@@ -223,13 +223,6 @@
      else if (nodeName == "iftrue") _findOrCreateRuleBundle().commands.push(node);
      else if (nodeName == "iffalse") _findOrCreateRuleBundle().commands.push(node);
      else if (nodeName == "endapi") _findOrCreateRuleBundle().commands.push(node);
-     else if (nodeName == "variable") api400modelObj.rule_parameters.push(node);
-     else if (nodeName == "decision") _findOrCreateRuleBundle(name, true).commands.push(node);
-     else if (nodeName == "data") {node.name = name; api400modelObj.data.push(node);}
-     else if (nodeName == "functions") {node.name = name; api400modelObj.functions.push(node);}
-     else if (nodeName == "output") api400modelObj.outputs.push(node);
-     else if (nodeName == "object") {node.name = name; api400modelObj.objects.push(node);}
-     else if (nodeName == "simulate") api400modelObj.simulations.push(node);
      
      node.id = id; idCache[id] = node;   // transfer ID and cache the node
      console.log(api400modelObj);
@@ -245,7 +238,6 @@
      else if (nodeName == "decision") _arrayDelete(api400modelObj.rule_bundles, _findRuleBundleWithThisRule(node));
      else if (nodeName == "variable") _arrayDelete(api400modelObj.rule_parameters, node);
      else if (nodeName == "data") _arrayDelete(api400modelObj.data, node);
-     else if (nodeName == "functions") _arrayDelete(api400modelObj.functions, node);
      else if (nodeName == "functions") _arrayDelete(api400modelObj.outputs, node);
      else if (nodeName == "object") _arrayDelete(api400modelObj.objects, node);
      else if (nodeName == "simulate") _arrayDelete(api400modelObj.simulations, node);
