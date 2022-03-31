@@ -146,25 +146,15 @@
  }
  
  function isConnectable(sourceName, targetName, sourceID, targetID) {    // are these nodes connectable
-     console.log("isConnectable");
-     console.log(idCache);
-     return true;
-    //  if (sourceID == targetID) return false; // can't loop from same node to itself
-    //  if (((sourceName != "rule") && (sourceName != "decision")  && (sourceName != "strapi")  && (sourceName != "runjs")  && (sourceName != "runsql")) || 
-    //      ((targetName != "rule") && (targetName != "decision") && (targetName != "runjs") && (targetName != "runsql"))) return false;   // currently only rules and decision tables support connections
- 
-     const _checkCycles = (sourceNode, targetNode) => {
-        console.log(sourceNode);
-        console.log(targetNode);
-         const targetDependencies = targetNode.dependencies, sourceDependencies = sourceNode.dependencies;
-         if (targetDependencies && targetDependencies.includes(sourceNode.id)) return false;   // can't reconnect same nodes again
-         if (sourceDependencies && sourceDependencies.includes(targetNode.id)) return false;   // cycle
-         return true;
-     }
- 
-     // don't allow cycles or reconnections
-    //  if (sourceName == "rule" && targetName == "rule") return _checkCycles(idCache[sourceID], idCache[targetID]);
-    //  else return _checkCycles(_findRuleBundleWithThisRule(idCache[sourceID]), _findRuleBundleWithThisRule(idCache[targetID]));
+     if (sourceID == targetID) return false; 
+     if(targetName =="strapi") return false;
+     if(sourceName=="endapi") return false;
+     if (((sourceName == "condition")&&!((targetName == "iftrue")||(targetName == "iffalse")))) return false;   
+     if (((sourceName != "condition")&&((targetName == "iftrue")||(targetName == "iffalse")))) return false;  
+     if((targetName == "condition")&&(idCache[targetID].dependencies)&&(sourceName != "goto")) return false;
+     if((sourceName=="sndapimsg")&&(targetName!="endapi")) return false;
+     return true
+     
  }
  
  function nodeDescriptionChanged(_nodeName, id, description) {
