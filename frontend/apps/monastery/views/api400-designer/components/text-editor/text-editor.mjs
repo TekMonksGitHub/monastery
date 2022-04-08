@@ -22,7 +22,7 @@ const P3_LIBS_JAVASCRPT = [
 ];
 
 const P3_LIBS_SQL = [
-  `${COMPONENT_PATH}/3p/codemirror/mode/sql/sql.js`,
+  `${COMPONENT_PATH}/3p/codemirror/mode/sql/sql.js`
 ];
 
 async function elementConnected(element) {
@@ -71,7 +71,7 @@ async function elementRendered(element) {
           mode: "javascript",
           lint: { selfContain: true },
           gutters: ["CodeMirror-lint-markers"],
-          matchBrackets: true,
+          matchBrackets: true
         }
       );
       text_editor.getMemoryByHost(element).editor = cm;
@@ -98,13 +98,44 @@ async function elementRendered(element) {
           styleActiveLine: true,
           styleActiveSelected: true,
           mode: "sql",
-          
           matchBrackets: true,
         }
       );
       text_editor.getMemoryByHost(element).editor = cm;
       cm.setSize("100%", "100%");
       cm.setValue("--SQL");
+
+      if (element.getAttribute("value"))
+        _setValue(element.getAttribute("value"), element);
+    }, 10);
+  }
+  else if (MODE == "json") {
+    for (const p3lib of P3_LIBS) await $$.require(p3lib); // load all the comman libs we need
+    for (const p3libjson of P3_LIBS_JAVASCRPT) await $$.require(p3libjson); // load all the json related libs we need
+    setTimeout((_) => {
+      // apparently we need timeout for CM to load properly
+      const editorElement = text_editor
+        .getShadowRootByHost(element)
+        .querySelector("textarea#texteditor");
+      const cm = CodeMirror(
+        (cmElement) =>
+          editorElement.parentNode.replaceChild(cmElement, editorElement),
+        {
+          lineNumbers: true,
+          gutter: true,
+          lineWrapping: true,
+          styleActiveLine: true,
+          styleActiveSelected: true,
+          autoCloseBrackets: true,
+          mode: "application/ld+json",
+          lint: { selfContain: true },
+          gutters: ["CodeMirror-lint-markers"],
+          matchBrackets: true
+        }
+      );
+      text_editor.getMemoryByHost(element).editor = cm;
+      cm.setSize("100%", "100%");
+      cm.setValue("");
 
       if (element.getAttribute("value"))
         _setValue(element.getAttribute("value"), element);
