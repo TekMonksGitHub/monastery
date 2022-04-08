@@ -1,1 +1,1 @@
-["strapi","runsql","runjs","condition","goto","iftrue","iffalse","chgvar","sndapimsg","endapi","publish"]
+["chgdtaara","rtvdtaara","qsnddtaq","qrcvdtaq","rest","dsppfm","log","jsonata","strapi","runsql","runjs","condition","goto","iftrue","iffalse","chgvar","sndapimsg","endapi","publish"]
