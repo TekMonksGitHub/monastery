@@ -1,0 +1,78 @@
+
+  
+SCHEMA
+======
+{
+    "libraryname": {"html":"input", "type":"text", "placeholder":"{{i18n.LibraryName}}", "spellcheck":"false"},
+    "dataarea": {"html":"input", "type":"text", "placeholder":"{{i18n.DataAreaName}}", "spellcheck":"false"},
+    "dropdown": {"html":"drop-down","style":"width:100%; height:100%;","list":"[{'value':'Big Decimal'},{'value':'Character'}]","text":"Select Type"},
+    "value": {"html":"input", "type":"text", "placeholder":"{{i18n.Value}}","spellcheck":"false"}
+}
+======
+
+
+LAYOUT
+=================
+----------------------------
+|   libraryname | dataarea |
+----------------------------  
+|   dropdown    | value    |      
+----------------------------
+
+=================
+Row Heights = 4em,5em
+Col Widths = 50%, 50%
+=================
+
+
+CSS CLASSES
+===========
+CONTAINER CLASSES = grid-container-extension
+ITEM CLASSES = grid-item-extension
+PER ITEM CLASS = class
+===========
+
+CSS
+=======
+.grid-container-extension {
+    height: 100%;
+}
+
+.grid-item-extension {
+    background-color: var(--dialog-background, white);
+    padding: 10px 20px 10px 20px;
+    display: flex;
+    flex-flow: row;
+    box-sizing: border-box;
+   margin-top: 0.8em;
+}
+.grid-item-extension > input, .grid-item-extension > input:focus{
+    width: 100%;
+    border-radius: 4px;
+    border: 0px;
+    outline: none;
+    padding: 10px;
+    resize: none;
+    height:8px;
+    font-family: inherit;
+ 
+}
+
+.item1,.item3{ 
+    margin-left:1.2em;
+}
+
+.item0,.item2{
+    margin-right:1.2em;
+}
+
+
+::placeholder {opacity: 0.8;}
+
+body {
+    margin: 0%;
+    display: inline-block;
+    width: 100%;
+}
+
+=======

@@ -44,7 +44,8 @@ async function showDialog(themeOrThemePath, templateOrTemplateURL, templateData,
     shadowRoot.querySelector("div#dialogcontent").appendChild(templateRoot);    // add dialog content
     router.runShadowJSScripts(templateRoot, shadowRoot);
 
-    const memory = dialog_box.getMemory(hostID); memory.retValIDs = retValIDs; memory.callback = callback; 
+    const memory = dialog_box.getMemory(hostID); memory.retValIDs = retValIDs; memory.callback = callback;
+   
     document.querySelector(`#${hostID}`).style.display = "block";   // show the dialog
     // for some reason this otherwise adds in a visible block if the <!doctype HTML> is declared in the parent document, and transitions don't work if this is defined in HTML file 
     shadowRoot.querySelector("html").style.height = "0px";  shadowRoot.querySelector("html").style.width = "0px"; 
@@ -103,7 +104,7 @@ function cancel(element) {
     
     const memory = element instanceof Element ? dialog_box.getMemoryByContainedElement(element) : 
         dialog_box.getMemory(element||DEFAULT_HOST_ID);
-    if(memory.retValIDs[0]!="listbox"){
+    if(!memory.retValIDs.includes("listbox")&&!memory.retValIDs.includes("dropdown")){
     const retVals = _getRetVals(memory, dialog_box.getShadowRootByContainedElement(element));
     if (memory.callback) memory.callback("cancel", retVals, element);}
     hideDialog(element); 
