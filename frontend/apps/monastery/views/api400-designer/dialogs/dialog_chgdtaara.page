@@ -1,9 +1,11 @@
+
+  
 SCHEMA
 ======
 {
     "libraryname": {"html":"input", "type":"text", "placeholder":"{{i18n.LibraryName}}", "spellcheck":"false"},
     "dataarea": {"html":"input", "type":"text", "placeholder":"{{i18n.DataAreaName}}", "spellcheck":"false"},
-    "type": {"html":"input", "type":"text", "placeholder":"{{i18n.Type}}", "spellcheck":"false"},
+    "dropdown": {"html":"drop-down","style":"width:100%; height:100%;","list":"[{'value':'Big Decimal'},{'value':'Character'}]","text":"Select Type"},
     "value": {"html":"input", "type":"text", "placeholder":"{{i18n.Value}}","spellcheck":"false"}
 }
 ======
@@ -14,11 +16,11 @@ LAYOUT
 ----------------------------
 |   libraryname | dataarea |
 ----------------------------  
-|    type       | value    |      
+|   dropdown    | value    |      
 ----------------------------
 
 =================
-Row Heights = 4em,4em
+Row Heights = 4em,5em
 Col Widths = 50%, 50%
 =================
 
@@ -72,4 +74,5 @@ body {
     display: inline-block;
     width: 100%;
 }
+
 =======

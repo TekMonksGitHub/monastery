@@ -11,8 +11,8 @@
    
     "var--dialog-font": "Raleway",
     "var--dialog-background": "#DFF0FE",
-    "var--dialog-left": "270px",
-    "var--dialog-width": "calc(100% - 520px)",
+    "var--dialog-left": "310px",
+    "var--dialog-width": "calc(100% - 620px)",
     "var--animation-name": "flyinbottom",
     "var--animation-duration": "0.18s",
     "var--animation-left-transform": "0%",
