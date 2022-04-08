@@ -5,7 +5,7 @@ SCHEMA
     "library": {"html":"input", "type":"text", "placeholder":"{{i18n.LibraryName}}", "spellcheck":"false"},
     "queue": {"html":"input", "type":"text", "placeholder":"{{i18n.DataQueueName}}", "spellcheck":"false"},
     "wait":{"html":"input", "type":"text", "placeholder":"{{i18n.Wait}}","spellcheck":"false"},
-    "peek": {"html":"input", "type":"text", "placeholder":"{{i18n.Peek}}","spellcheck":"false"},
+    "dropdown": {"html":"drop-down","style":"width:100%; height:100%;","list":"[{'value':'true'},{'value':'false'}]","text":"Allow Peek"},
     "data": {"html":"input", "type":"text", "placeholder":"{{i18n.Data}}","spellcheck":"false"}
 }
 
@@ -17,7 +17,7 @@ LAYOUT
 ----------------------------------------
 |     library         |      queue     |           
 ----------------------------------------
-|     wait            |      peek      |           
+|     wait            |      dropdown  |           
 ----------------------------------------
 |                data                  |           
 ----------------------------------------
@@ -65,8 +65,15 @@ CSS
 .item0>input,.item2>input{
     margin-right:1.3em;
 }
-.item1>input,.item3>input{
+.item1>input{
     margin-left:1.3em;
+}
+select#type{
+    margin-left:1.3em;
+    
+}
+.item3{
+    margin-right:1em;
 }
 
 
