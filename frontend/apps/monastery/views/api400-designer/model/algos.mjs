@@ -228,7 +228,7 @@ const _convertForRtvdtaara = function(node) {
 
 const _convertForQrcvdtaq = function(node) { 
     
-    let cmdString = `QRCVDTAQ PARM(${node.library.toUpperCase()||''}/${node.queue.toUpperCase()||''} ${node.wait} ${node.dropdown} &${node.data})`;;
+    let cmdString = `QRCVDTAQ PARM(${node.library.toUpperCase()||''}/${node.queue.toUpperCase()||''} ${node.wait||''} ${node.dropdown||''} &${node.data||''})`;;
     return cmdString;
 };
 
