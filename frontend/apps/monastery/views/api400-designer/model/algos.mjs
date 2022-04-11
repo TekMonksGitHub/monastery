@@ -81,6 +81,7 @@ const convertIntoAPICL = function(nodes) {
         else if (node.nodeName=='chgdtaara') { apicl[node.id] = _convertForChgdtaara(node) }
         else if (node.nodeName=='rtvdtaara') { apicl[node.id] = _convertForRtvdtaara(node) }
         else if (node.nodeName=='qrcvdtaq') { apicl[node.id] = _convertForQrcvdtaq(node) }
+        else if (node.nodeName=='dsppfm') { apicl[node.id] = _convertForDsppfm(node) }
         else if (node.nodeName=='call') { apicl[node.id] = _convertForCall(node) }
         else if (node.nodeName=='runsqlprc') { apicl[node.id] = _convertForRunsqlprc(node) }
         else if (node.nodeName=='rest') { apicl[node.id] = _convertForRest(node) }
@@ -228,6 +229,10 @@ const _convertForQrcvdtaq = function(node) {
     
     let cmdString = `QRCVDTAQ PARM(${node.library.toUpperCase()||''}/${node.queue.toUpperCase()||''} ${node.wait} ${node.dropdown} &${node.data})`;;
     return cmdString;
+};
+
+const _convertForDsppfm = function(node) { 
+    return `DSPPFM FILE(${node.libraryname||''}/${node.physical||''}) MBR(${node.member})`.toUpperCase();
 };
 
 

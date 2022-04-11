@@ -179,6 +179,7 @@
      else if (nodeName == "map") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "substr") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "qrcvdtaq") _findOrCreateCommand().commands.push(node);
+     else if (nodeName == "dsppfm") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "endapi") _findOrCreateCommand().commands.push(node);
      
      node.id = id; idCache[id] = node;   // transfer ID and cache the node
@@ -209,6 +210,7 @@
      else if (nodeName == "map") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "substr") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "qrcvdtaq") _arrayDelete(api400modelObj.apicl[0].commands, node);
+     else if (nodeName == "dsppfm") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "endapi") _arrayDelete(api400modelObj.apicl[0].commands, node);
 
      delete idCache[id]; // uncache
