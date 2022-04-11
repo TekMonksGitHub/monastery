@@ -226,7 +226,7 @@
             if (properties[key]!='') { variables = properties[key]; }
         } else idCache[id][key] = properties[key];   
      }
-     if (parameters && parameters.length!=0) { idCache[id].parameters = parameters; }
+     if (parameters && parameters.length!=0) { idCache[id].parameters = parameters.filter(Boolean); }
      if (variables && variables.length!=0) { idCache[id].variables = variables; }
 
      return true;
