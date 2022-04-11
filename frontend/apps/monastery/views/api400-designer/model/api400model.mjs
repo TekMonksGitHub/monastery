@@ -176,6 +176,8 @@
      else if (nodeName == "call") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "runsqlprc") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "rest") _findOrCreateCommand().commands.push(node);
+     else if (nodeName == "map") _findOrCreateCommand().commands.push(node);
+     else if (nodeName == "substr") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "endapi") _findOrCreateCommand().commands.push(node);
      
      node.id = id; idCache[id] = node;   // transfer ID and cache the node
@@ -203,6 +205,8 @@
      else if (nodeName == "call") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "runsqlprc") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "rest") _arrayDelete(api400modelObj.apicl[0].commands, node);
+     else if (nodeName == "map") _arrayDelete(api400modelObj.apicl[0].commands, node);
+     else if (nodeName == "substr") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "endapi") _arrayDelete(api400modelObj.apicl[0].commands, node);
 
      delete idCache[id]; // uncache
@@ -228,7 +232,7 @@
              idCache[id].data_raw = properties[key]; 
         } else if (key.includes("listbox") && (nodeName == "strapi" || nodeName == "sndapimsg" || nodeName == "call" || nodeName == "runsqlprc")) { 
             if (properties[key]!='') { parameters = properties[key]; }
-        } else if (key.includes("listbox") && (nodeName == "chgvar" )) { 
+        } else if (key.includes("listbox") && (nodeName == "chgvar" || nodeName == "substr"|| nodeName == "map")) { 
             if (properties[key]!='') { variables = properties[key]; }
         } else idCache[id][key] = properties[key];   
      }

@@ -83,6 +83,8 @@ const convertIntoAPICL = function(nodes) {
         else if (node.nodeName=='call') { apicl[node.id] = _convertForCall(node) }
         else if (node.nodeName=='runsqlprc') { apicl[node.id] = _convertForRunsqlprc(node) }
         else if (node.nodeName=='rest') { apicl[node.id] = _convertForRest(node) }
+        else if (node.nodeName=='map') { _convertForMap(node) }
+        else if (node.nodeName=='substr') { _convertForSubstr(node) }
      
     }
     console.log(apicl);
@@ -244,6 +246,35 @@ const _convertForRest = function(node) {
     let cmdString = `REST URL(${node.url||''}) METHOD(${node.method.toUpperCase()||''}) ` +
                         ` HEADERS(${node.headers||''}) PARM(&${node.parameter||''})`;
     return cmdString;
+};
+
+const _convertForMap = function(node) { 
+
+    // CHGVAR     VAR(&copybook)          VALUE(MAP DO(&token:0:-1:1:.capitalize(),&lifeprofiles[0].name:40:-1:1,&lifeprofiles[1].occupationName:60:-1:1))
+
+    let count = 1;
+    if (node.variables && node.variables.length>0)
+        for(const variableObj of node.variables) {
+            let cmdString = 'CHGVAR     VAR()   VALUE()';
+            cmdString = cmdString.replace(`VAR()`,`VAR('&${variableObj[0]||''}')`);
+            cmdString = cmdString.replace(`VALUE()`,`VALUE( MAP DO(${variableObj[1]||''}${variableObj[1]||''}))`);
+            apicl[`${node.id}_${count++}`] = cmdString;
+            console.log(cmdString);
+        }
+    
+    return cmdString;
+};
+
+const _convertForSubstr = function(node) { 
+
+    let count = 1;
+    if (node.variables && node.variables.length>0)
+        for(const variableObj of node.variables) {
+            let cmdString = 'CHGVAR     VAR()   VALUE()';
+            cmdString = cmdString.replace(`VAR()`,`VAR(&${variableObj[0]||''})`);
+            cmdString = cmdString.replace(`VALUE()`,`VALUE( SUBSTR DO(${variableObj[1]?'&'+variableObj[1]:''}:${variableObj[2]||''}:${variableObj[3]||''}))`);
+            apicl[`${node.id}_${count++}`] = cmdString;
+        }
 };
 
 const _sortIndexing = function(apicl) { 
