@@ -68,7 +68,7 @@ CSS
 .item1>input{
     margin-left:1.3em;
 }
-select#type{
+select#choices{
     margin-left:1.3em;
     
 }
