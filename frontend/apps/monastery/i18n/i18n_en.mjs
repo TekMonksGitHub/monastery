@@ -61,5 +61,6 @@ export const i18n = {
 "ProcedureName":"Procedure Name",
 "SubStrings":"Sub Strings",
 "Map":"MAP Variable",
-"ResultVariable":"Result Variable"
+"ResultVariable":"Result Variable",
+"JsonataExpression":"JSONATA Expression"
 }
