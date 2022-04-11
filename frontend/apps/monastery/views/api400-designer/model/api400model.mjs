@@ -179,6 +179,7 @@
      else if (nodeName == "map") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "substr") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "qrcvdtaq") _findOrCreateCommand().commands.push(node);
+     else if (nodeName == "qsnddtaq") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "dsppfm") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "log") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "endapi") _findOrCreateCommand().commands.push(node);
@@ -211,6 +212,7 @@
      else if (nodeName == "map") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "substr") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "qrcvdtaq") _arrayDelete(api400modelObj.apicl[0].commands, node);
+     else if (nodeName == "qsnddtaq") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "dsppfm") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "log") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "endapi") _arrayDelete(api400modelObj.apicl[0].commands, node);
