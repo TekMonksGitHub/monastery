@@ -70,10 +70,10 @@ div.Variable{
     
 
 }
-div.Variable>input.firstbox{
+div.Variable>input.variablebox{
     margin:8px 0px 8px 20px;
 }
-div.Variable>input.secondbox{
+div.Variable>input.valuebox{
     margin:8px 0px 8px 40px;
    
 }

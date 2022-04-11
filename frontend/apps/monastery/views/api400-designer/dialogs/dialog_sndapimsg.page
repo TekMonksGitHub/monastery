@@ -59,4 +59,7 @@ list-box>html>body>div#page-contents{
     grid-template-columns: 50% 50%;
     margin-left:9px;
 }
+list-box>html>body>div#page-contents>input{
+    width: 66%;  
+}
 =======

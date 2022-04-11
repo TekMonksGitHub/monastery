@@ -50,7 +50,7 @@ body {
     width: 100%;
 }
 input[type=text]#result {
-    width: 12%;
+    width: 15%;
     margin: 0px 0px 20px 6px;
     outline: none;
     padding: 6px;

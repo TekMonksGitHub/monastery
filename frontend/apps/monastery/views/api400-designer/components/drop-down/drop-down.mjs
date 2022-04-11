@@ -9,7 +9,6 @@ import { dialog_box } from "../../../shared/components/dialog-box/dialog-box.mjs
 
 const COMPONENT_PATH = util.getModulePath(import.meta);
 
-
 const elementConnected = async (element) => {
   Object.defineProperty(element, "value", {
     get: (_) => _getValue(element),
@@ -29,13 +28,7 @@ async function elementRendered(element) {
     elementArray.push("dropdown");
   }
   else dialog_box.getMemoryByContainedElement(element).retValIDs = ["dropdown"];
-  
- 
-  
 }
-
-
-
 function _getValue(host) {
   const shadowRoot = dialog_box.getShadowRootByContainedElement(host);
   const value=shadowRoot.querySelector("select").value;
