@@ -34,6 +34,16 @@ async function addChgvarElement(renderingParent, renderingContainer, idFirstBox,
  text_box.addTwoTextBox(renderingParent, renderingContainer, idFirstBox, idSecondBox, renderingElementName, chgvarVariable, chgvarValue);
 
 }
+async function addSubstrElement(renderingParent, renderingContainer,  renderingElementName,variableValue, stringValue,stringIndexValue,noOfCharValue) {
+
+  text_box.addTextBoxesForSubstr(renderingParent, renderingContainer, renderingElementName, variableValue, stringValue,stringIndexValue,noOfCharValue);
+ 
+ }
+ async function addMapElement(renderingParent, renderingContainer,  renderingElementName,variableValue, stringVariableValue,startPositionValue,noOfCharValue,stringFunctionValue,repitionValue) {
+
+  text_box.addTextBoxesForMap(renderingParent, renderingContainer,  renderingElementName,variableValue, stringVariableValue,startPositionValue,noOfCharValue,stringFunctionValue,repitionValue);
+ 
+ }
 async function removeElement(renderingParent, renderingContainer, renderingElementName) {
   const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
   if (dialogShadowRoot.querySelector("list-box#listbox").children.length > 1) {
@@ -52,6 +62,8 @@ export const tool_box = {
   elementConnected,
   addElement,
   addChgvarElement,
+  addSubstrElement,
+  addMapElement,
   removeElement,
 };
 

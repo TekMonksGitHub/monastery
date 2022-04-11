@@ -20,17 +20,26 @@ const elementConnected = async (element) => {
   if (memory[`${nodeID}`]&& memory[`${nodeID}`].length && element.getAttribute("type") == "Parameter")  _setValue(memory,  element.getAttribute("type"),nodeID);
   else if (memory[`${nodeID}`]&& memory[`${nodeID}`].length && element.getAttribute("type") == "Message")  _setValue(memory,  element.getAttribute("type"),nodeID);
   else if (memory[`${nodeID}`]&& memory[`${nodeID}`].length && element.getAttribute("type") == "Variable")  _setValue(memory, element.getAttribute("type"),nodeID); 
-
+  else if (memory[`${nodeID}`]&& memory[`${nodeID}`].length && element.getAttribute("type") == "Sub Strings")  _setValue(memory, element.getAttribute("type"),nodeID); 
+  else if (memory[`${nodeID}`]&& memory[`${nodeID}`].length && element.getAttribute("type") == "Map")  _setValue(memory, element.getAttribute("type"),nodeID);
 };
 
 async function elementRendered(element) {
-  dialog_box.getMemoryByContainedElement(element).retValIDs = ["listbox"];
+  console.log( dialog_box.getMemoryByContainedElement(element).retValIDs);
+  const elementArray= dialog_box.getMemoryByContainedElement(element).retValIDs;
+  if(elementArray.length>0&&!elementArray.includes("listbox")){
+    elementArray.push("listbox");
+  }
+  else dialog_box.getMemoryByContainedElement(element).retValIDs = ["listbox"];
+  
   const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
   const parentContainer = dialogShadowRoot.querySelector("div#page-contents");
   const noOfElements=parentContainer.children.length;
   if ( element.getAttribute("type") == "Parameter" && noOfElements<1)  window.monkshu_env.components['tool-box'].addElement('list-box', 'page-contents',element.getAttribute('type'),'listbox');
   else if ( element.getAttribute("type") == "Message" && noOfElements<1)  window.monkshu_env.components['tool-box'].addElement('list-box', 'page-contents',element.getAttribute('type'),'listbox'); 
   else if ( element.getAttribute("type") == "Variable" &&noOfElements<1) window.monkshu_env.components['tool-box'].addChgvarElement('list-box', 'page-contents', 'Variable', 'Value', 'listbox');
+  else if ( element.getAttribute("type") == "Sub Strings" &&noOfElements<1) window.monkshu_env.components['tool-box'].addSubstrElement('list-box', 'page-contents', 'listbox');
+  else if ( element.getAttribute("type") == "Map" &&noOfElements<1) window.monkshu_env.components['tool-box'].addMapElement('list-box', 'page-contents', 'listbox');
 }
 
 function _getValue(host, type,nodeID) {
@@ -46,18 +55,32 @@ function _getValue(host, type,nodeID) {
 function _setValue(memory, type,nodeID) {
 
   const textBoxValues = memory[`${nodeID}`];
+  console.log(textBoxValues);
   // removing previous elements
   list_box.shadowRoots.listbox.querySelector("#page-contents").innerHTML = '';
   if (type == "Variable") {
     for (const textBoxValue of textBoxValues) {
-      if(textBoxValue[0]!=''&& textBoxValue[1]!='')
-      window.monkshu_env.components['tool-box'].addChgvarElement('list-box', 'page-contents', 'Variable', 'Value', 'listbox', `${textBoxValue[0]}`, `${textBoxValue[1]}`);
+      if(textBoxValue.some(value=>value!=""))
+      window.monkshu_env.components['tool-box'].addChgvarElement('list-box', 'page-contents', 'Variable', 'Value', 'listbox', textBoxValue[0], textBoxValue[1]);
+    }
+  }
+  else if (type == "Sub Strings") {
+    for (const textBoxValue of textBoxValues) {
+
+      if(textBoxValue.some(value=>value!=""))
+      window.monkshu_env.components['tool-box'].addSubstrElement('list-box', 'page-contents','listbox',textBoxValue[0],textBoxValue[1],textBoxValue[2],textBoxValue[3] );
+    }
+  }
+  else if (type == "Map") {
+    for (const textBoxValue of textBoxValues) {
+      if(textBoxValue.some(value=>value!=""))
+      window.monkshu_env.components['tool-box'].addMapElement('list-box', 'page-contents','listbox',textBoxValue[0],textBoxValue[1],textBoxValue[2],textBoxValue[3],textBoxValue[4],textBoxValue[5] );
     }
   }
   else {
     for (const textBoxValue of textBoxValues) {
       if(textBoxValue!='')
-      window.monkshu_env.components['tool-box'].addElement('list-box', 'page-contents', `${type}`, 'listbox', `${textBoxValue}`);
+      window.monkshu_env.components['tool-box'].addElement('list-box', 'page-contents', type, 'listbox', textBoxValue);
     }
   }
   const shadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
@@ -71,14 +94,14 @@ function _setValue(memory, type,nodeID) {
 function _setValuesToMemory(textBoxContainer, shadowRoot, type,nodeID) {
   const memory = list_box.getMemoryByHost(DEFAULT_HOST_ID);
   const textBoxValues = [];
-  if (type == "Variable") {
+  if (type == "Variable"||type == "Sub Strings"||type == "Map") {
     for (const divBox of textBoxContainer.children) {
-      const variableValues = [];
+      const Values = [];
       for (const textBox of divBox.children) {
         const retValue = shadowRoot.querySelector(`#${textBox.getAttribute("id")}`).value;
-        variableValues.push(retValue);
+        Values.push(retValue);
       }
-      textBoxValues.push(variableValues);
+      textBoxValues.push(Values);
     }
     memory[`${nodeID}`] = textBoxValues;
     return textBoxValues;
