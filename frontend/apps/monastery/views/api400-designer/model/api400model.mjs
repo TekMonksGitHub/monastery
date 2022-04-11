@@ -173,6 +173,7 @@
      else if (nodeName == "iffalse") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "chgdtaara") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "call") _findOrCreateCommand().commands.push(node);
+     else if (nodeName == "runsqlprc") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "endapi") _findOrCreateCommand().commands.push(node);
      
      node.id = id; idCache[id] = node;   // transfer ID and cache the node
@@ -197,6 +198,7 @@
      else if (nodeName == "iffalse") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "chgdtaara") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "call") _arrayDelete(api400modelObj.apicl[0].commands, node);
+     else if (nodeName == "runsqlprc") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "endapi") _arrayDelete(api400modelObj.apicl[0].commands, node);
 
      delete idCache[id]; // uncache
@@ -220,7 +222,7 @@
          } else if (key == "data" && nodeName == "object") { // object sheet can be JSON or CSV
              idCache[id][key] = properties.type == "CSV" ? CSVSCHEME+properties.data : _tryJSONParse(properties.data);
              idCache[id].data_raw = properties[key]; 
-        } else if (key.includes("listbox") && (nodeName == "strapi" || nodeName == "sndapimsg" || nodeName == "call")) { 
+        } else if (key.includes("listbox") && (nodeName == "strapi" || nodeName == "sndapimsg" || nodeName == "call" || nodeName == "runsqlprc")) { 
             if (properties[key]!='') { parameters = properties[key]; }
         } else if (key.includes("listbox") && (nodeName == "chgvar" )) { 
             if (properties[key]!='') { variables = properties[key]; }

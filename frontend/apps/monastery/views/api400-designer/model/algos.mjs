@@ -80,6 +80,7 @@ const convertIntoAPICL = function(nodes) {
         else if (node.nodeName=='endapi') { apicl[node.id] = _convertForEndapi(node) }
         else if (node.nodeName=='chgdtaara') { apicl[node.id] = _convertForChgdtaara(node) }
         else if (node.nodeName=='call') { apicl[node.id] = _convertForCall(node) }
+        else if (node.nodeName=='runsqlprc') { apicl[node.id] = _convertForRunsqlprc(node) }
      
     }
     console.log(apicl);
@@ -207,11 +208,18 @@ const _convertForChgdtaara = function(node) {
 
 const _convertForCall = function(node) { 
 
-    // CALL       PGM(RVKAPOOR1/COSTCLP2)   PARM('&COST' '&QTY')
-
     let cmdString = `CALL PGM(${node.library||''}/${node.program||''})`.toUpperCase();
     if (node.parameters && node.parameters.length>0)
         cmdString += ` PARM ('&${node.parameters.join("' '&")}')`;
+
+    return cmdString;
+};
+
+const _convertForRunsqlprc = function(node) { 
+
+    let cmdString = `RUNSQLPRC PRC(${node.library||''}/${node.procedure||''})`.toUpperCase();
+    if (node.parameters && node.parameters.length>0)
+        cmdString += ` PARM (&${node.parameters.join(' &')})`;
 
     return cmdString;
 };
