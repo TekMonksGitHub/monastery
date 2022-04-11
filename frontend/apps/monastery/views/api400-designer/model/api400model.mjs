@@ -64,65 +64,23 @@
      // add connections between rules
      for (const bundle of api400modelObj.apicl) if (!bundle.commands.decisiontable) 
          for (const command of bundle.commands) if (command.dependencies) for (const dependency of command.dependencies) connectNodes(dependency, command.id);
- 
-     // add variables
-     for (const variable of api400modelObj.rule_parameters) {
-         const id = variable.id||_getUniqueID(); idCache[id] = variable;
-         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: variable.nodeName||"variable", id, description: variable.description, properties: {...variable}, connectable: false});
-     }
- 
-     // add data
-     for (const data of api400modelObj.data) {
-         const id = data.id||_getUniqueID(); idCache[id] = data; const clone = util.clone(data); 
-         clone.data = clone.data_raw||(clone.data.startsWith?.(CSVSCHEME)?clone.data.substring(CSVSCHEME.length):
-             clone.data.startsWith?.(CSVLOOKUPTABLESCHEME)?clone.data.substring(CSVLOOKUPTABLESCHEME.length) : 
-             typeof clone.data == "object" ? JSON.stringify(clone.data) : clone.data);
-         if (!clone.type) { if (clone.data.startsWith?.(CSVSCHEME)||clone.data.startsWith?.(CSVLOOKUPTABLESCHEME)) clone.type = "CSV";
-             else clone.type = "JSON/Javascript"; }
-         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: clone.nodeName||"data", id, description: clone.description, properties: {...clone}, connectable: false});
-     }
- 
-     // add functions
-     for (const functionThis of api400modelObj.functions) {
-         const id = functionThis.id||_getUniqueID(); idCache[id] = functionThis;
-         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: functionThis.nodeName||"functions", id, description: functionThis.description, properties: {...functionThis}, connectable: false});
-     }
- 
-     // add outputs
-     for (const output of api400modelObj.outputs) {
-         const id = output.id||_getUniqueID(); idCache[id] = output;
-         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: output.nodeName||"output", id, description: output.description, properties: {...output}, connectable: false});
-     }
- 
-     // add objects
-     for (const object of api400modelObj.objects) {
-         const id = object.id||_getUniqueID(); idCache[id] = object; const clone = util.clone(object);
-         clone.data = clone.data_raw||(clone.data.startsWith?.(CSVSCHEME)?clone.data.substring(CSVSCHEME.length):
-             typeof clone.data == "object" ? JSON.stringify(clone.data) : clone.data);
-         if (!clone.type) { if (clone.data.startsWith?.(CSVSCHEME)) clone.type = "CSV"; else clone.type = "JSON/Javascript"; }
-         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: clone.nodeName||"object", id, description: clone.description, properties: {...clone}, connectable: false});
-     }
- 
-     // add simulations
-     for (const simulation of api400modelObj.simulations) {
-         const id = simulation.id||_getUniqueID(); idCache[id] = simulation;
-         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName: simulation.nodeName||"simulate", id, description: simulation.description, properties: {...simulation}, connectable: false});
-     }
+
+     
+
  }
- 
+
  function modelNodesModified(type, nodeName, id, properties) {
-     console.log("modelNodesModified");
-     console.log(type, nodeName, id, properties);
-     if (type == api400model.ADDED) return _nodeAdded(nodeName, id, properties);
-     if (type == api400model.REMOVED) return _nodeRemoved(nodeName, id);
-     if (type == api400model.MODIFIED) return _nodeModified(nodeName, id, properties);
+
+    if (type == api400model.ADDED) return _nodeAdded(nodeName, id, properties);
+    if (type == api400model.REMOVED) return _nodeRemoved(nodeName, id);
+    if (type == api400model.MODIFIED) return _nodeModified(nodeName, id, properties);
  
-     return false;   // unknown modification
+    return false;   // unknown modification
  }
  
  function modelConnectorsModified(type, sourceName, targetName, sourceID, targetID) {
-     console.log("modelConnectorsModified");
-     if ((!idCache[sourceID]) || (!idCache[targetID])) return;   // not connected
+
+    if ((!idCache[sourceID]) || (!idCache[targetID])) return;   // not connected
  
      const addOrRemoveDependencies = (sourceNode, targetNode, type) => {
          if (type == api400model.ADDED) {
@@ -138,7 +96,7 @@
  
      if (sourceName == "rule" && targetName == "rule") addOrRemoveDependencies(idCache[sourceID], idCache[targetID], type);  // rule to rule
      else {    // rule to decision or decision to rule or decision to decision, so add dependency between bundles instead
-         const sourceBundle = _findRuleBundleWithThisRule(idCache[sourceID]), targetBundle = _findRuleBundleWithThisRule(idCache[targetID]);
+         const sourceBundle = _findCommandsWithThisCommand(idCache[sourceID]), targetBundle = _findCommandsWithThisCommand(idCache[targetID]);
          if ((!sourceBundle) || (!targetBundle)) {LOG.error("Rules bundle for rules being connected not found."); return;}
          addOrRemoveDependencies(sourceBundle, targetBundle, type);
          addOrRemoveDependencies(idCache[sourceID], idCache[targetID], type);    // also visually connect the rule nodes
@@ -158,22 +116,21 @@
  }
  
  function nodeDescriptionChanged(_nodeName, id, description) {
-     console.log("nodeDescriptionChanged");
-     if (!idCache[id]) return; 
+
+    if (!idCache[id]) return; 
      
-     const oldNameTracksDescription = _getNameFromDescription(idCache[id].description) == idCache[id].name;
-     if (idCache[id].name && oldNameTracksDescription) {
-         idCache[id].name = _getNameFromDescription(description); idCache[id].description = description;
-     } else idCache[id].description = description;
+    const oldNameTracksDescription = _getNameFromDescription(idCache[id].description) == idCache[id].name;
+    if (idCache[id].name && oldNameTracksDescription) {
+        idCache[id].name = _getNameFromDescription(description); idCache[id].description = description;
+    } else idCache[id].description = description;
  
      // rule bundle name is alaways same as description for decision tables
-     if (idCache[id].nodeName == "decision") _findRuleBundleWithThisRule(idCache[id]).name = _getNameFromDescription(description);    
+     if (idCache[id].nodeName == "decision") _findCommandsWithThisCommand(idCache[id]).name = _getNameFromDescription(description);    
  }
  
  function getModel() {
      const retModel = util.clone(api400modelObj); 
      retModel.apicl = algos.sortDependencies(retModel.apicl[0]);  // sort apicl commands in the order of dependencies
-     // for (const rules_bundle of retModel.rule_bundles) rules_bundle.commands = algos.sortDependencies(rules_bundle.commands);  // sort rules within a bundle in the order of dependencies
      const APICL = algos.convertIntoAPICL(retModel.apicl);
      return APICL;
  }
@@ -182,19 +139,21 @@
  
  const _getUniqueID = _ => `${Date.now()}${Math.random()*100}`;    
  
- function _findRuleBundleWithThisRule(rule) {
+ function _findCommandsWithThisCommand(rule) {
      for (const bundle of api400modelObj.apicl) if (bundle.commands.includes(rule)) return bundle;
      return null;
  }
  
- function _findOrCreateRuleBundle(name=current_rule_bundle, forceNew) {
+ function _findOrCreateCommand(name=current_rule_bundle, forceNew) {
      if (!forceNew) for (const bundle of api400modelObj.apicl) if (bundle.name == name) return bundle;
-     const newBundle = {name, commands:[], id:_getUniqueID()}; api400modelObj.apicl.push(newBundle); 
+     const newBundle = {name, commands:[], id:_getUniqueID()}; 
      console.log(newBundle);
+     api400modelObj.apicl.push(newBundle); 
+     console.log(api400modelObj);
      return newBundle;
  }
  
- const _findAndDeleteRuleBundle = (name=current_rule_bundle) => _arrayDelete(api400modelObj.rule_bundles, _findOrCreateRuleBundle(name));
+ const _findAndDeleteCommand = (name=current_rule_bundle) => _arrayDelete(api400modelObj.rule_bundles, _findOrCreateCommand(name));
  
  function _nodeAdded(nodeName, id, properties) {
      const node = idCache[id] ? idCache[id] : JSON.parse(JSON.stringify(properties)); node.nodeName = nodeName;
@@ -202,17 +161,18 @@
      console.log(nodeName, id, properties,node);
      const name = _getNameFromDescription(node.description); 
  
-     if (nodeName == "rule") _findOrCreateRuleBundle().commands.push(node); 
-     else if (nodeName == "strapi") _findOrCreateRuleBundle().commands.push(node);
-     else if (nodeName == "runsql") _findOrCreateRuleBundle().commands.push(node);
-     else if (nodeName == "runjs") _findOrCreateRuleBundle().commands.push(node);
-     else if (nodeName == "goto") _findOrCreateRuleBundle().commands.push(node);
-     else if (nodeName == "chgvar") _findOrCreateRuleBundle().commands.push(node);
-     else if (nodeName == "sndapimsg") _findOrCreateRuleBundle().commands.push(node);
-     else if (nodeName == "condition") _findOrCreateRuleBundle().commands.push(node);
-     else if (nodeName == "iftrue") _findOrCreateRuleBundle().commands.push(node);
-     else if (nodeName == "iffalse") _findOrCreateRuleBundle().commands.push(node);
-     else if (nodeName == "endapi") _findOrCreateRuleBundle().commands.push(node);
+     if (nodeName == "rule") _findOrCreateCommand().commands.push(node); 
+     else if (nodeName == "strapi") _findOrCreateCommand().commands.push(node);
+     else if (nodeName == "runsql") _findOrCreateCommand().commands.push(node);
+     else if (nodeName == "runjs") _findOrCreateCommand().commands.push(node);
+     else if (nodeName == "goto") _findOrCreateCommand().commands.push(node);
+     else if (nodeName == "chgvar") _findOrCreateCommand().commands.push(node);
+     else if (nodeName == "sndapimsg") _findOrCreateCommand().commands.push(node);
+     else if (nodeName == "condition") _findOrCreateCommand().commands.push(node);
+     else if (nodeName == "iftrue") _findOrCreateCommand().commands.push(node);
+     else if (nodeName == "iffalse") _findOrCreateCommand().commands.push(node);
+     else if (nodeName == "chgdtaara") _findOrCreateCommand().commands.push(node);
+     else if (nodeName == "endapi") _findOrCreateCommand().commands.push(node);
      
      node.id = id; idCache[id] = node;   // transfer ID and cache the node
      console.log(api400modelObj);
@@ -220,17 +180,11 @@
  }
  
  function _nodeRemoved(nodeName, id) {
-     console.log(api400modelObj)
-     if (!idCache[id]) return;   // we don't know of this node
+
+    if (!idCache[id]) return;   // we don't know of this node
      const node = idCache[id];
  
-     if (nodeName == "rule") {const bundle = _findOrCreateRuleBundle(); _arrayDelete(bundle.commands, node); if (!bundle.commands.length) _findAndDeleteRuleBundle();}
-     else if (nodeName == "decision") _arrayDelete(api400modelObj.rule_bundles, _findRuleBundleWithThisRule(node));
-     else if (nodeName == "variable") _arrayDelete(api400modelObj.rule_parameters, node);
-     else if (nodeName == "data") _arrayDelete(api400modelObj.data, node);
-     else if (nodeName == "functions") _arrayDelete(api400modelObj.outputs, node);
-     else if (nodeName == "object") _arrayDelete(api400modelObj.objects, node);
-     else if (nodeName == "simulate") _arrayDelete(api400modelObj.simulations, node);
+     if (nodeName == "rule") {const bundle = _findOrCreateCommand(); _arrayDelete(bundle.commands, node); if (!bundle.commands.length) _findAndDeleteCommand();}
      else if (nodeName == "strapi") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "runsql") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "runjs") _arrayDelete(api400modelObj.apicl[0].commands, node);
@@ -240,6 +194,7 @@
      else if (nodeName == "condition") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "iftrue") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "iffalse") _arrayDelete(api400modelObj.apicl[0].commands, node);
+     else if (nodeName == "chgdtaara") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "endapi") _arrayDelete(api400modelObj.apicl[0].commands, node);
 
      delete idCache[id]; // uncache

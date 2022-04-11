@@ -78,6 +78,7 @@ const convertIntoAPICL = function(nodes) {
         else if (node.nodeName=='condition') { apicl[node.id] = _convertForCondition(node,nodes) }
         else if (node.nodeName=='goto' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForGoto(node,nodes) }
         else if (node.nodeName=='endapi') { apicl[node.id] = _convertForEndapi(node) }
+        else if (node.nodeName=='chgdtaara') { apicl[node.id] = _convertForChgdtaara(node) }
      
     }
     console.log(apicl);
@@ -189,6 +190,20 @@ const _convertForGoto = function(node,nodes) {
 
 const _convertForEndapi = function(node) { 
     return `ENDAPI`; 
+};
+
+const _convertForChgdtaara = function(node) { 
+
+    // CHGDTAARA  DTAARA(&AREA) TYPE(*CHAR) VALUE(&VALUE)
+
+    let cmdString = `CHGDTAARA DTAARA(${node.libraryname||''}/${node.dataarea||''})`.toUpperCase();
+    if(node.dropdown && node.dropdown.includes("Character"))
+        cmdString += ` TYPE(*CHAR)`;
+    if(node.dropdown && node.dropdown.includes("Big Decimal"))
+        cmdString += ` TYPE(*BIGDEC)`;
+    if(node.value && node.value!='')
+        cmdString += ` VALUE(&${node.value})`;
+    return cmdString;
 };
 
 const _sortIndexing = function(apicl) { 
