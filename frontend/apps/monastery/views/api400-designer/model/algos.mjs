@@ -79,6 +79,7 @@ const convertIntoAPICL = function(nodes) {
         else if (node.nodeName=='goto' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForGoto(node,nodes) }
         else if (node.nodeName=='endapi') { apicl[node.id] = _convertForEndapi(node) }
         else if (node.nodeName=='chgdtaara') { apicl[node.id] = _convertForChgdtaara(node) }
+        else if (node.nodeName=='rtvdtaara') { apicl[node.id] = _convertForRtvdtaara(node) }
         else if (node.nodeName=='call') { apicl[node.id] = _convertForCall(node) }
         else if (node.nodeName=='runsqlprc') { apicl[node.id] = _convertForRunsqlprc(node) }
         else if (node.nodeName=='rest') { apicl[node.id] = _convertForRest(node) }
@@ -204,6 +205,19 @@ const _convertForChgdtaara = function(node) {
         cmdString += ` TYPE(*BIGDEC)`;
     if(node.value && node.value!='')
         cmdString += ` VALUE(&${node.value})`;
+    return cmdString;
+};
+
+
+const _convertForRtvdtaara = function(node) { 
+
+    let cmdString = `RTVDTAARA DTAARA(${node.libraryname||''}/${node.dataarea||''})`.toUpperCase();
+    if(node.dropdown && node.dropdown.includes("Character"))
+        cmdString += ` TYPE(*CHAR)`;
+    if(node.dropdown && node.dropdown.includes("Big Decimal"))
+        cmdString += ` TYPE(*BIGDEC)`;
+    if(node.value && node.value!='')
+        cmdString += ` RTNVAR(&${node.value})`;
     return cmdString;
 };
 

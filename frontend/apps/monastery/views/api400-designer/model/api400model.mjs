@@ -172,6 +172,7 @@
      else if (nodeName == "iftrue") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "iffalse") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "chgdtaara") _findOrCreateCommand().commands.push(node);
+     else if (nodeName == "rtvdtaara") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "call") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "runsqlprc") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "rest") _findOrCreateCommand().commands.push(node);
@@ -198,6 +199,7 @@
      else if (nodeName == "iftrue") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "iffalse") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "chgdtaara") _arrayDelete(api400modelObj.apicl[0].commands, node);
+     else if (nodeName == "rtvdtaara") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "call") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "runsqlprc") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "rest") _arrayDelete(api400modelObj.apicl[0].commands, node);
