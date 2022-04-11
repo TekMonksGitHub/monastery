@@ -81,6 +81,7 @@ const convertIntoAPICL = function(nodes) {
         else if (node.nodeName=='chgdtaara') { apicl[node.id] = _convertForChgdtaara(node) }
         else if (node.nodeName=='call') { apicl[node.id] = _convertForCall(node) }
         else if (node.nodeName=='runsqlprc') { apicl[node.id] = _convertForRunsqlprc(node) }
+        else if (node.nodeName=='rest') { apicl[node.id] = _convertForRest(node) }
      
     }
     console.log(apicl);
@@ -221,6 +222,13 @@ const _convertForRunsqlprc = function(node) {
     if (node.parameters && node.parameters.length>0)
         cmdString += ` PARM (&${node.parameters.join(' &')})`;
 
+    return cmdString;
+};
+
+const _convertForRest = function(node) { 
+
+    let cmdString = `REST URL(${node.url||''}) METHOD(${node.method.toUpperCase()||''}) ` +
+                        ` HEADERS(${node.headers||''}) PARM(&${node.parameter||''})`;
     return cmdString;
 };
 
