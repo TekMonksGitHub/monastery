@@ -60,5 +60,6 @@ export const i18n = {
 "ReturnValue":"Return Value",
 "ProcedureName":"Procedure Name",
 "SubStrings":"Sub Strings",
-"Map":"MAP Variable"
+"Map":"MAP Variable",
+"ResultVariable":"Result Variable"
 }

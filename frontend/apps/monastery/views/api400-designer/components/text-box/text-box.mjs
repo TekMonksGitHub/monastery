@@ -63,21 +63,21 @@ async function addTextBoxesForSubstr(renderingParent, renderingContainer, render
   const divElement = _createDivElementForSubstr(parentContainer,variableValue, stringValue,stringIndexValue,noOfCharValue);
   parentContainer.appendChild(divElement);
 };
-async function addTextBoxesForMap(renderingParent, renderingContainer,  renderingElementName,variableValue, stringVariableValue,startPositionValue,noOfCharValue,stringFunctionValue,repitionValue) {
+async function addTextBoxesForMap(renderingParent, renderingContainer,  renderingElementName, stringVariableValue,startPositionValue,noOfCharValue,stringFunctionValue,repitionValue) {
   const parent = window.monkshu_env.components[renderingParent];
   const shadowRoot = parent.shadowRoots[renderingElementName];
   const parentContainer = shadowRoot.querySelector(`#${renderingContainer}`);
   const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
   if (dialogShadowRoot.querySelector("list-box#listbox").children.length > 1) {
     const parentContainer = dialogShadowRoot.querySelector("div#page-contents");
-    const divElement = _createDivElementForMap(parentContainer,variableValue, stringVariableValue,startPositionValue,noOfCharValue,stringFunctionValue,repitionValue);
+    const divElement = _createDivElementForMap(parentContainer, stringVariableValue,startPositionValue,noOfCharValue,stringFunctionValue,repitionValue);
     parentContainer.appendChild(divElement);
 
     return true
   };
  
-  //Creating a div element for SUBSTR
-  const divElement = _createDivElementForMap(parentContainer,variableValue, stringVariableValue,startPositionValue,noOfCharValue,stringFunctionValue,repitionValue);
+ 
+  const divElement = _createDivElementForMap(parentContainer, stringVariableValue,startPositionValue,noOfCharValue,stringFunctionValue,repitionValue);
   parentContainer.appendChild(divElement);
 };
 
@@ -112,16 +112,16 @@ function _createDivElementForSubstr(parentContainer,variableValue, stringValue,s
   divElement.append(inputElement1, inputElement2,inputElement3,inputElement4);
   return divElement
 }
-function _createDivElementForMap(parentContainer,variableValue, stringVariableValue,startPositionValue,noOfCharValue,stringFunctionValue,repitionValue) {
+function _createDivElementForMap(parentContainer, stringVariableValue,startPositionValue,noOfCharValue,stringFunctionValue,repitionValue) {
   const divElement = document.createElement("div");
   divElement.setAttribute("class", "map");
-  const inputElement1 = _createElement(parentContainer, "variable", variableValue,"Variable" ,"variablebox");
-  const inputElement2 = _createElement(parentContainer, "string", stringVariableValue,"String Variable", "stringbox");
-  const inputElement3 = _createElement(parentContainer,"start",  startPositionValue,"Start Pos" ,"startbox","static");
-  const inputElement4 = _createElement(parentContainer,"count",  noOfCharValue, "Num of Char","countbox","static");
-  const inputElement5 = _createElement(parentContainer,"function",  stringFunctionValue,"String Function" ,"functionbox","static");
-  const inputElement6 = _createElement(parentContainer,"repetition",  repitionValue, "Repetition No","repitionbox","static");
-  divElement.append(inputElement1, inputElement2,inputElement3,inputElement4,inputElement5,inputElement6);
+
+  const inputElement1 = _createElement(parentContainer, "string", stringVariableValue,"String Variable", "stringbox");
+  const inputElement2 = _createElement(parentContainer,"start",  startPositionValue,"Start Pos" ,"startbox","static");
+  const inputElement3 = _createElement(parentContainer,"count",  noOfCharValue, "Num of Char","countbox","static");
+  const inputElement4 = _createElement(parentContainer,"function",  stringFunctionValue,"String Function" ,"functionbox","static");
+  const inputElement5 = _createElement(parentContainer,"repetition",  repitionValue, "Repetition No","repitionbox","static");
+  divElement.append(inputElement1, inputElement2,inputElement3,inputElement4,inputElement5);
   return divElement
 }
  

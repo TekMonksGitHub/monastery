@@ -1,6 +1,7 @@
 SCHEMA
 ======
 {
+  "result": {"html":"input", "type":"text", "placeholder":"{{i18n.ResultVariable}}"},
   "toolbox":{"html":"tool-box",
             "onclickHandler":"window.monkshu_env.components['tool-box'].addMapElement('list-box','page-contents','listbox')",
             "onclickRemoveHandler":"window.monkshu_env.components['tool-box'].removeElement('list-box','page-contents','listbox')",
@@ -13,13 +14,16 @@ SCHEMA
 
 LAYOUT
 =================
+
+----------------
+|   result     |
 ----------------
 |   toolbox    |
 ----------------
 |   listbox    |      
 ----------------
 =================
-Row Heights = 2.2em,calc(100% - 2.2em)
+Row Heights = 4em,2.2em,calc(100% - 2.2em - 4em)
 Col Widths = 100%
 =================
 
@@ -46,7 +50,19 @@ CSS
     flex-flow: row;
     box-sizing: border-box;
 }
-
+.grid-item-extension > input, .grid-item-extension > input:focus {
+    width: 17%;
+    border-radius: 3px;
+    border: 0px;
+    outline: none;
+    padding: 10px;
+    resize: none;
+    height:10px;
+    margin-bottom:10px; 
+    font-family: inherit;
+    margin-left:20px;
+    
+}
 ::placeholder {opacity: 0.8;}
 
 body {
@@ -64,16 +80,13 @@ div.map{
   border-radius:7px;
   margin:12px 20px 20px 18px;
   display: grid;
-  grid-template-columns: 28% 40% 15% 17%;
+  grid-template-columns: 23% 13% 16% 16% 32%;
   grid-template-rows: auto;
-  grid-template-areas: 
-    "variablebox stringbox startbox  countbox"
-    "  .  functionbox functionbox  repitionbox";
+  grid-template-areas:  " stringbox startbox  countbox  repitionbox functionbox";
+    
 }
 
-div.map>.variablebox {
-  grid-area: variablebox;
-}
+
 div.map>.stringbox {
   grid-area: stringbox;
 }
