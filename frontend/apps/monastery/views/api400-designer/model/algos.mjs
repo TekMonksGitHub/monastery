@@ -79,6 +79,7 @@ const convertIntoAPICL = function(nodes) {
         else if (node.nodeName=='goto' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForGoto(node,nodes) }
         else if (node.nodeName=='endapi') { apicl[node.id] = _convertForEndapi(node) }
         else if (node.nodeName=='chgdtaara') { apicl[node.id] = _convertForChgdtaara(node) }
+        else if (node.nodeName=='call') { apicl[node.id] = _convertForCall(node) }
      
     }
     console.log(apicl);
@@ -194,8 +195,6 @@ const _convertForEndapi = function(node) {
 
 const _convertForChgdtaara = function(node) { 
 
-    // CHGDTAARA  DTAARA(&AREA) TYPE(*CHAR) VALUE(&VALUE)
-
     let cmdString = `CHGDTAARA DTAARA(${node.libraryname||''}/${node.dataarea||''})`.toUpperCase();
     if(node.dropdown && node.dropdown.includes("Character"))
         cmdString += ` TYPE(*CHAR)`;
@@ -203,6 +202,17 @@ const _convertForChgdtaara = function(node) {
         cmdString += ` TYPE(*BIGDEC)`;
     if(node.value && node.value!='')
         cmdString += ` VALUE(&${node.value})`;
+    return cmdString;
+};
+
+const _convertForCall = function(node) { 
+
+    // CALL       PGM(RVKAPOOR1/COSTCLP2)   PARM('&COST' '&QTY')
+
+    let cmdString = `CALL PGM(${node.library||''}/${node.program||''})`.toUpperCase();
+    if (node.parameters && node.parameters.length>0)
+        cmdString += ` PARM ('&${node.parameters.join("' '&")}')`;
+
     return cmdString;
 };
 
