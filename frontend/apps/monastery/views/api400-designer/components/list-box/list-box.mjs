@@ -74,7 +74,7 @@ function _setValue(memory, type,nodeID) {
   else if (type == "Map") {
     for (const textBoxValue of textBoxValues) {
       if(textBoxValue.some(value=>value!=""))
-      window.monkshu_env.components['tool-box'].addMapElement('list-box', 'page-contents','listbox',textBoxValue[0],textBoxValue[1],textBoxValue[2],textBoxValue[3],textBoxValue[4],textBoxValue[5] );
+      window.monkshu_env.components['tool-box'].addMapElement('list-box', 'page-contents','listbox',textBoxValue[0],textBoxValue[1],textBoxValue[2],textBoxValue[3],textBoxValue[4] );
     }
   }
   else {
