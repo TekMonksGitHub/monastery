@@ -111,6 +111,7 @@
      if (((sourceName != "condition")&&((targetName == "iftrue")||(targetName == "iffalse")))) return false;  
      if((targetName == "condition")&&(idCache[targetID].dependencies)&&(sourceName != "goto")) return false;
      if((sourceName=="sndapimsg")&&(targetName!="endapi")) return false;
+     if((sourceName=="goto")&&(targetName=="goto")) return false;
      return true
      
  }

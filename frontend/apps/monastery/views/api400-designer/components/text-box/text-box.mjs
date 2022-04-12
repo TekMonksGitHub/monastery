@@ -63,21 +63,21 @@ async function addTextBoxesForSubstr(renderingParent, renderingContainer, render
   const divElement = _createDivElementForSubstr(parentContainer,variableValue, stringValue,stringIndexValue,noOfCharValue);
   parentContainer.appendChild(divElement);
 };
-async function addTextBoxesForMap(renderingParent, renderingContainer,  renderingElementName, stringVariableValue,startPositionValue,noOfCharValue,stringFunctionValue,repitionValue) {
+async function addTextBoxesForMap(renderingParent, renderingContainer,  renderingElementName, stringVariableValue,startPositionValue,noOfCharValue,repitionValue,stringFunctionValue) {
   const parent = window.monkshu_env.components[renderingParent];
   const shadowRoot = parent.shadowRoots[renderingElementName];
   const parentContainer = shadowRoot.querySelector(`#${renderingContainer}`);
   const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
   if (dialogShadowRoot.querySelector("list-box#listbox").children.length > 1) {
     const parentContainer = dialogShadowRoot.querySelector("div#page-contents");
-    const divElement = _createDivElementForMap(parentContainer, stringVariableValue,startPositionValue,noOfCharValue,stringFunctionValue,repitionValue);
+    const divElement = _createDivElementForMap(parentContainer, stringVariableValue,startPositionValue,noOfCharValue,repitionValue,stringFunctionValue);
     parentContainer.appendChild(divElement);
 
     return true
   };
  
  
-  const divElement = _createDivElementForMap(parentContainer, stringVariableValue,startPositionValue,noOfCharValue,stringFunctionValue,repitionValue);
+  const divElement = _createDivElementForMap(parentContainer, stringVariableValue,startPositionValue,noOfCharValue,repitionValue,stringFunctionValue);
   parentContainer.appendChild(divElement);
 };
 
@@ -112,7 +112,7 @@ function _createDivElementForSubstr(parentContainer,variableValue, stringValue,s
   divElement.append(inputElement1, inputElement2,inputElement3,inputElement4);
   return divElement
 }
-function _createDivElementForMap(parentContainer, stringVariableValue,startPositionValue,noOfCharValue,stringFunctionValue,repitionValue) {
+function _createDivElementForMap(parentContainer, stringVariableValue,startPositionValue,noOfCharValue,repitionValue,stringFunctionValue) {
   const divElement = document.createElement("div");
   divElement.setAttribute("class", "map");
 
