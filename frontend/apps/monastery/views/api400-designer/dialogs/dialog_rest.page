@@ -56,8 +56,8 @@ CSS
     height:8px;
     font-family: inherit;
 }
-.item0>input{
-    width:20%;
+.item0{
+    width:25%;
 }
 
 
