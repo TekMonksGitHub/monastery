@@ -182,6 +182,7 @@
      else if (nodeName == "qsnddtaq") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "dsppfm") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "log") _findOrCreateCommand().commands.push(node);
+     else if (nodeName == "jsonata") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "endapi") _findOrCreateCommand().commands.push(node);
      
      node.id = id; idCache[id] = node;   // transfer ID and cache the node
@@ -215,6 +216,7 @@
      else if (nodeName == "qsnddtaq") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "dsppfm") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "log") _arrayDelete(api400modelObj.apicl[0].commands, node);
+     else if (nodeName == "jsonata") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "endapi") _arrayDelete(api400modelObj.apicl[0].commands, node);
 
      delete idCache[id]; // uncache
