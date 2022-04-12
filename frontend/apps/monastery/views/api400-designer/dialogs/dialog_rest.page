@@ -12,15 +12,14 @@ SCHEMA
 
 LAYOUT
 =================
+
 ----------------------------------------
-|              result                  |
-----------------------------------------
-|              url                     |        
+|  result    |  url                    |        
 ----------------------------------------
 |   method   |   parameter |  headers  |   
 ---------------------------------------- 
 =================
-Row Heights = 3em,4em,4em
+Row Heights = 4em,3em
 Col Widths = 25%,25%,50%
 =================
 
@@ -44,6 +43,8 @@ CSS
     display: flex;
     flex-flow: row;
     box-sizing: border-box;
+    margin-top:10px;
+
 }
 
 .grid-item-extension > input, .grid-item-extension > input:focus{
@@ -56,14 +57,10 @@ CSS
     height:8px;
     font-family: inherit;
 }
-.item0{
-    width:25%;
-}
 
 
-.item1,.item2,.item3,.item4{
-    margin-top:0.6em;
-}
+
+
 
 ::placeholder {opacity: 0.8;}
 
