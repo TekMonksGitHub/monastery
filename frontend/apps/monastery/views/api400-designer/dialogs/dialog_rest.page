@@ -1,6 +1,7 @@
 SCHEMA
 ======
 {
+    "result": {"html":"input", "type":"text", "placeholder":"{{i18n.ResultVariable}}","spellcheck":"false"},
     "url": {"html":"input", "type":"text", "placeholder":"{{i18n.URL}}", "spellcheck":"false"},
     "method": {"html":"input", "type":"text", "placeholder":"{{i18n.Method}}", "spellcheck":"false"},
     "parameter": {"html":"input", "type":"text", "placeholder":"{{i18n.Parameters}}", "spellcheck":"false"},
@@ -12,12 +13,14 @@ SCHEMA
 LAYOUT
 =================
 ----------------------------------------
+|              result                  |
+----------------------------------------
 |              url                     |        
 ----------------------------------------
 |   method   |   parameter |  headers  |   
 ---------------------------------------- 
 =================
-Row Heights = 5em,5em
+Row Heights = 4em,4em,4em
 Col Widths = 25%,25%,50%
 =================
 
@@ -53,10 +56,10 @@ CSS
     height:8px;
     font-family: inherit;
 }
-.item0{  
+.item1{  
   margin-top:1em; 
 }
-.item1,.item2,.item3{ 
+.item2,.item3,.item4{
     margin-top:0.6em;
 }
 ::placeholder {opacity: 0.8;}
