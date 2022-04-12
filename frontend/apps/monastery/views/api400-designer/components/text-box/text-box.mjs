@@ -119,8 +119,8 @@ function _createDivElementForMap(parentContainer, stringVariableValue,startPosit
   const inputElement1 = _createElement(parentContainer, "string", stringVariableValue,"String Variable", "stringbox");
   const inputElement2 = _createElement(parentContainer,"start",  startPositionValue,"Start Pos" ,"startbox","static");
   const inputElement3 = _createElement(parentContainer,"count",  noOfCharValue, "Num of Char","countbox","static");
-  const inputElement4 = _createElement(parentContainer,"function",  stringFunctionValue,"String Function" ,"functionbox","static");
-  const inputElement5 = _createElement(parentContainer,"repetition",  repitionValue, "Repetition No","repitionbox","static");
+  const inputElement4 = _createElement(parentContainer,"repetition",  repitionValue, "Repetition No","repitionbox","static");
+  const inputElement5 = _createElement(parentContainer,"function",  stringFunctionValue,"String Function" ,"functionbox","static");
   divElement.append(inputElement1, inputElement2,inputElement3,inputElement4,inputElement5);
   return divElement
 }
