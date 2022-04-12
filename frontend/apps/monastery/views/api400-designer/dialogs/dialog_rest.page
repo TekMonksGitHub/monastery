@@ -20,7 +20,7 @@ LAYOUT
 |   method   |   parameter |  headers  |   
 ---------------------------------------- 
 =================
-Row Heights = 4em,4em,4em
+Row Heights = 3em,4em,4em
 Col Widths = 25%,25%,50%
 =================
 
@@ -56,12 +56,15 @@ CSS
     height:8px;
     font-family: inherit;
 }
-.item1{  
-  margin-top:1em; 
+.item0>input{
+    width:20%;
 }
-.item2,.item3,.item4{
+
+
+.item1,.item2,.item3,.item4{
     margin-top:0.6em;
 }
+
 ::placeholder {opacity: 0.8;}
 
 body {
