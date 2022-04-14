@@ -22,6 +22,8 @@ const elementConnected = async (element) => {
   else if (memory[`${nodeID}`]&& memory[`${nodeID}`].length && element.getAttribute("type") == "Variable")  _setValue(memory, element.getAttribute("type"),nodeID); 
   else if (memory[`${nodeID}`]&& memory[`${nodeID}`].length && element.getAttribute("type") == "Sub Strings")  _setValue(memory, element.getAttribute("type"),nodeID); 
   else if (memory[`${nodeID}`]&& memory[`${nodeID}`].length && element.getAttribute("type") == "Map")  _setValue(memory, element.getAttribute("type"),nodeID);
+  else if (memory[`${nodeID}`]&& memory[`${nodeID}`].length && element.getAttribute("type") == "Keys")  _setValue(memory, element.getAttribute("type"),nodeID);
+  else if (memory[`${nodeID}`]&& memory[`${nodeID}`].length && element.getAttribute("type") == "Read")  _setValue(memory, element.getAttribute("type"),nodeID);
 };
 
 async function elementRendered(element) {
@@ -40,6 +42,8 @@ async function elementRendered(element) {
   else if ( element.getAttribute("type") == "Variable" &&noOfElements<1) window.monkshu_env.components['tool-box'].addChgvarElement('list-box', 'page-contents', 'Variable', 'Value', 'listbox');
   else if ( element.getAttribute("type") == "Sub Strings" &&noOfElements<1) window.monkshu_env.components['tool-box'].addSubstrElement('list-box', 'page-contents', 'listbox');
   else if ( element.getAttribute("type") == "Map" &&noOfElements<1) window.monkshu_env.components['tool-box'].addMapElement('list-box', 'page-contents', 'listbox');
+  else if ( element.getAttribute("type") == "Keys" &&noOfElements<1) window.monkshu_env.components['tool-box'].addScrKeysElement('list-box', 'page-contents', 'listbox');
+  else if ( element.getAttribute("type") == "Read" &&noOfElements<1) window.monkshu_env.components['tool-box'].addScrReadElement('list-box', 'page-contents', 'listbox');
 }
 
 function _getValue(host, type,nodeID) {
@@ -77,6 +81,18 @@ function _setValue(memory, type,nodeID) {
       window.monkshu_env.components['tool-box'].addMapElement('list-box', 'page-contents','listbox',textBoxValue[0],textBoxValue[1],textBoxValue[2],textBoxValue[3],textBoxValue[4] );
     }
   }
+  else if (type == "Keys") {
+    for (const textBoxValue of textBoxValues) {
+      if(textBoxValue.some(value=>value!=""))
+      window.monkshu_env.components['tool-box'].addScrKeysElement('list-box', 'page-contents','listbox',textBoxValue[0],textBoxValue[1],textBoxValue[2]);
+    }
+  }
+  else if (type == "Read") {
+    for (const textBoxValue of textBoxValues) {
+      if(textBoxValue.some(value=>value!=""))
+      window.monkshu_env.components['tool-box'].addScrReadElement('list-box', 'page-contents','listbox',textBoxValue[0],textBoxValue[1],textBoxValue[2],textBoxValue[3]);
+    }
+  }
   else {
     for (const textBoxValue of textBoxValues) {
       if(textBoxValue!='')
@@ -94,7 +110,7 @@ function _setValue(memory, type,nodeID) {
 function _setValuesToMemory(textBoxContainer, shadowRoot, type,nodeID) {
   const memory = list_box.getMemoryByHost(DEFAULT_HOST_ID);
   const textBoxValues = [];
-  if (type == "Variable"||type == "Sub Strings"||type == "Map") {
+  if (type == "Variable"||type == "Sub Strings"||type == "Map"||type =="Keys"||type=="Read") {
     for (const divBox of textBoxContainer.children) {
       const Values = [];
       for (const textBox of divBox.children) {

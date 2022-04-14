@@ -44,6 +44,16 @@ async function addSubstrElement(renderingParent, renderingContainer,  renderingE
   text_box.addTextBoxesForMap(renderingParent, renderingContainer,  renderingElementName, stringVariableValue,startPositionValue,noOfCharValue,repitionValue,stringFunctionValue);
  
  }
+ async function addScrKeysElement(renderingParent, renderingContainer,  renderingElementName, keyValue,y_coordinateValue,x_coordinateValue) {
+
+  text_box.addTextBoxesForScrKeys(renderingParent, renderingContainer,  renderingElementName, keyValue,y_coordinateValue,x_coordinateValue);
+ 
+ }
+ async function addScrReadElement(renderingParent, renderingContainer,  renderingElementName, rowFromValue,columnFromValue,rowToValue,columnToValue) {
+
+  text_box.addTextBoxesForScrRead(renderingParent, renderingContainer,  renderingElementName,rowFromValue,columnFromValue,rowToValue,columnToValue);
+ 
+ }
 async function removeElement(renderingParent, renderingContainer, renderingElementName) {
   const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
   if (dialogShadowRoot.querySelector("list-box#listbox").children.length > 1) {
@@ -64,6 +74,8 @@ export const tool_box = {
   addChgvarElement,
   addSubstrElement,
   addMapElement,
+  addScrKeysElement,
+  addScrReadElement,
   removeElement,
 };
 

@@ -80,6 +80,40 @@ async function addTextBoxesForMap(renderingParent, renderingContainer,  renderin
   const divElement = _createDivElementForMap(parentContainer, stringVariableValue,startPositionValue,noOfCharValue,repitionValue,stringFunctionValue);
   parentContainer.appendChild(divElement);
 };
+async function addTextBoxesForScrKeys(renderingParent, renderingContainer,  renderingElementName, keyValue,y_coordinateValue,x_coordinateValue) {
+  const parent = window.monkshu_env.components[renderingParent];
+  const shadowRoot = parent.shadowRoots[renderingElementName];
+  const parentContainer = shadowRoot.querySelector(`#${renderingContainer}`);
+  const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
+  if (dialogShadowRoot.querySelector("list-box#listbox").children.length > 1) {
+    const parentContainer = dialogShadowRoot.querySelector("div#page-contents");
+    const divElement = _createDivElementForScrKeys(parentContainer, keyValue,y_coordinateValue,x_coordinateValue);
+    parentContainer.appendChild(divElement);
+
+    return true
+  };
+ 
+ 
+  const divElement = _createDivElementForScrKeys(parentContainer, keyValue,y_coordinateValue,x_coordinateValue);
+  parentContainer.appendChild(divElement);
+};
+async function addTextBoxesForScrRead(renderingParent, renderingContainer,  renderingElementName,rowFromValue,columnFromValue,rowToValue,columnToValue) {
+  const parent = window.monkshu_env.components[renderingParent];
+  const shadowRoot = parent.shadowRoots[renderingElementName];
+  const parentContainer = shadowRoot.querySelector(`#${renderingContainer}`);
+  const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
+  if (dialogShadowRoot.querySelector("list-box#listbox").children.length > 1) {
+    const parentContainer = dialogShadowRoot.querySelector("div#page-contents");
+    const divElement = _createDivElementForScrRead(parentContainer, rowFromValue,columnFromValue,rowToValue,columnToValue);
+    parentContainer.appendChild(divElement);
+
+    return true
+  };
+ 
+ 
+  const divElement = _createDivElementForScrRead(parentContainer, rowFromValue,columnFromValue,rowToValue,columnToValue);
+  parentContainer.appendChild(divElement);
+};
 
 function _createElement(parentContainer, id, value,placeHolder, className,placeHolderType) {
   const inputElement = document.createElement("input");
@@ -124,13 +158,37 @@ function _createDivElementForMap(parentContainer, stringVariableValue,startPosit
   divElement.append(inputElement1, inputElement2,inputElement3,inputElement4,inputElement5);
   return divElement
 }
+function _createDivElementForScrKeys(parentContainer, keyValue,y_coordinateValue,x_coordinateValue) {
+  const divElement = document.createElement("div");
+  divElement.setAttribute("class", "scr-keys");
+
+  const inputElement1 = _createElement(parentContainer, "key", keyValue,"Key", "Keys");
+  const inputElement2 = _createElement(parentContainer,"y",  y_coordinateValue,"y-cordinate" ,"y-coordinates","static");
+  const inputElement3 = _createElement(parentContainer,"x",  x_coordinateValue, "x-cordinate","x-coordinates","static");
+  
+  divElement.append(inputElement1, inputElement2,inputElement3);
+  return divElement
+}
+function _createDivElementForScrRead(parentContainer, rowFromValue,columnFromValue,rowToValue,columnToValue) {
+  const divElement = document.createElement("div");
+  divElement.setAttribute("class", "scr-read");
+
+  const inputElement1 = _createElement(parentContainer, "screen-row-from", rowFromValue,"Screen Row From", "rows-from");
+  const inputElement2 = _createElement(parentContainer,"screen-col-from",  columnFromValue,"Screen Col From" ,"cols-from");
+  const inputElement3 = _createElement(parentContainer,"screen-row-to",  rowToValue, "Screen Row To","rows-to");
+  const inputElement4 = _createElement(parentContainer,"screen-col-from",  columnToValue, "Screen Col To","cols-to");
+  divElement.append(inputElement1, inputElement2,inputElement3,inputElement4);
+  return divElement
+}
  
 export const text_box = {
   trueWebComponentMode: true,
   addTextBox,
   addTwoTextBox,
   addTextBoxesForSubstr,
-  addTextBoxesForMap
+  addTextBoxesForScrKeys,
+  addTextBoxesForMap,
+  addTextBoxesForScrRead
 
 };
 
