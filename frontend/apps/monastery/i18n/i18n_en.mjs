@@ -62,5 +62,8 @@ export const i18n = {
 "SubStrings":"Sub Strings",
 "Map":"MAP Variable",
 "ResultVariable":"Result Variable",
-"JsonataExpression":"JSONATA Expression"
+"JsonataExpression":"JSONATA Expression",
+"SessionName":"Session Name",
+"Keys":"KEYS",
+"ScreenContent":"Screen Contents"
 }

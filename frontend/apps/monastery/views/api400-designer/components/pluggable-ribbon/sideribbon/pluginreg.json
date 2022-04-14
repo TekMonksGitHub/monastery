@@ -1,1 +1,1 @@
-["substr","map","call","chgdtaara","rtvdtaara","qsnddtaq","qrcvdtaq","rest","dsppfm","log","runsqlprc","scr","jsonata","strapi","runsql","runjs","condition","goto","iftrue","iffalse","chgvar","sndapimsg","endapi","publish"]
+["scrkeys","scrread","scrtype","strapi","runsql","runjs","condition","iftrue","iffalse","goto","chgvar","chgdtaara","rtvdtaara","qsnddtaq","qrcvdtaq","rest","dsppfm","log","substr","map","call","runsqlprc","jsonata","sndapimsg","endapi","publish"]

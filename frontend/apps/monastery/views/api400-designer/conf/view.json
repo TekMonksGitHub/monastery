@@ -16,7 +16,8 @@
         "list-box":"components/list-box",
         "tool-box":"components/tool-box",
         "text-box":"components/text-box",
-        "drop-down":"components/drop-down"
+        "drop-down":"components/drop-down",
+        "radio-button":"components/radio-button"
        
     },
     "initModules": { "api400model": "model/api400model.mjs", 
