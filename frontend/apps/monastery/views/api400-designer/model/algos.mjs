@@ -289,7 +289,6 @@ const _convertForMap = function(node) {
     return `CHGVAR     VAR(${node.result})   VALUE(MAP DO(${mapVariables.join(",")}))`;
 };
 
-
 const _convertForScrread = function(node) { 
 
     let readVariables = [];
@@ -298,6 +297,17 @@ const _convertForScrread = function(node) {
             readVariables.push(`${scrPropertiesObj[0]||''},${scrPropertiesObj[1]||''},${scrPropertiesObj[2]||''},${scrPropertiesObj[3]||''}`);
         }
     return `SCR NAME(${node.session})   READ(${readVariables.join(" : ")})`;
+};
+
+
+const _convertForScrkeys = function(node) { 
+
+    let keysVariables = [];
+    if (node.scrProperties && node.scrProperties.length>0)
+        for(const scrPropertiesObj of node.scrProperties) {
+            keysVariables.push(`${scrPropertiesObj[1]||''},${scrPropertiesObj[2]||''},${scrPropertiesObj[0]||''}`);
+        }
+    return `SCR NAME(${node.session})   KEYS(${keysVariables.join(" : ")})`;
 };
 
 const _convertForSubstr = function(node) { 
