@@ -91,7 +91,7 @@ async function _shapeObjectClickedOnFlowDiagram(shapeName, id, shapelabel) {
     const idsNeeded = []; for (const item of items) for (const child of item.childNodes){
         //we are setting the nodeID , to be memorized uniquely for dynamic elements which is being added inside the dialog-box. 
         //So that, it can be available when someone revisit the dialog-box of node.
-        if(child.nodeName.toLowerCase()=="list-box")  child.setAttribute("nodeID",`${id}`);
+        if(child.nodeName.toLowerCase()=="list-box"||child.nodeName.toLowerCase()=="radio-button"||child.nodeName.toLowerCase()=="drop-down")  child.setAttribute("nodeID",`${id}`);
         if (HTML_INPUT_ELEMENTS.includes(child.nodeName.toLowerCase()) && child.id ) {
             idsNeeded.push(child.id); 
             if (savedDialogProperties[child.id]) if (child.nodeName.toLowerCase() == "textarea") child.innerHTML = savedDialogProperties[child.id];

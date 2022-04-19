@@ -5,7 +5,7 @@ SCHEMA
 {
     "libraryname": {"html":"input", "type":"text", "placeholder":"{{i18n.LibraryName}}", "spellcheck":"false"},
     "dataarea": {"html":"input", "type":"text", "placeholder":"{{i18n.DataAreaName}}", "spellcheck":"false"},
-    "dropdown": {"html":"drop-down","style":"width:100%; height:100%;","list":"[{'value':'Big Decimal'},{'value':'Character'}]","text":"Select Type"},
+    "dropdown": {"html":"drop-down","style":"width:100%; height:100%;","list":"[{'value':'BigDecimal'},{'value':'Character'}]","text":"Select Type"},
     "value": {"html":"input", "type":"text", "placeholder":"{{i18n.ReturnValue}}","spellcheck":"false"}
 }
 ======
@@ -47,7 +47,7 @@ CSS
    margin-top: 0.8em;
 }
 .grid-item-extension > input, .grid-item-extension > input:focus{
-    width: 100%;
+    width: 90%;
     border-radius: 4px;
     border: 0px;
     outline: none;
@@ -57,13 +57,31 @@ CSS
     font-family: inherit;
  
 }
-
-.item1,.item3{ 
-    margin-left:1.2em;
+ 
+.item0{
+    display:flex;
+    justify-content: flex-end;
+    margin-top:1em;
+    margin-right:1.5em;
 }
+.item1{
+     display:flex;
+    justify-content: flex-start;
+    margin-top:1em;
+    margin-left:1.5em;
+}
+.item2{
+     display:flex;
+    justify-content: flex-end;
+    margin-top:0.5em;
+    margin-right:2em;
 
-.item0,.item2{
-    margin-right:1.2em;
+}
+.item3{
+    display:flex;
+    justify-content: flex-start;
+    margin-top:1em;
+    margin-left:1.5em;
 }
 
 

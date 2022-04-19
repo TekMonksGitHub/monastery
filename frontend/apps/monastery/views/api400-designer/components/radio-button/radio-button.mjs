@@ -9,43 +9,52 @@ import { dialog_box } from "../../../shared/components/dialog-box/dialog-box.mjs
 
 const COMPONENT_PATH = util.getModulePath(import.meta);
 const DEFAULT_HOST_ID = "__org_monkshu_radio_button";
-const elementConnected = async (element) => {
-  Object.defineProperty(element, "value", {
-    get: (_) => _getValue(element),
-    set: (value) => _setValue(value, element),
-  });
-  // const data = {};
 
-  // data.values=JSON.parse(element.getAttribute("list").replace(/'/g,'\"'));
-  // data.text=element.getAttribute("text")
-  // drop_down.setData(element.id, data);
+const elementConnected = async (element) => {
+  const nodeID=element.getAttribute('nodeID');
+  Object.defineProperty(element, "value", {
+    get: (_) => _getValue(element,nodeID),
+    set: (value) => _setValue(value, element)
+  });
+
+  const memory = radio_button.getMemoryByHost(DEFAULT_HOST_ID);
+  if(memory[`${nodeID}`]&& memory[`${nodeID}`]) _setValue(memory[`${nodeID}`], element);
 
 };
 async function elementRendered(element) {
-  console.log(element);
-  console.log( dialog_box.getMemoryByContainedElement(element).retValIDs);
   const elementArray= dialog_box.getMemoryByContainedElement(element).retValIDs;
   if(elementArray.length>0&&!elementArray.includes("radiobutton")){
     elementArray.push("radiobutton");
   }
   else dialog_box.getMemoryByContainedElement(element).retValIDs = ["radiobutton"];
-  console.log(element.getAttribute("value"));
-  
 }
-function _getValue(host) {
-  
+function _getValue(host,nodeID) {
+   const memory = radio_button.getMemoryByHost(DEFAULT_HOST_ID);
    const shadowRoot = dialog_box.getShadowRootByContainedElement(host);
    const value=shadowRoot.querySelector('input[name="scr"]:checked').value;
-  
- return value
+   memory[`${nodeID}`]=value;
+    return value
  };
+function _setValue(value,host){
 
-
-
+const data = {};
+if(value=="start"){
+  data.start="checked"; 
+}
+else if(value=="stop"){
+  data.stop="checked";
+}
+else if(value=="release"){
+  data.release="checked";
+}
+radio_button.setData(host.id, data);
+ }
+ 
 export const radio_button = {
   trueWebComponentMode: false,
   elementConnected,
   elementRendered
+ 
   
 };
 
