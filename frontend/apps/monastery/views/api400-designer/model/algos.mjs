@@ -299,7 +299,6 @@ const _convertForScrread = function(node) {
     return `SCR NAME(${node.session})   READ(${readVariables.join(" : ")})`;
 };
 
-
 const _convertForScrkeys = function(node) { 
 
     let keysVariables = [];
@@ -308,6 +307,10 @@ const _convertForScrkeys = function(node) {
             keysVariables.push(`${scrPropertiesObj[1]||''},${scrPropertiesObj[2]||''},${scrPropertiesObj[0]||''}`);
         }
     return `SCR NAME(${node.session})   KEYS(${keysVariables.join(" : ")})`;
+};
+
+const _convertForScrops = function(node) { 
+    return `SCR NAME(${node.session}) ${node.radiobutton.toUpperCase()}`;
 };
 
 const _convertForSubstr = function(node) { 
