@@ -89,6 +89,9 @@ const convertIntoAPICL = function(nodes) {
         else if (node.nodeName=='rest') { apicl[node.id] = _convertForRest(node) }
         else if (node.nodeName=='jsonata') { apicl[node.id] = _convertForJsonata(node) }
         else if (node.nodeName=='map') { apicl[node.id] = _convertForMap(node) }
+        else if (node.nodeName=='scrread') { apicl[node.id] = _convertForScrread(node) }
+        else if (node.nodeName=='scrkeys') { apicl[node.id] = _convertForScrkeys(node) }
+        else if (node.nodeName=='scrops') { apicl[node.id] = _convertForScrops(node) }
         else if (node.nodeName=='substr') { _convertForSubstr(node) }
      
     }
@@ -284,6 +287,30 @@ const _convertForMap = function(node) {
             mapVariables.push(`&${variableObj[0]||''}:${variableObj[1]||''}:${variableObj[2]||''}:${variableObj[3]||''}:${variableObj[4]||''}`);
         }
     return `CHGVAR     VAR(${node.result})   VALUE(MAP DO(${mapVariables.join(",")}))`;
+};
+
+const _convertForScrread = function(node) { 
+
+    let readVariables = [];
+    if (node.scrProperties && node.scrProperties.length>0)
+        for(const scrPropertiesObj of node.scrProperties) {
+            readVariables.push(`${scrPropertiesObj[0]||''},${scrPropertiesObj[1]||''},${scrPropertiesObj[2]||''},${scrPropertiesObj[3]||''}`);
+        }
+    return `SCR NAME(${node.session})   READ(${readVariables.join(" : ")})`;
+};
+
+const _convertForScrkeys = function(node) { 
+
+    let keysVariables = [];
+    if (node.scrProperties && node.scrProperties.length>0)
+        for(const scrPropertiesObj of node.scrProperties) {
+            keysVariables.push(`${scrPropertiesObj[1]||''},${scrPropertiesObj[2]||''},${scrPropertiesObj[0]||''}`);
+        }
+    return `SCR NAME(${node.session})   KEYS(${keysVariables.join(" : ")})`;
+};
+
+const _convertForScrops = function(node) { 
+    return `SCR NAME(${node.session}) ${node.radiobutton.toUpperCase()}`;
 };
 
 const _convertForSubstr = function(node) { 

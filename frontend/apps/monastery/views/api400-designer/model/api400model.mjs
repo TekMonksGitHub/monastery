@@ -178,6 +178,9 @@
      else if (nodeName == "runsqlprc") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "rest") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "map") _findOrCreateCommand().commands.push(node);
+     else if (nodeName == "scrread") _findOrCreateCommand().commands.push(node);
+     else if (nodeName == "scrkeys") _findOrCreateCommand().commands.push(node);
+     else if (nodeName == "scrops") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "substr") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "qrcvdtaq") _findOrCreateCommand().commands.push(node);
      else if (nodeName == "qsnddtaq") _findOrCreateCommand().commands.push(node);
@@ -212,6 +215,9 @@
      else if (nodeName == "runsqlprc") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "rest") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "map") _arrayDelete(api400modelObj.apicl[0].commands, node);
+     else if (nodeName == "scrread") _arrayDelete(api400modelObj.apicl[0].commands, node);
+     else if (nodeName == "scrkeys") _arrayDelete(api400modelObj.apicl[0].commands, node);
+     else if (nodeName == "scrops") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "substr") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "qrcvdtaq") _arrayDelete(api400modelObj.apicl[0].commands, node);
      else if (nodeName == "qsnddtaq") _arrayDelete(api400modelObj.apicl[0].commands, node);
@@ -227,7 +233,7 @@
  function _nodeModified(nodeName, id, properties) {
      console.log("_nodeModified");
      console.log(nodeName, id, properties,idCache);
-     let parameters,variables = [];
+     let parameters,variables,scrProperties = [];
      if (!idCache[id]) return false; // we don't know of this node
      for (const key in properties) { // transfer the new properties, CSVs need the CSV scheme added
          if (key == "decisiontable") {   // decision table must be CSV
@@ -245,10 +251,13 @@
             if (properties[key]!='') { parameters = properties[key]; }
         } else if (key.includes("listbox") && (nodeName == "chgvar" || nodeName == "substr"|| nodeName == "map")) { 
             if (properties[key]!='') { variables = properties[key]; }
+        } else if (key.includes("listbox") && (nodeName == "scrread" || nodeName == "scrkeys")) { 
+            if (properties[key]!='') { scrProperties = properties[key]; }
         } else idCache[id][key] = properties[key];   
      }
      if (parameters && parameters.length!=0) { idCache[id].parameters = parameters.filter(Boolean); }
-     if (variables && variables.length!=0) { idCache[id].variables = variables; }
+     if (variables && variables.length!=0) { idCache[id].variables = variables.filter(Boolean); }
+     if (scrProperties && scrProperties.length!=0) { idCache[id].scrProperties = scrProperties.filter(Boolean); }
 
      return true;
  }
