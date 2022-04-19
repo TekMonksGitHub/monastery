@@ -104,7 +104,7 @@ function cancel(element) {
     
     const memory = element instanceof Element ? dialog_box.getMemoryByContainedElement(element) : 
         dialog_box.getMemory(element||DEFAULT_HOST_ID);
-    if(!memory.retValIDs.includes("listbox")&&!memory.retValIDs.includes("dropdown")){
+    if(!memory.retValIDs.includes("listbox")&&!memory.retValIDs.includes("dropdown")&&!memory.retValIDs.includes("radiobutton")){
     const retVals = _getRetVals(memory, dialog_box.getShadowRootByContainedElement(element));
     if (memory.callback) memory.callback("cancel", retVals, element);}
     hideDialog(element); 

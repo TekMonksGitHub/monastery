@@ -17,7 +17,7 @@ LAYOUT
  
 =================
 Row Heights = 4em
-Col Widths = 25%,75%
+Col Widths = 40%,60%
 =================
 
 
@@ -51,13 +51,9 @@ CSS
     outline: none;
     padding: 10px;
     resize: none;
-    height:8px;
+    height:9px;
     font-family: inherit;
 }
-
-
-
-
 
 ::placeholder {opacity: 0.8;}
 
