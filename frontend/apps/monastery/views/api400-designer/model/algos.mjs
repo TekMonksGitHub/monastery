@@ -286,7 +286,7 @@ const _convertForMap = function(node) {
         for(const variableObj of node.variables) {
             mapVariables.push(`&${variableObj[0]||''}:${variableObj[1]||''}:${variableObj[2]||''}:${variableObj[3]||''}:${variableObj[4]||''}`);
         }
-    return `CHGVAR     VAR(${node.result})   VALUE(MAP DO(${mapVariables.join(",")}))`;
+    return `CHGVAR     VAR(&${node.result})   VALUE(MAP DO(${mapVariables.join(",")}))`;
 };
 
 const _convertForScrread = function(node) { 
