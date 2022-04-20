@@ -26,7 +26,7 @@ LAYOUT
 
 
 =================
-Row Heights = 3.5em,3.5em,3em
+Row Heights = 3.5em,3.5em,3.5em
 Col Widths = 50%,50%
 =================
 
@@ -59,21 +59,29 @@ CSS
     outline: none;
     padding: 10px;
     resize: none;
-    height:10px;
+    height:8px;
     font-family: inherit;
 }
-.item0>input,.item2>input{
+
+.item0{
     margin-right:1.3em;
+    margin-top:0.3em;
 }
-.item1>input{
-    margin-left:1.3em;
+.item1{
+  margin-left:1.3em;
+  margin-top:0.3em;
 }
-select#choices{
-    margin-left:1.3em;
-    
+.item2{
+    margin-right:1.3em;
+    margin-top:0.6em;
 }
 .item3{
-    margin-right:1em;
+       margin-right: 0.5em;
+       margin-left: 0.8em;
+}
+
+.item4{ 
+    margin-top:1em;
 }
 
 

@@ -22,13 +22,12 @@
     outline: none;
 }
  
-
   </style>
    {{{styleBody}}}
    <select name="choices" id="choices">
-    <option value="" disabled selected hidden >{{text}}</option>
+    <option value="" disabled selected hidden class="disabled"  >{{text}}</option>
     {{#values}}
-    <option value="{{value}}">{{value}}</option>
+    <option value="{{value}}" class="values" id="{{value}}" >{{value}}</option>
    
    {{/values}}
   </select>
