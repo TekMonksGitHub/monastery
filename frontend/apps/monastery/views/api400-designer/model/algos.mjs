@@ -268,7 +268,7 @@ const _convertForRunsqlprc = function(node) {
 const _convertForRest = function(node) { 
 
     let cmdString = `REST URL(${node.url||''}) METHOD(${node.method.toUpperCase()||''}) ` +
-                        ` HEADERS(${node.headers||''}) PARM(&${node.parameter||''})`;
+                        ` HEADERS(${node.headers||''}) PARM(${node.parameter?'&'+node.parameter:''})`;
     if (node.result) 
         cmdString = `CHGVAR VAR(&${node.result||''}) VALUE(${cmdString})`;
     return cmdString;
