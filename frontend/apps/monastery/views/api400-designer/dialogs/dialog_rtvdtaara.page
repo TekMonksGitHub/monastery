@@ -55,7 +55,6 @@ CSS
     resize: none;
     height:8px;
     font-family: inherit;
- 
 }
  
 .item0{

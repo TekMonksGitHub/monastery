@@ -211,7 +211,7 @@ const _convertForChgdtaara = function(node) {
     let cmdString = `CHGDTAARA DTAARA(${node.libraryname||''}/${node.dataarea||''})`.toUpperCase();
     if(node.dropdown && node.dropdown.includes("Character"))
         cmdString += ` TYPE(*CHAR)`;
-    if(node.dropdown && node.dropdown.includes("Big Decimal"))
+    if(node.dropdown && node.dropdown.includes("BigDecimal"))
         cmdString += ` TYPE(*BIGDEC)`;
     if(node.value && node.value!='')
         cmdString += ` VALUE(&${node.value})`;
@@ -224,7 +224,7 @@ const _convertForRtvdtaara = function(node) {
     let cmdString = `RTVDTAARA DTAARA(${node.libraryname||''}/${node.dataarea||''})`.toUpperCase();
     if(node.dropdown && node.dropdown.includes("Character"))
         cmdString += ` TYPE(*CHAR)`;
-    if(node.dropdown && node.dropdown.includes("Big Decimal"))
+    if(node.dropdown && node.dropdown.includes("BigDecimal"))
         cmdString += ` TYPE(*BIGDEC)`;
     if(node.value && node.value!='')
         cmdString += ` RTNVAR(&${node.value})`;

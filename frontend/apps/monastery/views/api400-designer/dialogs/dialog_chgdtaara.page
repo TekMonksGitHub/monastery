@@ -75,7 +75,6 @@ CSS
     justify-content: flex-end;
     margin-top:0.5em;
     margin-right:2em;
-
 }
 .item3{
     display:flex;

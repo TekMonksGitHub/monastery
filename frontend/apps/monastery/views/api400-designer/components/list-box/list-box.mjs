@@ -17,13 +17,13 @@ const elementConnected = async (element) => {
   Object.defineProperty(element, "value", { get: (_) => _getValue(element, element.getAttribute("type"),element.getAttribute("nodeID")), set: (value) => _setValue(value, element) });
   const memory = list_box.getMemoryByHost(DEFAULT_HOST_ID);
   const nodeID=element.getAttribute('nodeID');
-  if (memory[`${nodeID}`]&& memory[`${nodeID}`].length && element.getAttribute("type") == "Parameter")  _setValue(memory,  element.getAttribute("type"),nodeID);
-  else if (memory[`${nodeID}`]&& memory[`${nodeID}`].length && element.getAttribute("type") == "Message")  _setValue(memory,  element.getAttribute("type"),nodeID);
-  else if (memory[`${nodeID}`]&& memory[`${nodeID}`].length && element.getAttribute("type") == "Variable")  _setValue(memory, element.getAttribute("type"),nodeID); 
-  else if (memory[`${nodeID}`]&& memory[`${nodeID}`].length && element.getAttribute("type") == "Sub Strings")  _setValue(memory, element.getAttribute("type"),nodeID); 
-  else if (memory[`${nodeID}`]&& memory[`${nodeID}`].length && element.getAttribute("type") == "Map")  _setValue(memory, element.getAttribute("type"),nodeID);
-  else if (memory[`${nodeID}`]&& memory[`${nodeID}`].length && element.getAttribute("type") == "Keys")  _setValue(memory, element.getAttribute("type"),nodeID);
-  else if (memory[`${nodeID}`]&& memory[`${nodeID}`].length && element.getAttribute("type") == "Read")  _setValue(memory, element.getAttribute("type"),nodeID);
+  if (memory[nodeID]&& memory[nodeID].length && element.getAttribute("type") == "Parameter")  _setValue(memory,  element.getAttribute("type"),nodeID);
+  else if (memory[nodeID]&& memory[nodeID].length && element.getAttribute("type") == "Message")  _setValue(memory,  element.getAttribute("type"),nodeID);
+  else if (memory[nodeID]&& memory[nodeID].length && element.getAttribute("type") == "Variable")  _setValue(memory, element.getAttribute("type"),nodeID); 
+  else if (memory[nodeID]&& memory[nodeID].length && element.getAttribute("type") == "Sub Strings")  _setValue(memory, element.getAttribute("type"),nodeID); 
+  else if (memory[nodeID]&& memory[nodeID].length && element.getAttribute("type") == "Map")  _setValue(memory, element.getAttribute("type"),nodeID);
+  else if (memory[nodeID]&& memory[nodeID].length && element.getAttribute("type") == "Keys")  _setValue(memory, element.getAttribute("type"),nodeID);
+  else if (memory[nodeID]&& memory[nodeID].length && element.getAttribute("type") == "Read")  _setValue(memory, element.getAttribute("type"),nodeID);
 };
 
 async function elementRendered(element) {
@@ -58,7 +58,7 @@ function _getValue(host, type,nodeID) {
 
 function _setValue(memory, type,nodeID) {
 
-  const textBoxValues = memory[`${nodeID}`];
+  const textBoxValues = memory[nodeID];
   console.log(textBoxValues);
   // removing previous elements
   list_box.shadowRoots.listbox.querySelector("#page-contents").innerHTML = '';
@@ -119,7 +119,7 @@ function _setValuesToMemory(textBoxContainer, shadowRoot, type,nodeID) {
       }
       textBoxValues.push(Values);
     }
-    memory[`${nodeID}`] = textBoxValues;
+    memory[nodeID] = textBoxValues;
     return textBoxValues;
   }
 
@@ -127,7 +127,7 @@ function _setValuesToMemory(textBoxContainer, shadowRoot, type,nodeID) {
     const retValue = shadowRoot.querySelector(`#${textBox.getAttribute("id")}`).value;
     textBoxValues.push(retValue);
   }
-  memory[`${nodeID}`] = textBoxValues;
+  memory[nodeID] = textBoxValues;
   return textBoxValues;
 }
 export const list_box = {

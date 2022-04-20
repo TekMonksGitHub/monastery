@@ -65,9 +65,11 @@ CSS
 
 .item0{
     margin-right:1.3em;
+    margin-top:0.3em;
 }
 .item1{
   margin-left:1.3em;
+  margin-top:0.3em;
 }
 .item2{
     margin-right:1.3em;
@@ -76,7 +78,6 @@ CSS
 .item3{
        margin-right: 0.5em;
        margin-left: 0.8em;
-
 }
 
 .item4{ 
