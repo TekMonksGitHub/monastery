@@ -1,7 +1,6 @@
 SCHEMA
 ======
 {
-  "result": {"html":"input", "type":"text", "placeholder":"{{i18n.ResultVariable}}","spellcheck":"false"},
   "session": {"html":"input", "type":"text", "placeholder":"{{i18n.SessionName}}"},
   "toolbox":{"html":"tool-box",
             "onclickHandler":"window.monkshu_env.components['tool-box'].addScrReadElement('list-box','page-contents','listbox')",
@@ -16,16 +15,16 @@ SCHEMA
 LAYOUT
 =================
 
--------------------------------
-|    result     |   session   |
--------------------------------
-|            toolbox          |
--------------------------------
-|            listbox          |      
--------------------------------
+----------------
+|   session    |
+----------------
+|   toolbox    |
+----------------
+|   listbox    |      
+----------------
 =================
 Row Heights = 4em,2.2em,calc(100% - 2.2em - 4em)
-Col Widths = 50%,50%
+Col Widths = 100%
 =================
 
 

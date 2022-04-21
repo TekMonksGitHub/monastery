@@ -51,7 +51,7 @@ body {
 }
 input[type=text]#result {
     width: 15%;
-    margin: 0px 0px 20px 6px;
+    margin: 0px 0px 20px 13px;
     outline: none;
     padding: 6px;
     resize: none;
@@ -61,6 +61,9 @@ input[type=text]#result {
 }
 text-editor#sql{position: relative;}
 
+.item1{
+    margin-left:13px;
+}
 
 
 
