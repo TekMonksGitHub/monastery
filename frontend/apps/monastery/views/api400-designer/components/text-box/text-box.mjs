@@ -176,7 +176,7 @@ function _createDivElementForScrRead(parentContainer, rowFromValue,columnFromVal
   const inputElement1 = _createElement(parentContainer, "screen-row-from", rowFromValue,"Screen Row From", "rows-from");
   const inputElement2 = _createElement(parentContainer,"screen-col-from",  columnFromValue,"Screen Col From" ,"cols-from");
   const inputElement3 = _createElement(parentContainer,"screen-row-to",  rowToValue, "Screen Row To","rows-to");
-  const inputElement4 = _createElement(parentContainer,"screen-col-from",  columnToValue, "Screen Col To","cols-to");
+  const inputElement4 = _createElement(parentContainer,"screen-col-to",  columnToValue, "Screen Col To","cols-to");
   divElement.append(inputElement1, inputElement2,inputElement3,inputElement4);
   return divElement
 }
