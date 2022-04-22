@@ -19,7 +19,7 @@ const MSG_REGISTER_SHAPE = "REGISTER_SHAPE", MSG_SHAPE_INIT = "SHAPE_INIT_ON_RIB
     MSG_MODEL_LOAD_MODEL = "LOAD_MODEL", MSG_RESET = "RESET", MSG_FILE_UPLOADED = "FILE_UPLOADED", GRAPH_ID = "flowui", MODEL_OP_ADDED = "added", 
     MODEL_OP_REMOVED = "removed", MODEL_OP_MODIFIED = "modified", MSG_SHAPE_MOVED = "SHAPE_MOVED";
 const PAGE_GENERATOR_GRID_ITEM_CLASS = "grid-item-extension", HTML_INPUT_ELEMENTS = ["input","select",
-    "textarea","spread-sheet","text-editor", "drag-drop"];
+    "textarea","spread-sheet","text-editor", "drag-drop","drop-down","list-box","text-box","tool-box","radio-button"];
 let ID_CACHE = {}, CONF, VIEW_PATH;
 
 const _generateShapeName = name => name.toLowerCase(), _generateShapeX = _ => 30, _generateShapeY = _ => 30;
@@ -89,9 +89,6 @@ async function _shapeObjectClickedOnFlowDiagram(shapeName, id, shapelabel) {
     // figure out IDs for all input items on the dialog and fill their defaults, if saved previously
     const dom = new DOMParser().parseFromString(html, "text/html"), items = dom.getElementsByClassName(PAGE_GENERATOR_GRID_ITEM_CLASS);
     const idsNeeded = []; for (const item of items) for (const child of item.childNodes){
-        //we are setting the nodeID , to be memorized uniquely for dynamic elements which is being added inside the dialog-box. 
-        //So that, it can be available when someone revisit the dialog-box of node.
-        if(child.nodeName.toLowerCase()=="list-box"||child.nodeName.toLowerCase()=="radio-button"||child.nodeName.toLowerCase()=="drop-down")  child.setAttribute("nodeID",`${id}`);
         if (HTML_INPUT_ELEMENTS.includes(child.nodeName.toLowerCase()) && child.id ) {
             idsNeeded.push(child.id); 
             if (savedDialogProperties[child.id]) if (child.nodeName.toLowerCase() == "textarea") child.innerHTML = savedDialogProperties[child.id];
