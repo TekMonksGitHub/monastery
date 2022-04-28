@@ -105,7 +105,7 @@ const convertIntoAPICL = function(nodes) {
 
 const _convertForStrapi = function(node) {
 
-    let cmdString = 'STRAPI()';
+    let cmdString = 'STRAPI PARM()' ; 
     if (node.parameters && node.parameters.length!=0)
         return cmdString = cmdString.replace(`()`,`(&${node.parameters.join(' &')})`);
     else     
