@@ -28,3 +28,4 @@ jobs:
         cache: 'npm'
     - run: npm i
     - run: npm run
+    - run: sudo service monastery restart
