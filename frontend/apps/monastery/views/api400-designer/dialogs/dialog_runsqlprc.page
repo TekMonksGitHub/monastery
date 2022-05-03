@@ -89,13 +89,12 @@ body {
 }
 list-box>html>body>div#page-contents{
     width: 100%;
-    display: grid;
-    grid-template-columns: 33.3% 33.3% 33.4%;
-    justify-content: space-evenly;
+     display: flex;
+    flex-wrap: wrap;
     margin-left:9px;
 }
-
 list-box>html>body>div#page-contents>input{
-    width: 83%;  
+    flex: 1 1 220px;
+    margin-right:2.3em; 
 }
 =======

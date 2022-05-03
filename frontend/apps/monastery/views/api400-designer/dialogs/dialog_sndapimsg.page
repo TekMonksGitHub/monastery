@@ -55,11 +55,12 @@ body {
 }
 list-box>html>body>div#page-contents{
     width: 100%;
-    display: grid;
-    grid-template-columns: 50% 50%;
+     display: flex;
+    flex-wrap: wrap;
     margin-left:9px;
 }
 list-box>html>body>div#page-contents>input{
-    width: 66%;  
+    flex: 1 1 220px;
+    margin-right:2.3em; 
 }
 =======
