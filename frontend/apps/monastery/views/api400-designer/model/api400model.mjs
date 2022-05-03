@@ -135,7 +135,7 @@
 }
  const getModelAsFile = name => { 
      console.log(name);
-     return {data: JSON.stringify(getModelObject(), null, 4), mime: "application/json", filename: `${name||"api400api"}.json`}}
+     return {data: JSON.stringify(getModel(), null, 4), mime: "application/json", filename: `${name||"api400api"}.apicl`}}
  
  const _getUniqueID = _ => `${Date.now()}${Math.random()*100}`;    
  
