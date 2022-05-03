@@ -19,7 +19,8 @@ const elementConnected = async (element) => {
 
 function _getValue(host) {
   const shadowRoot = dialog_box.getShadowRootByContainedElement(host);
-  const value = shadowRoot.querySelector('input[name="scr"]:checked').value;
+  let value = "";
+  if(shadowRoot.querySelector('input[name="scr"]:checked'))  value = shadowRoot.querySelector('input[name="scr"]:checked').value;
   return value;
 }
 function _setValue(value, host) {

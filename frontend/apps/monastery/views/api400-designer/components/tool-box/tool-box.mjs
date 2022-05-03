@@ -25,45 +25,38 @@ const elementConnected = async (element) => {
 
   tool_box.setData(element.id, data);
 };
-async function addElement(renderingParent, renderingContainer, idText, renderingElementName, value) {
+async function addElement( idText,value) {
 
-text_box.addTextBox(renderingParent, renderingContainer, idText, renderingElementName, value);
+text_box.addTextBox( idText, value);
 }
-async function addChgvarElement(renderingParent, renderingContainer, idFirstBox, idSecondBox, renderingElementName, chgvarVariable, chgvarValue) {
+async function addChgvarElement(idFirstBox, idSecondBox, chgvarVariable, chgvarValue) {
 
- text_box.addTwoTextBox(renderingParent, renderingContainer, idFirstBox, idSecondBox, renderingElementName, chgvarVariable, chgvarValue);
+ text_box.addTwoTextBox( idFirstBox, idSecondBox, chgvarVariable, chgvarValue);
 
 }
-async function addSubstrElement(renderingParent, renderingContainer,  renderingElementName,variableValue, stringValue,stringIndexValue,noOfCharValue) {
+async function addSubstrElement(  variableValue, stringValue,stringIndexValue,noOfCharValue) {
 
-  text_box.addTextBoxesForSubstr(renderingParent, renderingContainer, renderingElementName, variableValue, stringValue,stringIndexValue,noOfCharValue);
+  text_box.addTextBoxesForSubstr( variableValue, stringValue,stringIndexValue,noOfCharValue);
  
  }
- async function addMapElement(renderingParent, renderingContainer,  renderingElementName, stringVariableValue,startPositionValue,noOfCharValue,repitionValue,stringFunctionValue) {
+ async function addMapElement( stringVariableValue,startPositionValue,noOfCharValue,repitionValue,stringFunctionValue) {
 
-  text_box.addTextBoxesForMap(renderingParent, renderingContainer,  renderingElementName, stringVariableValue,startPositionValue,noOfCharValue,repitionValue,stringFunctionValue);
+  text_box.addTextBoxesForMap( stringVariableValue,startPositionValue,noOfCharValue,repitionValue,stringFunctionValue);
  
  }
- async function addScrKeysElement(renderingParent, renderingContainer,  renderingElementName, keyValue,y_coordinateValue,x_coordinateValue) {
+ async function addScrKeysElement(  keyValue,y_coordinateValue,x_coordinateValue) {
 
-  text_box.addTextBoxesForScrKeys(renderingParent, renderingContainer,  renderingElementName, keyValue,y_coordinateValue,x_coordinateValue);
+  text_box.addTextBoxesForScrKeys(keyValue,y_coordinateValue,x_coordinateValue);
  
  }
- async function addScrReadElement(renderingParent, renderingContainer,  renderingElementName, rowFromValue,columnFromValue,rowToValue,columnToValue) {
+ async function addScrReadElement( rowFromValue,columnFromValue,rowToValue,columnToValue) {
 
-  text_box.addTextBoxesForScrRead(renderingParent, renderingContainer,  renderingElementName,rowFromValue,columnFromValue,rowToValue,columnToValue);
+  text_box.addTextBoxesForScrRead(rowFromValue,columnFromValue,rowToValue,columnToValue);
  
  }
-async function removeElement(renderingParent, renderingContainer, renderingElementName) {
+async function removeElement() {
   const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
-  if (dialogShadowRoot.querySelector("list-box#listbox").children.length > 1) {
-    const parentContainer = dialogShadowRoot.querySelector("div#page-contents");
-    parentContainer.removeChild(parentContainer.lastChild);
-    return true
-  }
-  const box = window.monkshu_env.components[renderingParent];
-  const shadowRoot = box.shadowRoots[renderingElementName];
-  const parent = shadowRoot.querySelector(`#${renderingContainer}`);
+  const parent = dialogShadowRoot .querySelector("div#page-contents");
   parent.removeChild(parent.lastChild);
 }
 
@@ -76,7 +69,7 @@ export const tool_box = {
   addMapElement,
   addScrKeysElement,
   addScrReadElement,
-  removeElement,
+  removeElement
 };
 
 monkshu_component.register(

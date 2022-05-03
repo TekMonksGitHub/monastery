@@ -7,6 +7,7 @@ import {i18n} from "/framework/js/i18n.mjs";
 import {blackboard} from "/framework/js/blackboard.mjs";
 import {page_generator} from "/framework/components/page-generator/page-generator.mjs";
 
+
 const IMG_SIZE = {width: 40, height: 40}, DEFAULT_DIALOG_PROPERTIES="dialogPropertiesBottom.json";
 const MSG_REGISTER_SHAPE = "REGISTER_SHAPE", MSG_SHAPE_INIT = "SHAPE_INIT_ON_RIBBON", MSG_ADD_SHAPE = "ADD_SHAPE", 
     MSG_SHAPE_CLICKED_ON_RIBBON = "SHAPE_CLICKED_ON_RIBBON", MSG_SHAPE_CLICKED = "SHAPE_CLICKED", 
@@ -19,7 +20,7 @@ const MSG_REGISTER_SHAPE = "REGISTER_SHAPE", MSG_SHAPE_INIT = "SHAPE_INIT_ON_RIB
     MSG_MODEL_LOAD_MODEL = "LOAD_MODEL", MSG_RESET = "RESET", MSG_FILE_UPLOADED = "FILE_UPLOADED", GRAPH_ID = "flowui", MODEL_OP_ADDED = "added", 
     MODEL_OP_REMOVED = "removed", MODEL_OP_MODIFIED = "modified", MSG_SHAPE_MOVED = "SHAPE_MOVED";
 const PAGE_GENERATOR_GRID_ITEM_CLASS = "grid-item-extension", HTML_INPUT_ELEMENTS = ["input","select",
-    "textarea","spread-sheet","text-editor", "drag-drop","drop-down","list-box","text-box","tool-box","radio-button"];
+    "textarea","spread-sheet","text-editor", "drag-drop","drop-down","list-box","text-box","radio-button"];
 let ID_CACHE = {}, CONF, VIEW_PATH;
 
 const _generateShapeName = name => name.toLowerCase(), _generateShapeX = _ => 30, _generateShapeY = _ => 30;
@@ -89,10 +90,11 @@ async function _shapeObjectClickedOnFlowDiagram(shapeName, id, shapelabel) {
     // figure out IDs for all input items on the dialog and fill their defaults, if saved previously
     const dom = new DOMParser().parseFromString(html, "text/html"), items = dom.getElementsByClassName(PAGE_GENERATOR_GRID_ITEM_CLASS);
     const idsNeeded = []; for (const item of items) for (const child of item.childNodes){
+        console.log(child);
         if (HTML_INPUT_ELEMENTS.includes(child.nodeName.toLowerCase()) && child.id ) {
             idsNeeded.push(child.id); 
             if (savedDialogProperties[child.id]) if (child.nodeName.toLowerCase() == "textarea") child.innerHTML = savedDialogProperties[child.id];
-            else child.setAttribute("value", savedDialogProperties[child.id]);     
+            else child.setAttribute("value", savedDialogProperties[child.id]);    
         }
         }
     if (pageModule && pageModule.page.dialogConnected) dom = await pageModule.page.dialogConnected(dom, savedDialogProperties);

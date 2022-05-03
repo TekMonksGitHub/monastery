@@ -4,7 +4,7 @@
  * License: See enclosed LICENSE file.
  */
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
-
+import { APP_CONSTANTS } from "../../../js/constants.mjs";
 /**
  * Returns the list of models present on the server
  * @param {string} server Server IP or Hostname
@@ -13,15 +13,13 @@ import {apimanager as apiman} from "/framework/js/apimanager.mjs";
  * @param {string} adminpassword Server admin password
  * @returns {result: true|false, models: [array of model names on success], err: Error text on failure, raw_err: Raw error, key: Error i18n key}
  */
-async function getModelList(server, port, adminid, adminpassword) {
-    const API_ADMIN_URL_FRAGMENT = `://${server}:${port}/apps/monkruls/admin`;
-
-    const loginResult = await _loginToServer(server, port, adminid, adminpassword);
-    if (!loginResult.result) return loginResult;    // failed to connect or login
-
+async function getModelList(server, port, user, password) {
     try {   // try to get the list now
-        const result = await apiman.rest(loginResult.scheme+API_ADMIN_URL_FRAGMENT, "POST", 
-        {op: "list"}, true);
+        const result = await apiman.rest(`http://${server}:${port}/admin/listAPIs`, "POST", 
+        { user, password}, true);
+        const list = [];
+		result.list.forEach(function(el){list.push(el.substring(1));});
+        result.list = list;
         return {result: result.result, models: result.result?result.list:null, err: "List fetch failed at the server", 
             raw_err: "Model list fetch failed at the server", key: "ModelListServerIssue"};
     } catch (err)  {return {result: false, err: "Server connection issue", raw_err: err, key: "ConnectIssue"} }
@@ -37,7 +35,7 @@ async function getModelList(server, port, adminid, adminpassword) {
  * @returns {result: true|false, model: Model object on success, err: Error text on failure, raw_err: Raw error, key: Error i18n key}
  */
  async function getModel(name, server, port, adminid, adminpassword) {
-    const API_ADMIN_URL_FRAGMENT = `://${server}:${port}/apps/monkruls/admin`;
+    const API_ADMIN_URL_FRAGMENT = `://${server}:${port}/apps/api400/admin`;
 
     const loginResult = await _loginToServer(server, port, adminid, adminpassword);
     if (!loginResult.result) return loginResult;    // failed to connect or login
@@ -60,7 +58,7 @@ async function getModelList(server, port, adminid, adminpassword) {
  * @returns {result: true|false, err: Error text on failure, raw_err: Raw error, key: Error i18n key}
  */
  async function unpublishModel(name, server, port, adminid, adminpassword) {
-    const API_ADMIN_URL_FRAGMENT = `://${server}:${port}/apps/monkruls/admin`;
+    const API_ADMIN_URL_FRAGMENT = `://${server}:${port}/apps/api400/admin`;
 
     const loginResult = await _loginToServer(server, port, adminid, adminpassword);
     if (!loginResult.result) return loginResult;    // failed to connect or login
@@ -83,22 +81,22 @@ async function getModelList(server, port, adminid, adminpassword) {
  * @param {string} adminpassword Server admin password
  * @returns {result: true|false, err: Error text on failure, raw_err: Raw error, key: Error i18n key}
  */
-async function publishModel(model, name, server, port, adminid, adminpassword) {
-    const API_ADMIN_URL_FRAGMENT = `://${server}:${port}/apps/monkruls/admin`;
-
-    const loginResult = await _loginToServer(server, port, adminid, adminpassword);
-    if (!loginResult.result) return loginResult;    // failed to connect or login
-
+async function publishModel(model, name, server, port, user, password,modelObject) {
+     const type="apicl";
+     const b64Data= btoa(JSON.stringify(model));
+     
+    const result=  await apiman.rest( APP_CONSTANTS.API_PUBLISH, "POST", { model,modelObject,name}, true);
     try {   // try to publish now
-        return {result: (await apiman.rest(loginResult.scheme+API_ADMIN_URL_FRAGMENT, "POST", 
-            {name, op: "update", input: model}, true)).result, err: "Publishing failed at the server", 
+        return {result: (await apiman.rest(`http://${server}:${port}/admin/publishAPI`, "POST", { user, password, name, type, src: b64Data}, true)).result, err: "Publishing failed at the server", 
             raw_err: "Publishing failed at the server", key: "PublishServerIssue"};
     } catch (err)  {return {result: false, err: "Server connection issue", raw_err: err, key: "ConnectIssue"} }
+  
+
 }
 
 async function _loginToServer(server, port, adminid, adminpassword) {
-    const API_LOGIN_SECURE = `https://${server}:${port}/apps/monkruls/login`;
-    const API_LOGIN_INSECURE = `http://${server}:${port}/apps/monkruls/login`;
+    const API_LOGIN_SECURE = `https://${server}:${port}/apps/monastery/login`;
+    const API_LOGIN_INSECURE = `http://${server}:${port}/apps/monastery/login`;
 
     try {   // try secure first
         const result = await apiman.rest(API_LOGIN_SECURE, "GET", {id: adminid, pw: adminpassword}, false, true);

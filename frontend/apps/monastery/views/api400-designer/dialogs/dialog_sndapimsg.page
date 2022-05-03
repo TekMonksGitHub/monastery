@@ -1,8 +1,8 @@
 SCHEMA
 ======
 {
-  "toolbox":{"html":"tool-box","onclickHandler":"window.monkshu_env.components['tool-box'].addElement('list-box','page-contents','Message','listbox')",
-            "onclickRemoveHandler":"window.monkshu_env.components['tool-box'].removeElement('list-box','page-contents','listbox')",
+  "toolbox":{"html":"tool-box","onclickHandler":"window.monkshu_env.components['tool-box'].addElement('Message')",
+            "onclickRemoveHandler":"window.monkshu_env.components['tool-box'].removeElement()",
             "text":"{{i18n.Message}}", "style":"width:100%; height: 100%;"},
 
   "listbox":{"html":"list-box","style":"width:100%; height: 100%;","type":"Message"}

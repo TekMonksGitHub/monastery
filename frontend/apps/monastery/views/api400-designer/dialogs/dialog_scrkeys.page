@@ -3,8 +3,8 @@ SCHEMA
 {
   "session": {"html":"input", "type":"text", "placeholder":"{{i18n.SessionName}}"},
   "toolbox":{"html":"tool-box",
-            "onclickHandler":"window.monkshu_env.components['tool-box'].addScrKeysElement('list-box','page-contents','listbox')",
-            "onclickRemoveHandler":"window.monkshu_env.components['tool-box'].removeElement('list-box','page-contents','listbox')",
+            "onclickHandler":"window.monkshu_env.components['tool-box'].addScrKeysElement()",
+            "onclickRemoveHandler":"window.monkshu_env.components['tool-box'].removeElement()",
             "text":"{{i18n.Keys}}",
             "style":"width:100%; height: 100%;"},
   "listbox":{"html":"list-box","style":"width:100%; height: 100%;","type":"Keys"}
@@ -94,7 +94,14 @@ div.scr-keys>.y-coordinates {
 div.scr>.x-coordinates {
   grid-area: x-coordinates;
 }
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 
+input[type=number] {
+  -moz-appearance: textfield;
+}
 
    
 =======

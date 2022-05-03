@@ -9,115 +9,57 @@ import { dialog_box } from "../../../shared/components/dialog-box/dialog-box.mjs
 
 const DIALOG_HOST_ID = "__org_monkshu_dialog_box";
 
-async function addTextBox(renderingParent, renderingContainer, id, renderingElementName, value) {
-
-  const parent = window.monkshu_env.components[renderingParent];
-  const shadowRoot = parent.shadowRoots[renderingElementName];
+async function addTextBox( id,  value) {
   const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
-  const parentContainer = shadowRoot.querySelector(`#${renderingContainer}`);
-
-  if (dialogShadowRoot.querySelector("list-box#listbox").children.length > 1) {
-    const parentContainer = dialogShadowRoot.querySelector("div#page-contents");
-    const inputElement = _createElement(parentContainer, id, value,id);
-    parentContainer.appendChild(inputElement);
-    return true
-  };
-const placeHolder=id;
+  const parentContainer =  dialogShadowRoot.querySelector("div#page-contents");
+  const placeHolder=id;
   //Creating a text box element
   const inputElement = _createElement(parentContainer, id, value,placeHolder);
   parentContainer.appendChild(inputElement);
   return true
-
 }
-async function addTwoTextBox(renderingParent, renderingContainer, id1, id2, renderingElementName, chgvarVariable, chgvarValue) {
-  const parent = window.monkshu_env.components[renderingParent];
-  const shadowRoot = parent.shadowRoots[renderingElementName];
-  const parentContainer = shadowRoot.querySelector(`#${renderingContainer}`);
+async function addTwoTextBox( id1, id2, chgvarVariable, chgvarValue) {
+
   const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
-  if (dialogShadowRoot.querySelector("list-box#listbox").children.length > 1) {
-    const parentContainer = dialogShadowRoot.querySelector("div#page-contents");
-    const divElement = _createDivElement(parentContainer, id1, id2, chgvarVariable, chgvarValue);
-    parentContainer.appendChild(divElement);
-
-    return true
-  };
-
+  const parentContainer =  dialogShadowRoot.querySelector("div#page-contents");
   //Creating a div element having two text box
   const divElement = _createDivElement(parentContainer, id1, id2, chgvarVariable, chgvarValue);
   parentContainer.appendChild(divElement);
 };
-async function addTextBoxesForSubstr(renderingParent, renderingContainer, renderingElementName, variableValue, stringValue,stringIndexValue,noOfCharValue) {
-  const parent = window.monkshu_env.components[renderingParent];
-  const shadowRoot = parent.shadowRoots[renderingElementName];
-  const parentContainer = shadowRoot.querySelector(`#${renderingContainer}`);
-  const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
-  if (dialogShadowRoot.querySelector("list-box#listbox").children.length > 1) {
-    const parentContainer = dialogShadowRoot.querySelector("div#page-contents");
-    const divElement = _createDivElementForSubstr(parentContainer,variableValue, stringValue,stringIndexValue,noOfCharValue);
-    parentContainer.appendChild(divElement);
+async function addTextBoxesForSubstr( variableValue, stringValue,stringIndexValue,noOfCharValue) {
 
-    return true
-  };
- 
   //Creating a div element for SUBSTR
+  const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
+  const parentContainer =  dialogShadowRoot.querySelector("div#page-contents");
   const divElement = _createDivElementForSubstr(parentContainer,variableValue, stringValue,stringIndexValue,noOfCharValue);
   parentContainer.appendChild(divElement);
 };
-async function addTextBoxesForMap(renderingParent, renderingContainer,  renderingElementName, stringVariableValue,startPositionValue,noOfCharValue,repitionValue,stringFunctionValue) {
-  const parent = window.monkshu_env.components[renderingParent];
-  const shadowRoot = parent.shadowRoots[renderingElementName];
-  const parentContainer = shadowRoot.querySelector(`#${renderingContainer}`);
+async function addTextBoxesForMap( stringVariableValue,startPositionValue,noOfCharValue,repitionValue,stringFunctionValue) {
   const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
-  if (dialogShadowRoot.querySelector("list-box#listbox").children.length > 1) {
-    const parentContainer = dialogShadowRoot.querySelector("div#page-contents");
-    const divElement = _createDivElementForMap(parentContainer, stringVariableValue,startPositionValue,noOfCharValue,repitionValue,stringFunctionValue);
-    parentContainer.appendChild(divElement);
-
-    return true
-  };
- 
- 
+  const parentContainer =  dialogShadowRoot.querySelector("div#page-contents");
   const divElement = _createDivElementForMap(parentContainer, stringVariableValue,startPositionValue,noOfCharValue,repitionValue,stringFunctionValue);
   parentContainer.appendChild(divElement);
 };
-async function addTextBoxesForScrKeys(renderingParent, renderingContainer,  renderingElementName, keyValue,y_coordinateValue,x_coordinateValue) {
-  const parent = window.monkshu_env.components[renderingParent];
-  const shadowRoot = parent.shadowRoots[renderingElementName];
-  const parentContainer = shadowRoot.querySelector(`#${renderingContainer}`);
+async function addTextBoxesForScrKeys( keyValue,y_coordinateValue,x_coordinateValue) {
   const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
-  if (dialogShadowRoot.querySelector("list-box#listbox").children.length > 1) {
-    const parentContainer = dialogShadowRoot.querySelector("div#page-contents");
-    const divElement = _createDivElementForScrKeys(parentContainer, keyValue,y_coordinateValue,x_coordinateValue);
-    parentContainer.appendChild(divElement);
-
-    return true
-  };
- 
- 
+  const parentContainer =  dialogShadowRoot.querySelector("div#page-contents");
   const divElement = _createDivElementForScrKeys(parentContainer, keyValue,y_coordinateValue,x_coordinateValue);
   parentContainer.appendChild(divElement);
 };
-async function addTextBoxesForScrRead(renderingParent, renderingContainer,  renderingElementName,rowFromValue,columnFromValue,rowToValue,columnToValue) {
-  const parent = window.monkshu_env.components[renderingParent];
-  const shadowRoot = parent.shadowRoots[renderingElementName];
-  const parentContainer = shadowRoot.querySelector(`#${renderingContainer}`);
+async function addTextBoxesForScrRead(rowFromValue,columnFromValue,rowToValue,columnToValue) {
+ 
   const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
-  if (dialogShadowRoot.querySelector("list-box#listbox").children.length > 1) {
-    const parentContainer = dialogShadowRoot.querySelector("div#page-contents");
-    const divElement = _createDivElementForScrRead(parentContainer, rowFromValue,columnFromValue,rowToValue,columnToValue);
-    parentContainer.appendChild(divElement);
-
-    return true
-  };
- 
- 
+  const parentContainer =  dialogShadowRoot.querySelector("div#page-contents");
   const divElement = _createDivElementForScrRead(parentContainer, rowFromValue,columnFromValue,rowToValue,columnToValue);
   parentContainer.appendChild(divElement);
 };
 
-function _createElement(parentContainer, id, value,placeHolder, className,placeHolderType) {
+function _createElement(parentContainer, id, value,placeHolder, className,placeHolderType,type) {
+  console.log(typeof type);
+  console.log(type);
   const inputElement = document.createElement("input");
-  inputElement.setAttribute("type", "text");
+ if(type!=undefined) inputElement.setAttribute("type", "number"); 
+ else inputElement.setAttribute("type", "text");
   inputElement.setAttribute("id", `${id}-${parentContainer.children.length + 1}`);
   if(placeHolderType=="static") inputElement.setAttribute("placeholder", placeHolder);
  else inputElement.setAttribute("placeholder", `${placeHolder}-${parentContainer.children.length + 1}`);
@@ -141,8 +83,8 @@ function _createDivElementForSubstr(parentContainer,variableValue, stringValue,s
   divElement.setAttribute("class", "substrdiv");
   const inputElement1 = _createElement(parentContainer, "variable", variableValue,"Variable" ,"variablebox");
   const inputElement2 = _createElement(parentContainer, "string", stringValue,"String", "stringbox");
-  const inputElement3 = _createElement(parentContainer,"index",  stringIndexValue,"String Index" ,"indexbox","static");
-  const inputElement4 = _createElement(parentContainer,"count",  noOfCharValue, "Num of Char","countbox","static");
+  const inputElement3 = _createElement(parentContainer,"index",  stringIndexValue,"String Index" ,"indexbox","static","number");
+  const inputElement4 = _createElement(parentContainer,"count",  noOfCharValue, "Num of Char","countbox","static","number");
   divElement.append(inputElement1, inputElement2,inputElement3,inputElement4);
   return divElement
 }
@@ -151,9 +93,9 @@ function _createDivElementForMap(parentContainer, stringVariableValue,startPosit
   divElement.setAttribute("class", "map");
 
   const inputElement1 = _createElement(parentContainer, "string", stringVariableValue,"String Variable", "stringbox");
-  const inputElement2 = _createElement(parentContainer,"start",  startPositionValue,"Start Pos" ,"startbox","static");
-  const inputElement3 = _createElement(parentContainer,"count",  noOfCharValue, "Num of Char","countbox","static");
-  const inputElement4 = _createElement(parentContainer,"repetition",  repitionValue, "Repetition No","repitionbox","static");
+  const inputElement2 = _createElement(parentContainer,"start",  startPositionValue,"Start Pos" ,"startbox","static","number");
+  const inputElement3 = _createElement(parentContainer,"count",  noOfCharValue, "Num of Char","countbox","static","number");
+  const inputElement4 = _createElement(parentContainer,"repetition",  repitionValue, "Repetition No","repitionbox","static","number");
   const inputElement5 = _createElement(parentContainer,"function",  stringFunctionValue,"String Function" ,"functionbox","static");
   divElement.append(inputElement1, inputElement2,inputElement3,inputElement4,inputElement5);
   return divElement
@@ -161,10 +103,9 @@ function _createDivElementForMap(parentContainer, stringVariableValue,startPosit
 function _createDivElementForScrKeys(parentContainer, keyValue,y_coordinateValue,x_coordinateValue) {
   const divElement = document.createElement("div");
   divElement.setAttribute("class", "scr-keys");
-
   const inputElement1 = _createElement(parentContainer, "key", keyValue,"Key", "Keys");
-  const inputElement2 = _createElement(parentContainer,"y",  y_coordinateValue,"y-cordinate" ,"y-coordinates","static");
-  const inputElement3 = _createElement(parentContainer,"x",  x_coordinateValue, "x-cordinate","x-coordinates","static");
+  const inputElement2 = _createElement(parentContainer,"y",  y_coordinateValue,"y-cordinate" ,"y-coordinates","static","number");
+  const inputElement3 = _createElement(parentContainer,"x",  x_coordinateValue, "x-cordinate","x-coordinates","static","number");
   
   divElement.append(inputElement1, inputElement2,inputElement3);
   return divElement
@@ -172,11 +113,10 @@ function _createDivElementForScrKeys(parentContainer, keyValue,y_coordinateValue
 function _createDivElementForScrRead(parentContainer, rowFromValue,columnFromValue,rowToValue,columnToValue) {
   const divElement = document.createElement("div");
   divElement.setAttribute("class", "scr-read");
-
-  const inputElement1 = _createElement(parentContainer, "screen-row-from", rowFromValue,"Screen Row From", "rows-from");
-  const inputElement2 = _createElement(parentContainer,"screen-col-from",  columnFromValue,"Screen Col From" ,"cols-from");
-  const inputElement3 = _createElement(parentContainer,"screen-row-to",  rowToValue, "Screen Row To","rows-to");
-  const inputElement4 = _createElement(parentContainer,"screen-col-to",  columnToValue, "Screen Col To","cols-to");
+  const inputElement1 = _createElement(parentContainer, "screen-row-from", rowFromValue,"Screen Row From", "rows-from","dynamic","number");
+  const inputElement2 = _createElement(parentContainer,"screen-col-from",  columnFromValue,"Screen Col From" ,"cols-from","dynamic","number");
+  const inputElement3 = _createElement(parentContainer,"screen-row-to",  rowToValue, "Screen Row To","rows-to","dynamic","number");
+  const inputElement4 = _createElement(parentContainer,"screen-col-to",  columnToValue, "Screen Col To","cols-to","dynamic","number");
   divElement.append(inputElement1, inputElement2,inputElement3,inputElement4);
   return divElement
 }

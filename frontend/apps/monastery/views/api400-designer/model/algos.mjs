@@ -106,8 +106,8 @@ const convertIntoAPICL = function(nodes) {
 const _convertForStrapi = function(node) {
 
     let cmdString = 'STRAPI PARM()' ; 
-    if (node.parameters && node.parameters.length!=0)
-        return cmdString = cmdString.replace(`()`,`(&${node.parameters.join(' &')})`);
+    if (node.listbox && node.listbox.length!=0)
+        return cmdString = cmdString.replace(`()`,`(&${node.listbox.join(' &')})`);
     else     
         return cmdString;
 };
@@ -126,8 +126,8 @@ const _convertForRunjs = function(node) { return `RUNJS JS(${node.code||''})`; }
 
 const _convertForSndapimsg = function(node) { 
     let cmdString = 'SNDAPIMSG  MSG()';
-    if (node.parameters && node.parameters.length!=0)
-        return cmdString.replace(`()`,`(&${node.parameters.join(' &')})`);
+    if (node.listbox && node.listbox.length!=0)
+        return cmdString.replace(`()`,`(&${node.listbox.join(' &')})`);
     else     
         return cmdString;
 };
@@ -135,8 +135,8 @@ const _convertForSndapimsg = function(node) {
 const _convertForChgvar = function(node) { 
 
     let count = 1;
-    if (node.variables && node.variables.length>0)
-        for(const variableObj of node.variables) {
+    if (node.listbox && node.listbox.length>0)
+        for(const variableObj of node.listbox) {
             let cmdString = 'CHGVAR     VAR()   VALUE()';
             cmdString = cmdString.replace(`VAR()`,`VAR('&${variableObj[0]||''}')`);
             cmdString = cmdString.replace(`VALUE()`,`VALUE('${variableObj[1]||''}')`);
@@ -250,8 +250,8 @@ const _convertForLog = function(node) {
 const _convertForCall = function(node) { 
 
     let cmdString = `CALL PGM(${node.library||''}/${node.program||''})`.toUpperCase();
-    if (node.parameters && node.parameters.length>0)
-        cmdString += ` PARM ('&${node.parameters.join("' '&")}')`;
+    if (node.listbox && node.listbox.length>0)
+        cmdString += ` PARM ('&${node.listbox.join("' '&")}')`;
 
     return cmdString;
 };
@@ -259,8 +259,8 @@ const _convertForCall = function(node) {
 const _convertForRunsqlprc = function(node) { 
 
     let cmdString = `RUNSQLPRC PRC(${node.library||''}/${node.procedure||''})`.toUpperCase();
-    if (node.parameters && node.parameters.length>0)
-        cmdString += ` PARM (&${node.parameters.join(' &')})`;
+    if (node.listbox && node.listbox.length>0)
+        cmdString += ` PARM (&${node.listbox.join(' &')})`;
 
     return cmdString;
 };
@@ -282,8 +282,8 @@ const _convertForJsonata = function(node) {
 const _convertForMap = function(node) { 
 
     let mapVariables = [];
-    if (node.variables && node.variables.length>0)
-        for(const variableObj of node.variables) {
+    if (node.listbox && node.listbox.length>0)
+        for(const variableObj of node.listbox) {
             mapVariables.push(`&${variableObj[0]||''}:${variableObj[1]||''}:${variableObj[2]||''}:${variableObj[3]||''}:${variableObj[4]||''}`);
         }
     return `CHGVAR     VAR(&${node.result})   VALUE(MAP DO(${mapVariables.join(",")}))`;
@@ -292,8 +292,8 @@ const _convertForMap = function(node) {
 const _convertForScrread = function(node) { 
 
     let readVariables = [];
-    if (node.scrProperties && node.scrProperties.length>0)
-        for(const scrPropertiesObj of node.scrProperties) {
+    if (node.listbox && node.listbox.length>0)
+        for(const scrPropertiesObj of node.listbox) {
             readVariables.push(`${scrPropertiesObj[0]||''},${scrPropertiesObj[1]||''},${scrPropertiesObj[2]||''},${scrPropertiesObj[3]||''}`);
         }
     return `SCR NAME(${node.session})   READ(${readVariables.join(" : ")})`;
@@ -302,8 +302,8 @@ const _convertForScrread = function(node) {
 const _convertForScrkeys = function(node) { 
 
     let keysVariables = [];
-    if (node.scrProperties && node.scrProperties.length>0)
-        for(const scrPropertiesObj of node.scrProperties) {
+    if (node.listbox && node.listbox.length>0)
+        for(const scrPropertiesObj of node.listbox) {
             keysVariables.push(`${scrPropertiesObj[1]||''},${scrPropertiesObj[2]||''},${scrPropertiesObj[0]||''}`);
         }
     return `SCR NAME(${node.session})   KEYS(${keysVariables.join(" : ")})`;
@@ -316,8 +316,8 @@ const _convertForScrops = function(node) {
 const _convertForSubstr = function(node) { 
 
     let count = 1;
-    if (node.variables && node.variables.length>0)
-        for(const variableObj of node.variables) {
+    if (node.listbox && node.listbox.length>0)
+        for(const variableObj of node.listbox) {
             let cmdString = 'CHGVAR     VAR()   VALUE()';
             cmdString = cmdString.replace(`VAR()`,`VAR(&${variableObj[0]||''})`);
             cmdString = cmdString.replace(`VALUE()`,`VALUE( SUBSTR DO(${variableObj[1]?'&'+variableObj[1]:''}:${variableObj[2]||''}:${variableObj[3]||''}))`);
