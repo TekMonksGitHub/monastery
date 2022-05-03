@@ -97,7 +97,6 @@ async function publishModel(model, name, server, port, user, password,modelObjec
 async function _loginToServer(server, port, adminid, adminpassword) {
     const API_LOGIN_SECURE = `https://${server}:${port}/apps/monastery/login`;
     const API_LOGIN_INSECURE = `http://${server}:${port}/apps/monastery/login`;
-
     try {   // try secure first
         const result = await apiman.rest(API_LOGIN_SECURE, "GET", {id: adminid, pw: adminpassword}, false, true);
         if (result.result) return {result: true, scheme:"https"};
