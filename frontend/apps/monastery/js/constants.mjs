@@ -2,8 +2,8 @@
  * (C) 2015 TekMonks. All rights reserved.
  * License: See enclosed license file.
  */
-const FRONTEND = "http://localhost:8080";
-const BACKEND = "http://localhost:9090";
+ const FRONTEND = "http://128.199.24.231:8080";
+ const BACKEND = "http://128.199.24.231:9090";
 const APP_NAME = "monastery";
 const APP_PATH = `${FRONTEND}/apps/${APP_NAME}`;
 const API_PATH = `${BACKEND}/apps/${APP_NAME}`;
@@ -22,7 +22,8 @@ export const APP_CONSTANTS = {
 
     API_LOGIN: API_PATH+"/login",
     API_CHANGEPW: API_PATH+"/changepassword",
-
+    API_PUBLISH:API_PATH+"/apis/api400publish",
+    API_MODEL_OBJECT:API_PATH+"/apis/api400modelobject",
     USERNAME: "username",
     USERORG: "userorg",
     USER_ROLE: "user",
