@@ -20,7 +20,7 @@ LAYOUT
 |   adminid   |    adminpassword   |      
 ------------------------------------
 =================
-Row Heights = 3.7em, 3.7em, 3.7em
+Row Heights = 4em, 4em, 4em
 Col Widths = 50%, 50%
 =================
 
@@ -50,25 +50,20 @@ CSS
         .grid-item-extension > select, .grid-item-extension > select:focus, 
         .grid-item-extension > textarea, .grid-item-extension > textarea:focus {
     width: 100%;
-    border-radius: 5px;
+    border-radius: 10px;
     border: 0px;
     outline: none;
     padding: 10px;
     resize: none;
-    margin-bottom:10px; 
     font-family: inherit;
 }
-input[type="text"]::placeholder { 
-opacity:0.6;              
-}
+
+::placeholder {opacity: 0.8;}
 
 body {
     margin: 0%;
     display: inline-block;
     width: 100%;
-}
-div#buttonbar{
-    margin-right:30px;
 }
 
 input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {

@@ -34,9 +34,12 @@
      
     console.log("loadModel");
     console.log(jsonModel);
-     try {api400modelObj = JSON.parse(jsonModel)} 
+     try {api400modelObj = JSON.parse(jsonModel)
+         console.log(api400modelObj);
+    
+    } 
      catch (err) {LOG.error(`Bad API400 model, error ${err}, skipping.`); return;}
-     if (!(api400modelObj.apicl)) {LOG.error(`Bad API400 model, not in right format.`); return;}
+    if (!(api400modelObj.apicl)) {LOG.error(`Bad API400 model, not in right format.`); return;}
  
     // first add all the rules and bundles and decision tables
     for (const apicl of api400modelObj.apicl) for (const command of apicl.commands) {
@@ -45,16 +48,7 @@
         console.log(clone);
         blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName, id, description: clone.description, properties: {...clone}, connectable: true});
     }
-    
-    // first add all the rules and bundles and decision tables
-     for (const bundle of api400modelObj.rule_bundles) for (const rule of bundle.commands) {
-        const id = rule.id||_getUniqueID(); idCache[id] = rule; const clone = util.clone(rule);
-        const nodeName = clone.nodeName || (clone.decisiontable?"decision":"rule"); 
-        if (clone.decisiontable) clone.decisiontable = clone.decisiontable_raw||clone.decisiontable.substring(CSVSCHEME.length);
-        blackboard.broadcastMessage(MSG_ADD_NODE, {nodeName, id, description: clone.description, properties: {...clone}, connectable: true});
-    }
 
-  
 
    const connectNodes = (sourceID, targetID) => {
          if ((!idCache[sourceID])||(!idCache[targetID])) {LOG.error(`Bad dependency in the model ${sourceID}, skipping.`); return;}
@@ -62,10 +56,8 @@
          blackboard.broadcastMessage(MSG_CONNECT_NODES, {sourceName, targetName, sourceID, targetID});
      }
      // add connections between rules
-     for (const bundle of api400modelObj.apicl) if (!bundle.commands.decisiontable) 
+     for (const bundle of api400modelObj.apicl) 
          for (const command of bundle.commands) if (command.dependencies) for (const dependency of command.dependencies) connectNodes(dependency, command.id);
-
-     
 
  }
 
@@ -131,12 +123,19 @@
  
  function getModel() {
      const retModel = util.clone(api400modelObj); 
+     console.log(retModel);
      retModel.apicl = algos.sortDependencies(retModel.apicl[0]);  // sort apicl commands in the order of dependencies
      const APICL = algos.convertIntoAPICL(retModel.apicl);
      return APICL;
  }
+ function getModelObject() {
+    const retModel = util.clone(api400modelObj); 
+  
+    return retModel;
+}
  const getModelAsFile = name => { 
-     return {data: JSON.stringify(getModel(), null, 4), mime: "application/json", filename: `${name||"api400api"}.apicl`}}
+     console.log(name);
+     return {data: JSON.stringify(getModelObject(), null, 4), mime: "application/json", filename: `${name||"api400api"}.json`}}
  
  const _getUniqueID = _ => `${Date.now()}${Math.random()*100}`;    
  
@@ -255,9 +254,9 @@
             if (properties[key]!='') { scrProperties = properties[key]; }
         } else idCache[id][key] = properties[key];   
      }
-     if (parameters && parameters.length!=0) { idCache[id].parameters = parameters.filter(Boolean); }
-     if (variables && variables.length!=0) { idCache[id].variables = variables.filter(Boolean); }
-     if (scrProperties && scrProperties.length!=0) { idCache[id].scrProperties = scrProperties.filter(Boolean); }
+     if (parameters && parameters.length!=0) { idCache[id].listbox = parameters.filter(Boolean); }
+     if (variables && variables.length!=0) { idCache[id].listbox = variables.filter(Boolean); }
+     if (scrProperties && scrProperties.length!=0) { idCache[id].listbox = scrProperties.filter(Boolean); }
 
      return true;
  }
@@ -274,4 +273,4 @@
  const _tryJSONParse = object => { try{return JSON.parse(object)} catch (err) {return object} }
  
  export const api400model = {init, loadModel, modelNodesModified, modelConnectorsModified, isConnectable, 
-     nodeDescriptionChanged, getModelAsFile, getModel, ADDED: "added", REMOVED: "removed", MODIFIED: "modified"};
+     nodeDescriptionChanged, getModelAsFile, getModel,getModelObject, ADDED: "added", REMOVED: "removed", MODIFIED: "modified"};

@@ -39,6 +39,7 @@ const getDescriptiveName = (lang=en) => I18N.DESCRIPTIVE_NAME[lang];
 function saveToDisk(name) {
     if (name && name.trim() != "") MODEL_NAME = name; else MODEL_NAME = null;
     const download = blackboard.getListeners(MSG_MODEL_GET_MODEL)[0]({name: MODEL_NAME});
+    console.log(download);
     util.downloadFile(download.data, download.mime, download.filename);
 }
 

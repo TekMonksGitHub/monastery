@@ -7,22 +7,20 @@
     "closeIcon": "./views/{{url.view}}/dialogs/close.svg",
     "showOKIcon": false,
     "showCancelIcon": true,
-    "showErrorNotifier": false,
+    "showErrorNotifier": true,
 
     "styleBody": "div#buttonbar {justify-content: flex-end;} span#ok {margin-top: 10px;}",
     
     "var--dialog-font": "Raleway",
     "var--dialog-background": "#DFF0FE",
-    "var--dialog-left": "13%",
-    "var--dialog-width": "73%",
-    "var--dialog-height":"38%",
+    "var--dialog-left": "120px",
+    "var--dialog-width": "calc(100vw - 240px)",
     "var--animation-name": "flyinbottom",
     "var--animation-duration": "0.18s",
     "var--animation-left-transform": "0%",
-    "var--button-background-color": " #B6DCFE",
-    "var--button-text-color": "#444444",
+    "var--button-background-color": "#B6DCFE",
+    "var--button-text-color": "black",
     "var--margin-bottom": "0px",
     "var--box-shadow": "0px 10px 0px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)",
-    "var--dialog-border": "1px solid #98CCFD",
-    "var--dialog-border-radius": "20px 20px 0px 0px"
+    "var--dialog-border": "none"
 }
