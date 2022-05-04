@@ -2,8 +2,8 @@ SCHEMA
 ======
 {
   "toolbox":{"html":"tool-box",
-            "onclickHandler":"window.monkshu_env.components['tool-box'].addChgvarElement('list-box','page-contents','Variable','Value','listbox')",
-            "onclickRemoveHandler":"window.monkshu_env.components['tool-box'].removeElement('list-box','page-contents','listbox')",
+            "onclickHandler":"window.monkshu_env.components['tool-box'].addChgvarElement('Variable','Value')",
+            "onclickRemoveHandler":"window.monkshu_env.components['tool-box'].removeElement()",
             "text":"{{i18n.Variables}}",
             "style":"width:100%; height: 100%;"},
   "listbox":{"html":"list-box","style":"width:100%; height: 100%;","type":"Variable"}

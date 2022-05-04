@@ -10,6 +10,7 @@ import {blackboard} from "/framework/js/blackboard.mjs";
 import {api400model} from "../model/api400model.mjs";
 import {page_generator} from "/framework/components/page-generator/page-generator.mjs";
 
+
 const MODULE_PATH = util.getModulePath(import.meta), VIEW_PATH=`${MODULE_PATH}/..`, MSG_GET_MODEL_NAME = "GET_MODEL_NAME", 
     MSG_RENAME_MODEL = "RENAME_MODEL", DIALOG_RET_PROPS = ["name", "server", "port", "adminid", "adminpassword"], 
     DIALOG = window.monkshu_env.components["dialog-box"];
@@ -31,8 +32,9 @@ async function openDialog() {
     DIALOG.showDialog(dialogPropertiesPath, html, null, DIALOG_RET_PROPS, 
         async (typeOfClose, result, dialogElement) => { if (typeOfClose == "submit") {
             saved_props = util.clone(result, ["adminpassword"]); // don't save password, for security
-            const model = api400model.getModel(); 
-            const pubResult = await serverManager.publishModel(model, result.name, result.server, result.port, result.adminid, result.adminpassword);
+            const model = api400model.getModel();console.log(model);
+            const modelobject =api400model.getModelObject();console.log(modelobject);
+           const pubResult = await serverManager.publishModel(model, result.name, result.server, result.port, result.adminid, result.adminpassword,modelobject);
             blackboard.broadcastMessage(MSG_RENAME_MODEL, {name: result.name});
             if (!pubResult.result) DIALOG.showError(dialogElement, await i18n.get(pubResult.key)); 
             else {DIALOG.showMessage(await i18n.get("PublishSuccess"), null, null, messageTheme, "MSG_DIALOG");  return true;}

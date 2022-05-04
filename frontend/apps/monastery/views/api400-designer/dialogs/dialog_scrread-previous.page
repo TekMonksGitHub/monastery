@@ -1,11 +1,10 @@
 SCHEMA
 ======
 {
-  "result": {"html":"input", "type":"text", "placeholder":"{{i18n.ResultVariable}}","spellcheck":"false"},
   "session": {"html":"input", "type":"text", "placeholder":"{{i18n.SessionName}}"},
   "toolbox":{"html":"tool-box",
-            "onclickHandler":"window.monkshu_env.components['tool-box'].addScrReadElement()",
-            "onclickRemoveHandler":"window.monkshu_env.components['tool-box'].removeElement()",
+            "onclickHandler":"window.monkshu_env.components['tool-box'].addScrReadElement('list-box','page-contents','listbox')",
+            "onclickRemoveHandler":"window.monkshu_env.components['tool-box'].removeElement('list-box','page-contents','listbox')",
             "text":"{{i18n.ScreenContent}}",
             "style":"width:100%; height: 100%;"},
   "listbox":{"html":"list-box","style":"width:100%; height: 100%;","type":"Read"}
@@ -16,16 +15,16 @@ SCHEMA
 LAYOUT
 =================
 
--------------------------------
-|    result     |   session   |
--------------------------------
-|            toolbox          |
--------------------------------
-|            listbox          |      
--------------------------------
+----------------
+|   session    |
+----------------
+|   toolbox    |
+----------------
+|   listbox    |      
+----------------
 =================
 Row Heights = 4em,2.2em,calc(100% - 2.2em - 4em)
-Col Widths = 50%,50%
+Col Widths = 100%
 =================
 
 
@@ -97,14 +96,6 @@ div.scr-read>.rows-to {
 }
 div.scr-read>.cols-to {
   grid-area: cols-to;
-}
-input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type=number] {
-  -moz-appearance: textfield;
 }
 
    

@@ -49,6 +49,7 @@ async function droppedFile(event) {
 async function _uploadFile() {
     try {
         const {name, data} = await util.uploadAFile("application/json");
+        console.log(name,data);
         blackboard.broadcastMessage(MSG_FILE_UPLOADED, {name, data});
     } catch (err) {LOG.error(`Error opening file: ${err}`);}
 }

@@ -7,6 +7,9 @@ import {i18n} from "/framework/js/i18n.mjs";
 import {util} from "/framework/js/util.mjs";
 import {serverManager} from "./serverManager.js";
 import {blackboard} from "/framework/js/blackboard.mjs";
+import {apimanager as apiman} from "../../../../../framework/js/apimanager.mjs";
+import { APP_CONSTANTS } from "../../../js/constants.mjs";
+
 
 const MODULE_PATH = util.getModulePath(import.meta), DIALOG = window.monkshu_env.components["dialog-box"],
     MSG_FILE_UPLOADED = "FILE_UPLOADED";
@@ -27,15 +30,25 @@ async function connectServerClicked() {
 }
 
 async function openClicked(_elementSendingTheEvent, idOfPackageToOpen) {
-    const server = DIALOG.getElementValue("server"), port = DIALOG.getElementValue("port"), 
-        adminid = DIALOG.getElementValue("adminid"), adminpassword = DIALOG.getElementValue("adminpassword");
-    const modelResult = await serverManager.getModel(idOfPackageToOpen, server, port, adminid, adminpassword);
-    if (!modelResult.result) {DIALOG.showError(null, await i18n.get(modelResult.key)); LOG.error("Model fetch failed"); return;}
-    else {
-        DIALOG.hideError();
-        blackboard.broadcastMessage(MSG_FILE_UPLOADED, {name: modelResult.name, data: modelResult.model});
-        DIALOG.hideDialog();
-    }
+   const data =  await apiman.rest( APP_CONSTANTS.API_MODEL_OBJECT, "POST", { idOfPackageToOpen}, true);
+        if(!data){
+            DIALOG.showError(null, "Model Object fetch failed "); LOG.error("Model Object fetch failed"); return;
+        }
+        else{
+            DIALOG.hideError();
+            blackboard.broadcastMessage(MSG_FILE_UPLOADED, {idOfPackageToOpen, data});
+            DIALOG.hideDialog();
+        } 
+     //   const server = DIALOG.getElementValue("server"), port = DIALOG.getElementValue("port"), 
+       //     adminid = DIALOG.getElementValue("adminid"), adminpassword = DIALOG.getElementValue("adminpassword");
+        // const modelResult = await serverManager.getModel(idOfPackageToOpen, server, port, adminid, adminpassword);
+        // if (!modelResult.result) {DIALOG.showError(null, await i18n.get(modelResult.key)); LOG.error("Model fetch failed"); return;}
+        // else {
+        //     DIALOG.hideError();
+        //     blackboard.broadcastMessage(MSG_FILE_UPLOADED, {name: modelResult.name, data: modelResult.model});
+        //     DIALOG.hideDialog();
+        // }
+
 }
 
 export const openserverhelper = {init, connectServerClicked, openClicked};

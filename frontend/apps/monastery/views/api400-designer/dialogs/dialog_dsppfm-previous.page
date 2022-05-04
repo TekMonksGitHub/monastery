@@ -1,7 +1,6 @@
 SCHEMA
 ======
 {
-    "result": {"html":"input", "type":"text", "placeholder":"{{i18n.ResultVariable}}","spellcheck":"false"},
     "libraryname": {"html":"input", "type":"text", "placeholder":"{{i18n.LibraryName}}", "spellcheck":"false"},
     "physical": {"html":"input", "type":"text", "placeholder":"{{i18n.PhysicalFile}}", "spellcheck":"false"},
     "member": {"html":"input", "type":"text", "placeholder":"{{i18n.MemberName}}","spellcheck":"false"}
@@ -13,15 +12,13 @@ SCHEMA
 LAYOUT
 =================
 ------------------------------
-|         result             |  
-------------------------------
 |   libraryname | physical   |  
 ------------------------------
 |         member             |   
 ------------------------------ 
 
 =================
-Row Heights = 4em,4em,4em
+Row Heights = 4em,4em
 Col Widths = 50%,50%
 =================
 
@@ -59,10 +56,10 @@ CSS
     font-family: inherit;
     
 }
-.item1>input{
+.item0>input{
     margin-right:1.5em;
 }
-.item2>input{
+.item1>input{
     margin-left:1.5em;
 }
 

@@ -4,8 +4,8 @@ SCHEMA
   "library": {"html":"input", "type":"text", "placeholder":"{{i18n.LibraryName}}"},
   "procedure": {"html":"input", "type":"text", "placeholder":"{{i18n.ProcedureName}}"},
   "toolbox":{"html":"tool-box",
-            "onclickHandler":"window.monkshu_env.components['tool-box'].addElement('list-box','page-contents','Parameter','listbox')",
-            "onclickRemoveHandler":"window.monkshu_env.components['tool-box'].removeElement('list-box','page-contents','listbox')",
+            "onclickHandler":"window.monkshu_env.components['tool-box'].addElement('Parameter')",
+            "onclickRemoveHandler":"window.monkshu_env.components['tool-box'].removeElement()",
             "text":"{{i18n.Parameters}}",
             "style":"width:100%; height: 100%;"},
   "listbox":{"html":"list-box","style":"width:100%; height: 100%;","type":"Parameter"}
@@ -89,13 +89,12 @@ body {
 }
 list-box>html>body>div#page-contents{
     width: 100%;
-    display: grid;
-    grid-template-columns: 33.3% 33.3% 33.4%;
-    justify-content: space-evenly;
+     display: flex;
+    flex-wrap: wrap;
     margin-left:9px;
 }
-
 list-box>html>body>div#page-contents>input{
-    width: 83%;  
+    flex: 1 1 220px;
+    margin-right:2.3em; 
 }
 =======
