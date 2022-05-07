@@ -83,8 +83,9 @@ async function getModelList(server, port, user, password) {
  */
 async function publishModel(model, name, server, port, user, password,modelObject) {
      const type="apicl";
-     const b64Data= btoa(JSON.stringify(model));
-     
+     const b64Data= btoa(JSON.stringify(model,null,' '));
+     console.log(b64Data);
+     // we are saving modelObject in the backend
     const result=  await apiman.rest( APP_CONSTANTS.API_PUBLISH, "POST", { model,modelObject,name}, true);
     try {   // try to publish now
         return {result: (await apiman.rest(`http://${server}:${port}/admin/publishAPI`, "POST", { user, password, name, type, src: b64Data}, true)).result, err: "Publishing failed at the server", 
