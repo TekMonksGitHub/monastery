@@ -117,12 +117,20 @@ const _convertForRunsql = function(node) {
     let cmdString = `RUNSQL SQL(${node.sql||''})`;
     if(node.sql && node.sql.includes("SELECT"))
         cmdString += ` TRIM(TRUE)`;
+     if(node.sql && node.sql.includes("INSERT") && node.sql.split("INSERT").length - 1>1)
+        cmdString += ` BATCH(TRUE)`;
     if(node.result && node.result!='')
         cmdString = `CHGVAR     VAR(&${node.result})   VALUE(${cmdString})`;
     return cmdString;
 };
 
-const _convertForRunjs = function(node) { return `RUNJS JS(${node.code||''})`; };
+const _convertForRunjs = function(node) { 
+    
+    if(!node.result) return `RUNJS JS(${node.code||''})`; 
+    else return `CHGVAR VAR(&${node.result}) VALUE(RUNJS JS(${node.code||''}))`;
+};
+    
+    
 
 const _convertForSndapimsg = function(node) { 
     let cmdString = 'SNDAPIMSG  MSG()';
@@ -138,7 +146,7 @@ const _convertForChgvar = function(node) {
     if (node.listbox && node.listbox.length>0)
         for(const variableObj of node.listbox) {
             let cmdString = 'CHGVAR     VAR()   VALUE()';
-            cmdString = cmdString.replace(`VAR()`,`VAR('&${variableObj[0]||''}')`);
+            cmdString = cmdString.replace(`VAR()`,`VAR(&${variableObj[0]||''})`);
             cmdString = cmdString.replace(`VALUE()`,`VALUE('${variableObj[1]||''}')`);
             apicl[`${node.id}_${count++}`] = cmdString;
             console.log(cmdString);
@@ -284,9 +292,18 @@ const _convertForMap = function(node) {
     let mapVariables = [];
     if (node.listbox && node.listbox.length>0)
         for(const variableObj of node.listbox) {
-            mapVariables.push(`&${variableObj[0]||''}:${variableObj[1]||''}:${variableObj[2]||''}:${variableObj[3]||''}:${variableObj[4]||''}`);
+         if(variableObj[4]) {
+           if(variableObj[0]) mapVariables.push(`&${variableObj[0]}:${variableObj[1]||''}:${variableObj[2]||''}:${variableObj[3]||''}:.${variableObj[4]||''}`);
+           else   mapVariables.push(`-:${variableObj[1]||''}:${variableObj[2]||''}:${variableObj[3]||''}:.${variableObj[4]||''}`);
+         }
+         else {
+            if(variableObj[0]) mapVariables.push(`&${variableObj[0]}:${variableObj[1]||''}:${variableObj[2]||''}:${variableObj[3]||''}`);
+            else   mapVariables.push(`-:${variableObj[1]||''}:${variableObj[2]||''}:${variableObj[3]||''}`); 
         }
-    return `CHGVAR     VAR(${node.result})   VALUE(MAP DO(${mapVariables.join(",")}))`;
+        
+        
+        }
+    return `CHGVAR     VAR(&${node.result})   VALUE(MAP DO(${mapVariables.join(",")}))`;
 };
 
 const _convertForScrread = function(node) { 
@@ -296,10 +313,14 @@ const _convertForScrread = function(node) {
         for(const scrPropertiesObj of node.listbox) {
             readVariables.push(`${scrPropertiesObj[0]||''},${scrPropertiesObj[1]||''},${scrPropertiesObj[2]||''},${scrPropertiesObj[3]||''}`);
         }
-    return `SCR NAME(${node.session})   READ(${readVariables.join(" : ")})`;
+
+     if(!node.result)   return `SCR NAME(${node.session})   READ(${readVariables.join(" : ")})`;
+     else return `CHGVAR     VAR(&${node.result})   VALUE(SCR NAME(${node.session})   READ(${readVariables.join(" : ")}))`;
 };
 
 const _convertForScrkeys = function(node) { 
+
+    
 
     let keysVariables = [];
     if (node.listbox && node.listbox.length>0)
