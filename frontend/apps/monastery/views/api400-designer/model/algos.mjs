@@ -300,9 +300,9 @@ const _convertForMap = function(node) {
             if(variableObj[0]) mapVariables.push(`&${variableObj[0]}:${variableObj[1]||''}:${variableObj[2]||''}:${variableObj[3]||''}`);
             else   mapVariables.push(`-:${variableObj[1]||''}:${variableObj[2]||''}:${variableObj[3]||''}`); 
         }
-        
-        
+
         }
+
     return `CHGVAR     VAR(&${node.result})   VALUE(MAP DO(${mapVariables.join(",")}))`;
 };
 
