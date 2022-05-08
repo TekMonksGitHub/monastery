@@ -51,7 +51,8 @@ async function droppedFile(event) {
 async function _uploadFile() {
     try {
         let {name, data} = await util.uploadAFile("application/json");
-        data = JSON.stringify(_apiclParser(data));
+      data = JSON.stringify(_apiclParser(data));
+        console.log(data);
         blackboard.broadcastMessage(MSG_FILE_UPLOADED, {name, data});
     } catch (err) {LOG.error(`Error opening file: ${err}`);}
 }
@@ -80,26 +81,28 @@ async function _getFromServer() {
 }
 
 const _apiclParser = function(data) {
-
+    let dependencies = [];
     let counter=1;
     const apicl = JSON.parse(data);
     let result = Object.keys(apicl).map(e => {
-        return _parseCommand(apicl[e],counter++);
+        return _parseCommand(apicl[e],counter++,e,dependencies);
     });
 
-    return {"apicl" : [ { "commands" : result , "name" : "commands" , "id" : counter } ] }
+    return {"apicl" : [ { "commands" : result , "name" : "commands" , "id" : counter} ] }
 
 }
-const _parseCommand = function(command,counter) {
-    
+const _parseCommand = function(command,counter,index,dependencies) {
+    console.log(index);
+   
     let ret = {};
     let cmd = command.split(' ');
     ret["nodeName"] = cmd[0].toLowerCase();
     ret["description"] = cmd[0].charAt(0).toUpperCase() + cmd[0].slice(1).toLowerCase();
-    ret["id"] = counter;
-
+    ret["id"] = _getUniqueID();
+    dependencies.push(ret.id)
+console.log(ret);
     if (counter>=2) { 
-        ret["dependencies"] = _putDependency(counter);
+        ret["dependencies"] = _putDependency(dependencies[counter-2]);
         ret["x"] = xCounter;
         ret["y"] = yCounter;
         xCounter = xCounter + 100
@@ -111,7 +114,7 @@ const _parseCommand = function(command,counter) {
 }
 
 const _putDependency = function(counter) {
-    return [`${counter-1}`];
+    return [`${counter}`];
 };
 
 
@@ -119,7 +122,7 @@ const _parseStrapi = function(command) {
     return command.match(/\(([^)]+)\)/)[1].split(" ").filter(Boolean).map(s => s.slice(1));
 };
 
-
+const _getUniqueID = _ => `${Date.now()}${Math.random()*100}`;    
 
 const _isDraggedItemAJSONFile = event => event.dataTransfer.items?.length && event.dataTransfer.items[0].kind === "file"
     && event.dataTransfer.items[0].type.toLowerCase() === "application/json";
