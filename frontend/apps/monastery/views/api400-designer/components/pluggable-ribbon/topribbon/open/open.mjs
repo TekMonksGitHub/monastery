@@ -8,7 +8,7 @@ import {blackboard} from "/framework/js/blackboard.mjs";
 import {serverManager} from "../../../../js/serverManager.js";
 import {page_generator} from "/framework/components/page-generator/page-generator.mjs";
 
-let xCounter = 100, yCounter = 100;
+let xCounter = 100, yCounter = 30;
 
 const PLUGIN_PATH = util.getModulePath(import.meta), MSG_FILE_UPLOADED = "FILE_UPLOADED", 
     CONTEXT_MENU = window.monkshu_env.components["context-menu"], CONTEXT_MENU_ID = "contextmenumain",
@@ -85,22 +85,37 @@ const _apiclParser = function(data) {
     let counter=1;
     const apicl = JSON.parse(data);
     let result = Object.keys(apicl).map(e => {
-        return _parseCommand(apicl[e],counter++,e,dependencies);
+        return _parseCommand(apicl[e],counter++,dependencies);
     });
 
     return {"apicl" : [ { "commands" : result , "name" : "commands" , "id" : counter} ] }
 
 }
-const _parseCommand = function(command,counter,index,dependencies) {
-    console.log(index);
-   
-    let ret = {};
+const _parseCommand = function(command,counter,dependencies) {
+
+    let ret = {}, nodeNameAsSubCmd = '';
     let cmd = command.split(' ');
-    ret["nodeName"] = cmd[0].toLowerCase();
-    ret["description"] = cmd[0].charAt(0).toUpperCase() + cmd[0].slice(1).toLowerCase();
+    let nodeName = cmd[0].toLowerCase();
+
+    if (nodeName=='chgvar') { 
+        nodeNameAsSubCmd = _checkChgvarSubCommand(command).toLowerCase()||nodeName;
+    }
+
+    let isThisSubCmd = (nodeNameAsSubCmd)?true:false;
+    nodeName = (nodeNameAsSubCmd)?nodeNameAsSubCmd:nodeName;
+
+    ret["nodeName"] = nodeName;
+    ret["description"] = nodeName.charAt(0).toUpperCase() + nodeName.slice(1).toLowerCase();
+    
+
+    
+    if (nodeName=='strapi' || nodeName=='sndapimsg') { ret["listbox"] = _parseStrapi(command) }
+    else if (nodeName=='scr') { ret = _parseScr(command,isThisSubCmd) }
+    else if (nodeName=='rest') { ret["listbox"] = _parseRest(command,isThisSubCmd) }
+    
     ret["id"] = _getUniqueID();
-    dependencies.push(ret.id)
-console.log(ret);
+    dependencies.push(ret.id);
+    
     if (counter>=2) { 
         ret["dependencies"] = _putDependency(dependencies[counter-2]);
         ret["x"] = xCounter;
@@ -108,7 +123,7 @@ console.log(ret);
         xCounter = xCounter + 100
     }
 
-    if (cmd[0].toLowerCase()=='strapi') { ret["listbox"] = _parseStrapi(command) }
+    console.log(ret);
 
     return ret;
 }
@@ -117,9 +132,76 @@ const _putDependency = function(counter) {
     return [`${counter}`];
 };
 
+const _checkChgvarSubCommand = function(command) {
+
+    //CHGVAR     VAR(&val)     VALUE(SCR    NAME(SESS1)    READ(6,7,6,80))
+    //CHGVAR     VAR(&REST_RESP)    VALUE(REST  URL(http://dummy.restapiexample.com/api/v1/create) METHOD(POST) HEADERS() PARM(&REQUEST))
+    let subCommands = ['SCR','REST'];
+    let nodeName = "";
+    subCommands.forEach((subCommand) => {
+        if (command.includes(subCommand)) { nodeName = subCommand; }
+    })
+    return nodeName;
+};
+
 
 const _parseStrapi = function(command) {
+    // regex to return the string inside round braces ()
     return command.match(/\(([^)]+)\)/)[1].split(" ").filter(Boolean).map(s => s.slice(1));
+};
+
+const _parseScr = function(command,isThisSubCmd) {
+
+    let ret = {};
+    let subCmdVar,sessionName,readParams;
+    if (isThisSubCmd) {
+        // convert it as subcommand
+        //CHGVAR     VAR(&val)     VALUE(SCR    NAME(SESS1)    READ(6,7,6,80))
+        ret["result"] = _subStrUsingNextIndex(command,"VAR(",")").slice(1);
+        subCmdVar = _subStrUsingLastIndex(command,"VALUE(",")")
+    }
+    ret["session"] = _subStrUsingNextIndex(subCmdVar,"NAME(",")");
+    if (subCmdVar.includes("READ")) {
+        readParams = _subStrUsingLastIndex(subCmdVar,"READ(",")");
+        console.log(readParams);
+        let allReads = [];
+        readParams.split(':').forEach(function(value) {
+            allReads.push(value.trim().split(','));
+        });
+
+        ret["nodeName"] = "scrread";
+        ret["description"] = "Scrread";
+        ret["listbox"] = allReads;
+    } else if (subCmdVar.includes("KEYS")) {
+        
+    } else if (subCmdVar.includes("START") || subCmdVar.includes("STOP") || subCmdVar.includes("RELEASE")) {
+
+    }
+    return ret;
+};
+
+const _subStrUsingLastIndex = function(str,startStr,nextIndex) {
+    return str.substring(str.indexOf(startStr)+startStr.length , str.lastIndexOf(nextIndex));
+};
+
+const _subStrUsingNextIndex = function(str,startStr,lastIndex) {
+    return str.substring(str.indexOf(startStr)+startStr.length , str.indexOf(lastIndex));
+};
+
+const _parseRest = function(command,isThisSubCmd) {
+    
+    if (!isThisSubCmd) {
+        // convert it as main command
+        //REST  URL(http://dummy.restapiexample.com/api/v1/create) METHOD(POST) HEADERS() PARM(&REQUEST)
+
+
+    } else {
+        // convert it as subcommand
+        //CHGVAR     VAR(&val)     VALUE(SCR    NAME(SESS1)    READ(6,7,6,80))
+
+
+    }
+
 };
 
 const _getUniqueID = _ => `${Date.now()}${Math.random()*100}`;    
