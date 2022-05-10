@@ -97,7 +97,7 @@ const _parseCommand = function(command,counter,dependencies) {
     let cmd = command.split(' ');
     let nodeName = cmd[0].toLowerCase();
 
-    if (nodeName=='chgvar'|| nodeName=='jsonata' || nodeName=='dsppfm') { 
+    if (nodeName=='chgvar'|| nodeName=='jsonata' || nodeName=='dsppfm'|| nodeName=='rest') { 
         nodeNameAsSubCmd = _checkChgvarSubCommand(command).toLowerCase()||nodeName;
     }
 
@@ -115,18 +115,18 @@ const _parseCommand = function(command,counter,dependencies) {
     else if(nodeName=='log'){ret["log"]= _parseLog(command)}
     else if(nodeName=='jsonata'){ret= _parseJsonata(command,isThisSubCmd)}
     else if(nodeName=='dsppfm'){ret= _parseDsppfm(command,isThisSubCmd)}
+    else if(nodeName=='chgdtaara'){ret= _parseChgdtaara(command)}
+    else if(nodeName=='rtvdtaara'){ret= _parseRtvdtaara(command)}
+    else if(nodeName=='qsnddtaq'){ret= _parseQsnddtaq(command)}
+    else if(nodeName=='qrcvdtaq'){ret= _parseQrcvdtaq(command)}
     ret["id"] = _getUniqueID();
-    dependencies.push(ret.id);
-    
+    dependencies.push(ret.id);   
     if (counter>=2) { 
         ret["dependencies"] = _putDependency(dependencies[counter-2]);
         ret["x"] = xCounter;
         ret["y"] = yCounter;
         xCounter = xCounter + 100
     }
-
-    console.log(ret);
-
     return ret;
 }
 
@@ -156,6 +156,57 @@ const _parseLog = function(command) {
     // regex to return the string inside round braces ()
     return command.match(/\(([^)]+)\)/)[1]
 };
+const _parseChgdtaara = function(command) {
+    let ret = {};
+    ret["nodeName"] = "chgdtaara";
+    ret["description"] = "Chgdtaara";
+    let dataAreaName = _patternMatch(command,/DTAARA\(([^)]+)\)/,0).split("/");
+    ret["libraryname"]=dataAreaName[0];
+    ret["dataarea"]=dataAreaName[1];
+    ret["dropdown"] = _patternMatch(command,/TYPE\(([^)]+)\)/,1)=="CHAR"?"Character":"BigDecimal";
+    ret["value"] = _patternMatch(command,/VALUE\(([^)]+)\)/,1)
+    return ret
+};
+const _parseRtvdtaara = function(command) {
+//    "RTVDTAARA DTAARA(A/B) TYPE(*CHAR) RTNVAR(&c)"
+
+    let ret = {};
+    ret["nodeName"] = "rtvdtaara";
+    ret["description"] = "Rtvdtaara";
+    let dataAreaName = _patternMatch(command,/DTAARA\(([^)]+)\)/,0).split("/");
+    ret["libraryname"]=dataAreaName[0];
+    ret["dataarea"]=dataAreaName[1];
+    ret["dropdown"] = _patternMatch(command,/TYPE\(([^)]+)\)/,1)=="CHAR"?"Character":"BigDecimal";
+    ret["value"] = _patternMatch(command,/RTNVAR\(([^)]+)\)/,1)
+    return ret
+};
+const _parseQrcvdtaq = function(command) {
+    //  "2": "QRCVDTAQ PARM(A/B c true &e)"
+    
+        let ret = {};
+        ret["nodeName"] = "qrcvdtaq";
+        ret["description"] = "Qrcvdtaq";
+        let qrcvdtaqParm = _patternMatch(command,/PARM\(([^)]+)\)/,0).split(" ").filter(Boolean);
+        ret["library"]=qrcvdtaqParm[0].split("/")[0];
+        ret["queue"]=qrcvdtaqParm[0].split("/")[1];
+        ret["wait"]=qrcvdtaqParm[1];
+        ret["dropdown"] = qrcvdtaqParm[2]=="true"?"true":"false";
+        ret["data"] = qrcvdtaqParm[3].slice(1);
+        return ret
+    };
+ const _parseQsnddtaq = function(command) {
+        //   "2": "QSNDDTAQ PARM(C/D &e )"
+        
+            let ret = {};
+            ret["nodeName"] = "qsnddtaq";
+            ret["description"] = "Qsnddtaq";
+            let qsnddtaqParm = _patternMatch(command,/PARM\(([^)]+)\)/,0).split(" ").filter(Boolean);
+            ret["libraryname"]=qsnddtaqParm[0].split("/")[0];
+            ret["dataqueue"]=qsnddtaqParm[0].split("/")[1];
+            ret["value"] = qsnddtaqParm[1].slice(1);
+            return ret
+        };
+    
 
 const _parseScr = function(command,isThisSubCmd) {
 
@@ -164,8 +215,6 @@ const _parseScr = function(command,isThisSubCmd) {
     if (isThisSubCmd) {
         // convert it as subcommand
         //CHGVAR     VAR(&val)     VALUE(SCR    NAME(SESS1)    READ(6,7,6,80))
-        console.log(_subStrUsingNextIndex(command,"VAR(",")"));
-        console.log( _subStrUsingLastIndex(command,"VALUE(",")"));
         ret["result"] = _subStrUsingNextIndex(command,"VAR(",")").slice(1);
         subCmdVar = _subStrUsingLastIndex(command,"VALUE(",")")
     }
@@ -224,7 +273,7 @@ const _parseDsppfm = function(command,isThisSubCmd) {
     ret["description"] = "Dsppfm";
     return ret;
 };
-
+//"CHGDTAARA DTAARA(SASI/DHAR) TYPE(*BIGDEC) VALUE(&valuess)"
 const _subStrUsingLastIndex = function(str,startStr,nextIndex) {
     return str.substring(str.indexOf(startStr)+startStr.length , str.lastIndexOf(nextIndex));
 };
