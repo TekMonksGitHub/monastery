@@ -97,9 +97,10 @@ const _parseCommand = function(command,counter,dependencies) {
     let cmd = command.split(' ');
     let nodeName = cmd[0].toLowerCase();
 
-    if (nodeName=='chgvar'|| nodeName=='jsonata' || nodeName=='dsppfm'|| nodeName=='rest') { 
+    if (nodeName=='chgvar') { 
         nodeNameAsSubCmd = _checkChgvarSubCommand(command).toLowerCase()||nodeName;
     }
+    console.log(nodeNameAsSubCmd);
 
     let isThisSubCmd = (nodeNameAsSubCmd)?true:false;
     nodeName = (nodeNameAsSubCmd)?nodeNameAsSubCmd:nodeName;
@@ -119,6 +120,7 @@ const _parseCommand = function(command,counter,dependencies) {
     else if(nodeName=='rtvdtaara'){ret= _parseRtvdtaara(command)}
     else if(nodeName=='qsnddtaq'){ret= _parseQsnddtaq(command)}
     else if(nodeName=='qrcvdtaq'){ret= _parseQrcvdtaq(command)}
+    else if(nodeName=='chgvar'){ret= _parseChgvar(command)}
     ret["id"] = _getUniqueID();
     dependencies.push(ret.id);   
     if (counter>=2) { 
@@ -156,6 +158,7 @@ const _parseLog = function(command) {
     // regex to return the string inside round braces ()
     return command.match(/\(([^)]+)\)/)[1]
 };
+
 const _parseChgdtaara = function(command) {
     let ret = {};
     ret["nodeName"] = "chgdtaara";
@@ -167,6 +170,15 @@ const _parseChgdtaara = function(command) {
     ret["value"] = _patternMatch(command,/VALUE\(([^)]+)\)/,1)
     return ret
 };
+
+const _parseChgvar = function(command) {
+    let ret = {};
+    ret["nodeName"] = "chgvar";
+    ret["description"] = "Chgvar";
+    ret["listbox"] = [ _patternMatch(command,/VAR\(([^)]+)\)/,1), _patternMatch(command,/VALUE\(([^)]+)\)/,0)]
+    return ret
+};
+
 const _parseRtvdtaara = function(command) {
 //    "RTVDTAARA DTAARA(A/B) TYPE(*CHAR) RTNVAR(&c)"
 
@@ -211,17 +223,19 @@ const _parseQrcvdtaq = function(command) {
 const _parseScr = function(command,isThisSubCmd) {
 
     let ret = {};
-    let subCmdVar,sessionName,readParams;
+    let subCmdVar,readParams,keysParams;
     if (isThisSubCmd) {
         // convert it as subcommand
         //CHGVAR     VAR(&val)     VALUE(SCR    NAME(SESS1)    READ(6,7,6,80))
         ret["result"] = _subStrUsingNextIndex(command,"VAR(",")").slice(1);
         subCmdVar = _subStrUsingLastIndex(command,"VALUE(",")")
     }
+
+    subCmdVar = (subCmdVar)?subCmdVar:command;
+
     ret["session"] = _subStrUsingNextIndex(subCmdVar,"NAME(",")");
     if (subCmdVar.includes("READ")) {
         readParams = _subStrUsingLastIndex(subCmdVar,"READ(",")");
-        console.log(readParams);
         let allReads = [];
         readParams.split(':').forEach(function(value) {
             allReads.push(value.trim().split(','));
@@ -231,9 +245,27 @@ const _parseScr = function(command,isThisSubCmd) {
         ret["description"] = "Scrread";
         ret["listbox"] = allReads;
     } else if (subCmdVar.includes("KEYS")) {
+        keysParams = _subStrUsingLastIndex(subCmdVar,"KEYS(",")");
+        let allKeys = [];
+        keysParams.split(':').forEach(function(value) {
+            allKeys.push(value.trim().split(','));
+        });
+        ret["nodeName"] = "scrkeys";
+        ret["description"] = "Scrkeys";
+        ret["listbox"] = allKeys;
         
-    } else if (subCmdVar.includes("START") || subCmdVar.includes("STOP") || subCmdVar.includes("RELEASE")) {
-
+    } else if (subCmdVar.includes("START")) {
+        ret["nodeName"] = "scrops";
+        ret["description"] = "Scrops";
+        ret["radiobutton"] = "start";
+    } else if (subCmdVar.includes("STOP")) {
+        ret["nodeName"] = "scrops";
+        ret["description"] = "Scrops";
+        ret["radiobutton"] = "stop";
+    } else if (subCmdVar.includes("RELEASE")) {
+        ret["nodeName"] = "scrops";
+        ret["description"] = "Scrops";
+        ret["radiobutton"] = "release";
     }
     return ret;
 };
