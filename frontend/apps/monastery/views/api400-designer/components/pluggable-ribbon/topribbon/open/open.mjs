@@ -149,11 +149,10 @@ const _checkChgvarSubCommand = function(command) {
 
 const _parseStrapi = function(command) {
     // regex to return the string inside round braces ()
-    console.log(command.match(/\(([^)]+)\)/));
     return command.match(/\(([^)]+)\)/)[1].split(" ").filter(Boolean).map(s => s.slice(1));
 };
+
 const _parseLog = function(command) {
-    console.log(command.match(/\(([^)]+)\)/));
     // regex to return the string inside round braces ()
     return command.match(/\(([^)]+)\)/)[1]
 };
@@ -189,6 +188,7 @@ const _parseScr = function(command,isThisSubCmd) {
     }
     return ret;
 };
+
 const _parseJsonata = function(command,isThisSubCmd) {
 
     let ret = {};
@@ -204,6 +204,7 @@ const _parseJsonata = function(command,isThisSubCmd) {
     ret["description"] = "Jsonata";
     return ret;
 };
+
 const _parseDsppfm = function(command,isThisSubCmd) {
 
     let ret = {};
@@ -223,6 +224,7 @@ const _parseDsppfm = function(command,isThisSubCmd) {
     ret["description"] = "Dsppfm";
     return ret;
 };
+
 const _subStrUsingLastIndex = function(str,startStr,nextIndex) {
     return str.substring(str.indexOf(startStr)+startStr.length , str.lastIndexOf(nextIndex));
 };
@@ -235,26 +237,20 @@ const _parseRest = function(command,isThisSubCmd) {
     let ret = {};
     ret["nodeName"] = "rest";
     ret["description"] = "Rest";
-    let subCmdVar;
-    if (!isThisSubCmd) {
+    if (isThisSubCmd) {
         // convert it as main command
-        //REST  URL(http://dummy.restapiexample.com/api/v1/create) METHOD(POST) HEADERS() PARM(&REQUEST)
-       ret["url"] =_patternMatch(command,/URL\(([^)]+)\)/,0);
-       ret["method"] = _patternMatch(command,/METHOD\(([^)]+)\)/,0);
-       ret["parameter"] = _patternMatch(command,/PARM\(([^)]+)\)/,1);
-       ret["headers"] = _patternMatch(command,/HEADERS\(([^)]+)\)/,0);
-       return ret
-    } else {
-       // "2"    : "CHGVAR     VAR(&REST_RESP)    VALUE(REST  URL(http://dummy.restapiexample.com/api/v1/create) METHOD(POST) HEADERS() PARM(&REQUEST))",
+        // "2"    : "CHGVAR     VAR(&REST_RESP)    VALUE(REST  URL(http://dummy.restapiexample.com/api/v1/create) METHOD(POST) HEADERS() PARM(&REQUEST))",
+        ret["result"] = _subStrUsingNextIndex(command,"VAR(",")").slice(1);
+        command = _subStrUsingLastIndex(command,"VALUE(",")");    
+    } 
+    // if used as sub command
+    //REST  URL(http://dummy.restapiexample.com/api/v1/create) METHOD(POST) HEADERS() PARM(&REQUEST)
 
-    ret["result"] = _subStrUsingNextIndex(command,"VAR(",")").slice(1);
-    subCmdVar = _subStrUsingLastIndex(command,"VALUE(",")");
-    ret["url"] =_patternMatch(subCmdVar,/URL\(([^)]+)\)/,0);
-    ret["method"] = _patternMatch(subCmdVar,/METHOD\(([^)]+)\)/,0);
-    ret["parameter"] = _patternMatch(subCmdVar,/PARM\(([^)]+)\)/,1);
-    ret["headers"] = _patternMatch(subCmdVar,/HEADERS\(([^)]+)\)/,0);
-       return ret
-     }
+    ret["url"] =_patternMatch(command,/URL\(([^)]+)\)/,0);
+    ret["method"] = _patternMatch(command,/METHOD\(([^)]+)\)/,0);
+    ret["parameter"] = _patternMatch(command,/PARM\(([^)]+)\)/,1);
+    ret["headers"] = _patternMatch(command,/HEADERS\(([^)]+)\)/,0);
+    return ret
 
 };
 const _patternMatch = function(string,pattern,slicePosition){
