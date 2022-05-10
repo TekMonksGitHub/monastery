@@ -260,7 +260,7 @@ const _convertForCall = function(node) {
 
     let cmdString = `CALL PGM(${node.library||''}/${node.program||''})`.toUpperCase();
     if (node.listbox && node.listbox.length>0)
-        cmdString += ` PARM ('&${node.listbox.join("' '&")}')`;
+        cmdString += ` PARM('&${node.listbox.join("' '&")}')`;
 
     return cmdString;
 };

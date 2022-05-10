@@ -44,9 +44,9 @@ async function addSubstrElement(  variableValue, stringValue,stringIndexValue,no
   text_box.addTextBoxesForMap( stringVariableValue,startPositionValue,noOfCharValue,repitionValue,stringFunctionValue);
  
  }
- async function addScrKeysElement(  keyValue,y_coordinateValue,x_coordinateValue) {
+ async function addScrKeysElement(  y_coordinateValue,x_coordinateValue,keyValue) {
 
-  text_box.addTextBoxesForScrKeys(keyValue,y_coordinateValue,x_coordinateValue);
+  text_box.addTextBoxesForScrKeys(y_coordinateValue,x_coordinateValue,keyValue,);
  
  }
  async function addScrReadElement( rowFromValue,columnFromValue,rowToValue,columnToValue) {

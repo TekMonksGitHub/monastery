@@ -40,10 +40,10 @@ async function addTextBoxesForMap( stringVariableValue,startPositionValue,noOfCh
   const divElement = _createDivElementForMap(parentContainer, stringVariableValue,startPositionValue,noOfCharValue,repitionValue,stringFunctionValue);
   parentContainer.appendChild(divElement);
 };
-async function addTextBoxesForScrKeys( keyValue,y_coordinateValue,x_coordinateValue) {
+async function addTextBoxesForScrKeys( y_coordinateValue,x_coordinateValue,keyValue) {
   const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
   const parentContainer =  dialogShadowRoot.querySelector("div#page-contents");
-  const divElement = _createDivElementForScrKeys(parentContainer, keyValue,y_coordinateValue,x_coordinateValue);
+  const divElement = _createDivElementForScrKeys(parentContainer, y_coordinateValue,x_coordinateValue,keyValue);
   parentContainer.appendChild(divElement);
 };
 async function addTextBoxesForScrRead(rowFromValue,columnFromValue,rowToValue,columnToValue) {
@@ -55,8 +55,7 @@ async function addTextBoxesForScrRead(rowFromValue,columnFromValue,rowToValue,co
 };
 
 function _createElement(parentContainer, id, value,placeHolder, className,placeHolderType,type) {
-  console.log(typeof type);
-  console.log(type);
+
   const inputElement = document.createElement("input");
  if(type!=undefined) inputElement.setAttribute("type", "number"); 
  else inputElement.setAttribute("type", "text");
@@ -100,13 +99,13 @@ function _createDivElementForMap(parentContainer, stringVariableValue,startPosit
   divElement.append(inputElement1, inputElement2,inputElement3,inputElement4,inputElement5);
   return divElement
 }
-function _createDivElementForScrKeys(parentContainer, keyValue,y_coordinateValue,x_coordinateValue) {
+function _createDivElementForScrKeys(parentContainer, y_coordinateValue,x_coordinateValue,keyValue) {
   const divElement = document.createElement("div");
   divElement.setAttribute("class", "scr-keys");
-  const inputElement1 = _createElement(parentContainer, "key", keyValue,"Key", "Keys");
-  const inputElement2 = _createElement(parentContainer,"y",  y_coordinateValue,"y-cordinate" ,"y-coordinates","static","number");
-  const inputElement3 = _createElement(parentContainer,"x",  x_coordinateValue, "x-cordinate","x-coordinates","static","number");
-  
+ 
+  const inputElement1 = _createElement(parentContainer,"y",  y_coordinateValue,"y-cordinate" ,"y-coordinates","static","number");
+  const inputElement2 = _createElement(parentContainer,"x",  x_coordinateValue, "x-cordinate","x-coordinates","static","number");
+  const inputElement3 = _createElement(parentContainer, "key", keyValue,"Key", "Keys");
   divElement.append(inputElement1, inputElement2,inputElement3);
   return divElement
 }
