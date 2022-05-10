@@ -78,9 +78,9 @@ div.scr-keys{
   border-radius:7px;
   margin:12px 20px 20px 18px;
   display: grid;
-  grid-template-columns: 60% 20% 20%;
+  grid-template-columns: 20% 20% 60% ;
   grid-template-rows: auto;
-  grid-template-areas:  "keys y-coordinates x-coordinates";
+  grid-template-areas:  " y-coordinates x-coordinates keys";
     
 }
 
