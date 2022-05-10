@@ -97,7 +97,7 @@ const _parseCommand = function(command,counter,dependencies) {
     let cmd = command.split(' ');
     let nodeName = cmd[0].toLowerCase();
 
-    if (nodeName=='chgvar') { 
+    if (nodeName=='chgvar'|| nodeName=='jsonata' || nodeName=='dsppfm') { 
         nodeNameAsSubCmd = _checkChgvarSubCommand(command).toLowerCase()||nodeName;
     }
 
@@ -111,8 +111,10 @@ const _parseCommand = function(command,counter,dependencies) {
     
     if (nodeName=='strapi' || nodeName=='sndapimsg') { ret["listbox"] = _parseStrapi(command) }
     else if (nodeName=='scr') { ret = _parseScr(command,isThisSubCmd) }
-    else if (nodeName=='rest') { ret["listbox"] = _parseRest(command,isThisSubCmd) }
-    
+    else if (nodeName=='rest') { ret = _parseRest(command,isThisSubCmd) }
+    else if(nodeName=='log'){ret["log"]= _parseLog(command)}
+    else if(nodeName=='jsonata'){ret= _parseJsonata(command,isThisSubCmd)}
+    else if(nodeName=='dsppfm'){ret= _parseDsppfm(command,isThisSubCmd)}
     ret["id"] = _getUniqueID();
     dependencies.push(ret.id);
     
@@ -136,7 +138,7 @@ const _checkChgvarSubCommand = function(command) {
 
     //CHGVAR     VAR(&val)     VALUE(SCR    NAME(SESS1)    READ(6,7,6,80))
     //CHGVAR     VAR(&REST_RESP)    VALUE(REST  URL(http://dummy.restapiexample.com/api/v1/create) METHOD(POST) HEADERS() PARM(&REQUEST))
-    let subCommands = ['SCR','REST'];
+    let subCommands = ['SCR','REST','JSONATA','DSPPFM'];
     let nodeName = "";
     subCommands.forEach((subCommand) => {
         if (command.includes(subCommand)) { nodeName = subCommand; }
@@ -147,7 +149,13 @@ const _checkChgvarSubCommand = function(command) {
 
 const _parseStrapi = function(command) {
     // regex to return the string inside round braces ()
+    console.log(command.match(/\(([^)]+)\)/));
     return command.match(/\(([^)]+)\)/)[1].split(" ").filter(Boolean).map(s => s.slice(1));
+};
+const _parseLog = function(command) {
+    console.log(command.match(/\(([^)]+)\)/));
+    // regex to return the string inside round braces ()
+    return command.match(/\(([^)]+)\)/)[1]
 };
 
 const _parseScr = function(command,isThisSubCmd) {
@@ -157,6 +165,8 @@ const _parseScr = function(command,isThisSubCmd) {
     if (isThisSubCmd) {
         // convert it as subcommand
         //CHGVAR     VAR(&val)     VALUE(SCR    NAME(SESS1)    READ(6,7,6,80))
+        console.log(_subStrUsingNextIndex(command,"VAR(",")"));
+        console.log( _subStrUsingLastIndex(command,"VALUE(",")"));
         ret["result"] = _subStrUsingNextIndex(command,"VAR(",")").slice(1);
         subCmdVar = _subStrUsingLastIndex(command,"VALUE(",")")
     }
@@ -179,7 +189,40 @@ const _parseScr = function(command,isThisSubCmd) {
     }
     return ret;
 };
+const _parseJsonata = function(command,isThisSubCmd) {
 
+    let ret = {};
+    let subCmdVar;
+    if (isThisSubCmd) {
+        // convert it as subcommand
+        // "CHGVAR     VAR(&RESULT)    VALUE(JSONATA EXPRESSION(&expression))",
+        ret["result"] = _subStrUsingNextIndex(command,"VAR(",")").slice(1);
+        subCmdVar = _subStrUsingLastIndex(command,"VALUE(",")")
+    }
+    ret["jsonata"] = _subStrUsingNextIndex(subCmdVar,"EXPRESSION(",")");
+    ret["nodeName"] = "jsonata";
+    ret["description"] = "Jsonata";
+    return ret;
+};
+const _parseDsppfm = function(command,isThisSubCmd) {
+
+    let ret = {};
+    let subCmdVar;
+    if (isThisSubCmd) {
+        // convert it as subcommand
+        // "5"    : "CHGVAR     VAR(&data) VALUE(DSPPFM FILE(RVKAPOOR1/LINEOUT) MBR(LINEOUT))",
+        ret["result"] = _subStrUsingNextIndex(command,"VAR(",")").slice(1);
+        subCmdVar = _subStrUsingLastIndex(command,"VALUE(",")");
+    }
+
+  let file = _subStrUsingNextIndex(subCmdVar,"FILE(",")").split('/');
+    ret["libraryname"]=file[0];
+    ret["physical"]=file[1];
+    ret["member"]=_subStrUsingLastIndex(subCmdVar,"MBR(",")")
+    ret["nodeName"] = "dsppfm";
+    ret["description"] = "Dsppfm";
+    return ret;
+};
 const _subStrUsingLastIndex = function(str,startStr,nextIndex) {
     return str.substring(str.indexOf(startStr)+startStr.length , str.lastIndexOf(nextIndex));
 };
@@ -189,20 +232,35 @@ const _subStrUsingNextIndex = function(str,startStr,lastIndex) {
 };
 
 const _parseRest = function(command,isThisSubCmd) {
-    
+    let ret = {};
+    ret["nodeName"] = "rest";
+    ret["description"] = "Rest";
+    let subCmdVar;
     if (!isThisSubCmd) {
         // convert it as main command
         //REST  URL(http://dummy.restapiexample.com/api/v1/create) METHOD(POST) HEADERS() PARM(&REQUEST)
-
-
+       ret["url"] =_patternMatch(command,/URL\(([^)]+)\)/,0);
+       ret["method"] = _patternMatch(command,/METHOD\(([^)]+)\)/,0);
+       ret["parameter"] = _patternMatch(command,/PARM\(([^)]+)\)/,1);
+       ret["headers"] = _patternMatch(command,/HEADERS\(([^)]+)\)/,0);
+       return ret
     } else {
-        // convert it as subcommand
-        //CHGVAR     VAR(&val)     VALUE(SCR    NAME(SESS1)    READ(6,7,6,80))
+       // "2"    : "CHGVAR     VAR(&REST_RESP)    VALUE(REST  URL(http://dummy.restapiexample.com/api/v1/create) METHOD(POST) HEADERS() PARM(&REQUEST))",
 
-
-    }
+    ret["result"] = _subStrUsingNextIndex(command,"VAR(",")").slice(1);
+    subCmdVar = _subStrUsingLastIndex(command,"VALUE(",")");
+    ret["url"] =_patternMatch(subCmdVar,/URL\(([^)]+)\)/,0);
+    ret["method"] = _patternMatch(subCmdVar,/METHOD\(([^)]+)\)/,0);
+    ret["parameter"] = _patternMatch(subCmdVar,/PARM\(([^)]+)\)/,1);
+    ret["headers"] = _patternMatch(subCmdVar,/HEADERS\(([^)]+)\)/,0);
+       return ret
+     }
 
 };
+const _patternMatch = function(string,pattern,slicePosition){
+
+    return string.match(pattern)?string.match(pattern)[1].slice(slicePosition):"";
+}
 
 const _getUniqueID = _ => `${Date.now()}${Math.random()*100}`;    
 

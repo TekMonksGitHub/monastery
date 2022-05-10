@@ -248,7 +248,8 @@ const _convertForQsnddtaq = function(node) {
 };
 
 const _convertForDsppfm = function(node) { 
-    return `DSPPFM FILE(${node.libraryname||''}/${node.physical||''}) MBR(${node.member})`.toUpperCase();
+    //return `DSPPFM FILE(${node.libraryname||''}/${node.physical||''}) MBR(${node.member})`.toUpperCase();
+    return `CHGVAR     VAR(&${node.result||''})    VALUE(DSPPFM FILE(${node.libraryname||''}/${node.physical||''}) MBR(${node.member}))`;
 };
 
 const _convertForLog = function(node) { 
