@@ -15,19 +15,23 @@
    select#choices{
     width: 100%;
     font-family: inherit;
-    background-color:white;
+    background-color:rgba(255, 255, 255, 1);
     padding: 6px;
     border: 0px;
     border-radius: 4px;
     outline: none;
+    cursor: pointer;
+  
 }
+
+
  
   </style>
    {{{styleBody}}}
    <select name="choices" id="choices">
     <option value="" disabled selected hidden class="disabled"  >{{text}}</option>
     {{#values}}
-    <option value="{{value}}" class="values" id="{{value}}" >{{value}}</option>
+    <option value="{{value}}" class="values" id="{{value}}"  >{{value}}</option>
    
    {{/values}}
   </select>
