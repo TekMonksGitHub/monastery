@@ -103,7 +103,6 @@ const _parseCommand = function (command, counter, dependencies) {
     if (nodeName == 'chgvar') {
         nodeNameAsSubCmd = _checkChgvarSubCommand(command).toLowerCase() || nodeName;
     }
-    console.log(nodeNameAsSubCmd);
 
     let isThisSubCmd = (nodeNameAsSubCmd) ? true : false;
     nodeName = (nodeNameAsSubCmd) ? nodeNameAsSubCmd : nodeName;
@@ -128,6 +127,9 @@ const _parseCommand = function (command, counter, dependencies) {
     else if (nodeName == 'map') { ret = _parseMap(command, isThisSubCmd) }
     else if (nodeName == 'substr') { ret = _parseSubstr(command, isThisSubCmd) }
     else if (nodeName == 'chgvar') { ret = _parseChgvar(command) }
+    else if (nodeName == 'runsql') { ret = _parseRunsql(command,isThisSubCmd) }
+    else if (nodeName == 'runjs') { ret = _parseRunjs(command,isThisSubCmd) }
+
     ret["id"] = _getUniqueID();
     dependencies.push(ret.id);
     if (counter >= 2) {
@@ -144,7 +146,7 @@ const _putDependency = function (counter) {
 };
 
 const _checkChgvarSubCommand = function (command) {
-    let subCommands = ['SCR', 'REST', 'JSONATA', 'DSPPFM', 'MAP', 'SUBSTR'];
+    let subCommands = ['SCR', 'REST', 'JSONATA', 'DSPPFM', 'MAP', 'SUBSTR','RUNSQL','RUNJS'];
     let nodeName = "";
     subCommands.forEach((subCommand) => {
         if (command.includes(subCommand)) { nodeName = subCommand; }
@@ -168,6 +170,7 @@ const _parseCall = function (command) {
     ret["listbox"] = _patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean).map(s => s.slice(2, s.length - 1));
     return ret
 };
+
 const _parseRunsqlprc = function (command) {
     //"3": "RUNSQLPRC  PRC(RVKAPOOR1/COSTCLP)          PARM(&COST &QTY &TCOST &FLAG)",
     let ret = {};
@@ -179,6 +182,46 @@ const _parseRunsqlprc = function (command) {
     ret["listbox"] = _patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean).map(s => s.slice(1));
     return ret
 };
+const _parseRunsql = function (command) {
+    //RUNSQL     SQL(INSERT INTO RVKAPOOR1.CUSTOMERS (NAME, ADDRESS) VALUES ('&name', '&address'))
+
+    let ret = {};
+    let subCmdVar;
+    if (isThisSubCmd) {
+        // convert it as subcommand
+        //CHGVAR     VAR(&val)     VALUE(RUNSQL     SQL(INSERT INTO RVKAPOOR1.CUSTOMERS (NAME, ADDRESS) VALUES ('&name', '&address')))
+        ret["result"] = _subStrUsingNextIndex(command, "VAR(", ")").slice(1);
+        subCmdVar = _subStrUsingLastIndex(command, "VALUE(", ")")
+    }
+    subCmdVar = (subCmdVar) ? subCmdVar : command;
+
+    ret["nodeName"] = "runsql";
+    ret["description"] = "Runsql";
+    let sqlObj = _patternMatch(subCmdVar, /SQL\(([^)]+)\)/, 0).split("/");
+    ret["sql"] = sqlObj[0];
+    return ret
+};
+const _parseRunjs = function (command) {
+
+       //RUNJS    JS(env.NAME = env.DATA[0].NAME;)
+
+       let ret = {};
+       let subCmdVar;
+       if (isThisSubCmd) {
+           // convert it as subcommand
+           //CHGVAR     VAR(&val)     VALUE(RUNJS    JS(env.NAME = env.DATA[0].NAME;))
+           ret["result"] = _subStrUsingNextIndex(command, "VAR(", ")").slice(1);
+           subCmdVar = _subStrUsingLastIndex(command, "VALUE(", ")")
+       }
+       subCmdVar = (subCmdVar) ? subCmdVar : command;
+   
+       ret["nodeName"] = "runjs";
+       ret["description"] = "Runjs";
+       let jsObj = _patternMatch(subCmdVar, /JS\(([^)]+)\)/, 0).split("/");
+       ret["code"] = jsObj[0];
+       return ret
+};
+
 const _parseLog = function (command) {
     // regex to return the string inside round braces ()
     return command.match(/\(([^)]+)\)/)[1]
