@@ -182,14 +182,14 @@ const _parseRunsqlprc = function (command) {
     ret["listbox"] = _patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean).map(s => s.slice(1));
     return ret
 };
-const _parseRunsql = function (command) {
+const _parseRunsql = function (command,isThisSubCmd) {
     //RUNSQL     SQL(INSERT INTO RVKAPOOR1.CUSTOMERS (NAME, ADDRESS) VALUES ('&name', '&address'))
 
     let ret = {};
     let subCmdVar;
     if (isThisSubCmd) {
         // convert it as subcommand
-        //CHGVAR     VAR(&val)     VALUE(RUNSQL     SQL(INSERT INTO RVKAPOOR1.CUSTOMERS (NAME, ADDRESS) VALUES ('&name', '&address')))
+        //CHGVAR     VAR(&val)     VALUE(RUNSQL     SQL(INSERT INTO RVKAPOOR1.CUSTOMERS (NAME, ADDRESS) VALUES('&name', '&address')))
         ret["result"] = _subStrUsingNextIndex(command, "VAR(", ")").slice(1);
         subCmdVar = _subStrUsingLastIndex(command, "VALUE(", ")")
     }
@@ -197,11 +197,11 @@ const _parseRunsql = function (command) {
 
     ret["nodeName"] = "runsql";
     ret["description"] = "Runsql";
-    let sqlObj = _patternMatch(subCmdVar, /SQL\(([^)]+)\)/, 0).split("/");
-    ret["sql"] = sqlObj[0];
+    let sqlObj = _subStrUsingLastIndex(subCmdVar, "SQL(", ")")
+    ret["sql"] = sqlObj;
     return ret
 };
-const _parseRunjs = function (command) {
+const _parseRunjs = function (command,isThisSubCmd) {
 
        //RUNJS    JS(env.NAME = env.DATA[0].NAME;)
 
@@ -217,8 +217,8 @@ const _parseRunjs = function (command) {
    
        ret["nodeName"] = "runjs";
        ret["description"] = "Runjs";
-       let jsObj = _patternMatch(subCmdVar, /JS\(([^)]+)\)/, 0).split("/");
-       ret["code"] = jsObj[0];
+       let jsObj = _subStrUsingLastIndex(subCmdVar, "JS(", ")");
+       ret["code"] = jsObj;
        return ret
 };
 
