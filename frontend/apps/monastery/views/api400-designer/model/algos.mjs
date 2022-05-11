@@ -269,7 +269,7 @@ const _convertForRunsqlprc = function(node) {
 
     let cmdString = `RUNSQLPRC PRC(${node.library||''}/${node.procedure||''})`.toUpperCase();
     if (node.listbox && node.listbox.length>0)
-        cmdString += ` PARM (&${node.listbox.join(' &')})`;
+        cmdString += ` PARM(&${node.listbox.join(' &')})`;
 
     return cmdString;
 };
@@ -342,7 +342,7 @@ const _convertForSubstr = function(node) {
         for(const variableObj of node.listbox) {
             let cmdString = 'CHGVAR     VAR()   VALUE()';
             cmdString = cmdString.replace(`VAR()`,`VAR(&${variableObj[0]||''})`);
-            cmdString = cmdString.replace(`VALUE()`,`VALUE( SUBSTR DO(${variableObj[1]?'&'+variableObj[1]:''}:${variableObj[2]||''}:${variableObj[3]||''}))`);
+            cmdString = cmdString.replace(`VALUE()`,`VALUE(SUBSTR DO(${variableObj[1]?'&'+variableObj[1]:''}:${variableObj[2]||''}:${variableObj[3]||''}))`);
             apicl[`${node.id}_${count++}`] = cmdString;
         }
 };
