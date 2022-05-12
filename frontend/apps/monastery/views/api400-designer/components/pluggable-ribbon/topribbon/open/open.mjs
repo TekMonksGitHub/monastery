@@ -8,7 +8,7 @@ import { blackboard } from "/framework/js/blackboard.mjs";
 import { serverManager } from "../../../../js/serverManager.js";
 import { page_generator } from "/framework/components/page-generator/page-generator.mjs";
 
-let xCounter = 100, yCounter = 30;
+let xCounter, yCounter;
 
 const PLUGIN_PATH = util.getModulePath(import.meta), MSG_FILE_UPLOADED = "FILE_UPLOADED",
     CONTEXT_MENU = window.monkshu_env.components["context-menu"], CONTEXT_MENU_ID = "contextmenumain",
@@ -84,6 +84,8 @@ async function _getFromServer() {
 }
 
 const apiclParser = function (data) {
+    xCounter = 100;
+    yCounter = 30;
     let dependencies = [];
     let counter = 1;
     const apicl = JSON.parse(data);
