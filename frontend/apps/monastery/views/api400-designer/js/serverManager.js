@@ -5,6 +5,8 @@
  */
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 import { APP_CONSTANTS } from "../../../js/constants.mjs";
+import {open} from "../components/pluggable-ribbon/topribbon/open/open.mjs"
+
 /**
  * Returns the list of models present on the server
  * @param {string} server Server IP or Hostname
@@ -34,18 +36,15 @@ async function getModelList(server, port, user, password) {
  * @param {string} adminpassword Server admin password
  * @returns {result: true|false, model: Model object on success, err: Error text on failure, raw_err: Raw error, key: Error i18n key}
  */
- async function getModel(name, server, port, adminid, adminpassword) {
-    const API_ADMIN_URL_FRAGMENT = `://${server}:${port}/apps/api400/admin`;
-
-    const loginResult = await _loginToServer(server, port, adminid, adminpassword);
-    if (!loginResult.result) return loginResult;    // failed to connect or login
+ async function getModel(name, server, port, user, password) {
 
     try {   // try to read the model now
-        const result = await apiman.rest(loginResult.scheme+API_ADMIN_URL_FRAGMENT, "POST", 
-        {op: "read", name}, true);
-        return {result: result.result, model: result.result?result.data:null, err: "Model read failed at the server", 
-            name: result.result?result.name:null, raw_err: "Model read failed at the server", key: "ModelReadServerIssue"};
+        const result = await apiman.rest(`http://${server}:${port}/admin/getAPI`, "POST", { user, password, name}, true);
+        let data = await open.apiclParser(atob(result.data).toString());        
+        return {result: result.result, model: result.result?JSON.stringify(data):null, err: "Model read failed at the server", 
+            name: result.result?name:null, raw_err: "Model read failed at the server", key: "ModelReadServerIssue"};
     } catch (err)  {return {result: false, err: "Server connection issue", raw_err: err, key: "ConnectIssue"} }
+
 }
 
 /**
@@ -86,7 +85,7 @@ async function publishModel(model, name, server, port, user, password,modelObjec
      const b64Data= btoa(JSON.stringify(model,null,' '));
      console.log(b64Data);
      // we are saving modelObject in the backend
-    const result=  await apiman.rest( APP_CONSTANTS.API_PUBLISH, "POST", { model,modelObject,name}, true);
+  //  const result=  await apiman.rest( APP_CONSTANTS.API_PUBLISH, "POST", { model,modelObject,name}, true);
     try {   // try to publish now
         return {result: (await apiman.rest(`http://${server}:${port}/admin/publishAPI`, "POST", { user, password, name, type, src: b64Data}, true)).result, err: "Publishing failed at the server", 
             raw_err: "Publishing failed at the server", key: "PublishServerIssue"};

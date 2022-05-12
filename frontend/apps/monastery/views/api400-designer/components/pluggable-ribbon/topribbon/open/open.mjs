@@ -51,7 +51,7 @@ async function droppedFile(event) {
 async function _uploadFile() {
     try {
         let { name, data } = await util.uploadAFile("application/json");
-        data = JSON.stringify(_apiclParser(data));
+        data = JSON.stringify(apiclParser(data));
         console.log(data);
         blackboard.broadcastMessage(MSG_FILE_UPLOADED, { name, data });
     } catch (err) { LOG.error(`Error opening file: ${err}`); }
@@ -83,7 +83,7 @@ async function _getFromServer() {
         });
 }
 
-const _apiclParser = function (data) {
+const apiclParser = function (data) {
     let dependencies = [];
     let counter = 1;
     const apicl = JSON.parse(data);
@@ -197,6 +197,11 @@ const _parseRunsql = function (command,isThisSubCmd) {
 
     ret["nodeName"] = "runsql";
     ret["description"] = "Runsql";
+    if(subCmdVar.includes("TRIM(TRUE)") )  subCmdVar=  subCmdVar.replace("TRIM(TRUE)","");
+
+    
+    if(subCmdVar.includes("BATCH(TRUE)") )  subCmdVar =  subCmdVar.replace("BATCH(TRUE)","");
+
     let sqlObj = _subStrUsingLastIndex(subCmdVar, "SQL(", ")")
     ret["sql"] = sqlObj;
     return ret
@@ -228,6 +233,8 @@ const _parseLog = function (command) {
 };
 
 const _parseChgdtaara = function (command) {
+    //     "1" : "CHGDTAARA  DTAARA(RVKAPOOR1/COSTCLP)         TYPE(*CHAR) VALUE(&VALUE)"
+       
     let ret = {};
     ret["nodeName"] = "chgdtaara";
     ret["description"] = "Chgdtaara";
@@ -354,23 +361,25 @@ const _parseJsonata = function (command, isThisSubCmd) {
     return ret;
 };
 const _parseMap = function (command, isThisSubCmd) {
-    //"2":   "CHGVAR     VAR(&copybook)          VALUE(MAP DO(&token:0:-1:1,&lifeprofiles[0].name:40:-1:1,&lifeprofiles[1].occupationName:60:-1:1))",
+
     let ret = {};
-    let subCmdVar;
+    let subCmdVar,maps;
     if (isThisSubCmd) {
         ret["result"] = _subStrUsingNextIndex(command, "VAR(", ")").slice(1);
         subCmdVar = _subStrUsingLastIndex(command, "VALUE(", ")")
     }
-    let maps = _subStrUsingLastIndex(subCmdVar, "DO(", ")").split(",");
-    ret["listbox"] = maps.map(map => {
-        const values = map.split(":");
-        const result = values.map(m => {
-            if (m.includes("&")) m = m.slice(1);
-            if (m.includes(".")) m = m.slice(1);
-            return m
-        })
-        return result
-    })
+
+    maps = _subStrUsingLastIndex(subCmdVar, "DO(", ")");
+    let mapArr = [];
+    maps.split(',').forEach(function (value) {
+        let values = value.trim().split(':');
+        for (let j=0;j<5;j++) {
+            values[j] = values[j] ? (values[j].includes("&") ? values[j].slice(1) : values[j]) : '';
+            mapArr.push(values[j]);
+        }
+    });
+
+    ret["listbox"] = mapArr;
     ret["nodeName"] = "map";
     ret["description"] = "Map";
     return ret;
@@ -406,7 +415,8 @@ const _parseDsppfm = function (command, isThisSubCmd) {
         subCmdVar = _subStrUsingLastIndex(command, "VALUE(", ")");
     }
 
-    let file = _subStrUsingNextIndex(subCmdVar, "FILE(", ")").
+    let file = _subStrUsingNextIndex(subCmdVar, "FILE(", ")").split('/');
+    console.log(file);
     ret["libraryname"] = file[0];
     ret["physical"] = file[1];
     ret["member"] = _subStrUsingLastIndex(subCmdVar, "MBR(", ")") ? _subStrUsingLastIndex(subCmdVar, "MBR(", ")"):"";
@@ -452,4 +462,4 @@ const _getUniqueID = _ => `${Date.now()}${Math.random() * 100}`;
 const _isDraggedItemAJSONFile = event => event.dataTransfer.items?.length && event.dataTransfer.items[0].kind === "file"
     && event.dataTransfer.items[0].type.toLowerCase() === "application/json";
 
-export const open = { init, clicked, getImage, getHelpText, getDescriptiveName, allowDrop, droppedFile }
+export const open = { init, clicked, getImage, getHelpText, getDescriptiveName, allowDrop, droppedFile, apiclParser}
