@@ -65,5 +65,6 @@ export const i18n = {
 "JsonataExpression":"JSONATA Expression",
 "SessionName":"Session Name",
 "Keys":"KEYS",
-"ScreenContent":"Screen Contents"
+"ScreenContent":"Screen Contents",
+"PublishSuccess":"Published Successfully"
 }
