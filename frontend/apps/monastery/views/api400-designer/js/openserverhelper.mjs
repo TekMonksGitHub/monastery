@@ -39,5 +39,9 @@ async function openClicked(_elementSendingTheEvent, idOfPackageToOpen) {
         }
 
 }
+async function serverDetails() {
+    const server = DIALOG.getElementValue("server"), port = DIALOG.getElementValue("port");
+    return {server,port}
+}
 
-export const openserverhelper = {init, connectServerClicked, openClicked};
+export const openserverhelper = {init, connectServerClicked, openClicked, serverDetails};

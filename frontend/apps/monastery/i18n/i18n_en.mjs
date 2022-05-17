@@ -66,5 +66,6 @@ export const i18n = {
 "SessionName":"Session Name",
 "Keys":"KEYS",
 "ScreenContent":"Screen Contents",
-"PublishSuccess":"Published Successfully"
+"PublishSuccess":"Published Successfully",
+"module":"Module Name"
 }

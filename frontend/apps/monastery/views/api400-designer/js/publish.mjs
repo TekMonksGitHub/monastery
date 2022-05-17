@@ -32,9 +32,8 @@ async function openDialog() {
     DIALOG.showDialog(dialogPropertiesPath, html, null, DIALOG_RET_PROPS, 
         async (typeOfClose, result, dialogElement) => { if (typeOfClose == "submit") {
             saved_props = util.clone(result, ["adminpassword"]); // don't save password, for security
-            const model = api400model.getModel();console.log(model);
-            const modelobject =api400model.getModelObject();console.log(modelobject);
-           const pubResult = await serverManager.publishModel(model, result.name, result.server, result.port, result.adminid, result.adminpassword,modelobject);
+            const model = api400model.getModel();
+           const pubResult = await serverManager.publishModel(model, result.name, result.server, result.port, result.adminid, result.adminpassword);
             blackboard.broadcastMessage(MSG_RENAME_MODEL, {name: result.name});
             if (!pubResult.result) DIALOG.showError(dialogElement, await i18n.get(pubResult.key)); 
             else {DIALOG.showMessage(await i18n.get("PublishSuccess"), null, null, messageTheme, "MSG_DIALOG");  return true;}

@@ -7,7 +7,7 @@ import { util } from "/framework/js/util.mjs";
 import { monkshu_component } from "/framework/js/monkshu_component.mjs";
 
 const COMPONENT_PATH = util.getModulePath(import.meta);
-
+const DIALOG = window.monkshu_env.components["dialog-box"];
 const P3_LIBS = [
   `${COMPONENT_PATH}/3p/codemirror/lib/codemirror.js`,
   `${COMPONENT_PATH}/3p/codemirror/addon/selection/active-line.js`,
@@ -71,12 +71,14 @@ async function elementRendered(element) {
           mode: "javascript",
           lint: { selfContain: true },
           gutters: ["CodeMirror-lint-markers"],
-          matchBrackets: true
+          matchBrackets: true,
+          
         }
       );
       text_editor.getMemoryByHost(element).editor = cm;
       cm.setSize("100%", "100%");
-      cm.setValue("// JS script");
+     if (!element.getAttribute("mod"))   cm.setValue("// JS script");
+     else cm.setValue("exports.execute = execute;\n\nfunction execute(env, callback){\n\ncallback();\n}\n");
       if (element.getAttribute("value"))
         _setValue(element.getAttribute("value"), element);
     }, 10);
@@ -127,7 +129,7 @@ async function save(element) {
   util.downloadFile(
     jsContents,
     "text/javascript",
-    decodeURIComponent(host.getAttribute("downloadfilename")) || "code.js"
+    decodeURIComponent(DIALOG.getElementValue("result")) || "code.js"
   );
 }
 
