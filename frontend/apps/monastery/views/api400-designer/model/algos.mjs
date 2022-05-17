@@ -176,6 +176,7 @@ const _convertForCondition = function(node,nodes) {
             if(nodeObj.dependencies.includes(node.id)) {
                 if (nodeObj.nodeName=='iftrue' || nodeObj.nodeName=='iffalse') { 
                     let isThenElse = (nodeObj.nodeName=='iftrue') ? `THEN` : `ELSE`;
+                    let valueOfThenElse = (nodeObj.nodeName=='iftrue') ? nodeObj.true : nodeObj.false;
                     nextIdentifiedNodeObj = _checkNodeInAllNodes(nodeObj,nodes);
                     if (nextIdentifiedNodeObj) {
                         let subCmdStr='';
@@ -189,7 +190,7 @@ const _convertForCondition = function(node,nodes) {
                         nodeAlreadyAdded.push(nextIdentifiedNodeObj.id);
                     }
                     else
-                        cmdString = cmdString.concat(` ${isThenElse}(${nodeObj.true||''})`); 
+                        cmdString = cmdString.concat(` ${isThenElse}(${valueOfThenElse||''})`); 
                 }
             }
         }
