@@ -92,6 +92,7 @@ const convertIntoAPICL = function(nodes) {
         else if (node.nodeName=='scrread') { apicl[node.id] = _convertForScrread(node) }
         else if (node.nodeName=='scrkeys') { apicl[node.id] = _convertForScrkeys(node) }
         else if (node.nodeName=='scrops') { apicl[node.id] = _convertForScrops(node) }
+        else if (node.nodeName=='mod') { apicl[node.id] = _convertForMod(node) }
         else if (node.nodeName=='substr') { _convertForSubstr(node) }
      
     }
@@ -106,8 +107,10 @@ const convertIntoAPICL = function(nodes) {
 const _convertForStrapi = function(node) {
 
     let cmdString = 'STRAPI PARM()' ; 
-    if (node.listbox && node.listbox.length!=0)
-        return cmdString = cmdString.replace(`()`,`(&${node.listbox.join(' &')})`);
+    let listBoxValues= JSON.parse(node.listbox);
+    if (listBoxValues && listBoxValues.length!=0 && listBoxValues[0]!=""){
+        return cmdString = cmdString.replace(`()`,`(&${listBoxValues.filter(Boolean).join(' &')})`);
+    } 
     else     
         return cmdString;
 };
@@ -125,17 +128,25 @@ const _convertForRunsql = function(node) {
 };
 
 const _convertForRunjs = function(node) { 
-    
     if(!node.result) return `RUNJS JS(${node.code||''})`; 
     else return `CHGVAR VAR(&${node.result}) VALUE(RUNJS JS(${node.code||''}))`;
+    
+ 
 };
+const _convertForMod = function(node) { 
+    if(node.result) return `RUNJS MOD(${node.result||''})`; 
+    else return `RUNJS MOD(scriptMod)`;     
+
+};
+    
     
     
 
 const _convertForSndapimsg = function(node) { 
+    let listBoxValues = JSON.parse(node.listbox);
     let cmdString = 'SNDAPIMSG  MSG()';
-    if (node.listbox && node.listbox.length!=0)
-        return cmdString.replace(`()`,`(&${node.listbox.join(' &')})`);
+    if (listBoxValues && listBoxValues!=0 && listBoxValues[0]!="")
+        return cmdString.replace(`()`,`(&${listBoxValues.filter(Boolean).join(' &')})`);
     else     
         return cmdString;
 };
@@ -143,13 +154,16 @@ const _convertForSndapimsg = function(node) {
 const _convertForChgvar = function(node) { 
 
     let count = 1;
-    if (node.listbox && node.listbox.length>0)
-        for(const variableObj of node.listbox) {
-            let cmdString = 'CHGVAR     VAR()   VALUE()';
-            cmdString = cmdString.replace(`VAR()`,`VAR(&${variableObj[0]||''})`);
-            cmdString = cmdString.replace(`VALUE()`,`VALUE('${variableObj[1]||''}')`);
-            apicl[`${node.id}_${count++}`] = cmdString;
-            console.log(cmdString);
+    let listBoxValues= JSON.parse(node.listbox);
+    if (listBoxValues && listBoxValues.length>0)
+        for(const variableObj of listBoxValues) {
+            if(variableObj[0]){
+                let cmdString = 'CHGVAR     VAR()   VALUE()';
+                cmdString = cmdString.replace(`VAR()`,`VAR(&${variableObj[0]||''})`);
+                cmdString = cmdString.replace(`VALUE()`,`VALUE('${variableObj[1]||''}')`);
+                apicl[`${node.id}_${count++}`] = cmdString;
+                console.log(cmdString);
+            }
         }
 };
 
@@ -222,7 +236,7 @@ const _convertForChgdtaara = function(node) {
     if(node.dropdown && node.dropdown.includes("BigDecimal"))
         cmdString += ` TYPE(*BIGDEC)`;
     if(node.value && node.value!='')
-        cmdString += ` VALUE(&${node.value})`;
+        cmdString += ` VALUE(&${node.value || ''})`;
     return cmdString;
 };
 
@@ -235,7 +249,7 @@ const _convertForRtvdtaara = function(node) {
     if(node.dropdown && node.dropdown.includes("BigDecimal"))
         cmdString += ` TYPE(*BIGDEC)`;
     if(node.value && node.value!='')
-        cmdString += ` RTNVAR(&${node.value})`;
+        cmdString += ` RTNVAR(&${node.value || ''})`;
     return cmdString;
 };
 
@@ -244,7 +258,7 @@ const _convertForQrcvdtaq = function(node) {
 };
 
 const _convertForQsnddtaq = function(node) { 
-    return `QSNDDTAQ PARM(${node.libraryname.toUpperCase()||''}/${node.dataqueue.toUpperCase()||''} &${node.value||''} )`;;
+    return `QSNDDTAQ PARM(${node.libraryname.toUpperCase()||''}/${node.dataqueue.toUpperCase()||''} &${node.value||''})`;;
 };
 
 const _convertForDsppfm = function(node) { 
@@ -257,19 +271,19 @@ const _convertForLog = function(node) {
 };
 
 const _convertForCall = function(node) { 
-
+    let listBoxValues= JSON.parse(node.listbox);
     let cmdString = `CALL PGM(${node.library||''}/${node.program||''})`.toUpperCase();
-    if (node.listbox && node.listbox.length>0)
-        cmdString += ` PARM('&${node.listbox.join("' '&")}')`;
+    if (listBoxValues && listBoxValues.length>0)
+        cmdString += ` PARM('&${listBoxValues.filter(Boolean).join("' '&")}')`;
 
     return cmdString;
 };
 
 const _convertForRunsqlprc = function(node) { 
-
+    let listBoxValues= JSON.parse(node.listbox);
     let cmdString = `RUNSQLPRC PRC(${node.library||''}/${node.procedure||''})`.toUpperCase();
-    if (node.listbox && node.listbox.length>0)
-        cmdString += ` PARM(&${node.listbox.join(' &')})`;
+    if (listBoxValues && listBoxValues.length>0)
+        cmdString += ` PARM(&${listBoxValues.filter(Boolean).join(' &')})`;
 
     return cmdString;
 };
@@ -289,10 +303,10 @@ const _convertForJsonata = function(node) {
 };
 
 const _convertForMap = function(node) { 
-
+    let listBoxValues= JSON.parse(node.listbox);
     let mapVariables = [];
-    if (node.listbox && node.listbox.length>0)
-        for(const variableObj of node.listbox) {
+    if (listBoxValues && listBoxValues.length>0)
+        for(const variableObj of listBoxValues) {
          if(variableObj[4]) {
            if(variableObj[0]) mapVariables.push(`&${variableObj[0]}:${variableObj[1]||''}:${variableObj[2]||''}:${variableObj[3]||''}:.${variableObj[4]||''}`);
            else   mapVariables.push(`-:${variableObj[1]||''}:${variableObj[2]||''}:${variableObj[3]||''}:.${variableObj[4]||''}`);
@@ -308,10 +322,10 @@ const _convertForMap = function(node) {
 };
 
 const _convertForScrread = function(node) { 
-
+    let listBoxValues= JSON.parse(node.listbox);
     let readVariables = [];
-    if (node.listbox && node.listbox.length>0)
-        for(const scrPropertiesObj of node.listbox) {
+    if (listBoxValues && listBoxValues.length>0)
+        for(const scrPropertiesObj of listBoxValues) {
             readVariables.push(`${scrPropertiesObj[0]||''},${scrPropertiesObj[1]||''},${scrPropertiesObj[2]||''},${scrPropertiesObj[3]||''}`);
         }
 
@@ -319,13 +333,11 @@ const _convertForScrread = function(node) {
      else return `CHGVAR     VAR(&${node.result})   VALUE(SCR NAME(${node.session})   READ(${readVariables.join(" : ")}))`;
 };
 
-const _convertForScrkeys = function(node) { 
-
-    
-
+const _convertForScrkeys = function(node) {  
+    let listBoxValues= JSON.parse(node.listbox);
     let keysVariables = [];
-    if (node.listbox && node.listbox.length>0)
-        for(const scrPropertiesObj of node.listbox) {
+    if (listBoxValues && listBoxValues.length>0)
+        for(const scrPropertiesObj of listBoxValues) {
             keysVariables.push(`${scrPropertiesObj[1]||''},${scrPropertiesObj[2]||''},${scrPropertiesObj[0]||''}`);
         }
     return `SCR NAME(${node.session})   KEYS(${keysVariables.join(" : ")})`;
@@ -336,10 +348,10 @@ const _convertForScrops = function(node) {
 };
 
 const _convertForSubstr = function(node) { 
-
+    let listBoxValues= JSON.parse(node.listbox);
     let count = 1;
-    if (node.listbox && node.listbox.length>0)
-        for(const variableObj of node.listbox) {
+    if (listBoxValues && listBoxValues.length>0)
+        for(const variableObj of listBoxValues) {
             let cmdString = 'CHGVAR     VAR()   VALUE()';
             cmdString = cmdString.replace(`VAR()`,`VAR(&${variableObj[0]||''})`);
             cmdString = cmdString.replace(`VALUE()`,`VALUE(SUBSTR DO(${variableObj[1]?'&'+variableObj[1]:''}:${variableObj[2]||''}:${variableObj[3]||''}))`);

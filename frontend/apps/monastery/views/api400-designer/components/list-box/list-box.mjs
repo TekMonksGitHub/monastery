@@ -21,10 +21,11 @@ async function elementRendered(element) {
   const parentContainer = dialogShadowRoot.querySelector("div#page-contents");
   const noOfElements = parentContainer.children.length;
   // let values;
-  if (element.getAttribute("value")) {
-    let values = element.getAttribute("value").split(",");
 
-    if (element.getAttribute("value")) values = element.getAttribute("value").split(",");
+  if (element.getAttribute("value")) {
+    let values;
+    console.log(element.getAttribute("value"));
+    if (element.getAttribute("value")) values = JSON.parse(element.getAttribute("value"));
     if (values && values.length && element.getAttribute("type") == "Parameter") _setValue(values, element.getAttribute("type"));
     else if (values && values.length && element.getAttribute("type") == "Message") _setValue(values, element.getAttribute("type"));
     else if (values && values.length && element.getAttribute("type") == "Variable") _setValue(values, element.getAttribute("type"));
@@ -51,45 +52,40 @@ function _getValue(host, type) {
 }
 
 function _setValue(values, type) {
-  let textBoxValues = [];
+  console.log(values);
+
   if (type == "Variable") {
-    for (let i = 0; i < values.length; i += 2)  textBoxValues.push(values.slice(i, i + 2));
-    for (const textBoxValue of textBoxValues) {
+    for (const textBoxValue of values) {
       if (textBoxValue.some(value => value != ""))
         window.monkshu_env.components['tool-box'].addChgvarElement('Variable', 'Value', textBoxValue[0], textBoxValue[1]);
     }
   }
   else if (type == "Sub Strings") {
-    for (let i = 0; i < values.length; i += 4)  textBoxValues.push(values.slice(i, i + 4));
-    for (const textBoxValue of textBoxValues) {
+    for (const textBoxValue of values) {
       if (textBoxValue.some(value => value != ""))
         window.monkshu_env.components['tool-box'].addSubstrElement(textBoxValue[0], textBoxValue[1], textBoxValue[2], textBoxValue[3]);
     }
   }
   else if (type == "Map") {
-    for (let i = 0; i < values.length; i += 5)  textBoxValues.push(values.slice(i, i + 5));
-    for (const textBoxValue of textBoxValues) {
+    for (const textBoxValue of values) {
       if (textBoxValue.some(value => value != ""))
         window.monkshu_env.components['tool-box'].addMapElement(textBoxValue[0], textBoxValue[1], textBoxValue[2], textBoxValue[3], textBoxValue[4]);
     }
   }
   else if (type == "Keys") {
-    for (let i = 0; i < values.length; i += 3)  textBoxValues.push(values.slice(i, i + 3));
-    for (const textBoxValue of textBoxValues) {
+    for (const textBoxValue of values) {
       if (textBoxValue.some(value => value != ""))
         window.monkshu_env.components['tool-box'].addScrKeysElement(textBoxValue[0], textBoxValue[1], textBoxValue[2]);
     }
   }
   else if (type == "Read") {
-    for (let i = 0; i < values.length; i += 4)  textBoxValues.push(values.slice(i, i + 4));
-    for (const textBoxValue of textBoxValues) {
+    for (const textBoxValue of values) {
       if (textBoxValue.some(value => value != ""))
         window.monkshu_env.components['tool-box'].addScrReadElement(textBoxValue[0], textBoxValue[1], textBoxValue[2], textBoxValue[3]);
     }
   }
   else {
-    textBoxValues = values;
-    for (const textBoxValue of textBoxValues) {
+    for (const textBoxValue of values) {
       if (textBoxValue != '')
         window.monkshu_env.components['tool-box'].addElement(type, textBoxValue);
     }
@@ -105,18 +101,18 @@ function _getTextBoxValues(textBoxContainer, shadowRoot, type) {
       const Values = [];
       for (const textBox of divBox.children) {
         const retValue = shadowRoot.querySelector(`#${textBox.getAttribute("id")}`).value;
-        Values.push(retValue);
+        Values.push(retValue.trim());
       }
       textBoxValues.push(Values);
     }
-    return textBoxValues;
+    return JSON.stringify(textBoxValues);
   }
 
   for (const textBox of textBoxContainer.children) {
     const retValue = shadowRoot.querySelector(`#${textBox.getAttribute("id")}`).value;
-    textBoxValues.push(retValue);
+    textBoxValues.push(retValue.trim());
   }
-  return textBoxValues;
+  return JSON.stringify(textBoxValues);
 }
 export const list_box = {
   trueWebComponentMode: false,
