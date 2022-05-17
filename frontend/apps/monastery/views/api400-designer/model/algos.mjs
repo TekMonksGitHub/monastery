@@ -91,7 +91,7 @@ const convertIntoAPICL = function(nodes) {
         else if (node.nodeName=='map') { apicl[node.id] = _convertForMap(node) }
         else if (node.nodeName=='scrread') { apicl[node.id] = _convertForScrread(node) }
         else if (node.nodeName=='scrkeys') { apicl[node.id] = _convertForScrkeys(node) }
-        else if (node.nodeName=='scrops') { apicl[node.id] = _convertForScrops(node) }
+        else if (node.nodeName=='scrops'  && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForScrops(node) }
         else if (node.nodeName=='mod') { apicl[node.id] = _convertForMod(node) }
         else if (node.nodeName=='substr') { _convertForSubstr(node) }
      
@@ -174,30 +174,22 @@ const _convertForCondition = function(node,nodes) {
     for (const nodeObj of nodes) {
         if (nodeObj.dependencies && nodeObj.dependencies.length>0){
             if(nodeObj.dependencies.includes(node.id)) {
-                if (nodeObj.nodeName=='iftrue') { 
+                if (nodeObj.nodeName=='iftrue' || nodeObj.nodeName=='iffalse') { 
+                    let isThenElse = (nodeObj.nodeName=='iftrue') ? `THEN` : `ELSE`;
                     nextIdentifiedNodeObj = _checkNodeInAllNodes(nodeObj,nodes);
-                    if (nextIdentifiedNodeObj && nextIdentifiedNodeObj.nodeName=='runsql') {
-                        cmdString = cmdString.concat(` THEN( ${_convertForRunsql(nextIdentifiedNodeObj)})`); 
+                    if (nextIdentifiedNodeObj) {
+                        let subCmdStr='';
+                        if (nextIdentifiedNodeObj.nodeName=='runsql') { subCmdStr = _convertForRunsql(nextIdentifiedNodeObj);  }
+                        else if (nextIdentifiedNodeObj.nodeName=='goto') { subCmdStr = _convertForGoto(nextIdentifiedNodeObj,nodes);  } 
+                        else if (nextIdentifiedNodeObj.nodeName=='scrops') { subCmdStr = _convertForScrops(nextIdentifiedNodeObj,nodes);  } 
+                        else if (nextIdentifiedNodeObj.nodeName=='runjs') { subCmdStr = _convertForRunjs(nextIdentifiedNodeObj,nodes);  } 
+                        else if (nextIdentifiedNodeObj.nodeName=='scrkeys') { subCmdStr = _convertForScrkeys(nextIdentifiedNodeObj,nodes);  } 
+                        else if (nextIdentifiedNodeObj.nodeName=='scrread') { subCmdStr = _convertForScrread(nextIdentifiedNodeObj,nodes);  } 
+                        cmdString = cmdString.concat(` ${isThenElse}( ${subCmdStr})`);
                         nodeAlreadyAdded.push(nextIdentifiedNodeObj.id);
                     }
-                    else if (nextIdentifiedNodeObj && nextIdentifiedNodeObj.nodeName=='goto') {
-                        cmdString = cmdString.concat(` THEN( ${_convertForGoto(nextIdentifiedNodeObj,nodes)})`); 
-                        nodeAlreadyAdded.push(nextIdentifiedNodeObj.id);
-                    } 
                     else
-                        cmdString = cmdString.concat(` THEN(${nodeObj.true||''})`); 
-                }
-                else if (nodeObj.nodeName=='iffalse') { 
-                    nextIdentifiedNodeObj = _checkNodeInAllNodes(nodeObj,nodes);
-                    if (nextIdentifiedNodeObj && nextIdentifiedNodeObj.nodeName=='runsql') {
-                        cmdString = cmdString.concat(` ELSE( ${_convertForRunsql(nextIdentifiedNodeObj)})`); 
-                        nodeAlreadyAdded.push(nextIdentifiedNodeObj.id);
-                    } else if (nextIdentifiedNodeObj && nextIdentifiedNodeObj.nodeName=='goto'){
-                        cmdString = cmdString.concat(` ELSE( ${_convertForGoto(nextIdentifiedNodeObj,nodes)})`); 
-                        nodeAlreadyAdded.push(nextIdentifiedNodeObj.id);
-                    } 
-                    else
-                        cmdString = cmdString.concat(` ELSE(${nodeObj.false||''})`); 
+                        cmdString = cmdString.concat(` ${isThenElse}(${nodeObj.true||''})`); 
                 }
             }
         }
