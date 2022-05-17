@@ -72,7 +72,7 @@ const convertIntoAPICL = function(nodes) {
         console.log(node.nodeName);
         if (node.nodeName=='strapi') { apicl[node.id] = _convertForStrapi(node) }
         else if (node.nodeName=='runsql' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForRunsql(node) }
-        else if (node.nodeName=='runjs') { apicl[node.id] = _convertForRunjs(node) }
+        else if (node.nodeName=='runjs' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForRunjs(node) }
         else if (node.nodeName=='sndapimsg') { apicl[node.id] = _convertForSndapimsg(node) }
         else if (node.nodeName=='chgvar') { _convertForChgvar(node) }
         else if (node.nodeName=='condition') { apicl[node.id] = _convertForCondition(node,nodes) }
@@ -89,8 +89,8 @@ const convertIntoAPICL = function(nodes) {
         else if (node.nodeName=='rest') { apicl[node.id] = _convertForRest(node) }
         else if (node.nodeName=='jsonata') { apicl[node.id] = _convertForJsonata(node) }
         else if (node.nodeName=='map') { apicl[node.id] = _convertForMap(node) }
-        else if (node.nodeName=='scrread') { apicl[node.id] = _convertForScrread(node) }
-        else if (node.nodeName=='scrkeys') { apicl[node.id] = _convertForScrkeys(node) }
+        else if (node.nodeName=='scrread' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForScrread(node) }
+        else if (node.nodeName=='scrkeys' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForScrkeys(node) }
         else if (node.nodeName=='scrops'  && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForScrops(node) }
         else if (node.nodeName=='mod') { apicl[node.id] = _convertForMod(node) }
         else if (node.nodeName=='substr') { _convertForSubstr(node) }
