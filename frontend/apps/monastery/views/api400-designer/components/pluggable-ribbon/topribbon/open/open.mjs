@@ -51,6 +51,7 @@ async function _uploadFile() {
     try {
         let { name, data } = await util.uploadAFile("application/json");
         data = JSON.stringify(await apiclParser(data));
+        console.log(data);
         blackboard.broadcastMessage(MSG_FILE_UPLOADED, { name, data });
     } catch (err) { LOG.error(`Error opening file: ${err}`); }
 }
@@ -70,7 +71,7 @@ async function _getFromServer() {
         async (typeOfClose, result) => {
             if (typeOfClose == "submit") {
                 saved_props = util.clone(result, ["adminpassword"]); // don't save password, for security
-                const selectedModel = result.packages, readModelResult = serverManager.getModel(selectedModel, result.server,
+                const selectedModel = result.packages, readModelResult = serverManager.getApicl(selectedModel, result.server,
                     result.port, result.adminid, result.adminpassword);
                 if (!pubResult.result) DIALOG.showError(dialogElement, await i18n.get(readModelResult.key));
                 else blackboard.broadcastMessage(MSG_FILE_UPLOADED, {
@@ -184,13 +185,16 @@ const _parseCall = async function (command) {
 
 const _parseRunsqlprc = async function (command) {
     let ret = {};
+    console.log(command);
     ret["nodeName"] = "runsqlprc";
     ret["description"] = "Runsqlprc";
     let procedureName = _patternMatch(command, /PRC\(([^)]+)\)/, 0).split("/");
     ret["library"] = procedureName[0];
     ret["procedure"] = procedureName[1];
+    console.log(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" "));
+    console.log(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean));
     ret["listbox"] = JSON.stringify(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean).map(s => s.slice(1)));
-    return ret
+    return ret;
 };
 const _parseRunsql = async function (command, isThisSubCmd) {
     let ret = {};
@@ -234,6 +238,7 @@ async function _parseMod(command) {
     ret["description"] = "Mod";
     ret["result"] = _patternMatch(command, /MOD\(([^)]+)\)/, 0);
     const jsData = await serverManager.getModule(_patternMatch(command, /MOD\(([^)]+)\)/, 0));
+    
     console.log(jsData);
     ret["code"] = jsData.mod;
     return ret;
@@ -256,6 +261,7 @@ const _parseChgvar = async function (command) {
     let ret = {};
     ret["nodeName"] = "chgvar";
     ret["description"] = "Chgvar";
+    console.log(_patternMatch(command, /VALUE\(\'([^)]+)\'\)/, 0));
     ret["listbox"] =JSON.stringify([[_patternMatch(command, /VAR\(([^)]+)\)/, 1), _patternMatch(command, /VALUE\(\'([^)]+)\'\)/, 0)]]);
     return ret;
 };
@@ -403,15 +409,6 @@ const _parseSubstr = async function (command, isThisSubCmd) {
     ret["nodeName"] = "substr";
     ret["description"] = "Substr";
     return ret;
-    /*ret["listbox"] = JSON.stringify(substr.map(e => {
-        const values = e.split(":");
-        values.unshift(_subStrUsingNextIndex(command, "VAR(", ")"))
-        const result = values.map(m => {
-            if (m.includes("&")) m = m.slice(1);
-            return m
-        })
-        return result
-    }));*/
 };
 const _parseDsppfm = async function (command, isThisSubCmd) {
     let ret = {};

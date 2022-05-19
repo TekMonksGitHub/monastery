@@ -135,15 +135,13 @@ function runJsMod() {
     for (const command of api400.apicl[0].commands) {
         let nameAndJs = [];
         if (command.nodeName == "mod") {
-            if (command.result != "") nameAndJs.push(command.result);
-            else nameAndJs.push("scriptMod");
+            nameAndJs.push(command.result);
             nameAndJs.push(command.code);
             nameAndJsArray.push(nameAndJs)
         }
        
     }
-    if (nameAndJsArray.length != 0) return nameAndJsArray;
-    return false;
+     return nameAndJsArray;
 }
 const getModelAsFile = name => {
     return { data: JSON.stringify(getModel(), null, 4), mime: "application/json", filename: `${name || "api400api"}.apicl` }

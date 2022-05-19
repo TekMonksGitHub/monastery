@@ -180,24 +180,24 @@ const _convertForCondition = function(node,nodes) {
                         let subCmdStr='';
                         if (nextIdentifiedNodeObj.nodeName=='runsql') { subCmdStr = _convertForRunsql(nextIdentifiedNodeObj); }
                         else if (nextIdentifiedNodeObj.nodeName=='goto') { subCmdStr = _convertForGoto(nextIdentifiedNodeObj,nodes);  } 
-                        else if (nextIdentifiedNodeObj.nodeName=='scrops') { subCmdStr = _convertForScrops(nextIdentifiedNodeObj,nodes);  } 
-                        else if (nextIdentifiedNodeObj.nodeName=='runjs') { subCmdStr = _convertForRunjs(nextIdentifiedNodeObj,nodes);  } 
-                        else if (nextIdentifiedNodeObj.nodeName=='scrkeys') { subCmdStr = _convertForScrkeys(nextIdentifiedNodeObj,nodes);  } 
-                        else if (nextIdentifiedNodeObj.nodeName=='scrread') { subCmdStr = _convertForScrread(nextIdentifiedNodeObj,nodes);  } 
-                        else if (nextIdentifiedNodeObj.nodeName=='chgvar') { subCmdStr = _convertForChgvar(nextIdentifiedNodeObj,nodes);  } 
-                        else if (nextIdentifiedNodeObj.nodeName=='map') { subCmdStr = _convertForMap(nextIdentifiedNodeObj,nodes);  } 
-                        else if (nextIdentifiedNodeObj.nodeName=='jsonata') { subCmdStr = _convertForJsonata(nextIdentifiedNodeObj,nodes);}
-                        else if (nextIdentifiedNodeObj.nodeName=='rest') { subCmdStr = _convertForRest(nextIdentifiedNodeObj,nodes);}
-                        else if (nextIdentifiedNodeObj.nodeName=='runsqlprc') { subCmdStr = _convertForRunsqlprc(nextIdentifiedNodeObj,nodes);} 
-                        else if (nextIdentifiedNodeObj.nodeName=='call') { subCmdStr = _convertForCall(nextIdentifiedNodeObj,nodes);}
-                        else if (nextIdentifiedNodeObj.nodeName=='log') { subCmdStr = _convertForLog(nextIdentifiedNodeObj,nodes);}
-                        else if (nextIdentifiedNodeObj.nodeName=='dsppfm') { subCmdStr = _convertForDsppfm(nextIdentifiedNodeObj,nodes);}
-                        else if (nextIdentifiedNodeObj.nodeName=='qsnddtaq') { subCmdStr = _convertForQsnddtaq(nextIdentifiedNodeObj,nodes);}
-                        else if (nextIdentifiedNodeObj.nodeName=='qrcvdtaq') { subCmdStr = _convertForQrcvdtaq(nextIdentifiedNodeObj,nodes);}  
-                        else if (nextIdentifiedNodeObj.nodeName=='rtvdtaara') { subCmdStr = _convertForRtvdtaara(nextIdentifiedNodeObj,nodes);} 
-                        else if (nextIdentifiedNodeObj.nodeName=='chgdtaara') { subCmdStr = _convertForChgdtaara(nextIdentifiedNodeObj,nodes);}
-                        else if (nextIdentifiedNodeObj.nodeName=='sndapimsg') { subCmdStr = _convertForSndapimsg(nextIdentifiedNodeObj,nodes);}
-                        else if (nextIdentifiedNodeObj.nodeName=='mod') { subCmdStr = _convertForMod(nextIdentifiedNodeObj,nodes);}                                 
+                        else if (nextIdentifiedNodeObj.nodeName=='scrops') { subCmdStr = _convertForScrops(nextIdentifiedNodeObj);  } 
+                        else if (nextIdentifiedNodeObj.nodeName=='runjs') { subCmdStr = _convertForRunjs(nextIdentifiedNodeObj);  } 
+                        else if (nextIdentifiedNodeObj.nodeName=='scrkeys') { subCmdStr = _convertForScrkeys(nextIdentifiedNodeObj);  } 
+                        else if (nextIdentifiedNodeObj.nodeName=='scrread') { subCmdStr = _convertForScrread(nextIdentifiedNodeObj);  } 
+                        else if (nextIdentifiedNodeObj.nodeName=='chgvar') { subCmdStr = _convertForChgvar(nextIdentifiedNodeObj);  } 
+                        else if (nextIdentifiedNodeObj.nodeName=='map') { subCmdStr = _convertForMap(nextIdentifiedNodeObj);  } 
+                        else if (nextIdentifiedNodeObj.nodeName=='jsonata') { subCmdStr = _convertForJsonata(nextIdentifiedNodeObj);}
+                        else if (nextIdentifiedNodeObj.nodeName=='rest') { subCmdStr = _convertForRest(nextIdentifiedNodeObj);}
+                        else if (nextIdentifiedNodeObj.nodeName=='runsqlprc') { subCmdStr = _convertForRunsqlprc(nextIdentifiedNodeObj);} 
+                        else if (nextIdentifiedNodeObj.nodeName=='call') { subCmdStr = _convertForCall(nextIdentifiedNodeObj);}
+                        else if (nextIdentifiedNodeObj.nodeName=='log') { subCmdStr = _convertForLog(nextIdentifiedNodeObj);}
+                        else if (nextIdentifiedNodeObj.nodeName=='dsppfm') { subCmdStr = _convertForDsppfm(nextIdentifiedNodeObj);}
+                        else if (nextIdentifiedNodeObj.nodeName=='qsnddtaq') { subCmdStr = _convertForQsnddtaq(nextIdentifiedNodeObj);}
+                        else if (nextIdentifiedNodeObj.nodeName=='qrcvdtaq') { subCmdStr = _convertForQrcvdtaq(nextIdentifiedNodeObj);}  
+                        else if (nextIdentifiedNodeObj.nodeName=='rtvdtaara') { subCmdStr = _convertForRtvdtaara(nextIdentifiedNodeObj);} 
+                        else if (nextIdentifiedNodeObj.nodeName=='chgdtaara') { subCmdStr = _convertForChgdtaara(nextIdentifiedNodeObj);}
+                        else if (nextIdentifiedNodeObj.nodeName=='sndapimsg') { subCmdStr = _convertForSndapimsg(nextIdentifiedNodeObj);}
+                        else if (nextIdentifiedNodeObj.nodeName=='mod') { subCmdStr = _convertForMod(nextIdentifiedNodeObj);}                                 
                         cmdString = cmdString.concat(` ${isThenElse}( ${subCmdStr})`);
                         nodeAlreadyAdded.push(nextIdentifiedNodeObj.id);
                     }
@@ -259,11 +259,12 @@ const _convertForRtvdtaara = function(node) {
 };
 
 const _convertForQrcvdtaq = function(node) { 
-    return `QRCVDTAQ PARM(${node.library.toUpperCase()||''}/${node.queue.toUpperCase()||''} ${node.wait||''} ${node.dropdown||''} &${node.data||''})`;;
+    return `QRCVDTAQ PARM(${node.library.trim()||''}/${node.queue.trim()||''} ${node.wait.trim()||''} ${node.dropdown||''} &${node.data.trim()||''})`;;
 };
 
 const _convertForQsnddtaq = function(node) { 
-    return `QSNDDTAQ PARM(${node.libraryname.toUpperCase()||''}/${node.dataqueue.toUpperCase()||''} &${node.value||''})`;;
+    console.log(node);
+    return `QSNDDTAQ PARM(${node.libraryname.trim()||''}/${node.dataqueue.trim()||''} ${node.value.trim()||''})`;;
 };
 
 const _convertForDsppfm = function(node) { 
