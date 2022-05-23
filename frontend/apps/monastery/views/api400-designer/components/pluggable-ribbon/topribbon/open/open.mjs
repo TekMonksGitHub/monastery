@@ -51,6 +51,7 @@ async function _uploadFile() {
     try {
         let { name, data } = await util.uploadAFile("application/json");
         data = JSON.stringify(await apiclParser(data));
+        console.log(data);
         blackboard.broadcastMessage(MSG_FILE_UPLOADED, { name, data });
     } catch (err) { LOG.error(`Error opening file: ${err}`); }
 }
@@ -70,7 +71,7 @@ async function _getFromServer() {
         async (typeOfClose, result) => {
             if (typeOfClose == "submit") {
                 saved_props = util.clone(result, ["adminpassword"]); // don't save password, for security
-                const selectedModel = result.packages, readModelResult = serverManager.getModel(selectedModel, result.server,
+                const selectedModel = result.packages, readModelResult = serverManager.getApicl(selectedModel, result.server,
                     result.port, result.adminid, result.adminpassword);
                 if (!pubResult.result) DIALOG.showError(dialogElement, await i18n.get(readModelResult.key));
                 else blackboard.broadcastMessage(MSG_FILE_UPLOADED, {
@@ -158,7 +159,7 @@ const _checkChgvarSubCommand = async function (command) {
 };
 
 const _parseStrapi = async function (command) {
-    return command.match(/\(([^)]+)\)/) ? JSON.stringify(command.match(/\(([^)]+)\)/)[1].split(" ").filter(Boolean).map(s => s.slice(1))) : [""];
+    return command.match(/\(([^)]+)\)/) ? JSON.stringify(command.match(/\(([^)]+)\)/)[1].split(" ").filter(Boolean)) : [""];
 };
 
 const _parseEndapi = async function () {
@@ -178,26 +179,29 @@ const _parseCall = async function (command) {
     ret["program"] = programName[1];
     console.log(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" "));
     console.log(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean));
-    ret["listbox"] = JSON.stringify(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean).map(s => s.slice(2, s.length - 1)));
+    ret["listbox"] = JSON.stringify(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean));
     return ret;
 };
 
 const _parseRunsqlprc = async function (command) {
     let ret = {};
+    console.log(command);
     ret["nodeName"] = "runsqlprc";
     ret["description"] = "Runsqlprc";
     let procedureName = _patternMatch(command, /PRC\(([^)]+)\)/, 0).split("/");
     ret["library"] = procedureName[0];
     ret["procedure"] = procedureName[1];
-    ret["listbox"] = JSON.stringify(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean).map(s => s.slice(1)));
-    return ret
+    console.log(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" "));
+    console.log(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean));
+    ret["listbox"] = JSON.stringify(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean));
+    return ret;
 };
 const _parseRunsql = async function (command, isThisSubCmd) {
     let ret = {};
     let subCmdVar;
     if (isThisSubCmd) {
         // convert it as subcommand
-        ret["result"] = _subStrUsingNextIndex(command, "VAR(", ")").slice(1);
+        ret["result"] = _subStrUsingNextIndex(command, "VAR(", ")");
         subCmdVar = _subStrUsingLastIndex(command, "VALUE(", ")")
     }
     subCmdVar = (subCmdVar) ? subCmdVar : command;
@@ -214,7 +218,7 @@ const _parseRunjs = async function (command, isThisSubCmd) {
     let subCmdVar;
     if (isThisSubCmd) {
         // convert it as subcommand
-        ret["result"] = _subStrUsingNextIndex(command, "VAR(", ")").slice(1);
+        ret["result"] = _subStrUsingNextIndex(command, "VAR(", ")");
         subCmdVar = _subStrUsingLastIndex(command, "VALUE(", ")");
     }
     subCmdVar = (subCmdVar) ? subCmdVar : command;
@@ -222,7 +226,7 @@ const _parseRunjs = async function (command, isThisSubCmd) {
     ret["description"] = "Runjs";
     let jsObj = _subStrUsingLastIndex(subCmdVar, "JS(", ")");
     ret["code"] = jsObj;
-    return ret
+    return ret;
 };
 
 const _parseLog = async function (command) {
@@ -234,7 +238,6 @@ async function _parseMod(command) {
     ret["description"] = "Mod";
     ret["result"] = _patternMatch(command, /MOD\(([^)]+)\)/, 0);
     const jsData = await serverManager.getModule(_patternMatch(command, /MOD\(([^)]+)\)/, 0));
-    console.log(jsData);
     ret["code"] = jsData.mod;
     return ret;
 };
@@ -248,7 +251,7 @@ const _parseChgdtaara = async function (command) {
     ret["libraryname"] = dataAreaName[0];
     ret["dataarea"] = dataAreaName[1];
     ret["dropdown"] = _patternMatch(command, /TYPE\(([^)]+)\)/, 1) == "CHAR" ? "Character" : "BigDecimal";
-    ret["value"] = _patternMatch(command, /VALUE\(([^)]+)\)/, 1);
+    ret["value"] = _patternMatch(command, /VALUE\(([^)]+)\)/, 0);
     return ret;
 };
 
@@ -256,7 +259,7 @@ const _parseChgvar = async function (command) {
     let ret = {};
     ret["nodeName"] = "chgvar";
     ret["description"] = "Chgvar";
-    ret["listbox"] =JSON.stringify([[_patternMatch(command, /VAR\(([^)]+)\)/, 1), _patternMatch(command, /VALUE\(\'([^)]+)\'\)/, 0)]]);
+    ret["listbox"] =JSON.stringify([[_patternMatch(command, /VAR\(([^)]+)\)/, 0), _patternMatch(command, /VALUE\(([^)]+)\)/, 0)]]);
     return ret;
 };
 
@@ -268,7 +271,7 @@ const _parseRtvdtaara = async function (command) {
     ret["libraryname"] = dataAreaName[0];
     ret["dataarea"] = dataAreaName[1];
     ret["dropdown"] = _patternMatch(command, /TYPE\(([^)]+)\)/, 1) == "CHAR" ? "Character" : "BigDecimal";
-    ret["value"] = _patternMatch(command, /RTNVAR\(([^)]+)\)/, 1)
+    ret["value"] = _patternMatch(command, /RTNVAR\(([^)]+)\)/, 0);
     return ret ;
 };
 
@@ -276,12 +279,12 @@ const _parseQrcvdtaq = async function (command) {
     let ret = {};
     ret["nodeName"] = "qrcvdtaq";
     ret["description"] = "Qrcvdtaq";
-    let qrcvdtaqParm = _patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean);
+    let qrcvdtaqParm = _patternMatch(command, /PARM\(([^)]+)\)/, 0).split(/\s+/).filter(Boolean);
     ret["library"] = qrcvdtaqParm[0].split("/")[0];
     ret["queue"] = qrcvdtaqParm[0].split("/")[1];
     ret["wait"] = qrcvdtaqParm[1];
     ret["dropdown"] = qrcvdtaqParm[2] == "true" ? "true" : "false";
-    ret["data"] = qrcvdtaqParm[3].slice(1);
+    ret["data"] = qrcvdtaqParm[3].includes("&")?qrcvdtaqParm[3]: qrcvdtaqParm.slice(3).join(" ");
     return ret;
 };
 
@@ -289,10 +292,11 @@ const _parseQsnddtaq = async function (command) {
     let ret = {};
     ret["nodeName"] = "qsnddtaq";
     ret["description"] = "Qsnddtaq";
-    let qsnddtaqParm = _patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean);
+    console.log(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(/\s+/));
+    let qsnddtaqParm = _patternMatch(command, /PARM\(([^)]+)\)/, 0).split(/\s+/).filter(Boolean);
     ret["libraryname"] = qsnddtaqParm[0].split("/")[0];
     ret["dataqueue"] = qsnddtaqParm[0].split("/")[1];
-    ret["value"] = qsnddtaqParm[1].slice(1);
+    ret["value"] = qsnddtaqParm[1].includes("&")?qsnddtaqParm[1]:qsnddtaqParm.slice(1).join(" ");
     return ret;
 };
 
@@ -314,7 +318,7 @@ const _parseScr = async function (command, isThisSubCmd) {
         readParams.split(':').forEach(function (value) {
             values = value.trim().split(',')
             for (let j = 0; j < 3; j++) {
-                values[j] = values[j] ? (values[j].includes("&") ? values[j].slice(1).trim() : values[j].trim()) : '';
+                values[j] = values[j] ? values[j].trim() : '';
             }
             allReads.push(values)
         });
@@ -328,7 +332,7 @@ const _parseScr = async function (command, isThisSubCmd) {
         keysParams.split(':').forEach(function (value) {
             values = value.trim().split(',');
             for (let j = 0; j < 3; j++) {
-                values[j] = values[j] ? (values[j].includes("&") ? values[j].slice(1).trim(): values[j].trim()) : '';
+                values[j] = values[j] ? values[j].trim() : '';
             }
             allKeys.push(values);
         });
@@ -357,7 +361,7 @@ const _parseJsonata = async function (command, isThisSubCmd) {
     let subCmdVar;
     if (isThisSubCmd) {
         // convert it as subcommand
-        ret["result"] = _subStrUsingNextIndex(command, "VAR(", ")").slice(1);
+        ret["result"] = _subStrUsingNextIndex(command, "VAR(", ")");
         subCmdVar = _subStrUsingLastIndex(command, "VALUE(", ")");
     }
     ret["jsonata"] = _subStrUsingNextIndex(subCmdVar, "EXPRESSION(", ")");
@@ -369,18 +373,26 @@ const _parseMap = async function (command, isThisSubCmd) {
     let ret = {};
     let subCmdVar, maps;
     if (isThisSubCmd) {
-        ret["result"] = _subStrUsingNextIndex(command, "VAR(", ")").slice(1);
+        ret["result"] = _subStrUsingNextIndex(command, "VAR(", ")");
         subCmdVar = _subStrUsingLastIndex(command, "VALUE(", ")")
     }
     maps = _subStrUsingLastIndex(subCmdVar, "DO(", ")");
+    let fixIndex = 0; let tuples = []; maps.split(",").forEach((tuple,i) => {
+        if (tuple.match(/.+?:.+?[:.+?,?]/)) {tuples.push(tuple); fixIndex = i;}
+        else tuples[fixIndex] = `${tuples[fixIndex]},${tuple}`;
+    });
     let mapArr = [];
-    maps.split(',').forEach(function (value) {
+    tuples.forEach(function (value) {
         let values = value.trim().split(':');
         for (let j = 0; j < 5; j++) {
-            values[j] = values[j] ? (values[j].includes("&") ? values[j].slice(1).trim() : values[j].trim()) : '';
+            values[j] = values[j] ? values[j].trim() : '';
         }
         mapArr.push(values);
     });
+
+    console.log(mapArr);
+    console.log(tuples);
+
     ret["listbox"] = JSON.stringify(mapArr);
     ret["nodeName"] = "map";
     ret["description"] = "Map";
@@ -396,29 +408,20 @@ const _parseSubstr = async function (command, isThisSubCmd) {
     let substrArr = [];
     substr.unshift(_subStrUsingNextIndex(command, "VAR(", ")"))
     for (let j = 0; j < 4; j++) {
-        substr[j] = substr[j] ? (substr[j].includes("&") ? substr[j].slice(1).trim() : substr[j].trim()) : '';
+        substr[j] = substr[j] ? substr[j].trim() : '';
     }
     substrArr.push(substr);
     ret["listbox"] = JSON.stringify(substrArr);
     ret["nodeName"] = "substr";
     ret["description"] = "Substr";
     return ret;
-    /*ret["listbox"] = JSON.stringify(substr.map(e => {
-        const values = e.split(":");
-        values.unshift(_subStrUsingNextIndex(command, "VAR(", ")"))
-        const result = values.map(m => {
-            if (m.includes("&")) m = m.slice(1);
-            return m
-        })
-        return result
-    }));*/
 };
 const _parseDsppfm = async function (command, isThisSubCmd) {
     let ret = {};
     let subCmdVar;
     if (isThisSubCmd) {
         // convert it as subcommand
-        ret["result"] = _subStrUsingNextIndex(command, "VAR(", ")").slice(1);
+        ret["result"] = _subStrUsingNextIndex(command, "VAR(", ")");
         subCmdVar = _subStrUsingLastIndex(command, "VALUE(", ")");
     }
     let file = _subStrUsingNextIndex(subCmdVar, "FILE(", ")").split('/');
@@ -442,12 +445,12 @@ const _parseRest = async function (command, isThisSubCmd) {
     ret["nodeName"] = "rest";
     ret["description"] = "Rest";
     if (isThisSubCmd) {
-        ret["result"] = _subStrUsingNextIndex(command, "VAR(", ")").slice(1);
+        ret["result"] = _subStrUsingNextIndex(command, "VAR(", ")");
         command = _subStrUsingLastIndex(command, "VALUE(", ")");
     }
     ret["url"] = _patternMatch(command, /URL\(([^)]+)\)/, 0);
     ret["method"] = _patternMatch(command, /METHOD\(([^)]+)\)/, 0);
-    ret["parameter"] = _patternMatch(command, /PARM\(([^)]+)\)/, 1);
+    ret["parameter"] = _patternMatch(command, /PARM\(([^)]+)\)/,0 );
     ret["headers"] = _patternMatch(command, /HEADERS\(([^)]+)\)/, 0);
     return ret
 

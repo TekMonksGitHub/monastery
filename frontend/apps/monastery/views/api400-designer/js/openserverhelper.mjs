@@ -19,8 +19,8 @@ function init() {
 async function connectServerClicked() {
     const server = DIALOG.getElementValue("server"), port = DIALOG.getElementValue("port"), 
         adminid = DIALOG.getElementValue("adminid"), adminpassword = DIALOG.getElementValue("adminpassword");
-    const listResult = await serverManager.getModelList(server, port, adminid, adminpassword);
-    if (!listResult.result) {DIALOG.showError(null, await i18n.get(listResult.key)); LOG.error("Model list fetch failed"); return;}
+    const listResult = await serverManager.getApiclList(server, port, adminid, adminpassword);
+    if (!listResult.result) {DIALOG.showError(null, await i18n.get(listResult.key)); LOG.error("Apicl list fetch failed"); return;}
     else DIALOG.hideError();
     const items = []; for (const modelName of listResult.models) items.push({id: modelName, 
         img: util.resolveURL(`${MODULE_PATH}/../dialogs/model.svg`), label: modelName});
@@ -29,9 +29,9 @@ async function connectServerClicked() {
 
 async function openClicked(_elementSendingTheEvent, idOfPackageToOpen) {
        const server = DIALOG.getElementValue("server"), port = DIALOG.getElementValue("port"), 
-           adminid = DIALOG.getElementValue("adminid"), adminpassword = DIALOG.getElementValue("adminpassword");
-        const modelResult = await serverManager.getModel(idOfPackageToOpen, server, port, adminid, adminpassword);
-        if (!modelResult.result) {DIALOG.showError(null, await i18n.get(modelResult.key)); LOG.error("Model fetch failed"); return;}
+         adminid = DIALOG.getElementValue("adminid"), adminpassword = DIALOG.getElementValue("adminpassword");
+        const modelResult = await serverManager.getApicl(idOfPackageToOpen, server, port, adminid, adminpassword);
+        if (!modelResult.result) {DIALOG.showError(null, await i18n.get(modelResult.key)); LOG.error("Apicl fetch failed"); return;}
         else {
             DIALOG.hideError();
             blackboard.broadcastMessage(MSG_FILE_UPLOADED, {name: modelResult.name, data: modelResult.model});
@@ -40,8 +40,14 @@ async function openClicked(_elementSendingTheEvent, idOfPackageToOpen) {
 
 }
 async function serverDetails() {
-    const server = DIALOG.getElementValue("server"), port = DIALOG.getElementValue("port");
-    return {server,port}
+    try{
+    const server = DIALOG.getElementValue("server"), port = DIALOG.getElementValue("port"),
+    adminid = DIALOG.getElementValue("adminid"), adminpassword = DIALOG.getElementValue("adminpassword");
+    return {server,port,adminid,adminpassword}
+    }
+    catch{
+        return false
+    }
 }
 
 export const openserverhelper = {init, connectServerClicked, openClicked, serverDetails};

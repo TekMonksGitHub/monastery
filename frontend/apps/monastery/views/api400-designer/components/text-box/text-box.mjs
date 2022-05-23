@@ -82,8 +82,8 @@ function _createDivElementForSubstr(parentContainer,variableValue, stringValue,s
   divElement.setAttribute("class", "substrdiv");
   const inputElement1 = _createElement(parentContainer, "variable", variableValue,"Variable" ,"variablebox");
   const inputElement2 = _createElement(parentContainer, "string", stringValue,"String", "stringbox");
-  const inputElement3 = _createElement(parentContainer,"index",  stringIndexValue,"String Index" ,"indexbox","static","number");
-  const inputElement4 = _createElement(parentContainer,"count",  noOfCharValue, "Num of Char","countbox","static","number");
+  const inputElement3 = _createElement(parentContainer,"index",  stringIndexValue,"String Index" ,"indexbox","static");
+  const inputElement4 = _createElement(parentContainer,"count",  noOfCharValue, "Num of Char","countbox","static");
   divElement.append(inputElement1, inputElement2,inputElement3,inputElement4);
   return divElement
 }
@@ -92,9 +92,9 @@ function _createDivElementForMap(parentContainer, stringVariableValue,startPosit
   divElement.setAttribute("class", "map");
 
   const inputElement1 = _createElement(parentContainer, "string", stringVariableValue,"String Variable", "stringbox");
-  const inputElement2 = _createElement(parentContainer,"start",  startPositionValue,"Start Pos" ,"startbox","static","number");
-  const inputElement3 = _createElement(parentContainer,"count",  noOfCharValue, "Num of Char","countbox","static","number");
-  const inputElement4 = _createElement(parentContainer,"repetition",  repitionValue, "Repetition No","repitionbox","static","number");
+  const inputElement2 = _createElement(parentContainer,"start",  startPositionValue,"Start Pos" ,"startbox","static");
+  const inputElement3 = _createElement(parentContainer,"count",  noOfCharValue, "Num of Char","countbox","static");
+  const inputElement4 = _createElement(parentContainer,"repetition",  repitionValue, "Repetition No","repitionbox","static");
   const inputElement5 = _createElement(parentContainer,"function",  stringFunctionValue,"String Function" ,"functionbox","static");
   divElement.append(inputElement1, inputElement2,inputElement3,inputElement4,inputElement5);
   return divElement
@@ -103,8 +103,8 @@ function _createDivElementForScrKeys(parentContainer, y_coordinateValue,x_coordi
   const divElement = document.createElement("div");
   divElement.setAttribute("class", "scr-keys");
  
-  const inputElement1 = _createElement(parentContainer,"y",  y_coordinateValue,"y-cordinate" ,"y-coordinates","static","number");
-  const inputElement2 = _createElement(parentContainer,"x",  x_coordinateValue, "x-cordinate","x-coordinates","static","number");
+  const inputElement1 = _createElement(parentContainer,"y",  y_coordinateValue,"y-cordinate" ,"y-coordinates","static");
+  const inputElement2 = _createElement(parentContainer,"x",  x_coordinateValue, "x-cordinate","x-coordinates","static");
   const inputElement3 = _createElement(parentContainer, "key", keyValue,"Key", "Keys");
   divElement.append(inputElement1, inputElement2,inputElement3);
   return divElement
@@ -112,10 +112,10 @@ function _createDivElementForScrKeys(parentContainer, y_coordinateValue,x_coordi
 function _createDivElementForScrRead(parentContainer, rowFromValue,columnFromValue,rowToValue,columnToValue) {
   const divElement = document.createElement("div");
   divElement.setAttribute("class", "scr-read");
-  const inputElement1 = _createElement(parentContainer, "screen-row-from", rowFromValue,"Screen Row From", "rows-from","dynamic","number");
-  const inputElement2 = _createElement(parentContainer,"screen-col-from",  columnFromValue,"Screen Col From" ,"cols-from","dynamic","number");
-  const inputElement3 = _createElement(parentContainer,"screen-row-to",  rowToValue, "Screen Row To","rows-to","dynamic","number");
-  const inputElement4 = _createElement(parentContainer,"screen-col-to",  columnToValue, "Screen Col To","cols-to","dynamic","number");
+  const inputElement1 = _createElement(parentContainer, "screen-row-from", rowFromValue,"Screen Row From", "rows-from","dynamic");
+  const inputElement2 = _createElement(parentContainer,"screen-col-from",  columnFromValue,"Screen Col From" ,"cols-from","dynamic");
+  const inputElement3 = _createElement(parentContainer,"screen-row-to",  rowToValue, "Screen Row To","rows-to","dynamic");
+  const inputElement4 = _createElement(parentContainer,"screen-col-to",  columnToValue, "Screen Col To","cols-to","dynamic");
   divElement.append(inputElement1, inputElement2,inputElement3,inputElement4);
   return divElement
 }
