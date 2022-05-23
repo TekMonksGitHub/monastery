@@ -159,7 +159,7 @@ const _checkChgvarSubCommand = async function (command) {
 };
 
 const _parseStrapi = async function (command) {
-    return command.match(/\(([^)]+)\)/) ? JSON.stringify(command.match(/\(([^)]+)\)/)[1].split(" ").filter(Boolean).map(s => s.slice(1))) : [""];
+    return command.match(/\(([^)]+)\)/) ? JSON.stringify(command.match(/\(([^)]+)\)/)[1].split(" ").filter(Boolean)) : [""];
 };
 
 const _parseEndapi = async function () {
@@ -179,7 +179,7 @@ const _parseCall = async function (command) {
     ret["program"] = programName[1];
     console.log(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" "));
     console.log(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean));
-    ret["listbox"] = JSON.stringify(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean).map(s => s.slice(2, s.length - 1)));
+    ret["listbox"] = JSON.stringify(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean));
     return ret;
 };
 
@@ -193,7 +193,7 @@ const _parseRunsqlprc = async function (command) {
     ret["procedure"] = procedureName[1];
     console.log(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" "));
     console.log(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean));
-    ret["listbox"] = JSON.stringify(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean).map(s => s.slice(1)));
+    ret["listbox"] = JSON.stringify(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean));
     return ret;
 };
 const _parseRunsql = async function (command, isThisSubCmd) {
