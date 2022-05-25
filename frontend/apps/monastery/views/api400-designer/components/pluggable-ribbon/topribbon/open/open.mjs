@@ -7,7 +7,9 @@ import { util } from "/framework/js/util.mjs";
 import { blackboard } from "/framework/js/blackboard.mjs";
 import { serverManager } from "../../../../js/serverManager.js";
 import { page_generator } from "/framework/components/page-generator/page-generator.mjs";
-let xCounter, yCounter;
+
+let xCounter, yCounter, counter = 1,dependencies=[],result = [];;
+let apicl={};
 
 const PLUGIN_PATH = util.getModulePath(import.meta), MSG_FILE_UPLOADED = "FILE_UPLOADED",
     CONTEXT_MENU = window.monkshu_env.components["context-menu"], CONTEXT_MENU_ID = "contextmenumain",
@@ -51,7 +53,6 @@ async function _uploadFile() {
     try {
         let { name, data } = await util.uploadAFile("application/json");
         data = JSON.stringify(await apiclParser(data));
-        console.log(data);
         blackboard.broadcastMessage(MSG_FILE_UPLOADED, { name, data });
     } catch (err) { LOG.error(`Error opening file: ${err}`); }
 }
@@ -85,11 +86,11 @@ async function _getFromServer() {
 async function apiclParser(data) {
     xCounter = 100;
     yCounter = 80;
-    let dependencies = [];
-    let counter = 1;
-    const apicl = JSON.parse(data);
+    dependencies = [];
+    
+    apicl = JSON.parse(data);
     let modelObject;
-    let result = [];
+    result = [];
     for (let key in apicl) {
         modelObject = await _parseCommand(apicl[key], counter++, dependencies);
         result.push(modelObject)
@@ -116,6 +117,8 @@ const _parseCommand = async function (command, counter, dependencies) {
     ret["nodeName"] = nodeName;
     ret["description"] = nodeName.charAt(0).toUpperCase() + nodeName.slice(1).toLowerCase();
 
+    console.log(ret);
+
     if (nodeName == 'strapi' || nodeName == 'sndapimsg') { ret["listbox"] = await _parseStrapi(command) }
     else if (nodeName == 'scr') { ret = await _parseScr(command, isThisSubCmd) }
     else if (nodeName == 'rest') { ret = await _parseRest(command, isThisSubCmd) }
@@ -137,6 +140,16 @@ const _parseCommand = async function (command, counter, dependencies) {
     else if (nodeName == 'endapi') { ret = await _parseEndapi()}
     else if (nodeName == 'changevar') { ret = await _parseChangeVariable(command)}
     else if (nodeName == 'condition') { ret = await _parseIfCondition(command)}
+    else if (nodeName == 'iftrue') { ret = await _parseIfTrue(command)}
+    else if (nodeName == 'iffalse') { ret = await _parseIfFalse(command)}
+
+    ret = _setAttribute();
+    return ret;
+}
+
+const _setAttribute = function () {
+
+    let ret={};
     ret["id"] = _getUniqueID();
     dependencies.push(ret.id);
     if (counter >= 2) {
@@ -147,7 +160,7 @@ const _parseCommand = async function (command, counter, dependencies) {
         xCounter = xCounter + 100
     }
     return ret;
-}
+};
 
 const _putDependency = function (nodeid) {
     return [`${nodeid}`];
@@ -176,18 +189,26 @@ const _parseIfCondition = async function (command) {
     let ret = {};
     ret["nodeName"] = "condition";
     ret["condition"] = _patternMatch(command, /COND\(([^)]+)\)/, 0);
-    let iftrue,iffalse='';
+    ret["description"] = "Condition";
+    ret = _setAttribute();
+    result.push(ret);
+
+    let iftrue='',iffalse='';
     if(command.includes("ELSE")){
-    let getThen = command.match(/THEN\(.+\)/)[0].split("ELSE")[0].trim();
-     iftrue = _subStrUsingLastIndex(getThen, "THEN(", ")");
-     iffalse = _subStrUsingLastIndex(command, "ELSE(", ")");
+        let getThen = command.match(/THEN\(.+\)/)[0].split("ELSE")[0].trim();
+        iftrue = _subStrUsingLastIndex(getThen, "THEN(", ")");
+        iffalse = _subStrUsingLastIndex(command, "ELSE(", ")");
     }
     else iftrue = _subStrUsingLastIndex(command, "THEN(", ")");
-    console.log(iftrue);
-    console.log(iffalse);
-    ret["description"] = "Condition";
-    console.log(ret);
-    return ret;
+
+    if (iftrue) { 
+        result.push(await _parseCommand("iftrue", counter++, dependencies)); 
+        result.push(await _parseCommand(iftrue, counter++, dependencies)); 
+    }
+    if (iffalse) { 
+        result.push(await _parseCommand("iffalse", counter++, dependencies)); 
+        result.push(await _parseCommand(iffalse, counter++, dependencies)); 
+    }
 };
 
 
@@ -196,25 +217,23 @@ const _parseCall = async function (command) {
     ret["nodeName"] = "call";
     ret["description"] = "Call";
     let programName = _patternMatch(command, /PGM\(([^)]+)\)/, 0).split("/");
-    console.log(programName);
+    
     ret["library"] = programName[0];
     ret["program"] = programName[1];
-    console.log(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" "));
-    console.log(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean));
+    
     ret["listbox"] = JSON.stringify(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean));
     return ret;
 };
 
 const _parseRunsqlprc = async function (command) {
     let ret = {};
-    console.log(command);
+    
     ret["nodeName"] = "runsqlprc";
     ret["description"] = "Runsqlprc";
     let procedureName = _patternMatch(command, /PRC\(([^)]+)\)/, 0).split("/");
     ret["library"] = procedureName[0];
     ret["procedure"] = procedureName[1];
-    console.log(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" "));
-    console.log(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean));
+
     ret["listbox"] = JSON.stringify(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean));
     return ret;
 };
@@ -323,7 +342,6 @@ const _parseQsnddtaq = async function (command) {
     let ret = {};
     ret["nodeName"] = "qsnddtaq";
     ret["description"] = "Qsnddtaq";
-    console.log(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(/\s+/));
     let qsnddtaqParm = _patternMatch(command, /PARM\(([^)]+)\)/, 0).split(/\s+/).filter(Boolean);
     ret["libraryname"] = qsnddtaqParm[0].split("/")[0];
     ret["dataqueue"] = qsnddtaqParm[0].split("/")[1];
@@ -482,6 +500,22 @@ const _parseRest = async function (command, isThisSubCmd) {
     return ret
 
 };
+
+const _parseIfTrue = async function (command) {
+    let ret = {};
+    ret["nodeName"] = "iftrue";
+    ret["description"] = "Iftrue";
+    return ret;
+};
+
+const _parseIfFalse = async function (command) {
+    let ret = {};
+    ret["nodeName"] = "iffalse";
+    ret["description"] = "Iffalse";
+    return ret;
+};
+
+
 const _patternMatch = function (string, pattern, slicePosition) {
 
     return string.match(pattern) ? string.match(pattern)[1].slice(slicePosition) : "";

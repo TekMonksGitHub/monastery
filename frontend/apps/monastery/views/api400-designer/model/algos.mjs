@@ -4,7 +4,7 @@
  * License: See enclosed LICENSE file.
  */
 import { util } from "/framework/js/util.mjs";
-let apicl = {}, goto = [], nodeAlreadyAdded = [], nodeToAddLater = [];
+let apicl = {},laterAPICLCmd = {}, goto = [], nodeAlreadyAdded = [], nodeToAddLater = [];
 const DIALOG = window.monkshu_env.components["dialog-box"];
 
 /**
@@ -66,8 +66,10 @@ const _arrayDelete = (array, element) => { if (array.includes(element)) array.sp
 const convertIntoAPICL = function (nodes) {
 
     apicl = {};
+    laterAPICLCmd = {};
+    nodeToAddLater = [];
     let cmdString,addLaterflag;
-    let laterAPICLCmd = {};
+     
     for (const node of nodes) {
 
         cmdString = '';
@@ -118,7 +120,7 @@ const convertIntoAPICL = function (nodes) {
     console.log('Sorting Indexing');
     apicl = _sortIndexing(apicl);
     console.log(apicl);
-
+    laterAPICLCmd = {};
     
     return apicl;
 };
@@ -236,7 +238,7 @@ const _convertForCondition = function (node, nodes) {
 const _saveNextNodeIdsInFlow = function (nodeObj,nodes) {
 
     let nextNodeObj = _checkNodeInAllNodes(nodeObj, nodes);
-    if (nextNodeObj && nextNodeObj.id ) {
+    if (nextNodeObj && nextNodeObj.id && nextNodeObj.nodeName!='condition' ) {
         nodeToAddLater.push(nextNodeObj.id);
         _saveNextNodeIdsInFlow(nextNodeObj,nodes);
     } else {
