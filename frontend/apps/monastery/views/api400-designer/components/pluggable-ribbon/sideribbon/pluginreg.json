@@ -1,1 +1,1 @@
-["strapi","runsql","runjs","mod","condition","iftrue","iffalse","goto","chgvar","chgdtaara","rtvdtaara","qsnddtaq","qrcvdtaq","rest","dsppfm","log","substr","map","call","runsqlprc","jsonata","scrops","scrread","scrkeys","sndapimsg","endapi","publish"]
+["strapi","runsql","runjs","mod","condition","iftrue","iffalse","goto","changevar","chgdtaara","rtvdtaara","qsnddtaq","qrcvdtaq","rest","dsppfm","log","substr","map","call","runsqlprc","jsonata","scrops","scrread","scrkeys","sndapimsg","endapi","publish"]

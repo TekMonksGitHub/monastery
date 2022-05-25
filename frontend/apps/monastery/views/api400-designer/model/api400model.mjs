@@ -199,6 +199,7 @@ function _nodeAdded(nodeName, id, properties) {
     else if (nodeName == "jsonata") _findOrCreateCommand().commands.push(node);
     else if (nodeName == "mod") _findOrCreateCommand().commands.push(node);
     else if (nodeName == "endapi") _findOrCreateCommand().commands.push(node);
+    else if (nodeName == "changevar") _findOrCreateCommand().commands.push(node);
 
     node.id = id; idCache[id] = node;   // transfer ID and cache the node
     console.log(api400modelObj);
@@ -237,6 +238,7 @@ function _nodeRemoved(nodeName, id) {
     else if (nodeName == "jsonata") _arrayDelete(api400modelObj.apicl[0].commands, node);
     else if (nodeName == "mod") _arrayDelete(api400modelObj.apicl[0].commands, node);
     else if (nodeName == "endapi") _arrayDelete(api400modelObj.apicl[0].commands, node);
+    else if (nodeName == "changevar") _arrayDelete(api400modelObj.apicl[0].commands, node);
 
     delete idCache[id]; // uncache
     return true;
