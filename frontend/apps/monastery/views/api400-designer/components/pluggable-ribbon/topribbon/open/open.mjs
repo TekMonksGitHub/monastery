@@ -84,7 +84,7 @@ async function _getFromServer() {
 
 async function apiclParser(data) {
     xCounter = 100;
-    yCounter = 30;
+    yCounter = 80;
     let dependencies = [];
     let counter = 1;
     const apicl = JSON.parse(data);
@@ -93,7 +93,8 @@ async function apiclParser(data) {
     for (let key in apicl) {
         modelObject = await _parseCommand(apicl[key], counter++, dependencies);
         result.push(modelObject)
-    }
+    } 
+       
     let resolvedPromises = await Promise.all(result)
     return { "apicl": [{ "commands": resolvedPromises, "name": "commands", "id": counter }] }
 }
@@ -104,6 +105,7 @@ const _parseCommand = async function (command, counter, dependencies) {
     let cmd = command.split(' ');
     let nodeName = cmd[0].toLowerCase();
     if (nodeName == "runjs" && _patternMatch(command, /MOD\(([^)]+)\)/, 0) != "") nodeName = "mod";
+    if (nodeName == "if") nodeName = "condition";
     if (nodeName == 'chgvar') {
         let nodenameAsSubCmd = await _checkChgvarSubCommand(command);
         nodeNameAsSubCmd = nodenameAsSubCmd.toLowerCase() || nodeName;
@@ -128,15 +130,17 @@ const _parseCommand = async function (command, counter, dependencies) {
     else if (nodeName == 'runsqlprc') { ret = await _parseRunsqlprc(command) }
     else if (nodeName == 'map') { ret = await _parseMap(command, isThisSubCmd) }
     else if (nodeName == 'substr') { ret = await _parseSubstr(command, isThisSubCmd) }
-    else if (nodeName == 'chgvar') { ret = await _parseChgvar(command) }
+ //   else if (nodeName == 'chgvar') { ret = await _parseChgvar(command) }
     else if (nodeName == 'runsql') { ret = await _parseRunsql(command, isThisSubCmd) }
     else if (nodeName == 'runjs') { ret = await _parseRunjs(command, isThisSubCmd) }
     else if (nodeName == 'mod') { ret = await _parseMod(command) }
     else if (nodeName == 'endapi') { ret = await _parseEndapi()}
-
-    ret["id"] = _getUniqueID()
+    else if (nodeName == 'changevar') { ret = await _parseChangeVariable(command)}
+    else if (nodeName == 'condition') { ret = await _parseIfCondition(command)}
+    ret["id"] = _getUniqueID();
     dependencies.push(ret.id);
     if (counter >= 2) {
+        if(xCounter%1200==0 && yCounter%80 == 0){ xCounter=100;yCounter=yCounter+80};
         ret["dependencies"] = _putDependency(dependencies[counter - 2]);
         ret["x"] = xCounter;
         ret["y"] = yCounter;
@@ -168,6 +172,24 @@ const _parseEndapi = async function () {
     ret["description"] = "Endapi";
     return ret;
 };
+const _parseIfCondition = async function (command) {
+    let ret = {};
+    ret["nodeName"] = "condition";
+    ret["condition"] = _patternMatch(command, /COND\(([^)]+)\)/, 0);
+    let iftrue,iffalse='';
+    if(command.includes("ELSE")){
+    let getThen = command.match(/THEN\(.+\)/)[0].split("ELSE")[0].trim();
+     iftrue = _subStrUsingLastIndex(getThen, "THEN(", ")");
+     iffalse = _subStrUsingLastIndex(command, "ELSE(", ")");
+    }
+    else iftrue = _subStrUsingLastIndex(command, "THEN(", ")");
+    console.log(iftrue);
+    console.log(iffalse);
+    ret["description"] = "Condition";
+    console.log(ret);
+    return ret;
+};
+
 
 const _parseCall = async function (command) {
     let ret = {};
@@ -262,6 +284,15 @@ const _parseChgvar = async function (command) {
     ret["listbox"] =JSON.stringify([[_patternMatch(command, /VAR\(([^)]+)\)/, 0), _patternMatch(command, /VALUE\(([^)]+)\)/, 0)]]);
     return ret;
 };
+const _parseChangeVariable = async function (command) {
+    let ret = {};
+    ret["nodeName"] = "chgvar";
+    ret["description"] = "Chgvar";
+    ret["variable"] =_patternMatch(command, /VAR\(([^)]+)\)/, 0);
+    ret["value"] = _patternMatch(command, /VALUE\(([^)]+)\)/, 0)
+    return ret;
+};
+
 
 const _parseRtvdtaara = async function (command) {
     let ret = {};
@@ -306,7 +337,7 @@ const _parseScr = async function (command, isThisSubCmd) {
     let subCmdVar, readParams, keysParams;
     if (isThisSubCmd) {
         // convert it as subcommand
-        ret["result"] = _subStrUsingNextIndex(command, "VAR(", ")").slice(1);
+        ret["result"] = _subStrUsingNextIndex(command, "VAR(", ")");
         subCmdVar = _subStrUsingLastIndex(command, "VALUE(", ")")
     }
     subCmdVar = (subCmdVar) ? subCmdVar : command;
@@ -389,10 +420,6 @@ const _parseMap = async function (command, isThisSubCmd) {
         }
         mapArr.push(values);
     });
-
-    console.log(mapArr);
-    console.log(tuples);
-
     ret["listbox"] = JSON.stringify(mapArr);
     ret["nodeName"] = "map";
     ret["description"] = "Map";
