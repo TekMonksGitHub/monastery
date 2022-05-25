@@ -4,7 +4,7 @@
  * License: See enclosed LICENSE file.
  */
 import { util } from "/framework/js/util.mjs";
-let apicl = {}, goto = [], nodeAlreadyAdded = [];
+let apicl = {}, goto = [], nodeAlreadyAdded = [], nodeToAddLater = [];
 const DIALOG = window.monkshu_env.components["dialog-box"];
 
 /**
@@ -66,41 +66,60 @@ const _arrayDelete = (array, element) => { if (array.includes(element)) array.sp
 const convertIntoAPICL = function (nodes) {
 
     apicl = {};
+    let cmdString,addLaterflag;
+    let laterAPICLCmd = {};
     for (const node of nodes) {
 
+        cmdString = '';
+        addLaterflag=0;
         console.log(node);
         console.log(node.nodeName);
-        if (node.nodeName == 'strapi') { apicl[node.id] = _convertForStrapi(node) }
-        else if (node.nodeName == 'runsql' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForRunsql(node) }
-        else if (node.nodeName == 'runjs' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForRunjs(node) }
-        else if (node.nodeName == 'sndapimsg' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForSndapimsg(node) }
+        if(nodeToAddLater.includes(node.id)) { addLaterflag = 1; }
+
+        if (node.nodeName == 'strapi') { cmdString = _convertForStrapi(node) }
+        else if (node.nodeName == 'runsql' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForRunsql(node) }
+        else if (node.nodeName == 'runjs' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForRunjs(node) }
+        else if (node.nodeName == 'sndapimsg' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForSndapimsg(node) }
         else if (node.nodeName == 'chgvar' && !nodeAlreadyAdded.includes(node.id)) { _convertForChgvar(node) }
-        else if (node.nodeName == 'condition') { apicl[node.id] = _convertForCondition(node, nodes) }
-        else if (node.nodeName == 'goto' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForGoto(node, nodes) }
-        else if (node.nodeName == 'endapi') { apicl[node.id] = _convertForEndapi(node) }
-        else if (node.nodeName == 'chgdtaara' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForChgdtaara(node) }
-        else if (node.nodeName == 'rtvdtaara' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForRtvdtaara(node) }
-        else if (node.nodeName == 'qrcvdtaq' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForQrcvdtaq(node) }
-        else if (node.nodeName == 'qsnddtaq' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForQsnddtaq(node) }
-        else if (node.nodeName == 'dsppfm' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForDsppfm(node) }
-        else if (node.nodeName == 'log' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForLog(node) }
-        else if (node.nodeName == 'call' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForCall(node) }
-        else if (node.nodeName == 'runsqlprc' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForRunsqlprc(node) }
-        else if (node.nodeName == 'rest' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForRest(node) }
-        else if (node.nodeName == 'jsonata' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForJsonata(node) }
-        else if (node.nodeName == 'map' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForMap(node) }
-        else if (node.nodeName == 'scrread' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForScrread(node) }
-        else if (node.nodeName == 'scrkeys' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForScrkeys(node) }
-        else if (node.nodeName == 'scrops' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForScrops(node) }
-        else if (node.nodeName == 'mod' && !nodeAlreadyAdded.includes(node.id)) { apicl[node.id] = _convertForMod(node) }
+        else if (node.nodeName == 'condition') { cmdString = _convertForCondition(node, nodes) }
+        else if (node.nodeName == 'goto' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForGoto(node, nodes) }
+        else if (node.nodeName == 'endapi') { cmdString = _convertForEndapi(node) }
+        else if (node.nodeName == 'chgdtaara' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForChgdtaara(node) }
+        else if (node.nodeName == 'rtvdtaara' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForRtvdtaara(node) }
+        else if (node.nodeName == 'qrcvdtaq' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForQrcvdtaq(node) }
+        else if (node.nodeName == 'qsnddtaq' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForQsnddtaq(node) }
+        else if (node.nodeName == 'dsppfm' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForDsppfm(node) }
+        else if (node.nodeName == 'log' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForLog(node) }
+        else if (node.nodeName == 'call' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForCall(node) }
+        else if (node.nodeName == 'runsqlprc' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForRunsqlprc(node) }
+        else if (node.nodeName == 'rest' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForRest(node) }
+        else if (node.nodeName == 'jsonata' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForJsonata(node) }
+        else if (node.nodeName == 'map' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForMap(node) }
+        else if (node.nodeName == 'scrread' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForScrread(node) }
+        else if (node.nodeName == 'scrkeys' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForScrkeys(node) }
+        else if (node.nodeName == 'scrops' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForScrops(node) }
+        else if (node.nodeName == 'mod' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForMod(node) }
         else if (node.nodeName == 'substr') { _convertForSubstr(node) }
+        else if (node.nodeName == 'changevar' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForChangeVar(node) }
+
+        if (cmdString!='') {
+            if (addLaterflag) { laterAPICLCmd[node.id] = cmdString; } 
+            else { apicl[node.id] = cmdString; }   
+        }
+
+        console.log(apicl);
+        console.log(laterAPICLCmd);
 
     }
+
+    console.log(laterAPICLCmd);
+    apicl = Object.assign(apicl,laterAPICLCmd);
     console.log(apicl);
     console.log('Sorting Indexing');
     apicl = _sortIndexing(apicl);
     console.log(apicl);
 
+    
     return apicl;
 };
 
@@ -158,7 +177,6 @@ const _convertForChgvar = function (node) {
                 cmdString = cmdString.replace(`VAR()`, `VAR(${variableObj[0].trim()})`);
                 cmdString = cmdString.replace(`VALUE()`, `VALUE(${variableObj[1].trim()})`);
                 apicl[`${node.id}_${count++}`] = cmdString;
-                console.log(cmdString);
             }
         }
 };
@@ -166,7 +184,8 @@ const _convertForChgvar = function (node) {
 const _convertForCondition = function (node, nodes) {
 
     let nextIdentifiedNodeObj;
-    let cmdString = `IF COND(${node.condition || ''})`;
+    let cmdString = [];
+    cmdString[0] = `IF COND(${node.condition || ''})`;
     for (const nodeObj of nodes) {
         if (nodeObj.dependencies && nodeObj.dependencies.length > 0) {
             if (nodeObj.dependencies.includes(node.id)) {
@@ -176,8 +195,10 @@ const _convertForCondition = function (node, nodes) {
                     nextIdentifiedNodeObj = _checkNodeInAllNodes(nodeObj, nodes);
                     if (nextIdentifiedNodeObj) {
                         let subCmdStr = '';
+                        console.log(nodeObj);
+                        console.log(nextIdentifiedNodeObj);
                         if (nextIdentifiedNodeObj.nodeName == 'runsql') { subCmdStr = _convertForRunsql(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'goto') { subCmdStr = _convertForGoto(nextIdentifiedNodeObj, nodes); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'goto') { subCmdStr = _convertForGoto(nextIdentifiedNodeObj, nodes); _saveNextNodeIdsInFlow(nextIdentifiedNodeObj,nodes); }
                         else if (nextIdentifiedNodeObj.nodeName == 'scrops') { subCmdStr = _convertForScrops(nextIdentifiedNodeObj); }
                         else if (nextIdentifiedNodeObj.nodeName == 'runjs') { subCmdStr = _convertForRunjs(nextIdentifiedNodeObj); }
                         else if (nextIdentifiedNodeObj.nodeName == 'scrkeys') { subCmdStr = _convertForScrkeys(nextIdentifiedNodeObj); }
@@ -196,7 +217,9 @@ const _convertForCondition = function (node, nodes) {
                         else if (nextIdentifiedNodeObj.nodeName == 'chgdtaara') { subCmdStr = _convertForChgdtaara(nextIdentifiedNodeObj); }
                         else if (nextIdentifiedNodeObj.nodeName == 'sndapimsg') { subCmdStr = _convertForSndapimsg(nextIdentifiedNodeObj); }
                         else if (nextIdentifiedNodeObj.nodeName == 'mod') { subCmdStr = _convertForMod(nextIdentifiedNodeObj); }
-                        cmdString = cmdString.concat(` ${isThenElse}( ${subCmdStr})`);
+                        else if (nextIdentifiedNodeObj.nodeName == 'changevar') { subCmdStr = _convertForChangeVar(nextIdentifiedNodeObj); }
+                        // cmdString = cmdString.concat(` ${isThenElse}( ${subCmdStr})`);
+                        (nodeObj.nodeName == 'iftrue') ? cmdString[1] = ` ${isThenElse}( ${subCmdStr})` : cmdString[2] = ` ${isThenElse}( ${subCmdStr})`;
                         nodeAlreadyAdded.push(nextIdentifiedNodeObj.id);
                     }
                     else
@@ -206,8 +229,20 @@ const _convertForCondition = function (node, nodes) {
         }
     }
 
-    return cmdString;
+    return cmdString.join(' ');
 };
+
+
+const _saveNextNodeIdsInFlow = function (nodeObj,nodes) {
+
+    let nextNodeObj = _checkNodeInAllNodes(nodeObj, nodes);
+    if (nextNodeObj && nextNodeObj.id ) {
+        nodeToAddLater.push(nextNodeObj.id);
+        _saveNextNodeIdsInFlow(nextNodeObj,nodes);
+    } else {
+        return;
+    }
+}    
 
 const _checkNodeInAllNodes = function (node, allnodes) {
 
@@ -362,6 +397,12 @@ const _convertForSubstr = function (node) {
             }
         }
 };
+
+const _convertForChangeVar = function (node) {
+    return `CHGVAR     VAR(${node.variable ? node.variable.trim():'' })    VALUE(${node.value?node.value.trim():''})`;
+};
+
+
 
 const _sortIndexing = function (apicl) {
 
