@@ -9,7 +9,8 @@ import { serverManager } from "../../../../js/serverManager.js";
 import { page_generator } from "/framework/components/page-generator/page-generator.mjs";
 
 let xCounter, yCounter,counter=0,dependencies=[],result = [];
-let apicl={};
+let apicl={},commandCounter = [];
+;
 
 const PLUGIN_PATH = util.getModulePath(import.meta), MSG_FILE_UPLOADED = "FILE_UPLOADED",
     CONTEXT_MENU = window.monkshu_env.components["context-menu"], CONTEXT_MENU_ID = "contextmenumain",
@@ -87,6 +88,7 @@ async function apiclParser(data) {
     xCounter = 100;
     yCounter = 80;
     dependencies = [];
+    commandCounter = [];
     
     apicl = JSON.parse(data);
     let modelObject;
@@ -94,7 +96,7 @@ async function apiclParser(data) {
     for (let key in apicl) {
         console.log(apicl[key]);
         modelObject = await _parseCommand(apicl[key], counter++, dependencies);
-        if (modelObject && modelObject.nodeName) { result.push(modelObject) }
+        if (modelObject && modelObject.nodeName) {  result.push(modelObject) }
     } 
        
     console.log(result);
@@ -103,9 +105,16 @@ async function apiclParser(data) {
     return { "apicl": [{ "commands": resolvedPromises, "name": "commands", "id": counter }] }
 }
 
+const _addCommandCount = function (command) {
+    console.log(commandCounter);
+    commandCounter[command] = (commandCounter[command]>=1) ? ++commandCounter[command] : 1; 
+    return commandCounter[command];
+
+}
+
 const _parseCommand = async function (command, counter, dependencies) {
     
-    let ret = {}, nodeNameAsSubCmd = '';
+    let ret = {}, nodeNameAsSubCmd = '', attr;
     let cmd = command.split(' ');
     let nodeName = cmd[0].toLowerCase();
     if (nodeName == "runjs" && _patternMatch(command, /MOD\(([^)]+)\)/, 0) != "") nodeName = "mod";
@@ -118,7 +127,7 @@ const _parseCommand = async function (command, counter, dependencies) {
     nodeName = (nodeNameAsSubCmd) ? nodeNameAsSubCmd : nodeName;
 
     ret["nodeName"] = nodeName;
-    ret["description"] = nodeName.charAt(0).toUpperCase() + nodeName.slice(1).toLowerCase();
+    
 
     if (nodeName == 'strapi' || nodeName == 'sndapimsg') { ret["listbox"] = await _parseStrapi(command) }
     else if (nodeName == 'scr') { ret = await _parseScr(command, isThisSubCmd) }
@@ -144,16 +153,18 @@ const _parseCommand = async function (command, counter, dependencies) {
     else if (nodeName == 'iftrue') { ret = await _parseIfTrue(command)}
     else if (nodeName == 'iffalse') { ret = await _parseIfFalse(command)}
 
-    let attr = await _setAttribute(command);
+    if (ret && ret.nodeName) { attr = await _setAttribute(ret.nodeName); }
     console.log({ ...ret, ...attr });
     return { ...ret, ...attr };
 }
 
-const _setAttribute = async function (command) {
-    console.log(command)
-    console.log(counter);
+const _setAttribute = async function (nodeName) {
     let attribute={};
+    let description = nodeName.charAt(0).toUpperCase() + nodeName.slice(1).toLowerCase();
     attribute["id"] = _getUniqueID();
+    if (description == 'Iftrue'||description == 'Iffalse') {  attribute["description"] = description;
+    } else { attribute["description"] = `${description}${_addCommandCount(description)}`;  }
+
     dependencies.push(attribute.id);
     
     if (counter >= 2) {
@@ -193,8 +204,9 @@ const _parseIfCondition = async function (command) {
     let ret = {};
     ret["nodeName"] = "condition";
     ret["condition"] = _patternMatch(command, /COND\(([^)]+)\)/, 0);
-    ret["description"] = "Condition";
-    let attr = await _setAttribute(command);
+    ret["description"] = `Condition${_addCommandCount(ret["nodeName"])}`;
+
+    let attr = await _setAttribute("condition");
     console.log({ ...ret, ...attr });
     result.push({ ...ret, ...attr });
 
