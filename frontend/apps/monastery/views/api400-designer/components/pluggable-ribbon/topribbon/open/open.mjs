@@ -9,7 +9,7 @@ import { serverManager } from "../../../../js/serverManager.js";
 import { page_generator } from "/framework/components/page-generator/page-generator.mjs";
 
 let xCounter, yCounter,counter=0,dependencies=[],result = [];
-let apicl={},commandCounter = [];
+let apicl={},initAPICL={},commandCounter = [];
 ;
 
 const PLUGIN_PATH = util.getModulePath(import.meta), MSG_FILE_UPLOADED = "FILE_UPLOADED",
@@ -89,30 +89,57 @@ async function apiclParser(data) {
     yCounter = 80;
     dependencies = [];
     commandCounter = [];
+    initAPICL = {};
     
     apicl = JSON.parse(data);
+    initAPICL = _initializeAPICLIndex(JSON.parse(data));
+    console.log(initAPICL);
     let modelObject;
     result = [];
-    for (let key in apicl) {
-        console.log(apicl[key]);
-        modelObject = await _parseCommand(apicl[key], counter++, dependencies);
-        if (modelObject && modelObject.nodeName) {  result.push(modelObject) }
+    for (let key in apicl) {    
+        console.log(initAPICL);    
+        if (!initAPICL[key]) {
+            console.log(apicl[key]);
+            modelObject = await _parseCommand(apicl[key], counter++, dependencies,key);
+            console.log("modelObject"); console.log(modelObject);
+            console.log("modelObject length"); console.log(Object.keys(modelObject).length);
+            if (Object.keys(modelObject).length>0) { result.push(modelObject); initAPICL[key] = true; }
+            
+        }
+        console.log(result);
     } 
-       
+    console.log("After For Loop");
     console.log(result);
     let resolvedPromises = await Promise.all(result)
+    let finalCommands = _correctAPICL(resolvedPromises);
+
     counter=0;
-    return { "apicl": [{ "commands": resolvedPromises, "name": "commands", "id": counter }] }
+    return { "apicl": [{ "commands": finalCommands, "name": "commands", "id": counter }] }
+}
+
+const _correctAPICL = function (result) {
+    
+    let finalAPICL = [];
+    for (let key in result) {  if (Object.keys(result[key]).length>0) { finalAPICL.push(result[key]); } }
+    console.log("finalAPICL"); console.log(finalAPICL); 
+    return finalAPICL;
+}
+
+const _initializeAPICLIndex = function (initApicl) {
+    for (let key in initApicl) {
+        initApicl[key] = false;
+    } 
+    return initApicl;
 }
 
 const _addCommandCount = function (command) {
-    console.log(commandCounter);
     commandCounter[command] = (commandCounter[command]>=1) ? ++commandCounter[command] : 1; 
     return commandCounter[command];
 
 }
 
-const _parseCommand = async function (command, counter, dependencies) {
+const _parseCommand = async function (command, counter, dependencies,key) {
+
     
     let ret = {}, nodeNameAsSubCmd = '', attr;
     let cmd = command.split(' ');
@@ -149,12 +176,12 @@ const _parseCommand = async function (command, counter, dependencies) {
     else if (nodeName == 'mod') { ret = await _parseMod(command) }
     else if (nodeName == 'endapi') { ret = await _parseEndapi()}
     else if (nodeName == 'chgvar') { ret = await _parseChangeVariable(command)}
-    else if (nodeName == 'condition') { ret = await _parseIfCondition(command)}
+    else if (nodeName == 'condition') { ret = await _parseIfCondition(command,key)}
     else if (nodeName == 'iftrue') { ret = await _parseIfTrue(command)}
     else if (nodeName == 'iffalse') { ret = await _parseIfFalse(command)}
+    else if (nodeName == 'goto') { ret = await _parseGoto(command)}
 
     if (ret && ret.nodeName) { attr = await _setAttribute(ret.nodeName); }
-    console.log({ ...ret, ...attr });
     return { ...ret, ...attr };
 }
 
@@ -200,15 +227,40 @@ const _parseEndapi = async function () {
     ret["description"] = "Endapi";
     return ret;
 };
-const _parseIfCondition = async function (command) {
+const _parseGoto = async function (command) {
+    let ret = {};
+
+    let gotoIndex = command.split(/\s+/)[1];
+    console.log(`Goto Index : ${gotoIndex}`);
+
+    if (gotoIndex) {
+        ret["nodeName"] = "goto";
+        ret["description"] = `Goto${_addCommandCount(ret["nodeName"])}`;
+        let attr = await _setAttribute("goto");
+        result.push({ ...ret, ...attr });
+        let i=gotoIndex;
+        do {
+            console.log(apicl[i]);
+            let object = await _parseCommand(apicl[i], counter++, dependencies);
+            console.log(object);
+            console.log(object);
+            if (object && object.nodeName) { 
+                result.push(object); initAPICL[i] = true; 
+            }
+            console.log(initAPICL);
+        } while(apicl[i] && apicl[i++]!='ENDAPI');
+    }
+};
+
+const _parseIfCondition = async function (command,key) {
     let ret = {};
     ret["nodeName"] = "condition";
     ret["condition"] = _patternMatch(command, /COND\(([^)]+)\)/, 0);
     ret["description"] = `Condition${_addCommandCount(ret["nodeName"])}`;
 
     let attr = await _setAttribute("condition");
-    console.log({ ...ret, ...attr });
     result.push({ ...ret, ...attr });
+    initAPICL[key] = true; 
 
     let iftrue='',iffalse='';
     if(command.includes("ELSE")){
@@ -226,6 +278,8 @@ const _parseIfCondition = async function (command) {
         result.push(await _parseCommand("iffalse", counter++, dependencies)); 
         result.push(await _parseCommand(iffalse, counter++, dependencies)); 
     }
+
+    return {};
 };
 
 
