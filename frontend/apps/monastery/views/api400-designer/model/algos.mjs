@@ -13,7 +13,6 @@ const DIALOG = window.monkshu_env.components["dialog-box"];
 * @returns The sorted graph in which they have the connection , {id:, dependencies:[array_of_ids]}
 */
 function sortDependencies(nodes) {
-    console.log(nodes);
 
     const nodesToWorkOn = util.clone(nodes.commands), sortedSet = [], stopNodeIds = [], futureCurrentNode = [];
     let nextCurrentNodeId;
@@ -32,24 +31,24 @@ function sortDependencies(nodes) {
             _arrayDelete(futureCurrentNode, futureCurrentNode[0]);
         }
         for (let nodeIn of nodesToWorkOn) {
-            console.log("currentNodeId : ", currentNodeId, " | nodeName : ", nodeIn.nodeName, " | dependencies : ", nodeIn.dependencies, " | nodeIn.id : ", nodeIn.id);
-            console.log("icopunter", icounter, "dependencyCheck", dependencyCheck);
             if (nodeIn.dependencies?.includes(currentNodeId)) {
                 if (nodeIn.dependencies.length > 1) {
-                    console.log("- more than 2 dependencies -");
+                    //- more than 2 dependencies 
                     if (stopNodeIds.indexOf(nodeIn.id) === -1) { stopNodeIds.push(nodeIn.id); }
                 }
                 if (flag == 1) { futureCurrentNode.push(nodeIn); icounter.push(i); }
                 else { sortedSet.push(nodeIn); nextCurrentNodeId = nodeIn.id; flag = 1; }
-                console.log("futureCurrentNode = ", futureCurrentNode[0], "stopNodeIds = ", stopNodeIds);
                 dependencyCheck = 1;
             }
         }
         if (icounter && icounter.length > 0 && dependencyCheck == 0) {
             i = icounter[0]; _arrayDelete(icounter, i);
-            sortedSet.push(futureCurrentNode[0]);
-            nextCurrentNodeId = futureCurrentNode[0].id;
-            _arrayDelete(futureCurrentNode, futureCurrentNode[0]);
+            if (futureCurrentNode[0] && futureCurrentNode[0].id) {
+                sortedSet.push(futureCurrentNode[0]);
+                nextCurrentNodeId = futureCurrentNode[0].id;
+                _arrayDelete(futureCurrentNode, futureCurrentNode[0]);
+            }
+            
         }
     }
     return sortedSet;
@@ -71,11 +70,8 @@ const convertIntoAPICL = function (nodes) {
     let cmdString, addLaterflag;
 
     for (const node of nodes) {
-       console.log(nodes);
         cmdString = '';
         addLaterflag = 0;
-        console.log(node);
-        console.log(node.nodeName);
         if (nodeToAddLater.includes(node.id)) { addLaterflag = 1; }
 
         if (node.nodeName == 'strapi') { cmdString = _convertForStrapi(node) }
@@ -109,17 +105,11 @@ const convertIntoAPICL = function (nodes) {
             else { apicl[node.id] = cmdString; }
         }
 
-        console.log(apicl);
-        console.log(laterAPICLCmd);
 
     }
 
-    console.log(laterAPICLCmd);
     apicl = Object.assign(apicl, laterAPICLCmd);
-    console.log(apicl);
-    console.log('Sorting Indexing');
     apicl = _sortIndexing(apicl);
-    console.log(apicl);
     laterAPICLCmd = {};
 
     return apicl;
@@ -190,12 +180,11 @@ const _convertForChgvar = function (node) {
 };
 
 const _convertForCondition = function (node, nodes) {
-   console.log(nodes);
     let nextIdentifiedNodeObj;
     let cmdString = [];
     cmdString[0] = `IF COND(${node.condition || ''})`;
     for (const nodeObj of nodes) {
-        if (nodeObj.dependencies && nodeObj.dependencies.length > 0) {
+        if (nodeObj && nodeObj.dependencies && nodeObj.dependencies.length > 0) {
             if (nodeObj.dependencies.includes(node.id)) {
                 if (nodeObj.nodeName == 'iftrue' || nodeObj.nodeName == 'iffalse') {
                     let isThenElse = (nodeObj.nodeName == 'iftrue') ? `THEN` : `ELSE`;
@@ -203,8 +192,6 @@ const _convertForCondition = function (node, nodes) {
                     nextIdentifiedNodeObj = _checkNodeInAllNodes(nodeObj, nodes);
                     if (nextIdentifiedNodeObj) {
                         let subCmdStr = '';
-                        console.log(nodeObj);
-                        console.log(nextIdentifiedNodeObj);
                         if (nextIdentifiedNodeObj.nodeName == 'runsql') { subCmdStr = _convertForRunsql(nextIdentifiedNodeObj); }
                         else if (nextIdentifiedNodeObj.nodeName == 'goto') { subCmdStr = _convertForGoto(nextIdentifiedNodeObj, nodes); _saveNextNodeIdsInFlow(nextIdentifiedNodeObj, nodes); }
                         else if (nextIdentifiedNodeObj.nodeName == 'scrops') { subCmdStr = _convertForScrops(nextIdentifiedNodeObj); }
@@ -256,7 +243,7 @@ const _checkNodeInAllNodes = function (node, allnodes) {
 
     if (allnodes && allnodes.length > 0)
         for (const nodeObj of allnodes) {
-            if (nodeObj.dependencies && nodeObj.dependencies.length > 0) {
+            if (nodeObj && nodeObj.dependencies && nodeObj.dependencies.length > 0) {
                 if (nodeObj.dependencies.includes(node.id)) {
                     return nodeObj;
                 }
