@@ -60,7 +60,9 @@ function loadModel(jsonModel) {
 }
 
 function modelNodesModified(type, nodeName, id, properties) {
-
+    console.log(nodeName);
+    console.log(id);
+    console.log(properties);
     if (type == api400model.ADDED) return _nodeAdded(nodeName, id, properties);
     if (type == api400model.REMOVED) return _nodeRemoved(nodeName, id);
     if (type == api400model.MODIFIED) return _nodeModified(nodeName, id, properties);
@@ -139,9 +141,9 @@ function runJsMod() {
             nameAndJs.push(command.code);
             nameAndJsArray.push(nameAndJs)
         }
-       
+
     }
-     return nameAndJsArray;
+    return nameAndJsArray;
 }
 const getModelAsFile = name => {
     return { data: JSON.stringify(getModel(), null, 4), mime: "application/json", filename: `${name || "api400api"}.apicl` }
@@ -164,12 +166,8 @@ function _findOrCreateCommand(name = current_rule_bundle, forceNew) {
 const _findAndDeleteCommand = (name = current_rule_bundle) => _arrayDelete(api400modelObj.rule_bundles, _findOrCreateCommand(name));
 
 function _nodeAdded(nodeName, id, properties) {
-    console.log(nodeName);
-    console.log(id);
-    console.log(properties);
     const node = idCache[id] ? idCache[id] : JSON.parse(JSON.stringify(properties)); node.nodeName = nodeName;
     if (idCache[id]) { _nodeModified(nodeName, id, properties); return; }  // node properties modified
-    console.log(nodeName, id, properties, node);
     const name = _getNameFromDescription(node.description);
 
     if (nodeName == "rule") _findOrCreateCommand().commands.push(node);
@@ -218,7 +216,6 @@ function _nodeRemoved(nodeName, id) {
     else if (nodeName == "goto") _arrayDelete(api400modelObj.apicl[0].commands, node);
     else if (nodeName == "chgvar") _arrayDelete(api400modelObj.apicl[0].commands, node);
     else if (nodeName == "sndapimsg") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "condition") _arrayDelete(api400modelObj.apicl[0].commands, node);
     else if (nodeName == "iftrue") _arrayDelete(api400modelObj.apicl[0].commands, node);
     else if (nodeName == "iffalse") _arrayDelete(api400modelObj.apicl[0].commands, node);
     else if (nodeName == "chgdtaara") _arrayDelete(api400modelObj.apicl[0].commands, node);
@@ -239,14 +236,11 @@ function _nodeRemoved(nodeName, id) {
     else if (nodeName == "mod") _arrayDelete(api400modelObj.apicl[0].commands, node);
     else if (nodeName == "endapi") _arrayDelete(api400modelObj.apicl[0].commands, node);
     else if (nodeName == "changevar") _arrayDelete(api400modelObj.apicl[0].commands, node);
-
+    else if (nodeName == "condition")   _arrayDelete(api400modelObj.apicl[0].commands, node) 
     delete idCache[id]; // uncache
     return true;
 }
-
 function _nodeModified(nodeName, id, properties) {
-    console.log("_nodeModified");
-    console.log(nodeName, id, properties, idCache);
     let parameters, variables, scrProperties = [];
     if (!idCache[id]) return false; // we don't know of this node
     for (const key in properties) { // transfer the new properties, CSVs need the CSV scheme added
@@ -281,7 +275,9 @@ function _getSheetTabData(sheetProperties, tabName) {
     return null;
 }
 
-const _arrayDelete = (array, element) => { if (array.includes(element)) array.splice(array.indexOf(element), 1); return element; }
+const _arrayDelete = (array, element) => {
+    if (array.includes(element)) array.splice(array.indexOf(element), 1); return element;
+}
 
 const _getNameFromDescription = description => description.split(" ")[0].split("\n")[0];
 

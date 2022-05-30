@@ -2,7 +2,7 @@ SCHEMA
 ======
 {
   "toolbox":{"html":"tool-box",
-            "onclickHandler":"window.monkshu_env.components['tool-box'].addChgvarElement('Variable','Value')",
+            "onclickHandler":"window.monkshu_env.components['text-box'].addTwoTextBox('Variable','Value')",
             "onclickRemoveHandler":"window.monkshu_env.components['tool-box'].removeElement()",
             "text":"{{i18n.Variables}}",
             "style":"width:100%; height: 100%;"},

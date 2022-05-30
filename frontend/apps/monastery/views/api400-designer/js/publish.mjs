@@ -36,7 +36,8 @@ async function openDialog() {
             const jsModule = api400model.runJsMod()
             if(jsModule.length!=0){
                 const pubModResult = await serverManager.publishModule( result.name, result.server, result.port, result.adminid, result.adminpassword);
-                if (!pubModResult.result) DIALOG.showError(dialogElement, await i18n.get(pubModResult.key)); 
+                if (!pubModResult.result) {DIALOG.showError(dialogElement, await i18n.get(pubModResult.key));  return null;}
+               
             }
            const pubResult = await serverManager.publishApicl(model, result.name, result.server, result.port, result.adminid, result.adminpassword);
             blackboard.broadcastMessage(MSG_RENAME_MODEL, {name: result.name});

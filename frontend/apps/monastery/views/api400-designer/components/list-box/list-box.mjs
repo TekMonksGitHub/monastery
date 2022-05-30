@@ -13,14 +13,12 @@ const DIALOG_HOST_ID = "__org_monkshu_dialog_box";
 
 const elementConnected = async (element) => {
   Object.defineProperty(element, "value", { get: (_) => _getValue(element, element.getAttribute("type")), set: (value) => _setValue(value, element.getAttribute("type")) });
-
 };
 
 async function elementRendered(element) {
   const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
   const parentContainer = dialogShadowRoot.querySelector("div#page-contents");
   const noOfElements = parentContainer.children.length;
-  // let values;
 
   if (element.getAttribute("value")) {
     let values;
@@ -35,13 +33,13 @@ async function elementRendered(element) {
     else if (values && values.length && element.getAttribute("type") == "Read") _setValue(values, element.getAttribute("type"))
   }
   else {
-    if (element.getAttribute("type") == "Parameter" && noOfElements < 1) window.monkshu_env.components['tool-box'].addElement(element.getAttribute('type'));
-    else if (element.getAttribute("type") == "Message" && noOfElements < 1) window.monkshu_env.components['tool-box'].addElement(element.getAttribute('type'));
-    else if (element.getAttribute("type") == "Variable" && noOfElements < 1) window.monkshu_env.components['tool-box'].addChgvarElement('Variable', 'Value',);
-    else if (element.getAttribute("type") == "Sub Strings" && noOfElements < 1) window.monkshu_env.components['tool-box'].addSubstrElement();
-    else if (element.getAttribute("type") == "Map" && noOfElements < 1) window.monkshu_env.components['tool-box'].addMapElement();
-    else if (element.getAttribute("type") == "Keys" && noOfElements < 1) window.monkshu_env.components['tool-box'].addScrKeysElement();
-    else if (element.getAttribute("type") == "Read" && noOfElements < 1) window.monkshu_env.components['tool-box'].addScrReadElement();
+    if (element.getAttribute("type") == "Parameter" && noOfElements < 1) window.monkshu_env.components['text-box'].addTextBox(element.getAttribute('type'));
+    else if (element.getAttribute("type") == "Message" && noOfElements < 1) window.monkshu_env.components['text-box'].addTextBox(element.getAttribute('type'));
+    else if (element.getAttribute("type") == "Variable" && noOfElements < 1) window.monkshu_env.components['text-box'].addTwoTextBox('Variable', 'Value',);
+    else if (element.getAttribute("type") == "Sub Strings" && noOfElements < 1) window.monkshu_env.components['text-box'].addTextBoxesForSubstr();
+    else if (element.getAttribute("type") == "Map" && noOfElements < 1) window.monkshu_env.components['text-box'].addTextBoxesForMap();
+    else if (element.getAttribute("type") == "Keys" && noOfElements < 1) window.monkshu_env.components['text-box'].addTextBoxesForScrKeys();
+    else if (element.getAttribute("type") == "Read" && noOfElements < 1) window.monkshu_env.components['text-box'].addTextBoxesForScrRead();
   }
 }
 
@@ -52,42 +50,40 @@ function _getValue(host, type) {
 }
 
 function _setValue(values, type) {
-  console.log(values);
-
   if (type == "Variable") {
     for (const textBoxValue of values) {
       if (textBoxValue.some(value => value != ""))
-        window.monkshu_env.components['tool-box'].addChgvarElement('Variable', 'Value', textBoxValue[0], textBoxValue[1]);
+        window.monkshu_env.components['text-box'].addTwoTextBox('Variable', 'Value', textBoxValue[0], textBoxValue[1]);
     }
   }
   else if (type == "Sub Strings") {
     for (const textBoxValue of values) {
       if (textBoxValue.some(value => value != ""))
-        window.monkshu_env.components['tool-box'].addSubstrElement(textBoxValue[0], textBoxValue[1], textBoxValue[2], textBoxValue[3]);
+        window.monkshu_env.components['text-box'].addTextBoxesForSubstr(textBoxValue[0], textBoxValue[1], textBoxValue[2], textBoxValue[3]);
     }
   }
   else if (type == "Map") {
     for (const textBoxValue of values) {
       if (textBoxValue.some(value => value != ""))
-        window.monkshu_env.components['tool-box'].addMapElement(textBoxValue[0], textBoxValue[1], textBoxValue[2], textBoxValue[3], textBoxValue[4]);
+        window.monkshu_env.components['text-box'].addTextBoxesForMap(textBoxValue[0], textBoxValue[1], textBoxValue[2], textBoxValue[3], textBoxValue[4]);
     }
   }
   else if (type == "Keys") {
     for (const textBoxValue of values) {
       if (textBoxValue.some(value => value != ""))
-        window.monkshu_env.components['tool-box'].addScrKeysElement(textBoxValue[0], textBoxValue[1], textBoxValue[2]);
+        window.monkshu_env.components['text-box'].addTextBoxesForScrKeys(textBoxValue[0], textBoxValue[1], textBoxValue[2]);
     }
   }
   else if (type == "Read") {
     for (const textBoxValue of values) {
       if (textBoxValue.some(value => value != ""))
-        window.monkshu_env.components['tool-box'].addScrReadElement(textBoxValue[0], textBoxValue[1], textBoxValue[2], textBoxValue[3]);
+        window.monkshu_env.components['text-box'].addTextBoxesForScrRead(textBoxValue[0], textBoxValue[1], textBoxValue[2], textBoxValue[3]);
     }
   }
   else {
     for (const textBoxValue of values) {
       if (textBoxValue != '')
-        window.monkshu_env.components['tool-box'].addElement(type, textBoxValue);
+        window.monkshu_env.components['text-box'].addTextBox(type, textBoxValue);
     }
   }
 

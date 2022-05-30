@@ -6,7 +6,8 @@
 import { apimanager as apiman } from "/framework/js/apimanager.mjs";
 import { open } from "../components/pluggable-ribbon/topribbon/open/open.mjs"
 import { api400model } from "../model/api400model.mjs";
-import { openserverhelper } from "./openserverhelper.mjs"
+import { openserverhelper } from "./openserverhelper.mjs";
+
 /**
  * Returns the list of models present on the server
  * @param {string} server Server IP or Hostname
@@ -95,7 +96,6 @@ async function publishApicl(model, name, server, port, user, password) {
         };
     } catch (err) { return { result: false, err: "Server connection issue", raw_err: err, key: "ConnectIssue" } }
 
-
 }
 
 async function _loginToServer(server, port, adminid, adminpassword) {
@@ -117,7 +117,7 @@ async function _loginToServer(server, port, adminid, adminpassword) {
 
 async function getModule(name) {
     let serverDetails = await openserverhelper.serverDetails();
-    try {   // try to read the model now
+    try {   // try to read the module now
         const result = await apiman.rest(`http://${serverDetails.server}:${serverDetails.port}/admin/getMOD`, "POST", { "user": serverDetails.adminid, "password": serverDetails.adminpassword, name }, true);
         let data = atob(result.data).toString();
         return {
@@ -130,22 +130,23 @@ async function getModule(name) {
 async function publishModule(name, server, port, user, password) {
     try {
         let count = 0;
+        let result;
         const runJsModArray = api400model.runJsMod();
         if (runJsModArray.length != 0) {
             for (let runJsMod of runJsModArray) {
-                if (runJsMod[0] == "") runJsMod[0] = name;
+                if (runJsMod[0] == "")   throw  'Module Name Not Found'             
                 if (runJsMod[1] == "") runJsMod[1] = "exports.execute = execute;\n\nfunction execute(env, callback){\n\ncallback();\n}\n"
                 let b64Data = btoa(runJsMod[1]);
-                const result = await apiman.rest(`http://${server}:${port}/admin/publishModule`, "POST", { user, password, name: runJsMod[0], type: "js", src: b64Data }, true);
+                 result = await apiman.rest(`http://${server}:${port}/admin/publishModule`, "POST", { user, password, name: runJsMod[0], type: "js", src: b64Data }, true);
                 count = result.result ? ++count : count;
             }
         }
         if (count == runJsModArray.length) return{ result:true};
+        
         return {result:false, key: "FailedModule" }
     }
     catch(err) {
         return {result: false, err: "Server connection issue", raw_err: err, key: "ConnectIssue"}
-
     }
 }
 

@@ -3,7 +3,7 @@ SCHEMA
 {
   "session": {"html":"input", "type":"text", "placeholder":"{{i18n.SessionName}}"},
   "toolbox":{"html":"tool-box",
-            "onclickHandler":"window.monkshu_env.components['tool-box'].addScrKeysElement()",
+            "onclickHandler":"window.monkshu_env.components['text-box'].addTextBoxesForScrKeys()",
             "onclickRemoveHandler":"window.monkshu_env.components['tool-box'].removeElement()",
             "text":"{{i18n.Keys}}",
             "style":"width:100%; height: 100%;"},
