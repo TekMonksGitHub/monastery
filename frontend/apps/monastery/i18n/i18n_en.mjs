@@ -69,7 +69,7 @@ export const i18n = {
 "ScreenContent":"Screen Contents",
 "PublishSuccess":"Published Successfully",
 "module":"Module Name",
-"FailedModule":"Module Publishing failed at the server",
+"FailedModule":"Please Fill module name in Mod or Publishing Module failed at the server",
 "PublishServerIssue": "Publishing failed at the server",
 "ConnectIssue":"Server connection issue",
 "ApiclListServerIssue":"List fetch failed at the server",

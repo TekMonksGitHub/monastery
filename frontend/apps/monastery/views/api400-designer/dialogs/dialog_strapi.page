@@ -2,7 +2,7 @@ SCHEMA
 ======
 {
   "toolbox":{"html":"tool-box",
-            "onclickHandler":"window.monkshu_env.components['tool-box'].addElement('Parameter')",
+            "onclickHandler":"window.monkshu_env.components['text-box'].addTextBox('Parameter')",
             "onclickRemoveHandler":"window.monkshu_env.components['tool-box'].removeElement()",
             "text":"{{i18n.Parameters}}",
             "style":"width:100%; height: 100%;"},
