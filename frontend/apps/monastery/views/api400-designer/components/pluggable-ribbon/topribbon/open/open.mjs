@@ -8,7 +8,7 @@ import { blackboard } from "/framework/js/blackboard.mjs";
 import { serverManager } from "../../../../js/serverManager.js";
 import { page_generator } from "/framework/components/page-generator/page-generator.mjs";
 
-let xCounter, yCounter, counter = 1,dependencies=[],result = [];;
+let xCounter, yCounter,counter=0,dependencies=[],result = [];
 let apicl={};
 
 const PLUGIN_PATH = util.getModulePath(import.meta), MSG_FILE_UPLOADED = "FILE_UPLOADED",
@@ -92,22 +92,25 @@ async function apiclParser(data) {
     let modelObject;
     result = [];
     for (let key in apicl) {
+        console.log(apicl[key]);
         modelObject = await _parseCommand(apicl[key], counter++, dependencies);
-        result.push(modelObject)
+        if (modelObject && modelObject.nodeName) { result.push(modelObject) }
     } 
        
+    console.log(result);
     let resolvedPromises = await Promise.all(result)
+    counter=0;
     return { "apicl": [{ "commands": resolvedPromises, "name": "commands", "id": counter }] }
 }
 
 const _parseCommand = async function (command, counter, dependencies) {
-
+    
     let ret = {}, nodeNameAsSubCmd = '';
     let cmd = command.split(' ');
     let nodeName = cmd[0].toLowerCase();
     if (nodeName == "runjs" && _patternMatch(command, /MOD\(([^)]+)\)/, 0) != "") nodeName = "mod";
     if (nodeName == "if") nodeName = "condition";
-    if (nodeName == 'chgvar') {
+    if (nodeName == 'chgvar' || nodeName == 'changevar') {
         let nodenameAsSubCmd = await _checkChgvarSubCommand(command);
         nodeNameAsSubCmd = nodenameAsSubCmd.toLowerCase() || nodeName;
     }
@@ -116,8 +119,6 @@ const _parseCommand = async function (command, counter, dependencies) {
 
     ret["nodeName"] = nodeName;
     ret["description"] = nodeName.charAt(0).toUpperCase() + nodeName.slice(1).toLowerCase();
-
-    console.log(ret);
 
     if (nodeName == 'strapi' || nodeName == 'sndapimsg') { ret["listbox"] = await _parseStrapi(command) }
     else if (nodeName == 'scr') { ret = await _parseScr(command, isThisSubCmd) }
@@ -138,28 +139,31 @@ const _parseCommand = async function (command, counter, dependencies) {
     else if (nodeName == 'runjs') { ret = await _parseRunjs(command, isThisSubCmd) }
     else if (nodeName == 'mod') { ret = await _parseMod(command) }
     else if (nodeName == 'endapi') { ret = await _parseEndapi()}
-    else if (nodeName == 'changevar') { ret = await _parseChangeVariable(command)}
+    else if (nodeName == 'chgvar') { ret = await _parseChangeVariable(command)}
     else if (nodeName == 'condition') { ret = await _parseIfCondition(command)}
     else if (nodeName == 'iftrue') { ret = await _parseIfTrue(command)}
     else if (nodeName == 'iffalse') { ret = await _parseIfFalse(command)}
 
-    ret = _setAttribute();
-    return ret;
+    let attr = await _setAttribute(command);
+    console.log({ ...ret, ...attr });
+    return { ...ret, ...attr };
 }
 
-const _setAttribute = function () {
-
-    let ret={};
-    ret["id"] = _getUniqueID();
-    dependencies.push(ret.id);
+const _setAttribute = async function (command) {
+    console.log(command)
+    console.log(counter);
+    let attribute={};
+    attribute["id"] = _getUniqueID();
+    dependencies.push(attribute.id);
+    
     if (counter >= 2) {
         if(xCounter%1200==0 && yCounter%80 == 0){ xCounter=100;yCounter=yCounter+80};
-        ret["dependencies"] = _putDependency(dependencies[counter - 2]);
-        ret["x"] = xCounter;
-        ret["y"] = yCounter;
+        attribute["dependencies"] = _putDependency(dependencies[counter - 2]);
+        attribute["x"] = xCounter;
+        attribute["y"] = yCounter;
         xCounter = xCounter + 100
     }
-    return ret;
+    return attribute;
 };
 
 const _putDependency = function (nodeid) {
@@ -190,8 +194,9 @@ const _parseIfCondition = async function (command) {
     ret["nodeName"] = "condition";
     ret["condition"] = _patternMatch(command, /COND\(([^)]+)\)/, 0);
     ret["description"] = "Condition";
-    ret = _setAttribute();
-    result.push(ret);
+    let attr = await _setAttribute(command);
+    console.log({ ...ret, ...attr });
+    result.push({ ...ret, ...attr });
 
     let iftrue='',iffalse='';
     if(command.includes("ELSE")){
@@ -201,11 +206,11 @@ const _parseIfCondition = async function (command) {
     }
     else iftrue = _subStrUsingLastIndex(command, "THEN(", ")");
 
-    if (iftrue) { 
+    if (iftrue!='') { 
         result.push(await _parseCommand("iftrue", counter++, dependencies)); 
         result.push(await _parseCommand(iftrue, counter++, dependencies)); 
     }
-    if (iffalse) { 
+    if (iffalse!='') { 
         result.push(await _parseCommand("iffalse", counter++, dependencies)); 
         result.push(await _parseCommand(iffalse, counter++, dependencies)); 
     }
@@ -305,8 +310,8 @@ const _parseChgvar = async function (command) {
 };
 const _parseChangeVariable = async function (command) {
     let ret = {};
-    ret["nodeName"] = "chgvar";
-    ret["description"] = "Chgvar";
+    ret["nodeName"] = "changevar";
+    ret["description"] = "Changevar";
     ret["variable"] =_patternMatch(command, /VAR\(([^)]+)\)/, 0);
     ret["value"] = _patternMatch(command, /VALUE\(([^)]+)\)/, 0)
     return ret;
@@ -497,7 +502,7 @@ const _parseRest = async function (command, isThisSubCmd) {
     ret["method"] = _patternMatch(command, /METHOD\(([^)]+)\)/, 0);
     ret["parameter"] = _patternMatch(command, /PARM\(([^)]+)\)/,0 );
     ret["headers"] = _patternMatch(command, /HEADERS\(([^)]+)\)/, 0);
-    return ret
+    return ret;
 
 };
 
