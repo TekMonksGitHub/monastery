@@ -69,11 +69,16 @@ export const i18n = {
 "ScreenContent":"Screen Contents",
 "PublishSuccess":"Published Successfully",
 "module":"Module Name",
-"FailedModule":"Please Fill module name in Mod or Publishing Module failed at the server",
+"FailedModule":"Please Fill module name in Mod",
 "PublishServerIssue": "Publishing failed at the server",
 "ConnectIssue":"Server connection issue",
 "ApiclListServerIssue":"List fetch failed at the server",
 "ModuleNotFound":"Module read failed at the server or Not Found",
 "ApiclReadServerIssue":"Apicl read failed at the server",
-"Fillout":"Please Fill all the fields"
+"Fillout":"Please Fill all the fields",
+"PublishModFailed":"Publishing Mod Failed at the server",
+"FailedAllModule":"All Modules not published",
+"String":"String",
+"StringIndex":"String Index",
+"NoOfChar":"Num Of Char"
 }

@@ -97,15 +97,12 @@ const convertIntoAPICL = function (nodes) {
         else if (node.nodeName == 'scrkeys' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForScrkeys(node) }
         else if (node.nodeName == 'scrops' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForScrops(node) }
         else if (node.nodeName == 'mod' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForMod(node) }
-        else if (node.nodeName == 'substr') { _convertForSubstr(node) }
+        else if (node.nodeName == 'substr'  && !nodeAlreadyAdded.includes(node.id)) { cmdString =_convertForSubstr(node) }
         else if (node.nodeName == 'changevar' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForChangeVar(node) }
-
         if (cmdString != '') {
             if (addLaterflag) { laterAPICLCmd[node.id] = cmdString; }
             else { apicl[node.id] = cmdString; }
         }
-
-
     }
 
     apicl = Object.assign(apicl, laterAPICLCmd);
@@ -213,6 +210,7 @@ const _convertForCondition = function (node, nodes) {
                         else if (nextIdentifiedNodeObj.nodeName == 'sndapimsg') { subCmdStr = _convertForSndapimsg(nextIdentifiedNodeObj); }
                         else if (nextIdentifiedNodeObj.nodeName == 'mod') { subCmdStr = _convertForMod(nextIdentifiedNodeObj); }
                         else if (nextIdentifiedNodeObj.nodeName == 'changevar') { subCmdStr = _convertForChangeVar(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'substr') { subCmdStr = _convertForSubstr(nextIdentifiedNodeObj); }
                         // cmdString = cmdString.concat(` ${isThenElse}( ${subCmdStr})`);
                         (nodeObj.nodeName == 'iftrue') ? cmdString[1] = ` ${isThenElse}( ${subCmdStr})` : cmdString[2] = ` ${isThenElse}( ${subCmdStr})`;
                         nodeAlreadyAdded.push(nextIdentifiedNodeObj.id);
@@ -395,22 +393,12 @@ const _convertForScrops = function (node) {
     return `SCR NAME(${node.session ? node.session : ''}) ${node.radiobutton ? node.radiobutton.toUpperCase() : 'START'}`;
 };
 
-const _convertForSubstr = function (node) {
-    let listBoxValues = JSON.parse(node.listbox);
-    let count = 1;
-    if (listBoxValues && listBoxValues.length > 0)
-        for (const variableObj of listBoxValues) {
-            let cmdString = 'CHGVAR     VAR()   VALUE()';
-            if (variableObj.some(value => value != "")) {
-                cmdString = cmdString.replace(`VAR()`, `VAR(${variableObj[0].trim()})`);
-                cmdString = cmdString.replace(`VALUE()`, `VALUE(SUBSTR DO(${variableObj[1].trim()}:${variableObj[2].trim()}:${variableObj[3].trim()}))`);
-                apicl[`${node.id}_${count++}`] = cmdString;
-            }
-        }
-};
+ const _convertForSubstr = function (node) {
+     return `CHGVAR     VAR(${node.variable ? node.variable.trim() : ''})     VALUE(${node.string ? node.string.trim() : ''}:${node.index ? node.index.trim() : ''}:${node.noofchar ? node.noofchar.trim() : ''})`
+ };
 
 const _convertForChangeVar = function (node) {
-    return `CHGVAR     VAR(${node.variable ? node.variable.trim() : ''})    VALUE(${node.value ? node.value.trim() : ''})`;
+    return `CHGVAR     VAR(${node.variable ? node.variable.trim() : ''})       VALUE(${node.value ? node.value.trim() : ''})`;
 };
 
 
