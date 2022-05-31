@@ -103,13 +103,13 @@ async function apiclParser(data) {
             modelObject = await _parseCommand(apicl[key], counter++, dependencies,key);
             console.log("modelObject"); console.log(modelObject);
             console.log("modelObject length"); console.log(Object.keys(modelObject).length);
-            if (Object.keys(modelObject).length>0) { result.push(modelObject); initAPICL[key] = true; }
+            if (Object.keys(modelObject).length>0) { result.push(modelObject); initAPICL[key] = modelObject.id; }
             
         }
         console.log(result);
     } 
     console.log("After For Loop");
-    console.log(result);
+    console.log(initAPICL);
     let resolvedPromises = await Promise.all(result)
     let finalCommands = _correctAPICL(resolvedPromises);
      console.log(storeIDS);
@@ -238,6 +238,12 @@ const _parseGoto = async function (command) {
         ret["nodeName"] = "goto";
         ret["description"] = `Goto${_addCommandCount(ret["nodeName"])}`;
         let attr = await _setAttribute("goto");
+        if (initAPICL[gotoIndex]!=false) {
+            let position = await _findPosition(initAPICL[gotoIndex]);
+            result[position].dependencies.push(attr.id);
+            result.push({ ...ret, ...attr });
+            return;
+        }
         result.push({ ...ret, ...attr });
         let i=gotoIndex;
         do {
@@ -246,7 +252,7 @@ const _parseGoto = async function (command) {
             console.log(object);
             console.log(object);
             if (object && object.nodeName) { 
-                result.push(object); initAPICL[i] = true; 
+                result.push(object); initAPICL[i] = object.id; 
             }
             console.log(initAPICL);
         } while(apicl[i] && apicl[i++]!='ENDAPI');
@@ -261,7 +267,7 @@ const _parseIfCondition = async function (command,key) {
 
     let attr = await _setAttribute("condition");
     result.push({ ...ret, ...attr });
-    initAPICL[key] = true; 
+    initAPICL[key] = attr.id; 
 
     let iftrue='',iffalse='';
     if(command.includes("ELSE")){
@@ -288,6 +294,13 @@ const _parseIfCondition = async function (command,key) {
     return {};
 };
 
+
+const _findPosition = async function (id) {
+
+    let pos=0;
+    for (pos in result) { if (result[pos].id==id) {  return pos; } }
+
+}
 
 const _parseCall = async function (command) {
     let ret = {};
