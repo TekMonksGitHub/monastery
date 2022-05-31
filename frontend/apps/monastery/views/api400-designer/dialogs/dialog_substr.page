@@ -1,26 +1,26 @@
 SCHEMA
 ======
 {
-  "toolbox":{"html":"tool-box",
-            "onclickHandler":"window.monkshu_env.components['text-box'].addTextBoxesForSubstr()",
-            "onclickRemoveHandler":"window.monkshu_env.components['tool-box'].removeElement()",
-            "text":"{{i18n.SubStrings}}",
-            "style":"width:100%; height: 100%;"},
-  "listbox":{"html":"list-box","style":"width:100%; height: 100%;","type":"Sub Strings"}
- 
+    "variable": {"html":"input", "type":"text", "placeholder":"{{i18n.Variable}}", "spellcheck":"false"},
+    "string": {"html":"input", "type":"text", "placeholder":"{{i18n.String}}", "spellcheck":"false"},
+    "index": {"html":"input", "type":"text", "placeholder":"{{i18n.StringIndex}}", "spellcheck":"false"},
+    "noofchar": {"html":"input", "type":"text", "placeholder":"{{i18n.NoOfChar}}", "spellcheck":"false"}
+   
+   
 }
 ======
 
+
 LAYOUT
 =================
-----------------
-|   toolbox    |
-----------------
-|   listbox    |      
-----------------
+----------------------------------------------------------
+|  variable   |    string    |  index     |  noofchar    |
+----------------------------------------------------------
+
+
 =================
-Row Heights = 2.2em,calc(100% - 2.2em)
-Col Widths = 100%
+Row Heights = 4em
+Col Widths = 32%,32%,18%,18%
 =================
 
 
@@ -34,18 +34,30 @@ PER ITEM CLASS = class
 CSS
 =======
 .grid-container-extension {
-    height100%;
-    width:100%;
+    height: 100%;
 }
 
 .grid-item-extension {
     background-color: var(--dialog-background, white);
+    padding: 10px 20px 10px 20px;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
     flex-flow: row;
     box-sizing: border-box;
+    margin-top:15px;
 }
+
+.grid-item-extension > input, .grid-item-extension > input:focus{
+    width: 100%;
+    border-radius: 4px;
+    border: 0px;
+    outline: none;
+    padding: 10px;
+    resize: none;
+    height:10px;
+    font-family: inherit;
+    
+}
+
 
 ::placeholder {opacity: 0.8;}
 
@@ -54,43 +66,4 @@ body {
     display: inline-block;
     width: 100%;
 }
-div#page-contents{
-    width: 100%; 
-}
-
-
-div.substrdiv{
-  background: #C9E5FF;
-  margin:12px 20px 20px 18px;
-  border-radius:5px;
-  display: grid;
-  grid-template-columns: 32% 32% 18% 18%;
-  grid-template-rows: auto;
-  grid-template-areas:  "variablebox stringbox indexbox  countbox" ;
-   
-}
-
-div.substrdiv>.variablebox {
-  grid-area: variablebox;
-  
-}
-div.substrdiv>.stringbox {
-  grid-area: stringbox;
-}
-div.substrdiv>.indexbox {
-  grid-area: indexbox;
-}
-div.substrdiv>.countbox {
-  grid-area: countbox;
-}
-input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type=number] {
-  -moz-appearance: textfield;
-}
-
-   
 =======

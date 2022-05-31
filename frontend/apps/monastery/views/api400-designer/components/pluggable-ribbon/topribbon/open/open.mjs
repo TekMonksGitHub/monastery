@@ -533,7 +533,7 @@ const _parseMap = async function (command, isThisSubCmd) {
     ret["description"] = "Map";
     return ret;
 };
-const _parseSubstr = async function (command, isThisSubCmd) {
+/*const _parseSubstr = async function (command, isThisSubCmd) {
     let ret = {};
     let subCmdVar;
     if (isThisSubCmd) {
@@ -551,6 +551,28 @@ const _parseSubstr = async function (command, isThisSubCmd) {
     ret["description"] = "Substr";
     return ret;
 };
+*/
+const _parseSubstr = async function (command, isThisSubCmd) {
+
+    let ret = {};
+    let subCmdVar;
+    if (isThisSubCmd) {
+        subCmdVar = _subStrUsingLastIndex(command, "VALUE(", ")")
+    }
+    subCmdVar = (subCmdVar) ? subCmdVar : command;
+    let substr = _subStrUsingLastIndex(subCmdVar, "DO(", ")").split(":");
+    ret["variable"] = _subStrUsingNextIndex(command, "VAR(", ")");
+    ret["string"] = substr[0];
+    ret["index"] = substr[1];
+    ret["noofchar"] = substr[2]
+    ret["nodeName"] = "substr";
+    ret["description"] = "Substr";
+    return ret;
+}
+
+
+
+
 const _parseDsppfm = async function (command, isThisSubCmd) {
     let ret = {};
     let subCmdVar;
