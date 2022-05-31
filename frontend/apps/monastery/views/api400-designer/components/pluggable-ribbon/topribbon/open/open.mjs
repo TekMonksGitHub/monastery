@@ -8,7 +8,7 @@ import { blackboard } from "/framework/js/blackboard.mjs";
 import { serverManager } from "../../../../js/serverManager.js";
 import { page_generator } from "/framework/components/page-generator/page-generator.mjs";
 
-let xCounter, yCounter,counter=0,dependencies=[],result = [];
+let xCounter, yCounter,counter=0,dependencies=[],result = [],storeIDS={};
 let apicl={},initAPICL={},commandCounter = [];
 ;
 
@@ -90,7 +90,7 @@ async function apiclParser(data) {
     dependencies = [];
     commandCounter = [];
     initAPICL = {};
-    
+    storeIDS={};
     apicl = JSON.parse(data);
     initAPICL = _initializeAPICLIndex(JSON.parse(data));
     console.log(initAPICL);
@@ -112,7 +112,7 @@ async function apiclParser(data) {
     console.log(result);
     let resolvedPromises = await Promise.all(result)
     let finalCommands = _correctAPICL(resolvedPromises);
-
+     console.log(storeIDS);
     counter=0;
     return { "apicl": [{ "commands": finalCommands, "name": "commands", "id": counter }] }
 }
@@ -181,17 +181,18 @@ const _parseCommand = async function (command, counter, dependencies,key) {
     else if (nodeName == 'iffalse') { ret = await _parseIfFalse(command)}
     else if (nodeName == 'goto') { ret = await _parseGoto(command)}
 
-    if (ret && ret.nodeName) { attr = await _setAttribute(ret.nodeName); }
+    if (ret && ret.nodeName) { attr = await _setAttribute(ret.nodeName,key); }
     return { ...ret, ...attr };
 }
 
-const _setAttribute = async function (nodeName) {
+const _setAttribute = async function (nodeName,key) {
     let attribute={};
     let description = nodeName.charAt(0).toUpperCase() + nodeName.slice(1).toLowerCase();
     attribute["id"] = _getUniqueID();
     if (description == 'Iftrue'||description == 'Iffalse') {  attribute["description"] = description;
     } else { attribute["description"] = `${description}${_addCommandCount(description)}`;  }
-
+    
+    storeIDS[key]=attribute.id
     dependencies.push(attribute.id);
     
     if (counter >= 2) {
@@ -274,8 +275,13 @@ const _parseIfCondition = async function (command,key) {
         result.push(await _parseCommand("iftrue", counter++, dependencies)); 
         result.push(await _parseCommand(iftrue, counter++, dependencies)); 
     }
-    if (iffalse!='') { 
-        result.push(await _parseCommand("iffalse", counter++, dependencies)); 
+    xCounter=attr.x;
+    yCounter=attr.y+80;
+    let ModelObjectOfIffalse = await _parseCommand("iffalse", counter++, dependencies);
+    ModelObjectOfIffalse.dependencies=[attr.id];
+
+    result.push( ModelObjectOfIffalse); 
+    if (iffalse!='') {  
         result.push(await _parseCommand(iffalse, counter++, dependencies)); 
     }
 
