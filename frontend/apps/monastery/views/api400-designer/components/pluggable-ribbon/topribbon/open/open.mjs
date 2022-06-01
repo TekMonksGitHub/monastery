@@ -316,15 +316,28 @@ const _parseCall = async function (command) {
 };
 
 const _parseRunsqlprc = async function (command) {
-    let ret = {};
+    let ret = {},finalValues=[],paramAtrributes,paramType,otherParams,parameter,paramNature;
+    // &INOUT&NUM:CHAR
     
     ret["nodeName"] = "runsqlprc";
     ret["description"] = "Runsqlprc";
     let procedureName = _patternMatch(command, /PRC\(([^)]+)\)/, 0).split("/");
     ret["library"] = procedureName[0];
     ret["procedure"] = procedureName[1];
-
-    ret["listbox"] = JSON.stringify(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean));
+    let listOfParams =  _patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean);
+    for(let param of listOfParams ){
+        paramType='',parameter='',paramNature='';
+      if(param.includes(":")){
+            paramAtrributes=  param.split(":");
+            paramType =`:${paramAtrributes[1]}`;
+            otherParams = paramAtrributes[0].split("&").filter(Boolean);
+            parameter = `&${otherParams[1]}`;
+            paramNature= `&${otherParams[0]}` 
+      }
+      else parameter = param;
+      finalValues.push([paramNature,parameter,paramType])
+    }
+    ret["listbox"] = JSON.stringify(finalValues);
     return ret;
 };
 const _parseRunsql = async function (command, isThisSubCmd) {

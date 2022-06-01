@@ -54,6 +54,15 @@ async function addTextBoxesForScrRead(rowFromValue,columnFromValue,rowToValue,co
   parentContainer.appendChild(divElement);
 };
 
+ function addContainerForRunsqlprc(typeOfParam,variable,type) {
+
+  const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
+  const parentContainer =  dialogShadowRoot.querySelector("div#page-contents");
+  //Creating a div element having two text box
+  const divElement = _createDivElementForRunsqlPrc(parentContainer,typeOfParam,variable,type);
+  parentContainer.appendChild(divElement);
+};
+
 function _createElement(parentContainer, id, value,placeHolder, className,placeHolderType,type) {
 
   const inputElement = document.createElement("input");
@@ -77,6 +86,7 @@ function _createDivElement(parentContainer, id1, id2, chgvarVariable, chgvarValu
   divElement.append(inputElement1, inputElement2);
   return divElement
 }
+
 function _createDivElementForSubstr(parentContainer,variableValue, stringValue,stringIndexValue,noOfCharValue) {
   const divElement = document.createElement("div");
   divElement.setAttribute("class", "substrdiv");
@@ -119,7 +129,44 @@ function _createDivElementForScrRead(parentContainer, rowFromValue,columnFromVal
   divElement.append(inputElement1, inputElement2,inputElement3,inputElement4);
   return divElement
 }
- 
+function _createDivElementForRunsqlPrc(parentContainer,typeOfParam,variable,type) {
+  const divElement = document.createElement("div");
+  divElement.setAttribute("class", 'runsqlprc');
+  const inputElement1 = _createElement(parentContainer, "variable", variable,"Variable", "variablebox");
+  const selectElement1 = _createDropDownElementForParam(parentContainer);
+  const selectElement2 = _createDropDownElementFortype(parentContainer);
+  divElement.append( selectElement1,inputElement1,selectElement2);
+
+  if(typeOfParam!=undefined){
+      for (let i = 0; i <  selectElement1.options.length; ++i) {
+          if ( selectElement1.options[i].text == typeOfParam.slice(1))
+          selectElement1.options[i].selected = true;
+      }
+    }
+    if(type!=undefined){
+      for (let i = 0; i <  selectElement2.options.length; ++i) {
+          if (selectElement2.options[i].text == type.slice(1))
+          selectElement2.options[i].selected = true;
+      }
+    }
+  return divElement
+}
+function _createDropDownElementForParam(parentContainer) {
+  const selectElement = document.createElement("select");
+  selectElement.innerHTML=' <option value="" selected   >Nature Of Param</option> <option value="&IN">IN</option><option value="&OUT">OUT</option><option value="&INOUT">INOUT</option>'
+  let id = `param-${parentContainer.children.length + 1}`
+  selectElement.setAttribute("id", id);
+  selectElement.setAttribute("class",'param'); 
+  return selectElement;
+};
+function _createDropDownElementFortype(parentContainer) {
+
+  const selectElement = document.createElement("select");
+  selectElement.innerHTML=' <option value="" selected  >Type Of Param </option> <option value=":NUM">NUM</option><option value=":CHAR">CHAR</option>'
+  selectElement.setAttribute("id", `type-${parentContainer.children.length + 1}`);
+  selectElement.setAttribute("class",'type'); 
+  return selectElement;
+};
 export const text_box = {
   trueWebComponentMode: true,
   addTextBox,
@@ -127,7 +174,8 @@ export const text_box = {
   addTextBoxesForSubstr,
   addTextBoxesForScrKeys,
   addTextBoxesForMap,
-  addTextBoxesForScrRead
+  addTextBoxesForScrRead,
+  addContainerForRunsqlprc
 
 };
 

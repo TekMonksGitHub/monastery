@@ -137,7 +137,7 @@ function runJsMod() {
     for (const command of api400.apicl[0].commands) {
         let nameAndJs = [];
         if (command.nodeName == "mod") {
-            nameAndJs.push(command.result);
+            nameAndJs.push(command.result?command.result:'');
             nameAndJs.push(command.code);
             nameAndJsArray.push(nameAndJs)
         }
