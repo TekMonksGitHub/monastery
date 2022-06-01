@@ -48,7 +48,7 @@ function sortDependencies(nodes) {
                 nextCurrentNodeId = futureCurrentNode[0].id;
                 _arrayDelete(futureCurrentNode, futureCurrentNode[0]);
             }
-            
+
         }
     }
     return sortedSet;
@@ -97,7 +97,7 @@ const convertIntoAPICL = function (nodes) {
         else if (node.nodeName == 'scrkeys' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForScrkeys(node) }
         else if (node.nodeName == 'scrops' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForScrops(node) }
         else if (node.nodeName == 'mod' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForMod(node) }
-        else if (node.nodeName == 'substr'  && !nodeAlreadyAdded.includes(node.id)) { cmdString =_convertForSubstr(node) }
+        else if (node.nodeName == 'substr' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForSubstr(node) }
         else if (node.nodeName == 'changevar' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForChangeVar(node) }
         if (cmdString != '') {
             if (addLaterflag) { laterAPICLCmd[node.id] = cmdString; }
@@ -314,12 +314,25 @@ const _convertForCall = function (node) {
     return cmdString;
 };
 
-const _convertForRunsqlprc = function (node) {
+/*const _convertForRunsqlprc = function (node) {
     let cmdString = `RUNSQLPRC PRC(${node.library ? node.library.trim() : ''}/${node.procedure ? node.procedure.trim() : ''})`;
     if (node.listbox) {
         let listBoxValues = JSON.parse(node.listbox);
         if (listBoxValues && listBoxValues.length > 0)
             cmdString += ` PARM(${listBoxValues.filter(Boolean).join(" ")})`;
+    }
+    else cmdString += ` PARM()`
+    return cmdString;
+};
+*/
+const _convertForRunsqlprc = function (node) {
+    let cmdString = `RUNSQLPRC PRC(${node.library ? node.library.trim() : ''}/${node.procedure ? node.procedure.trim() : ''})`;
+    console.log(node.listbox);
+    let paramString = '';
+    if (node.listbox) {
+        let listBoxValues = JSON.parse(node.listbox);
+        if (listBoxValues && listBoxValues.length > 0)  for (let values of listBoxValues) if(values.some(value => value != "")) paramString += values.join("")+" ";      
+        cmdString += ` PARM(${paramString.trim()})`;
     }
     else cmdString += ` PARM()`
     return cmdString;
@@ -379,23 +392,23 @@ const _convertForScrread = function (node) {
 const _convertForScrkeys = function (node) {
     let keysVariables = [];
     let listBoxValues = JSON.parse(node.listbox);
-if(node.listbox){
-    if (listBoxValues && listBoxValues.length > 0)
-        for (const scrPropertiesObj of listBoxValues) {
-            if (scrPropertiesObj.some(value => value != "")) keysVariables.push(`${scrPropertiesObj[0].trim()},${scrPropertiesObj[1].trim()},${scrPropertiesObj[2].trim()}`);
-        }
-    return `SCR NAME(${node.session ? node.session : ''})   KEYS(${keysVariables.join(" : ")})`;
-}
-else return `SCR NAME()   KEYS()`
+    if (node.listbox) {
+        if (listBoxValues && listBoxValues.length > 0)
+            for (const scrPropertiesObj of listBoxValues) {
+                if (scrPropertiesObj.some(value => value != "")) keysVariables.push(`${scrPropertiesObj[0].trim()},${scrPropertiesObj[1].trim()},${scrPropertiesObj[2].trim()}`);
+            }
+        return `SCR NAME(${node.session ? node.session : ''})   KEYS(${keysVariables.join(" : ")})`;
+    }
+    else return `SCR NAME()   KEYS()`
 };
 
 const _convertForScrops = function (node) {
     return `SCR NAME(${node.session ? node.session : ''}) ${node.radiobutton ? node.radiobutton.toUpperCase() : 'START'}`;
 };
 
- const _convertForSubstr = function (node) {
-     return `CHGVAR     VAR(${node.variable ? node.variable.trim() : ''})     VALUE(${node.string ? node.string.trim() : ''}:${node.index ? node.index.trim() : ''}:${node.noofchar ? node.noofchar.trim() : ''})`
- };
+const _convertForSubstr = function (node) {
+    return `CHGVAR     VAR(${node.variable ? node.variable.trim() : ''})     VALUE(${node.string ? node.string.trim() : ''}:${node.index ? node.index.trim() : ''}:${node.noofchar ? node.noofchar.trim() : ''})`
+};
 
 const _convertForChangeVar = function (node) {
     return `CHGVAR     VAR(${node.variable ? node.variable.trim() : ''})       VALUE(${node.value ? node.value.trim() : ''})`;

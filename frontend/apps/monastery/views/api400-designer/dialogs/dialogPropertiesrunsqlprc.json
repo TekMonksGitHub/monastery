@@ -11,7 +11,7 @@
     "var--dialog-background": "#DFF0FE",
     "var--dialog-left": "230px",
     "var--dialog-width": "calc(100% - 450px)",
-    "var--dialog-height":"33%",
+    "var--dialog-height":"36%",
     "var--animation-name": "flyinbottom",
     "var--animation-duration": "0.18s",
     "var--animation-left-transform": "0%",

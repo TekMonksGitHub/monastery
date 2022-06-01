@@ -31,6 +31,7 @@ async function elementRendered(element) {
     else if (values && values.length && element.getAttribute("type") == "Map") _setValue(values, element.getAttribute("type"));
     else if (values && values.length && element.getAttribute("type") == "Keys") _setValue(values, element.getAttribute("type"));
     else if (values && values.length && element.getAttribute("type") == "Read") _setValue(values, element.getAttribute("type"))
+    else if (values && values.length && element.getAttribute("type") == "runsqlprc") _setValue(values, element.getAttribute("type"))
   }
   else {
     if (element.getAttribute("type") == "Parameter" && noOfElements < 1) window.monkshu_env.components['text-box'].addTextBox(element.getAttribute('type'));
@@ -40,6 +41,7 @@ async function elementRendered(element) {
     else if (element.getAttribute("type") == "Map" && noOfElements < 1) window.monkshu_env.components['text-box'].addTextBoxesForMap();
     else if (element.getAttribute("type") == "Keys" && noOfElements < 1) window.monkshu_env.components['text-box'].addTextBoxesForScrKeys();
     else if (element.getAttribute("type") == "Read" && noOfElements < 1) window.monkshu_env.components['text-box'].addTextBoxesForScrRead();
+    else if (element.getAttribute("type") == "runsqlprc" && noOfElements < 1) window.monkshu_env.components['text-box'].addContainerForRunsqlprc();
   }
 }
 
@@ -80,6 +82,12 @@ function _setValue(values, type) {
         window.monkshu_env.components['text-box'].addTextBoxesForScrRead(textBoxValue[0], textBoxValue[1], textBoxValue[2], textBoxValue[3]);
     }
   }
+  else if (type == "runsqlprc") {
+    for (const textBoxValue of values) {
+      if (textBoxValue.some(value => value != ""))
+        window.monkshu_env.components['text-box'].addContainerForRunsqlprc(textBoxValue[0], textBoxValue[1], textBoxValue[2]);
+    }
+  }
   else {
     for (const textBoxValue of values) {
       if (textBoxValue != '')
@@ -92,10 +100,12 @@ function _setValue(values, type) {
 
 function _getTextBoxValues(textBoxContainer, shadowRoot, type) {
   const textBoxValues = [];
-  if (type == "Variable" || type == "Sub Strings" || type == "Map" || type == "Keys" || type == "Read") {
+  if (type == "Variable" || type == "Sub Strings" || type == "Map" || type == "Keys" || type == "Read" || type =="runsqlprc") {
     for (const divBox of textBoxContainer.children) {
       const Values = [];
       for (const textBox of divBox.children) {
+        console.log(textBox);
+        console.log(textBox.getAttribute("id"));
         const retValue = shadowRoot.querySelector(`#${textBox.getAttribute("id")}`).value;
         Values.push(retValue.trim());
       }

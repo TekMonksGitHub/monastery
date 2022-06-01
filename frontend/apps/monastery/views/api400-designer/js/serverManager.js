@@ -21,7 +21,7 @@ async function getApiclList(server, port, user, password) {
         const result = await apiman.rest(`http://${server}:${port}/admin/listAPIs`, "POST",
             { user, password }, true);
         const list = [];
-        result.list.forEach(function (el) { list.push(el.substring(1));});
+        result.list.forEach(function (el) { list.push(el.substring(1)); });
         result.list = list;
         return {
             result: result.result, models: result.result ? result.list : null, err: "List fetch failed at the server",
@@ -121,7 +121,7 @@ async function getModule(name) {
         const result = await apiman.rest(`http://${serverDetails.server}:${serverDetails.port}/admin/getMOD`, "POST", { "user": serverDetails.adminid, "password": serverDetails.adminpassword, name }, true);
         let data = atob(result.data).toString();
         return {
-            result: result.result, mod: result.result ? data : null, err: "Module read failed at the server or Not Found",key: "ModuleNotFound",
+            result: result.result, mod: result.result ? data : null, err: "Module read failed at the server or Not Found", key: "ModuleNotFound",
 
         };
     } catch (err) { return { result: false, err: "Server connection issue", raw_err: err, key: "ConnectIssue", mod: "exports.execute = execute;\n\nfunction execute(env, callback){\n\ncallback();\n}\n" } }
@@ -134,20 +134,20 @@ async function publishModule(name, server, port, user, password) {
         const runJsModArray = api400model.runJsMod();
         if (runJsModArray.length != 0) {
             for (let runJsMod of runJsModArray) {
-                if (runJsMod[0] == "")   throw  'Module Name Not Found'             
-                if (runJsMod[1] == "") runJsMod[1] = "exports.execute = execute;\n\nfunction execute(env, callback){\n\ncallback();\n}\n"
+                if (runJsMod[0] == "")  return { result: false, key: "FailedModule" };
+                if (runJsMod[1] == "") runJsMod[1] = "exports.execute = execute;\n\nfunction execute(env, callback){\n\ncallback();\n}\n";
                 let b64Data = btoa(runJsMod[1]);
-                 result = await apiman.rest(`http://${server}:${port}/admin/publishModule`, "POST", { user, password, name: runJsMod[0], type: "js", src: b64Data }, true);
+                result = await apiman.rest(`http://${server}:${port}/admin/publishModule`, "POST", { user, password, name: runJsMod[0], type: "js", src: b64Data }, true);
                 count = result.result ? ++count : count;
             }
         }
-        if (count == runJsModArray.length) return{ result:true};
-        
-        return {result:false, key: "FailedModule" }
+        if (count == runJsModArray.length) return { result: true };
+        if (!result.result) return { result: result.result, key: "PublishModFailed" };
+        return { result: false, key: "PublishModFailed" }
     }
-    catch(err) {
-        return {result: false, err: "Server connection issue", raw_err: err, key: "ConnectIssue"}
+    catch (err) {
+        return { result: false, err: "Server connection issue", raw_err: err, key: "ConnectIssue" }
     }
 }
 
-export const serverManager = { publishApicl, unpublishModel, getApiclList, getApicl, getModule ,publishModule};
+export const serverManager = { publishApicl, unpublishModel, getApiclList, getApicl, getModule, publishModule };
