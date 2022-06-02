@@ -219,7 +219,7 @@ const _checkChgvarSubCommand = async function (command) {
 };
 
 const _parseStrapi = async function (command) {
-    return command.match(/\(([^)]+)\)/) ? JSON.stringify(command.match(/\(([^)]+)\)/)[1].split(" ").filter(Boolean)) : [""];
+    return command.match(/\(([^)]+)\)/) ? JSON.stringify(command.match(/\(([^)]+)\)/)[1].split(" ").filter(Boolean)) : JSON.stringify(['']);
 };
 
 const _parseEndapi = async function () {

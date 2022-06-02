@@ -116,10 +116,8 @@ const _convertForStrapi = function (node) {
 
     let cmdString = 'STRAPI PARM()';
     if (node.listbox) {
-        let listBoxValues = JSON.parse(node.listbox);
-        if (listBoxValues && listBoxValues.length != 0 && listBoxValues[0] != "") {
-            return cmdString = cmdString.replace(`()`, `(${listBoxValues.filter(Boolean).join(' ')})`);
-        }
+        let listBoxValues = JSON.parse(node.listbox); 
+            return cmdString = cmdString.replace(`()`, `(${listBoxValues.filter(Boolean).join(' ')})`);    
     }
     else
         return cmdString;
@@ -154,7 +152,6 @@ const _convertForSndapimsg = function (node) {
     let cmdString = 'SNDAPIMSG  MSG()';
     if (node.listbox) {
         let listBoxValues = JSON.parse(node.listbox);
-        if (listBoxValues && listBoxValues != 0 && listBoxValues[0] != "")
             return cmdString.replace(`()`, `(${listBoxValues.filter(Boolean).join(' ')})`);
     }
     else
