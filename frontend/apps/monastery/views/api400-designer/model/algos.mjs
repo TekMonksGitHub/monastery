@@ -249,7 +249,6 @@ const _checkNodeInAllNodes = function (node, allnodes) {
         }
 
 }
-
 const _convertForGoto = function (node, nodes) {
     let gotoNextNode = _checkNodeInAllNodes(node, nodes);
     return `GOTO ${gotoNextNode.id || ''}`;
@@ -260,43 +259,58 @@ const _convertForEndapi = function (node) {
 };
 
 const _convertForChgdtaara = function (node) {
-
-    let cmdString = `CHGDTAARA DTAARA(${node.libraryname ? node.libraryname.trim() : ''}/${node.dataarea ? node.dataarea.trim() : ''})`;
-    if (node.dropdown && node.dropdown.includes("Character"))
-        cmdString += ` TYPE(*CHAR)`;
-    else if (node.dropdown && node.dropdown.includes("BigDecimal"))
-        cmdString += ` TYPE(*BIGDEC)`;
-    else cmdString += ` TYPE()`
-    cmdString += ` VALUE(${node.value ? node.value.trim() : ''})`;
-    return cmdString;
-
+    let cmdString;
+    if ((node.libraryname || node.dataarea) && node.value && node.dropdown) {
+        if (node.libraryname != '' && node.dataarea != '') cmdString = `CHGDTAARA DTAARA(${node.libraryname.trim() || ''}/${node.dataarea.trim() || ''})`;
+        else cmdString = `CHGDTAARA DTAARA(${node.libraryname.trim() || ''})`
+        if (node.dropdown.includes("Character"))
+            cmdString += `TYPE(*CHAR)`;
+        else if (node.dropdown.includes("BigDecimal"))
+            cmdString += `TYPE(*BIGDEC)`;
+        cmdString += `VALUE(${node.value.trim()})`;
+        return cmdString;
+    }
+    else return `CHGDTAARA DTAARA() TYPE() VALUE()`;
 };
 
 
 const _convertForRtvdtaara = function (node) {
-    let cmdString = `RTVDTAARA DTAARA(${node.libraryname ? node.libraryname.trim() : ''}/${node.dataarea ? node.dataarea.trim() : ''})`;
-    if (node.dropdown && node.dropdown.includes("Character"))
-        cmdString += ` TYPE(*CHAR)`;
-    else if (node.dropdown && node.dropdown.includes("BigDecimal"))
-        cmdString += ` TYPE(*BIGDEC)`;
-    else cmdString += ` TYPE()`
-    cmdString += ` RTNVAR(${node.value ? node.value.trim() : ''})`;
-    return cmdString;
-
+    let cmdString;
+    if ((node.libraryname || node.dataarea) && node.value && node.dropdown) {
+        if (node.libraryname != '' && node.dataarea != '') cmdString = `RTVDTAARA DTAARA(${node.libraryname.trim() || ''}/${node.dataarea.trim() || ''})`;
+        else cmdString = `RTVDTAARA DTAARA(${node.libraryname.trim() || ''})`
+        if (node.dropdown.includes("Character"))
+            cmdString += `  TYPE(*CHAR)`;
+        else if (node.dropdown.includes("BigDecimal"))
+            cmdString += `  TYPE(*BIGDEC)`;
+        cmdString += ` RTNVAR(${node.value.trim()})`;
+        return cmdString;
+    }
+    else return `RTVDTAARA DTAARA() TYPE() RTNVAR()`;
 };
 
 const _convertForQrcvdtaq = function (node) {
-
-    return `QRCVDTAQ PARM(${node.library ? node.library.trim() : ''}/${node.queue ? node.queue.trim() : ''} ${node.wait ? node.wait.trim() : ''} ${node.dropdown ? node.dropdown : ''} ${node.data ? node.data.trim() : ''})`;
+    if ((node.library || node.queue) && node.wait && node.dropdown && node.data) {
+        if (node.library != '' && node.queue != '')
+            return `QRCVDTAQ PARM(${node.library.trim() || ''}/${node.queue.trim() || ''} ${node.wait.trim()} ${node.dropdown} ${node.data.trim()})`;
+        else return `QRCVDTAQ PARM(${node.library.trim() || ''} ${node.wait.trim()} ${node.dropdown} ${node.data.trim()})`
+    }
+    else return `QRCVDTAQ  PARM()`
 };
 
 const _convertForQsnddtaq = function (node) {
-
-    return `QSNDDTAQ PARM(${node.libraryname ? node.libraryname.trim() : ''}/${node.dataqueue ? node.dataqueue.trim() : ''} ${node.value ? node.value.trim() : ''})`;
+    if ((node.libraryname || node.dataqueue) && node.value) {
+        if (node.libraryname != '' && node.dataqueue != '')
+            return `QSNDDTAQ PARM(${node.libraryname.trim() || ''}/${node.dataqueue.trim() || ''} ${node.value.trim()})`;
+        else return `QSNDDTAQ PARM(${node.libraryname.trim() || ''} ${node.value.trim()})`;
+    }
+    else return `QSNDDTAQ PARM()`
 };
 
 const _convertForDsppfm = function (node) {
+    if(node.libraryname!='' && node.physical!='' )
     return `CHGVAR     VAR(${node.result ? node.result.trim() : ''})    VALUE(DSPPFM FILE(${node.libraryname ? node.libraryname.trim() : ''}/${node.physical ? node.physical.trim() : ''}) MBR(${node.member ? node.member.trim() : ''}))`;
+    else return `CHGVAR     VAR(${node.result ? node.result.trim() : ''})    VALUE(DSPPFM FILE(${node.libraryname ? node.libraryname.trim() : ''}) MBR(${node.member ? node.member.trim() : ''}))`
 };
 
 const _convertForLog = function (node) {
@@ -331,7 +345,7 @@ const _convertForRunsqlprc = function (node) {
     let paramString = '';
     if (node.listbox) {
         let listBoxValues = JSON.parse(node.listbox);
-        if (listBoxValues && listBoxValues.length > 0)  for (let values of listBoxValues) if(values.some(value => value != "")) paramString += values.join("")+" ";      
+        if (listBoxValues && listBoxValues.length > 0) for (let values of listBoxValues) if (values.some(value => value != "")) paramString += values.join("") + " ";
         cmdString += ` PARM(${paramString.trim()})`;
     }
     else cmdString += ` PARM()`
