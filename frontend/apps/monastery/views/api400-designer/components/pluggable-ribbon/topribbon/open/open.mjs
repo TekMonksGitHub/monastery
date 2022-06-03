@@ -157,7 +157,7 @@ const _parseCommand = async function (command, counter, dependencies,key) {
     
 
     if (nodeName == 'strapi' || nodeName == 'sndapimsg') { ret["listbox"] = await _parseStrapi(command) }
-    else if (nodeName == 'scr') { ret = await _parseScr(command, isThisSubCmd) }
+    else if (nodeName == 'scr') { ret = await _parseScr(command, isThisSubCmd,key) }
     else if (nodeName == 'rest') { ret = await _parseRest(command, isThisSubCmd) }
     else if (nodeName == 'log') { ret["log"] = await _parseLog(command) }
     else if (nodeName == 'jsonata') { ret = await _parseJsonata(command, isThisSubCmd) }
@@ -206,8 +206,7 @@ const _setAttribute = async function (nodeName,key) {
 };
 
 const _putDependency = function (nodeid,nodeName) {
-    console.log(nodeName);console.log(flagNOthenYESelse);console.log(nextElseDependency);
-
+    
     let dependencyId;
     if (nextElseDependency.length>0) {dependencyId = nextElseDependency[0];  nextElseDependency.pop(); } 
     else { 
@@ -470,7 +469,7 @@ const _parseQsnddtaq = async function (command) {
     return ret;
 };
 
-const _parseScr = async function (command, isThisSubCmd) {
+const _parseScr = async function (command, isThisSubCmd,key) {
 
     let ret = {};
     let subCmdVar, readParams, keysParams;
@@ -481,7 +480,32 @@ const _parseScr = async function (command, isThisSubCmd) {
     }
     subCmdVar = (subCmdVar) ? subCmdVar : command;
     ret["session"] = _subStrUsingNextIndex(subCmdVar, "NAME(", ")");
-    if (subCmdVar.includes("READ")) {
+    if (subCmdVar.includes("START")) {
+        ret["nodeName"] = "scrops";
+        ret["description"] = "Scrops";
+        ret["radiobutton"] = "start";
+
+        if (subCmdVar.includes("KEYS")) {
+            let attr;
+            if (ret && ret.nodeName) {  attr = await _setAttribute(ret.nodeName,key); }
+            result.push({ ...ret, ...attr }); 
+            initAPICL[key] = attr.id; 
+            
+            let cmdAfterRemoveScrStart = command.replace('START','');
+            result.push(await _parseCommand(cmdAfterRemoveScrStart, counter++, dependencies));
+
+            return {};
+        }
+
+    } else if (subCmdVar.includes("STOP")) {
+        ret["nodeName"] = "scrops";
+        ret["description"] = "Scrops";
+        ret["radiobutton"] = "stop";
+    } else if (subCmdVar.includes("RELEASE")) {
+        ret["nodeName"] = "scrops";
+        ret["description"] = "Scrops";
+        ret["radiobutton"] = "release";
+    } else if (subCmdVar.includes("READ")) {
         let allReads = [];
         let values;
         readParams = _subStrUsingLastIndex(subCmdVar, "READ(", ")");    
@@ -496,7 +520,8 @@ const _parseScr = async function (command, isThisSubCmd) {
         ret["description"] = "Scrread";
         ret["listbox"] = JSON.stringify(allReads);
     } else if (subCmdVar.includes("KEYS")) {
-        keysParams = _subStrUsingLastIndex(subCmdVar, "KEYS(", ")");
+        keysParams = _patternMatch(subCmdVar, /KEYS\(([^)]+)\)/, 0);
+        
         let allKeys = [];
         let values;
         keysParams.split(':').forEach(function (value) {
@@ -510,19 +535,8 @@ const _parseScr = async function (command, isThisSubCmd) {
         ret["description"] = "Scrkeys";
         ret["listbox"] = JSON.stringify(allKeys);
 
-    } else if (subCmdVar.includes("START")) {
-        ret["nodeName"] = "scrops";
-        ret["description"] = "Scrops";
-        ret["radiobutton"] = "start";
-    } else if (subCmdVar.includes("STOP")) {
-        ret["nodeName"] = "scrops";
-        ret["description"] = "Scrops";
-        ret["radiobutton"] = "stop";
-    } else if (subCmdVar.includes("RELEASE")) {
-        ret["nodeName"] = "scrops";
-        ret["description"] = "Scrops";
-        ret["radiobutton"] = "release";
     }
+
     return ret;
 };
 
