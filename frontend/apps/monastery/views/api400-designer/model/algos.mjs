@@ -418,7 +418,7 @@ const _convertForScrops = function (node) {
 };
 
 const _convertForSubstr = function (node) {
-    return `CHGVAR     VAR(${node.variable ? node.variable.trim() : ''})     VALUE(${node.string ? node.string.trim() : ''}:${node.index ? node.index.trim() : ''}:${node.noofchar ? node.noofchar.trim() : ''})`
+    return `CHGVAR     VAR(${node.variable ? node.variable.trim() : ''})     VALUE(SUBSTR DO(${node.string ? node.string.trim() : ''}:${node.index ? node.index.trim() : ''}:${node.noofchar ? node.noofchar.trim() : ''}))`
 };
 
 const _convertForChangeVar = function (node) {
