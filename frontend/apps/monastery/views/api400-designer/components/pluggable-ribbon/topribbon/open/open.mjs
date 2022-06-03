@@ -8,8 +8,8 @@ import { blackboard } from "/framework/js/blackboard.mjs";
 import { serverManager } from "../../../../js/serverManager.js";
 import { page_generator } from "/framework/components/page-generator/page-generator.mjs";
 
-let xCounter, yCounter,counter=0,dependencies=[],result = [],storeIDS={};
-let apicl={},initAPICL={},commandCounter = [];
+let xCounter, yCounter,counter=0,dependencies=[],result = [],storeIDS={},flagNOthenYESelse=0;
+let apicl={},initAPICL={},commandCounter = [],nextElseDependency=[];
 ;
 
 const PLUGIN_PATH = util.getModulePath(import.meta), MSG_FILE_UPLOADED = "FILE_UPLOADED",
@@ -197,7 +197,7 @@ const _setAttribute = async function (nodeName,key) {
     
     if (counter >= 2) {
         if(xCounter%1200==0 && yCounter%80 == 0){ xCounter=100;yCounter=yCounter+80};
-        attribute["dependencies"] = _putDependency(dependencies[counter - 2]);
+        attribute["dependencies"] = _putDependency(dependencies[counter - 2],nodeName);
         attribute["x"] = xCounter;
         attribute["y"] = yCounter;
         xCounter = xCounter + 100
@@ -205,8 +205,17 @@ const _setAttribute = async function (nodeName,key) {
     return attribute;
 };
 
-const _putDependency = function (nodeid) {
-    return [`${nodeid}`];
+const _putDependency = function (nodeid,nodeName) {
+    console.log(nodeName);console.log(flagNOthenYESelse);console.log(nextElseDependency);
+
+    let dependencyId;
+    if (nextElseDependency.length>0) {dependencyId = nextElseDependency[0];  nextElseDependency.pop(); } 
+    else { 
+        dependencyId = nodeid;
+        if (flagNOthenYESelse!=0 && nodeName!='endapi') { dependencyId = flagNOthenYESelse; flagNOthenYESelse=0; }
+    }
+    
+    return [`${dependencyId}`];
 };
 
 const _checkChgvarSubCommand = async function (command) {
@@ -260,7 +269,7 @@ const _parseGoto = async function (command) {
 };
 
 const _parseIfCondition = async function (command,key) {
-    let ret = {};
+    let ret = {},afterTrueCmd;
     ret["nodeName"] = "condition";
     ret["condition"] = _patternMatch(command, /COND\(([^)]+)\)/, 0);
     ret["description"] = `Condition${_addCommandCount(ret["nodeName"])}`;
@@ -279,7 +288,8 @@ const _parseIfCondition = async function (command,key) {
 
     if (iftrue!='') { 
         result.push(await _parseCommand("iftrue", counter++, dependencies)); 
-        result.push(await _parseCommand(iftrue, counter++, dependencies)); 
+        afterTrueCmd = await _parseCommand(iftrue.trim(), counter++, dependencies);
+        result.push(afterTrueCmd); 
     }
     xCounter=attr.x;
     yCounter=attr.y+80;
@@ -287,8 +297,16 @@ const _parseIfCondition = async function (command,key) {
     ModelObjectOfIffalse.dependencies=[attr.id];
 
     result.push( ModelObjectOfIffalse); 
-    if (iffalse!='') {  
-        result.push(await _parseCommand(iffalse, counter++, dependencies)); 
+    if (iffalse.trim()!='') {  
+        result.push(await _parseCommand(iffalse.trim(), counter++, dependencies)); 
+    } else {
+        nextElseDependency.push(ModelObjectOfIffalse.id);
+    }
+
+    // when THEN do not have GOTO and ELSE has GOTO
+    if (iftrue.trim().split(" ")[0]!="GOTO" && iffalse.trim().split(" ")[0]=="GOTO" ) {
+        console.log(afterTrueCmd);        
+        flagNOthenYESelse = afterTrueCmd.id;        
     }
 
     return {};
