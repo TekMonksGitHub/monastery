@@ -319,7 +319,7 @@ const _convertForCall = function (node) {
     if (node.listbox) {
         let listBoxValues = JSON.parse(node.listbox);
         if (listBoxValues && listBoxValues.length > 0)
-            cmdString += ` PARM('${listBoxValues.filter(Boolean).join(" ")}')`;
+            cmdString += ` PARM(${listBoxValues.filter(Boolean).join(" ")})`;
     }
     else cmdString += ` PARM()`
     return cmdString;
