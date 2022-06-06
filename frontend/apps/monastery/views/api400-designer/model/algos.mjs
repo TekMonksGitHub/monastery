@@ -25,6 +25,8 @@ function sortDependencies(nodes) {
         let flag = 0;
         dependencyCheck = 0;
         currentNodeId = (nextCurrentNodeId ? nextCurrentNodeId : currentNodeId);
+        console.log(currentNodeId);
+        console.log( sortedSet);
         if (stopNodeIds && stopNodeIds.length > 0 && stopNodeIds.includes(currentNodeId) && futureCurrentNode && futureCurrentNode.length > 0) {
             sortedSet.push(futureCurrentNode[0]);
             currentNodeId = futureCurrentNode[0].id;
@@ -183,7 +185,7 @@ const _convertForCondition = function (node, nodes) {
                 if (nodeObj.nodeName == 'iftrue' || nodeObj.nodeName == 'iffalse') {
                     let isThenElse = (nodeObj.nodeName == 'iftrue') ? `THEN` : `ELSE`;
                     let valueOfThenElse = (nodeObj.nodeName == 'iftrue') ? nodeObj.true : nodeObj.false;
-                    nextIdentifiedNodeObj = _checkNodeInAllNodes(nodeObj, nodes);
+                    nextIdentifiedNodeObj = checkNodeInAllNodes(nodeObj, nodes);
                     if (nextIdentifiedNodeObj) {
                         let subCmdStr = '';
                         if (nextIdentifiedNodeObj.nodeName == 'runsql') { subCmdStr = _convertForRunsql(nextIdentifiedNodeObj); }
@@ -225,7 +227,7 @@ const _convertForCondition = function (node, nodes) {
 
 const _saveNextNodeIdsInFlow = function (nodeObj, nodes) {
 
-    let nextNodeObj = _checkNodeInAllNodes(nodeObj, nodes);
+    let nextNodeObj = checkNodeInAllNodes(nodeObj, nodes);
     if (nextNodeObj && nextNodeObj.id && nextNodeObj.nodeName != 'condition') {
         nodeToAddLater.push(nextNodeObj.id);
         _saveNextNodeIdsInFlow(nextNodeObj, nodes);
@@ -234,7 +236,7 @@ const _saveNextNodeIdsInFlow = function (nodeObj, nodes) {
     }
 }
 
-const _checkNodeInAllNodes = function (node, allnodes) {
+const checkNodeInAllNodes = function (node, allnodes) {
 
     if (allnodes && allnodes.length > 0)
         for (const nodeObj of allnodes) {
@@ -247,7 +249,9 @@ const _checkNodeInAllNodes = function (node, allnodes) {
 
 }
 const _convertForGoto = function (node, nodes) {
-    let gotoNextNode = _checkNodeInAllNodes(node, nodes);
+    console.log(node);
+    console.log(nodes);
+    let gotoNextNode = checkNodeInAllNodes(node, nodes);
     return `GOTO ${gotoNextNode.id || ''}`;
 };
 
@@ -455,4 +459,4 @@ const _assignIndexIfInGOTO = function (idIndexMapping, finalAPICL) {
 }
 
 
-export const algos = { sortDependencies, convertIntoAPICL, _convertForStrapi };
+export const algos = { sortDependencies, convertIntoAPICL, _convertForStrapi,checkNodeInAllNodes };
