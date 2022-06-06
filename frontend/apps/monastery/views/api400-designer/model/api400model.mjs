@@ -71,28 +71,31 @@ function modelNodesModified(type, nodeName, id, properties) {
 }
 
 function modelConnectorsModified(type, sourceName, targetName, sourceID, targetID) {
-
+  console.log("modelConnectorsModified");
+  console.log(type, sourceName, targetName, sourceID, targetID);
+     console.log(idCache);
+     console.log(idCache[sourceID],idCache[targetID]);
     if ((!idCache[sourceID]) || (!idCache[targetID])) return;   // not connected
-
+console.log(idCache);
+console.log("idCache");
     const addOrRemoveDependencies = (sourceNode, targetNode, type) => {
+        console.log("addOrRemoveDependencies");
+        console.log(idCache);
         if (type == api400model.ADDED) {
             if (!targetNode.dependencies) targetNode.dependencies = [];
             targetNode.dependencies.push(sourceNode.id);
         } else if (type == api400model.REMOVED && targetNode) {
+            console.log("api400model.REMOVED");
+            console.log(targetNode);
             const dependencies = targetNode.dependencies;
             if ((!dependencies) || (!dependencies.length) || dependencies.indexOf(sourceNode.id) == -1) return;
             else _arrayDelete(dependencies, sourceNode.id);
             if (dependencies.length == 0) delete targetNode.dependencies;    // no longer required
         }
     }
-
-    if (sourceName == "rule" && targetName == "rule") addOrRemoveDependencies(idCache[sourceID], idCache[targetID], type);  // rule to rule
-    else {    // rule to decision or decision to rule or decision to decision, so add dependency between bundles instead
-        const sourceBundle = _findCommandsWithThisCommand(idCache[sourceID]), targetBundle = _findCommandsWithThisCommand(idCache[targetID]);
-        if ((!sourceBundle) || (!targetBundle)) { LOG.error("Rules bundle for rules being connected not found."); return; }
-        addOrRemoveDependencies(sourceBundle, targetBundle, type);
-        addOrRemoveDependencies(idCache[sourceID], idCache[targetID], type);    // also visually connect the rule nodes
-    }
+            console.log(idCache);
+         addOrRemoveDependencies(idCache[sourceID], idCache[targetID], type);    // also visually connect the rule nodes  
+    console.log(idCache);
 }
 
 function isConnectable(sourceName, targetName, sourceID, targetID) {    // are these nodes connectable
@@ -123,6 +126,7 @@ function nodeDescriptionChanged(_nodeName, id, description) {
 
 function getModel() {
     const retModel = util.clone(api400modelObj);
+    console.log(api400modelObj);
     retModel.apicl = algos.sortDependencies(retModel.apicl[0]);  // sort apicl commands in the order of dependencies
     const APICL = algos.convertIntoAPICL(retModel.apicl);
     return APICL;
@@ -208,6 +212,9 @@ function _nodeRemoved(nodeName, id) {
 
     if (!idCache[id]) return;   // we don't know of this node
     const node = idCache[id];
+  const nextTargetNode =  algos.checkNodeInAllNodes(node,api400modelObj.apicl[0].commands);
+      console.log(nextTargetNode);
+      modelConnectorsModified(api400model.REMOVED,nodeName,nextTargetNode.nodeName,id,nextTargetNode.id);
 
     if (nodeName == "rule") { const bundle = _findOrCreateCommand(); _arrayDelete(bundle.commands, node); if (!bundle.commands.length) _findAndDeleteCommand(); }
     else if (nodeName == "strapi") _arrayDelete(api400modelObj.apicl[0].commands, node);
@@ -236,7 +243,7 @@ function _nodeRemoved(nodeName, id) {
     else if (nodeName == "mod") _arrayDelete(api400modelObj.apicl[0].commands, node);
     else if (nodeName == "endapi") _arrayDelete(api400modelObj.apicl[0].commands, node);
     else if (nodeName == "changevar") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "condition")   _arrayDelete(api400modelObj.apicl[0].commands, node) 
+    else if (nodeName == "condition")  _arrayDelete(api400modelObj.apicl[0].commands, node) 
     delete idCache[id]; // uncache
     return true;
 }
@@ -276,6 +283,7 @@ function _getSheetTabData(sheetProperties, tabName) {
 }
 
 const _arrayDelete = (array, element) => {
+    console.log(array,element);
     if (array.includes(element)) array.splice(array.indexOf(element), 1); return element;
 }
 
