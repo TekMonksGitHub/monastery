@@ -184,8 +184,10 @@ function _nodeModified(nodeName, id, properties) {
 
     let parameters  = [];
     if (!idCache[id]) return false; // we don't know of this node
-    for (const key in properties) { // transfer the new properties, CSVs need the CSV scheme added
-        if (key.includes("listbox") && (nodeName == "strapi" || nodeName == "sndapimsg" || nodeName == "call" || nodeName == "runsqlprc" || nodeName == "map" || nodeName == "scrread" || nodeName == "scrkeys")) {
+    for (const key in properties) { // transfer the new properties
+        // listbox is used for the commands which are having the dynamic elements
+        if (key.includes("listbox") && (nodeName == "strapi" || nodeName == "sndapimsg" || nodeName == "call" || nodeName == "runsqlprc" || 
+                                        nodeName == "map" || nodeName == "scrread" || nodeName == "scrkeys")) {
             if (properties[key] != '') { parameters = properties[key]; }
         } else idCache[id][key] = properties[key];
     }

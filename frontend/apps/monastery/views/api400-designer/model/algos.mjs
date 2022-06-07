@@ -1,10 +1,10 @@
 /** 
- * Some algorithms for Monkruls application.
- * (C) 2021 TekMonks. All rights reserved.
+ * Some algorithms for API400 application.
+ * (C) 2022 TekMonks. All rights reserved.
  * License: See enclosed LICENSE file.
  */
  import { util } from "/framework/js/util.mjs";
- let apicl = {}, laterAPICLCmd = {}, goto = [], nodeAlreadyAdded = [], nodeToAddLater = [];
+ let apicl = {}, laterAPICLCmd = {}, nodeAlreadyAdded = [], nodeToAddLater = [];
  const DIALOG = window.monkshu_env.components["dialog-box"];
  
  /**
@@ -25,8 +25,6 @@
          let flag = 0;
          dependencyCheck = 0;
          currentNodeId = (nextCurrentNodeId ? nextCurrentNodeId : currentNodeId);
-         console.log(currentNodeId);
-         console.log( sortedSet);
          if (stopNodeIds && stopNodeIds.length > 0 && stopNodeIds.includes(currentNodeId) && futureCurrentNode && futureCurrentNode.length > 0) {
              sortedSet.push(futureCurrentNode[0]);
              currentNodeId = futureCurrentNode[0].id;
@@ -66,9 +64,7 @@
   */
  const convertIntoAPICL = function (nodes) {
  
-     apicl = {};
-     laterAPICLCmd = {};
-     nodeToAddLater = [];
+     apicl = {}, laterAPICLCmd = {},nodeToAddLater = [];
      let cmdString, addLaterflag;
  
      for (const node of nodes) {
@@ -100,6 +96,8 @@
          else if (node.nodeName == 'scrops' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForScrops(node) }
          else if (node.nodeName == 'mod' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForMod(node) }
          else if (node.nodeName == 'substr' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForSubstr(node) }
+         
+         // checking for condition cases
          if (cmdString != '') {
              if (addLaterflag) { laterAPICLCmd[node.id] = cmdString; }
              else { apicl[node.id] = cmdString; }
@@ -107,7 +105,7 @@
      }
  
      apicl = Object.assign(apicl, laterAPICLCmd);
-     apicl = _sortIndexing(apicl);
+     apicl = _putGotoIndexing(apicl);
      laterAPICLCmd = {};
  
      return apicl;
@@ -195,7 +193,7 @@
                          else if (nextIdentifiedNodeObj.nodeName == 'sndapimsg') { subCmdStr = _convertForSndapimsg(nextIdentifiedNodeObj); }
                          else if (nextIdentifiedNodeObj.nodeName == 'mod') { subCmdStr = _convertForMod(nextIdentifiedNodeObj); }
                          else if (nextIdentifiedNodeObj.nodeName == 'substr') { subCmdStr = _convertForSubstr(nextIdentifiedNodeObj); }
-                         // cmdString = cmdString.concat(` ${isThenElse}( ${subCmdStr})`);
+                         
                          (nodeObj.nodeName == 'iftrue') ? cmdString[1] = ` ${isThenElse}( ${subCmdStr})` : cmdString[2] = ` ${isThenElse}( ${subCmdStr})`;
                          nodeAlreadyAdded.push(nextIdentifiedNodeObj.id);
                      }
@@ -231,11 +229,8 @@
                  }
              }
          }
- 
  }
  const _convertForGoto = function (node, nodes) {
-     console.log(node);
-     console.log(nodes);
      let gotoNextNode = checkNodeInAllNodes(node, nodes);
      return `GOTO ${gotoNextNode.id || ''}`;
  };
@@ -412,7 +407,7 @@
  
  
  
- const _sortIndexing = function (apicl) {
+ const _putGotoIndexing = function (apicl) {
  
      let finalAPICL = {};
      let index = 0;
