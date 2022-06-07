@@ -1,6 +1,6 @@
 /** 
- * Model file for Monkruls application.
- * (C) 2021 TekMonks. All rights reserved.
+ * Model file for API400 application.
+ * (C) 2022 TekMonks. All rights reserved.
  * License: See enclosed LICENSE file.
  */
 import { algos } from "./algos.mjs";
@@ -8,12 +8,11 @@ import { util } from "/framework/js/util.mjs";
 import { blackboard } from "/framework/js/blackboard.mjs";
 
 const EMPTY_MODEL = { apicl: [] }, DEFAULT_BUNDLE = "commands";
-let api400modelObj = EMPTY_MODEL, idCache = {}, current_rule_bundle = DEFAULT_BUNDLE;
+let api400modelObj = EMPTY_MODEL, idCache = {}, current_command_bundle = DEFAULT_BUNDLE;
 const MSG_NODES_MODIFIED = "NODES_MODIFIED", MSG_CONNECTORS_MODIFIED = "CONNECTORS_MODIFIED",
     MSG_NODE_DESCRIPTION_CHANGED = "NODE_DESCRIPTION_CHANGED", MSG_ARE_NODES_CONNECTABLE = "ARE_NODES_CONNECTABLE",
     MSG_GET_MODEL = "GET_MODEL", MSG_RESET = "RESET", MSG_LOAD_MODEL = "LOAD_MODEL",
-    MSG_CONNECT_NODES = "CONNECT_NODES", MSG_ADD_NODE = "ADD_NODE", CSVLOOKUPTABLESCHEME = "csvlookuptable://",
-    CSVSCHEME = "csv://";
+    MSG_CONNECT_NODES = "CONNECT_NODES", MSG_ADD_NODE = "ADD_NODE" ;
 
 function init() {
 
@@ -26,21 +25,19 @@ function init() {
     blackboard.registerListener(MSG_ARE_NODES_CONNECTABLE, message => isConnectable(message.sourceName,
         message.targetName, message.sourceID, message.targetID), true);
     blackboard.registerListener(MSG_GET_MODEL, message => getModelAsFile(message.name), true);
-    blackboard.registerListener(MSG_RESET, _ => { api400modelObj = EMPTY_MODEL, idCache = {}, current_rule_bundle = DEFAULT_BUNDLE; }, true);
+    blackboard.registerListener(MSG_RESET, _ => { api400modelObj = EMPTY_MODEL, idCache = {}, current_command_bundle = DEFAULT_BUNDLE; }, true);
     blackboard.registerListener(MSG_LOAD_MODEL, message => loadModel(message.data));
 }
 
 function loadModel(jsonModel) {
 
     try {
-        api400modelObj = JSON.parse(jsonModel)
-        console.log(api400modelObj);
-
+        api400modelObj = JSON.parse(jsonModel);
     }
     catch (err) { LOG.error(`Bad API400 model, error ${err}, skipping.`); return; }
     if (!(api400modelObj.apicl)) { LOG.error(`Bad API400 model, not in right format.`); return; }
 
-    // first add all the rules and bundles and decision tables
+    // first add all the commands
     for (const apicl of api400modelObj.apicl) for (const command of apicl.commands) {
         const id = command.id || _getUniqueID(); idCache[id] = command; const clone = util.clone(command);
         const nodeName = clone.nodeName;
@@ -53,16 +50,14 @@ function loadModel(jsonModel) {
         const sourceName = idCache[sourceID].nodeName, targetName = idCache[targetID].nodeName;
         blackboard.broadcastMessage(MSG_CONNECT_NODES, { sourceName, targetName, sourceID, targetID });
     }
-    // add connections between rules
-    for (const bundle of api400modelObj.apicl)
-        for (const command of bundle.commands) if (command.dependencies) for (const dependency of command.dependencies) connectNodes(dependency, command.id);
+
+    // add connections between commands
+    for (const command of api400modelObj.apicl.commands) if (command.dependencies) for (const dependency of command.dependencies) connectNodes(dependency, command.id);
 
 }
 
 function modelNodesModified(type, nodeName, id, properties) {
-    console.log(nodeName);
-    console.log(id);
-    console.log(properties);
+
     if (type == api400model.ADDED) return _nodeAdded(nodeName, id, properties);
     if (type == api400model.REMOVED) return _nodeRemoved(nodeName, id);
     if (type == api400model.MODIFIED) return _nodeModified(nodeName, id, properties);
@@ -71,31 +66,23 @@ function modelNodesModified(type, nodeName, id, properties) {
 }
 
 function modelConnectorsModified(type, sourceName, targetName, sourceID, targetID) {
-  console.log("modelConnectorsModified");
-  console.log(type, sourceName, targetName, sourceID, targetID);
-     console.log(idCache);
-     console.log(idCache[sourceID],idCache[targetID]);
+
     if ((!idCache[sourceID]) || (!idCache[targetID])) return;   // not connected
-console.log(idCache);
-console.log("idCache");
+
     const addOrRemoveDependencies = (sourceNode, targetNode, type) => {
-        console.log("addOrRemoveDependencies");
-        console.log(idCache);
+
         if (type == api400model.ADDED) {
             if (!targetNode.dependencies) targetNode.dependencies = [];
             targetNode.dependencies.push(sourceNode.id);
         } else if (type == api400model.REMOVED && targetNode) {
-            console.log("api400model.REMOVED");
-            console.log(targetNode);
             const dependencies = targetNode.dependencies;
             if ((!dependencies) || (!dependencies.length) || dependencies.indexOf(sourceNode.id) == -1) return;
             else _arrayDelete(dependencies, sourceNode.id);
             if (dependencies.length == 0) delete targetNode.dependencies;    // no longer required
         }
     }
-            console.log(idCache);
-         addOrRemoveDependencies(idCache[sourceID], idCache[targetID], type);    // also visually connect the rule nodes  
-    console.log(idCache);
+
+    addOrRemoveDependencies(idCache[sourceID], idCache[targetID], type);    // also visually connect the rule nodes  
 }
 
 function isConnectable(sourceName, targetName, sourceID, targetID) {    // are these nodes connectable
@@ -126,7 +113,6 @@ function nodeDescriptionChanged(_nodeName, id, description) {
 
 function getModel() {
     const retModel = util.clone(api400modelObj);
-    console.log(api400modelObj);
     retModel.apicl = algos.sortDependencies(retModel.apicl[0]);  // sort apicl commands in the order of dependencies
     const APICL = algos.convertIntoAPICL(retModel.apicl);
     return APICL;
@@ -160,14 +146,14 @@ function _findCommandsWithThisCommand(rule) {
     return null;
 }
 
-function _findOrCreateCommand(name = current_rule_bundle, forceNew) {
+function _findOrCreateCommand(name = current_command_bundle, forceNew) {
     if (!forceNew) for (const bundle of api400modelObj.apicl) if (bundle.name == name) return bundle;
     const newBundle = { name, commands: [], id: _getUniqueID() };
     api400modelObj.apicl.push(newBundle);
     return newBundle;
 }
 
-const _findAndDeleteCommand = (name = current_rule_bundle) => _arrayDelete(api400modelObj.rule_bundles, _findOrCreateCommand(name));
+const _findAndDeleteCommand = (name = current_command_bundle) => _arrayDelete(api400modelObj.rule_bundles, _findOrCreateCommand(name));
 
 function _nodeAdded(nodeName, id, properties) {
     const node = idCache[id] ? idCache[id] : JSON.parse(JSON.stringify(properties)); node.nodeName = nodeName;
@@ -203,7 +189,6 @@ function _nodeAdded(nodeName, id, properties) {
     else if (nodeName == "endapi") _findOrCreateCommand().commands.push(node);
 
     node.id = id; idCache[id] = node;   // transfer ID and cache the node
-    console.log(api400modelObj);
     return true;
 }
 
@@ -248,18 +233,7 @@ function _nodeModified(nodeName, id, properties) {
     let parameters, variables, scrProperties = [];
     if (!idCache[id]) return false; // we don't know of this node
     for (const key in properties) { // transfer the new properties, CSVs need the CSV scheme added
-        if (key == "decisiontable") {   // decision table must be CSV
-            idCache[id][key] = CSVSCHEME + _getSheetTabData(properties.decisiontable, "Rules");
-            idCache[id].decisiontable_raw = properties[key];
-        } else if (key == "data" && nodeName == "data") {   // data sheet can be CSV or Lookup table
-            idCache[id][key] = properties.type == "CSV" ?
-                (_getSheetTabData(properties.data, "isLookupTable").toLowerCase() == "true" ? CSVLOOKUPTABLESCHEME : CSVSCHEME) + _getSheetTabData(properties.data, "default") :
-                _tryJSONParse(properties.data);
-            idCache[id].data_raw = properties[key];
-        } else if (key == "data" && nodeName == "object") { // object sheet can be JSON or CSV
-            idCache[id][key] = properties.type == "CSV" ? CSVSCHEME + properties.data : _tryJSONParse(properties.data);
-            idCache[id].data_raw = properties[key];
-        } else if (key.includes("listbox") && (nodeName == "strapi" || nodeName == "sndapimsg" || nodeName == "call" || nodeName == "runsqlprc")) {
+        if (key.includes("listbox") && (nodeName == "strapi" || nodeName == "sndapimsg" || nodeName == "call" || nodeName == "runsqlprc")) {
             if (properties[key] != '') { parameters = properties[key]; }
         } else if (key.includes("listbox") && (nodeName == "chgvar" || nodeName == "substr" || nodeName == "map")) {
             if (properties[key] != '') { variables = properties[key]; }
@@ -280,7 +254,6 @@ function _getSheetTabData(sheetProperties, tabName) {
 }
 
 const _arrayDelete = (array, element) => {
-    console.log(array,element);
     if (array.includes(element)) array.splice(array.indexOf(element), 1); return element;
 }
 
