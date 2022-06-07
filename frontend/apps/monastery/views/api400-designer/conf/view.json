@@ -5,7 +5,6 @@
         "dialog-box": "../shared/components/dialog-box", 
         "flow-diagram": "../shared/components/flow-diagram", 
         "pluggable-ribbon": "components/pluggable-ribbon",
-        "spread-sheet": "components/spread-sheet",
         "text-editor": "components/text-editor",
         "html-fragment": "../shared/components/html-fragment",
         "image-button": "../shared/components/image-button",
