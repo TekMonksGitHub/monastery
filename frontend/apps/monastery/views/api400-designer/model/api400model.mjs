@@ -52,7 +52,8 @@ function loadModel(jsonModel) {
     }
 
     // add connections between commands
-    for (const command of api400modelObj.apicl[0].commands) if (command.dependencies) for (const dependency of command.dependencies) connectNodes(dependency, command.id);
+    for (const command of api400modelObj.apicl[0].commands) 
+        if (command.dependencies) for (const dependency of command.dependencies) connectNodes(dependency, command.id);
 
 }
 
@@ -82,20 +83,19 @@ function modelConnectorsModified(type, sourceName, targetName, sourceID, targetI
         }
     }
 
-    addOrRemoveDependencies(idCache[sourceID], idCache[targetID], type);    // also visually connect the rule nodes  
+    addOrRemoveDependencies(idCache[sourceID], idCache[targetID], type);    // also visually connect the nodes  
 }
 
 function isConnectable(sourceName, targetName, sourceID, targetID) {    // are these nodes connectable
-    if (sourceID == targetID) return false;
-    if (targetName == "strapi") return false;
-    if (sourceName == "endapi") return false;
-    if (((sourceName == "condition") && !((targetName == "iftrue") || (targetName == "iffalse")))) return false;
-    if (((sourceName != "condition") && ((targetName == "iftrue") || (targetName == "iffalse")))) return false;
-    if ((targetName == "condition") && (idCache[targetID].dependencies) && (sourceName != "goto")) return false;
-    if ((sourceName == "sndapimsg") && (targetName != "endapi")) return false;
-    if ((sourceName == "goto") && (targetName == "goto")) return false;
-    return true
-
+    
+    if (sourceID == targetID) return false;  // can't loop from same node to itself
+    if (targetName == "strapi") return false; // strapi can't be target, so that it will always be first command only
+    if (sourceName == "endapi") return false; // endapi can't be connect to any next command
+    if (((sourceName == "condition") && !((targetName == "iftrue") || (targetName == "iffalse")))) return false; // condition can only connect to iftrue and iffalse
+    if (((sourceName != "condition") && ((targetName == "iftrue") || (targetName == "iffalse")))) return false; // iftrue and iffalse , can only be connect by condition
+    if ((sourceName == "goto") && (targetName == "goto")) return false; // can't connect goto to goto
+    
+    return true;
 }
 
 function nodeDescriptionChanged(_nodeName, id, description) {
@@ -107,20 +107,15 @@ function nodeDescriptionChanged(_nodeName, id, description) {
         idCache[id].name = _getNameFromDescription(description); idCache[id].description = description;
     } else idCache[id].description = description;
 
-    // rule bundle name is alaways same as description for decision tables
-    if (idCache[id].nodeName == "decision") _findCommandsWithThisCommand(idCache[id]).name = _getNameFromDescription(description);
 }
 
 function getModel() {
     const retModel = util.clone(api400modelObj);
     retModel.apicl = algos.sortDependencies(retModel.apicl[0]);  // sort apicl commands in the order of dependencies
-    const APICL = algos.convertIntoAPICL(retModel.apicl);
+    const APICL = algos.convertIntoAPICL(retModel.apicl); // converting into the final APICL
     return APICL;
 }
-function getModelObject() {
-    const retModel = util.clone(api400modelObj);
-    return retModel;
-}
+
 function runJsMod() {
     const api400 = util.clone(api400modelObj);
     let nameAndJsArray = []
@@ -135,58 +130,34 @@ function runJsMod() {
     }
     return nameAndJsArray;
 }
-const getModelAsFile = name => {
-    return { data: JSON.stringify(getModel(), null, 4), mime: "application/json", filename: `${name || "api400api"}.apicl` }
-}
+
+const getModelAsFile = name => { return { data: JSON.stringify(getModel(), null, 4), mime: "application/json", filename: `${name || "api400api"}.apicl` } }
 
 const _getUniqueID = _ => `${Date.now()}${Math.random() * 100}`;
 
-function _findCommandsWithThisCommand(rule) {
-    for (const bundle of api400modelObj.apicl) if (bundle.commands.includes(rule)) return bundle;
-    return null;
-}
-
 function _findOrCreateCommand(name = current_command_bundle, forceNew) {
-    if (!forceNew) for (const bundle of api400modelObj.apicl) if (bundle.name == name) return bundle;
-    const newBundle = { name, commands: [], id: _getUniqueID() };
-    api400modelObj.apicl.push(newBundle);
-    return newBundle;
+    if (!forceNew) for (const command of api400modelObj.apicl) if (command.name == name) return command;
+    const newCommand = { name, commands: [], id: _getUniqueID() };
+    api400modelObj.apicl.push(newCommand);
+    return newCommand;
 }
 
-const _findAndDeleteCommand = (name = current_command_bundle) => _arrayDelete(api400modelObj.rule_bundles, _findOrCreateCommand(name));
+const _findAndDeleteCommand = (name = current_command_bundle) => _arrayDelete(api400modelObj.apicl[0].commands, _findOrCreateCommand(name));
 
 function _nodeAdded(nodeName, id, properties) {
     const node = idCache[id] ? idCache[id] : JSON.parse(JSON.stringify(properties)); node.nodeName = nodeName;
     if (idCache[id]) { _nodeModified(nodeName, id, properties); return; }  // node properties modified
     const name = _getNameFromDescription(node.description);
 
-    if (nodeName == "rule") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "strapi") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "runsql") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "runjs") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "goto") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "chgvar") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "sndapimsg") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "condition") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "iftrue") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "iffalse") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "chgdtaara") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "rtvdtaara") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "call") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "runsqlprc") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "rest") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "map") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "scrread") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "scrkeys") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "scrops") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "substr") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "qrcvdtaq") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "qsnddtaq") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "dsppfm") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "log") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "jsonata") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "mod") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "endapi") _findOrCreateCommand().commands.push(node);
+    if (nodeName == "strapi") _findOrCreateCommand().commands.push(node);
+    else if (nodeName == "runsql" || nodeName == "runjs" || nodeName == "goto" || nodeName == "chgvar" ||
+            nodeName == "sndapimsg" || nodeName == "condition" || nodeName == "iftrue" || nodeName == "iffalse" ||
+            nodeName == "chgdtaara" || nodeName == "rtvdtaara" || nodeName == "call" || nodeName == "runsqlprc" ||
+            nodeName == "rest" || nodeName == "map" || nodeName == "scrread" || nodeName == "scrkeys" ||nodeName == "scrops" ||
+            nodeName == "substr" || nodeName == "qrcvdtaq" || nodeName == "qsnddtaq" || nodeName == "dsppfm" || 
+            nodeName == "log" ||nodeName == "jsonata" || nodeName == "mod" || nodeName == "endapi") {
+            api400modelObj.apicl[0].commands.push(node);
+    }
 
     node.id = id; idCache[id] = node;   // transfer ID and cache the node
     return true;
@@ -200,32 +171,32 @@ function _nodeRemoved(nodeName, id) {
   if( nextTargetNode)  modelConnectorsModified(api400model.REMOVED,nodeName,nextTargetNode.nodeName,id,nextTargetNode.id);
 
     if (nodeName == "rule") { const bundle = _findOrCreateCommand(); _arrayDelete(bundle.commands, node); if (!bundle.commands.length) _findAndDeleteCommand(); }
-    else if (nodeName == "strapi") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "runsql") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "runjs") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "goto") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "chgvar") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "sndapimsg") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "iftrue") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "iffalse") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "chgdtaara") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "rtvdtaara") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "call") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "runsqlprc") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "rest") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "map") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "scrread") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "scrkeys") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "scrops") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "substr") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "qrcvdtaq") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "qsnddtaq") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "dsppfm") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "log") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "jsonata") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "mod") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "endapi") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "condition")  _arrayDelete(api400modelObj.apicl[0].commands, node) 
+    else if (nodeName == "strapi") _findAndDeleteCommand(node);
+    else if (nodeName == "runsql") _findAndDeleteCommand(node);
+    else if (nodeName == "runjs") _findAndDeleteCommand(node);
+    else if (nodeName == "goto") _findAndDeleteCommand(node);
+    else if (nodeName == "chgvar") _findAndDeleteCommand(node);
+    else if (nodeName == "sndapimsg") _findAndDeleteCommand(node);
+    else if (nodeName == "iftrue") _findAndDeleteCommand(node);
+    else if (nodeName == "iffalse") _findAndDeleteCommand(node);
+    else if (nodeName == "chgdtaara") _findAndDeleteCommand(node);
+    else if (nodeName == "rtvdtaara") _findAndDeleteCommand(node);
+    else if (nodeName == "call") _findAndDeleteCommand(node);
+    else if (nodeName == "runsqlprc") _findAndDeleteCommand(node);
+    else if (nodeName == "rest") _findAndDeleteCommand(node);
+    else if (nodeName == "map") _findAndDeleteCommand(node);
+    else if (nodeName == "scrread") _findAndDeleteCommand(node);
+    else if (nodeName == "scrkeys") _findAndDeleteCommand(node);
+    else if (nodeName == "scrops") _findAndDeleteCommand(node);
+    else if (nodeName == "substr") _findAndDeleteCommand(node);
+    else if (nodeName == "qrcvdtaq") _findAndDeleteCommand(node);
+    else if (nodeName == "qsnddtaq") _findAndDeleteCommand(node);
+    else if (nodeName == "dsppfm") _findAndDeleteCommand(node);
+    else if (nodeName == "log") _findAndDeleteCommand(node);
+    else if (nodeName == "jsonata") _findAndDeleteCommand(node);
+    else if (nodeName == "mod") _findAndDeleteCommand(node);
+    else if (nodeName == "endapi") _findAndDeleteCommand(node);
+    else if (nodeName == "condition")  _findAndDeleteCommand(node);
     delete idCache[id]; // uncache
     return true;
 }
