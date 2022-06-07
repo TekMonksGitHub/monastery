@@ -1,6 +1,6 @@
 export const i18n = {
     HELP_TEXTS: {
-        en:"SCR\nSCR READ"
+        en:"SCR\nScreen READ"
     },
     DESCRIPTIVE_NAME : {
         en:"SCRREAD"

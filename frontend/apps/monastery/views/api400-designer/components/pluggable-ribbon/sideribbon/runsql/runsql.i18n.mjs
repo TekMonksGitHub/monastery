@@ -1,6 +1,6 @@
 export const i18n = {
     HELP_TEXTS: {
-        en:"RUNSQL\nRun SQL"
+        en:"RUN SQL\nRun SQL Query"
     },
     DESCRIPTIVE_NAME : {
         en:"RUNSQL"

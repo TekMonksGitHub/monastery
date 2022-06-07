@@ -1,6 +1,6 @@
 export const i18n = {
     HELP_TEXTS: {
-        en:"RUNJS\nRun JavaScript"
+        en:"RUN JS\nRun JavaScript Code"
     },
     DESCRIPTIVE_NAME : {
         en:"RUNJS"

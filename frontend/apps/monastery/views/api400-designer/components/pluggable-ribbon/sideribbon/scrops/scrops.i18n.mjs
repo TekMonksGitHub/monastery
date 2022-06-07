@@ -1,6 +1,6 @@
 export const i18n = {
     HELP_TEXTS: {
-        en:"Select Operation\nSTART, STOP, RELEASE"
+        en:"Select SCR Operation\nSelect Screen Session Operation"
     },
     DESCRIPTIVE_NAME : {
         en:"SCROPS"
