@@ -1,8 +1,8 @@
 SCHEMA
 ======
 {
-  "library": {"html":"input", "type":"text", "placeholder":"{{i18n.LibraryName}}"},
-  "program": {"html":"input", "type":"text", "placeholder":"{{i18n.ProgramName}}"},
+  "libraryname": {"html":"input", "type":"text", "placeholder":"{{i18n.LibraryName}}"},
+  "programname": {"html":"input", "type":"text", "placeholder":"{{i18n.ProgramName}}"},
   "toolbox":{"html":"tool-box",
             "onclickHandler":"window.monkshu_env.components['text-box'].addTextBox('Parameter')",
             "onclickRemoveHandler":"window.monkshu_env.components['tool-box'].removeElement()",
@@ -16,13 +16,13 @@ SCHEMA
 LAYOUT
 =================
 
-----------------------------------
-|   library     |  program       |
-----------------------------------
-|            toolbox             |      
-----------------------------------
-|            listbox             |      
-----------------------------------
+------------------------------------------
+|   libraryname     |    programname     |
+------------------------------------------
+|               toolbox                  |      
+------------------------------------------
+|               listbox                  |      
+------------------------------------------
 
 =================
 Row Heights = 4em,1.8em,calc(100% - 1.8em - 4em)

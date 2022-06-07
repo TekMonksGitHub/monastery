@@ -323,10 +323,8 @@ const _parseCall = async function (command) {
     ret["nodeName"] = "call";
     ret["description"] = "Call";
     let programName = _patternMatch(command, /PGM\(([^)]+)\)/, 0).split("/");
-    
-    ret["library"] = programName[0];
-    ret["program"] = programName[1];
-    
+    ret["libraryname"] = programName[0];
+    ret["programname"] = programName[1];  
     ret["listbox"] = JSON.stringify(_patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean));
     return ret;
 };
@@ -338,8 +336,8 @@ const _parseRunsqlprc = async function (command) {
     ret["nodeName"] = "runsqlprc";
     ret["description"] = "Runsqlprc";
     let procedureName = _patternMatch(command, /PRC\(([^)]+)\)/, 0).split("/");
-    ret["library"] = procedureName[0];
-    ret["procedure"] = procedureName[1];
+    ret["libraryname"] = procedureName[0];
+    ret["procedurename"] = procedureName[1];
     let listOfParams =  _patternMatch(command, /PARM\(([^)]+)\)/, 0).split(" ").filter(Boolean);
     for(let param of listOfParams ){
         paramType='',parameter='',paramNature='';
@@ -442,7 +440,7 @@ const _parseQrcvdtaq = async function (command) {
     ret["nodeName"] = "qrcvdtaq";
     ret["description"] = "Qrcvdtaq";
     let qrcvdtaqParm = _patternMatch(command, /PARM\(([^)]+)\)/, 0).split(/\s+/).filter(Boolean);
-    ret["library"] = qrcvdtaqParm[0].split("/")[0];
+    ret["libraryname"] = qrcvdtaqParm[0].split("/")[0];
     ret["queue"] = qrcvdtaqParm[0].split("/")[1];
     ret["wait"] = qrcvdtaqParm[1];
     ret["dropdown"] = qrcvdtaqParm[2] == "true" ? "true" : "false";
