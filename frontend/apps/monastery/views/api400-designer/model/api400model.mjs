@@ -136,7 +136,7 @@ const getModelAsFile = name => { return { data: JSON.stringify(getModel(), null,
 const _getUniqueID = _ => `${Date.now()}${Math.random() * 100}`;
 
 function _findOrCreateCommand(name = current_command_bundle, forceNew) {
-    if (!forceNew) for (const command of api400modelObj.apicl[0].commands) if (command.name == name) return command;
+    if (!forceNew) for (const command of api400modelObj.apicl) if (command.name == name) return command;
     const newCommand = { name, commands: [], id: _getUniqueID() };
     api400modelObj.apicl.push(newCommand);
     return newCommand;
