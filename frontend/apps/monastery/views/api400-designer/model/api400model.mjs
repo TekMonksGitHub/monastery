@@ -175,7 +175,7 @@ function _nodeRemoved(nodeName, id) {
         nodeName == "call"||nodeName == "runsqlprc"||nodeName == "rest"||nodeName == "map"||nodeName == "scrread"||
         nodeName == "scrkeys"||nodeName == "scrops"||nodeName == "substr"||nodeName == "qrcvdtaq"||nodeName == "qsnddtaq"||
         nodeName == "dsppfm"||nodeName == "log"||nodeName == "jsonata"||nodeName == "mod"||nodeName == "endapi"||nodeName == "condition")  
-    _findAndDeleteCommand(node);
+        _arrayDelete(api400modelObj.apicl[0].commands,node);
 
     delete idCache[id]; // uncache
     return true;
