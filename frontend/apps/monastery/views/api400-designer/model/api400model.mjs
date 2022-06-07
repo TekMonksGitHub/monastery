@@ -167,39 +167,20 @@ function _nodeRemoved(nodeName, id) {
 
     if (!idCache[id]) return;   // we don't know of this node
     const node = idCache[id];
-  const nextTargetNode =  algos.checkNodeInAllNodes(node,api400modelObj.apicl[0].commands);
-  if( nextTargetNode)  modelConnectorsModified(api400model.REMOVED,nodeName,nextTargetNode.nodeName,id,nextTargetNode.id);
+    const nextTargetNode =  algos.checkNodeInAllNodes(node,api400modelObj.apicl[0].commands);
+    if (nextTargetNode)  modelConnectorsModified(api400model.REMOVED,nodeName,nextTargetNode.nodeName,id,nextTargetNode.id);
 
-    if (nodeName == "rule") { const bundle = _findOrCreateCommand(); _arrayDelete(bundle.commands, node); if (!bundle.commands.length) _findAndDeleteCommand(); }
-    else if (nodeName == "strapi") _findAndDeleteCommand(node);
-    else if (nodeName == "runsql") _findAndDeleteCommand(node);
-    else if (nodeName == "runjs") _findAndDeleteCommand(node);
-    else if (nodeName == "goto") _findAndDeleteCommand(node);
-    else if (nodeName == "chgvar") _findAndDeleteCommand(node);
-    else if (nodeName == "sndapimsg") _findAndDeleteCommand(node);
-    else if (nodeName == "iftrue") _findAndDeleteCommand(node);
-    else if (nodeName == "iffalse") _findAndDeleteCommand(node);
-    else if (nodeName == "chgdtaara") _findAndDeleteCommand(node);
-    else if (nodeName == "rtvdtaara") _findAndDeleteCommand(node);
-    else if (nodeName == "call") _findAndDeleteCommand(node);
-    else if (nodeName == "runsqlprc") _findAndDeleteCommand(node);
-    else if (nodeName == "rest") _findAndDeleteCommand(node);
-    else if (nodeName == "map") _findAndDeleteCommand(node);
-    else if (nodeName == "scrread") _findAndDeleteCommand(node);
-    else if (nodeName == "scrkeys") _findAndDeleteCommand(node);
-    else if (nodeName == "scrops") _findAndDeleteCommand(node);
-    else if (nodeName == "substr") _findAndDeleteCommand(node);
-    else if (nodeName == "qrcvdtaq") _findAndDeleteCommand(node);
-    else if (nodeName == "qsnddtaq") _findAndDeleteCommand(node);
-    else if (nodeName == "dsppfm") _findAndDeleteCommand(node);
-    else if (nodeName == "log") _findAndDeleteCommand(node);
-    else if (nodeName == "jsonata") _findAndDeleteCommand(node);
-    else if (nodeName == "mod") _findAndDeleteCommand(node);
-    else if (nodeName == "endapi") _findAndDeleteCommand(node);
-    else if (nodeName == "condition")  _findAndDeleteCommand(node);
+    if (nodeName == "strapi"||nodeName == "runsql"||nodeName == "runjs"||nodeName == "goto"||nodeName == "chgvar"||
+        nodeName == "sndapimsg"||nodeName == "iftrue"||nodeName == "iffalse"||nodeName == "chgdtaara"||nodeName == "rtvdtaara"||
+        nodeName == "call"||nodeName == "runsqlprc"||nodeName == "rest"||nodeName == "map"||nodeName == "scrread"||
+        nodeName == "scrkeys"||nodeName == "scrops"||nodeName == "substr"||nodeName == "qrcvdtaq"||nodeName == "qsnddtaq"||
+        nodeName == "dsppfm"||nodeName == "log"||nodeName == "jsonata"||nodeName == "mod"||nodeName == "endapi"||nodeName == "condition")  
+    _findAndDeleteCommand(node);
+
     delete idCache[id]; // uncache
     return true;
 }
+
 function _nodeModified(nodeName, id, properties) {
     let parameters, variables, scrProperties = [];
     if (!idCache[id]) return false; // we don't know of this node
@@ -219,18 +200,11 @@ function _nodeModified(nodeName, id, properties) {
     return true;
 }
 
-function _getSheetTabData(sheetProperties, tabName) {
-    for (const object of JSON.parse(sheetProperties)) if (object.id == tabName) return object.data;
-    return null;
-}
-
 const _arrayDelete = (array, element) => {
     if (array.includes(element)) array.splice(array.indexOf(element), 1); return element;
 }
 
 const _getNameFromDescription = description => description.split(" ")[0].split("\n")[0];
-
-const _tryJSONParse = object => { try { return JSON.parse(object) } catch (err) { return object } }
 
 export const api400model = {
     init, loadModel, modelNodesModified, modelConnectorsModified, isConnectable,
