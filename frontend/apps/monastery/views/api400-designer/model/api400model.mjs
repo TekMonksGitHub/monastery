@@ -234,5 +234,5 @@ const _tryJSONParse = object => { try { return JSON.parse(object) } catch (err) 
 
 export const api400model = {
     init, loadModel, modelNodesModified, modelConnectorsModified, isConnectable,
-    nodeDescriptionChanged, getModelAsFile, getModel, getModelObject, runJsMod, ADDED: "added", REMOVED: "removed", MODIFIED: "modified"
+    nodeDescriptionChanged, getModelAsFile, getModel, runJsMod, ADDED: "added", REMOVED: "removed", MODIFIED: "modified"
 };
