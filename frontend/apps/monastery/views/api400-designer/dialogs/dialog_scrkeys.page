@@ -68,10 +68,6 @@ body {
     display: inline-block;
     width: 100%;
 }
-div#page-contents{
-    width: 100%;
-  
-}
 
 div.scr-keys{
   background: #C9E5FF;
@@ -84,23 +80,20 @@ div.scr-keys{
     
 }
 
+div#page-contents{
+    width: 100%; 
+}
 
 div.scr-keys>.keys {
   grid-area: keys;
 }
+
 div.scr-keys>.y-coordinates {
   grid-area: y-coordinates;
 }
+
 div.scr>.x-coordinates {
   grid-area: x-coordinates;
-}
-input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type=number] {
-  -moz-appearance: textfield;
 }
 
    

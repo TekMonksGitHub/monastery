@@ -2,7 +2,6 @@ SCHEMA
 ======
 {
 "condition": {"html":"textarea", "placeholder":"{{i18n.Condition}}", "wrap":"soft", "spellcheck":"false"}
-
 }
 ======
 

@@ -58,10 +58,6 @@ CSS
     font-family: inherit;
 }
 
-
-
-
-
 ::placeholder {opacity: 0.8;}
 
 body {

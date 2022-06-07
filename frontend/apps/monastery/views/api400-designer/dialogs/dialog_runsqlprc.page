@@ -66,6 +66,7 @@ CSS
     margin-left:20px;
     margin-right:1.2em;
 }
+
 select.param,select.type{
     width: 100%;
     font-family: inherit;
@@ -78,9 +79,11 @@ select.param,select.type{
     margin-top:10px;
     margin-bottom:10px;
 }
+
 select.type{
  margin-left:10px;
 }
+
 div.runsqlprc{
   background: #C9E5FF;
   border-radius:7px;
@@ -97,12 +100,15 @@ div.runsqlprc{
 div.runsqlprc >.variable {
   grid-area: variable ;
 }
+
 div.runsqlprc >.param {
   grid-area: param;
 }
+
 div.runsqlprc >.type {
   grid-area: type ;
 }
+
 .item0{
     display:flex;
     justify-content: flex-start;
@@ -123,17 +129,11 @@ body {
     display: inline-block;
     width: 100%;
 }
-list-box>html>body>div#page-contents{
+div#page-contents{
     width: 100%;
     display: flex;
     flex-wrap: wrap;
     margin-left:9px;
 }
-list-box>html>body>div#page-contents>input{
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    margin-left:9px;
-   
-}
+
 =======

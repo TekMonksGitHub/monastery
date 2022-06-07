@@ -4,9 +4,7 @@ SCHEMA
     "variable": {"html":"input", "type":"text", "placeholder":"{{i18n.Variable}}", "spellcheck":"false"},
     "string": {"html":"input", "type":"text", "placeholder":"{{i18n.String}}", "spellcheck":"false"},
     "index": {"html":"input", "type":"text", "placeholder":"{{i18n.StringIndex}}", "spellcheck":"false"},
-    "noofchar": {"html":"input", "type":"text", "placeholder":"{{i18n.NoOfChar}}", "spellcheck":"false"}
-   
-   
+    "noofchar": {"html":"input", "type":"text", "placeholder":"{{i18n.NoOfChar}}", "spellcheck":"false"}  
 }
 ======
 

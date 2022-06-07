@@ -51,10 +51,8 @@ CSS
     padding: 10px;
     resize: none;
     height:10px;
-    font-family: inherit;
-    
+    font-family: inherit;  
 }
-
 
 ::placeholder {opacity: 0.8;}
 

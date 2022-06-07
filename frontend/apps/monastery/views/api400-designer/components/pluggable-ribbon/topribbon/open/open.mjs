@@ -146,7 +146,7 @@ const _parseCommand = async function (command, counter, dependencies,key) {
     let nodeName = cmd[0].toLowerCase();
     if (nodeName == "runjs" && _patternMatch(command, /MOD\(([^)]+)\)/, 0) != "") nodeName = "mod";
     if (nodeName == "if") nodeName = "condition";
-    if (nodeName == 'chgvar' || nodeName == 'changevar') {
+    if (nodeName == 'chgvar') {
         let nodenameAsSubCmd = await _checkChgvarSubCommand(command);
         nodeNameAsSubCmd = nodenameAsSubCmd.toLowerCase() || nodeName;
     }
@@ -170,12 +170,11 @@ const _parseCommand = async function (command, counter, dependencies,key) {
     else if (nodeName == 'runsqlprc') { ret = await _parseRunsqlprc(command) }
     else if (nodeName == 'map') { ret = await _parseMap(command, isThisSubCmd) }
     else if (nodeName == 'substr') { ret = await _parseSubstr(command, isThisSubCmd) }
- //   else if (nodeName == 'chgvar') { ret = await _parseChgvar(command) }
+   else if (nodeName == 'chgvar') { ret = await _parseChgvar(command) }
     else if (nodeName == 'runsql') { ret = await _parseRunsql(command, isThisSubCmd) }
     else if (nodeName == 'runjs') { ret = await _parseRunjs(command, isThisSubCmd) }
     else if (nodeName == 'mod') { ret = await _parseMod(command) }
     else if (nodeName == 'endapi') { ret = await _parseEndapi()}
-    else if (nodeName == 'chgvar') { ret = await _parseChangeVariable(command)}
     else if (nodeName == 'condition') { ret = await _parseIfCondition(command,key)}
     else if (nodeName == 'iftrue') { ret = await _parseIfTrue(command)}
     else if (nodeName == 'iffalse') { ret = await _parseIfFalse(command)}
@@ -420,13 +419,6 @@ const _parseChgvar = async function (command) {
     let ret = {};
     ret["nodeName"] = "chgvar";
     ret["description"] = "Chgvar";
-    ret["listbox"] =JSON.stringify([[_patternMatch(command, /VAR\(([^)]+)\)/, 0), _patternMatch(command, /VALUE\(([^)]+)\)/, 0)]]);
-    return ret;
-};
-const _parseChangeVariable = async function (command) {
-    let ret = {};
-    ret["nodeName"] = "changevar";
-    ret["description"] = "Changevar";
     ret["variable"] =_patternMatch(command, /VAR\(([^)]+)\)/, 0);
     ret["value"] = _patternMatch(command, /VALUE\(([^)]+)\)/, 0)
     return ret;
@@ -578,25 +570,7 @@ const _parseMap = async function (command, isThisSubCmd) {
     ret["description"] = "Map";
     return ret;
 };
-/*const _parseSubstr = async function (command, isThisSubCmd) {
-    let ret = {};
-    let subCmdVar;
-    if (isThisSubCmd) {
-        subCmdVar = _subStrUsingLastIndex(command, "VALUE(", ")")
-    }
-    let substr = _subStrUsingLastIndex(subCmdVar, "DO(", ")").split(":");
-    let substrArr = [];
-    substr.unshift(_subStrUsingNextIndex(command, "VAR(", ")"))
-    for (let j = 0; j < 4; j++) {
-        substr[j] = substr[j] ? substr[j].trim() : '';
-    }
-    substrArr.push(substr);
-    ret["listbox"] = JSON.stringify(substrArr);
-    ret["nodeName"] = "substr";
-    ret["description"] = "Substr";
-    return ret;
-};
-*/
+
 const _parseSubstr = async function (command, isThisSubCmd) {
 
     let ret = {};
