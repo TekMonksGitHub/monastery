@@ -8,7 +8,6 @@
         "spread-sheet": "components/spread-sheet",
         "text-editor": "components/text-editor",
         "floating-window": "components/floating-window",
-        "drag-drop": "components/drag-drop",
         "html-fragment": "../shared/components/html-fragment",
         "image-button": "../shared/components/image-button",
         "context-menu": "components/context-menu",
