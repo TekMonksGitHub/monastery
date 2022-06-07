@@ -18,22 +18,7 @@ async function addTextBox( id,  value) {
   parentContainer.appendChild(inputElement);
   return true
 }
-async function addTwoTextBox( id1, id2, chgvarVariable, chgvarValue) {
 
-  const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
-  const parentContainer =  dialogShadowRoot.querySelector("div#page-contents");
-  //Creating a div element having two text box
-  const divElement = _createDivElement(parentContainer, id1, id2, chgvarVariable, chgvarValue);
-  parentContainer.appendChild(divElement);
-};
-async function addTextBoxesForSubstr( variableValue, stringValue,stringIndexValue,noOfCharValue) {
-
-  //Creating a div element for SUBSTR
-  const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
-  const parentContainer =  dialogShadowRoot.querySelector("div#page-contents");
-  const divElement = _createDivElementForSubstr(parentContainer,variableValue, stringValue,stringIndexValue,noOfCharValue);
-  parentContainer.appendChild(divElement);
-};
 async function addTextBoxesForMap( stringVariableValue,startPositionValue,noOfCharValue,repitionValue,stringFunctionValue) {
   const dialogShadowRoot = dialog_box.getShadowRootByHostId(DIALOG_HOST_ID);
   const parentContainer =  dialogShadowRoot.querySelector("div#page-contents");
@@ -76,27 +61,7 @@ function _createElement(parentContainer, id, value,placeHolder, className,placeH
   return inputElement
 };
 
-function _createDivElement(parentContainer, id1, id2, chgvarVariable, chgvarValue) {
-  const divElement = document.createElement("div");
-  divElement.setAttribute("class", `${id1}`);
-  const placeHolder1=id1;
-  const placeHolder2=id2;
-  const inputElement1 = _createElement(parentContainer, id1, chgvarVariable,placeHolder1, "variablebox");
-  const inputElement2 = _createElement(parentContainer, id2, chgvarValue,placeHolder2, "valuebox");
-  divElement.append(inputElement1, inputElement2);
-  return divElement
-}
 
-function _createDivElementForSubstr(parentContainer,variableValue, stringValue,stringIndexValue,noOfCharValue) {
-  const divElement = document.createElement("div");
-  divElement.setAttribute("class", "substrdiv");
-  const inputElement1 = _createElement(parentContainer, "variable", variableValue,"Variable" ,"variablebox");
-  const inputElement2 = _createElement(parentContainer, "string", stringValue,"String", "stringbox");
-  const inputElement3 = _createElement(parentContainer,"index",  stringIndexValue,"String Index" ,"indexbox","static");
-  const inputElement4 = _createElement(parentContainer,"count",  noOfCharValue, "Num of Char","countbox","static");
-  divElement.append(inputElement1, inputElement2,inputElement3,inputElement4);
-  return divElement
-}
 function _createDivElementForMap(parentContainer, stringVariableValue,startPositionValue,noOfCharValue,repitionValue,stringFunctionValue) {
   const divElement = document.createElement("div");
   divElement.setAttribute("class", "map");
@@ -170,8 +135,6 @@ function _createDropDownElementFortype(parentContainer) {
 export const text_box = {
   trueWebComponentMode: true,
   addTextBox,
-  addTwoTextBox,
-  addTextBoxesForSubstr,
   addTextBoxesForScrKeys,
   addTextBoxesForMap,
   addTextBoxesForScrRead,

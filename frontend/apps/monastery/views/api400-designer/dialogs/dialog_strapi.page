@@ -54,13 +54,15 @@ body {
     display: inline-block;
     width: 100%;
 }
-list-box>html>body>div#page-contents{
+
+div#page-contents{
     width: 100%;
-     display: flex;
+    display: flex;
     flex-wrap: wrap;
     margin-left:9px;
 }
-list-box>html>body>div#page-contents>input{
+
+div#page-contents>input{
     flex: 1 1 220px;
     margin-right:2.3em; 
 }

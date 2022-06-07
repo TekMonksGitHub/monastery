@@ -59,9 +59,11 @@ CSS
     font-family: inherit;
     
 }
+
 .item1>input{
     margin-right:1.5em;
 }
+
 .item2>input{
     margin-left:1.5em;
 }

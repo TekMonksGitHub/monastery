@@ -39,7 +39,6 @@ CSS
     box-sizing: border-box;
 }
 
-
 .grid-item-extension > textarea, .grid-item-extension > textarea:focus {
     width: 100%;
     border-radius: 5px;

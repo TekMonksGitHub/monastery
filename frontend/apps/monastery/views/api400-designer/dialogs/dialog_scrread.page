@@ -70,6 +70,7 @@ body {
     display: inline-block;
     width: 100%;
 }
+
 div#page-contents{
     width: 100%; 
 }
@@ -89,15 +90,19 @@ div.scr-read{
 div.scr-read>.rows-from{
   grid-area: rows-from;
 }
+
 div.scr-read>.cols-from {
   grid-area: cols-from;
 }
+
 div.scr-read>.rows-to {
   grid-area: rows-to;
 }
+
 div.scr-read>.cols-to {
   grid-area: cols-to;
 }
+
 input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;

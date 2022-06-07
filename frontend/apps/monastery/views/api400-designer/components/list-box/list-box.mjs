@@ -26,18 +26,14 @@ async function elementRendered(element) {
     if (element.getAttribute("value")) values = JSON.parse(element.getAttribute("value"));
     if (values && values.length && element.getAttribute("type") == "Parameter") _setValue(values, element.getAttribute("type"));
     else if (values && values.length && element.getAttribute("type") == "Message") _setValue(values, element.getAttribute("type"));
-    else if (values && values.length && element.getAttribute("type") == "Variable") _setValue(values, element.getAttribute("type"));
-    else if (values && values.length && element.getAttribute("type") == "Sub Strings") _setValue(values, element.getAttribute("type"));
     else if (values && values.length && element.getAttribute("type") == "Map") _setValue(values, element.getAttribute("type"));
     else if (values && values.length && element.getAttribute("type") == "Keys") _setValue(values, element.getAttribute("type"));
-    else if (values && values.length && element.getAttribute("type") == "Read") _setValue(values, element.getAttribute("type"))
-    else if (values && values.length && element.getAttribute("type") == "runsqlprc") _setValue(values, element.getAttribute("type"))
+    else if (values && values.length && element.getAttribute("type") == "Read") _setValue(values, element.getAttribute("type"));
+    else if (values && values.length && element.getAttribute("type") == "runsqlprc") _setValue(values, element.getAttribute("type"));
   }
   else {
     if (element.getAttribute("type") == "Parameter" && noOfElements < 1) window.monkshu_env.components['text-box'].addTextBox(element.getAttribute('type'));
     else if (element.getAttribute("type") == "Message" && noOfElements < 1) window.monkshu_env.components['text-box'].addTextBox(element.getAttribute('type'));
-    else if (element.getAttribute("type") == "Variable" && noOfElements < 1) window.monkshu_env.components['text-box'].addTwoTextBox('Variable', 'Value',);
-    else if (element.getAttribute("type") == "Sub Strings" && noOfElements < 1) window.monkshu_env.components['text-box'].addTextBoxesForSubstr();
     else if (element.getAttribute("type") == "Map" && noOfElements < 1) window.monkshu_env.components['text-box'].addTextBoxesForMap();
     else if (element.getAttribute("type") == "Keys" && noOfElements < 1) window.monkshu_env.components['text-box'].addTextBoxesForScrKeys();
     else if (element.getAttribute("type") == "Read" && noOfElements < 1) window.monkshu_env.components['text-box'].addTextBoxesForScrRead();
@@ -47,24 +43,13 @@ async function elementRendered(element) {
 
 function _getValue(host, type) {
   const shadowRoot = dialog_box.getShadowRootByContainedElement(host);
-  const textBoxContainer = shadowRoot.querySelector("#page-contents")
+  const textBoxContainer = shadowRoot.querySelector("#page-contents");
   return _getTextBoxValues(textBoxContainer, shadowRoot, type);
 }
 
 function _setValue(values, type) {
-  if (type == "Variable") {
-    for (const textBoxValue of values) {
-      if (textBoxValue.some(value => value != ""))
-        window.monkshu_env.components['text-box'].addTwoTextBox('Variable', 'Value', textBoxValue[0], textBoxValue[1]);
-    }
-  }
-  else if (type == "Sub Strings") {
-    for (const textBoxValue of values) {
-      if (textBoxValue.some(value => value != ""))
-        window.monkshu_env.components['text-box'].addTextBoxesForSubstr(textBoxValue[0], textBoxValue[1], textBoxValue[2], textBoxValue[3]);
-    }
-  }
-  else if (type == "Map") {
+
+  if (type == "Map") {
     for (const textBoxValue of values) {
       if (textBoxValue.some(value => value != ""))
         window.monkshu_env.components['text-box'].addTextBoxesForMap(textBoxValue[0], textBoxValue[1], textBoxValue[2], textBoxValue[3], textBoxValue[4]);
@@ -100,7 +85,7 @@ function _setValue(values, type) {
 
 function _getTextBoxValues(textBoxContainer, shadowRoot, type) {
   const textBoxValues = [];
-  if (type == "Variable" || type == "Sub Strings" || type == "Map" || type == "Keys" || type == "Read" || type =="runsqlprc") {
+  if ( type == "Map" || type == "Keys" || type == "Read" || type =="runsqlprc") {
     for (const divBox of textBoxContainer.children) {
       const Values = [];
       for (const textBox of divBox.children) {

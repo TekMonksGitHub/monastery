@@ -50,6 +50,7 @@ CSS
     flex-flow: row;
     box-sizing: border-box;
 }
+
 .grid-item-extension > input, .grid-item-extension > input:focus {
     width: 100%;
     border-radius: 3px;
@@ -61,6 +62,7 @@ CSS
     font-family: inherit;
     margin:10px 22px 10px 20px; 
 }
+
 ::placeholder {opacity: 0.8;}
 
 body {
@@ -70,7 +72,6 @@ body {
 }
 div#page-contents{
     width: 100%;
-  
 }
 
 div.map{
@@ -88,25 +89,21 @@ div.map{
 div.map>.stringbox {
   grid-area: stringbox;
 }
+
 div.map>.startbox {
   grid-area: startbox;
 }
+
 div.map>.countbox {
   grid-area: countbox;
 }
+
 div.map>.functionbox {
   grid-area: functionbox;
 }
+
 div.map>.repitionbox {
   grid-area: repitionbox;
-}
-input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type=number] {
-  -moz-appearance: textfield;
 }
 
    

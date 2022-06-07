@@ -201,7 +201,6 @@ function _nodeAdded(nodeName, id, properties) {
     else if (nodeName == "jsonata") _findOrCreateCommand().commands.push(node);
     else if (nodeName == "mod") _findOrCreateCommand().commands.push(node);
     else if (nodeName == "endapi") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "changevar") _findOrCreateCommand().commands.push(node);
 
     node.id = id; idCache[id] = node;   // transfer ID and cache the node
     console.log(api400modelObj);
@@ -213,8 +212,7 @@ function _nodeRemoved(nodeName, id) {
     if (!idCache[id]) return;   // we don't know of this node
     const node = idCache[id];
   const nextTargetNode =  algos.checkNodeInAllNodes(node,api400modelObj.apicl[0].commands);
-      console.log(nextTargetNode);
-      modelConnectorsModified(api400model.REMOVED,nodeName,nextTargetNode.nodeName,id,nextTargetNode.id);
+  if( nextTargetNode)  modelConnectorsModified(api400model.REMOVED,nodeName,nextTargetNode.nodeName,id,nextTargetNode.id);
 
     if (nodeName == "rule") { const bundle = _findOrCreateCommand(); _arrayDelete(bundle.commands, node); if (!bundle.commands.length) _findAndDeleteCommand(); }
     else if (nodeName == "strapi") _arrayDelete(api400modelObj.apicl[0].commands, node);
@@ -242,7 +240,6 @@ function _nodeRemoved(nodeName, id) {
     else if (nodeName == "jsonata") _arrayDelete(api400modelObj.apicl[0].commands, node);
     else if (nodeName == "mod") _arrayDelete(api400modelObj.apicl[0].commands, node);
     else if (nodeName == "endapi") _arrayDelete(api400modelObj.apicl[0].commands, node);
-    else if (nodeName == "changevar") _arrayDelete(api400modelObj.apicl[0].commands, node);
     else if (nodeName == "condition")  _arrayDelete(api400modelObj.apicl[0].commands, node) 
     delete idCache[id]; // uncache
     return true;

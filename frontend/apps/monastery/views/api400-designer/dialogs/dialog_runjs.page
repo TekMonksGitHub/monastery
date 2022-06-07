@@ -49,6 +49,7 @@ body {
     display: inline-block;
     width: 100%;
 }
+
 input[type=text]#result {
     width: 15%;
     margin: 0px 0px 20px 13px;
@@ -59,12 +60,11 @@ input[type=text]#result {
     border-radius: 4px;
     font-family: inherit;
 }
+
 .item1{
     margin-left:13px;
 }
+
 text-editor#code{position: relative;}
-
-
-
 
 =======
