@@ -52,7 +52,7 @@ function loadModel(jsonModel) {
     }
 
     // add connections between commands
-    for (const command of api400modelObj.apicl.commands) if (command.dependencies) for (const dependency of command.dependencies) connectNodes(dependency, command.id);
+    for (const command of api400modelObj.apicl[0].commands) if (command.dependencies) for (const dependency of command.dependencies) connectNodes(dependency, command.id);
 
 }
 
