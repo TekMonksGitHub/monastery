@@ -142,9 +142,8 @@ function _findOrCreateCommand(name = current_command_bundle, forceNew) {
     return newCommand;
 }
 
-const _findAndDeleteCommand = (name = current_command_bundle) => _arrayDelete(api400modelObj.apicl[0].commands, _findOrCreateCommand(name));
-
 function _nodeAdded(nodeName, id, properties) {
+
     const node = idCache[id] ? idCache[id] : JSON.parse(JSON.stringify(properties)); node.nodeName = nodeName;
     if (idCache[id]) { _nodeModified(nodeName, id, properties); return; }  // node properties modified
     const name = _getNameFromDescription(node.description);
@@ -182,20 +181,16 @@ function _nodeRemoved(nodeName, id) {
 }
 
 function _nodeModified(nodeName, id, properties) {
-    let parameters, variables, scrProperties = [];
+
+    let parameters  = [];
     if (!idCache[id]) return false; // we don't know of this node
     for (const key in properties) { // transfer the new properties, CSVs need the CSV scheme added
-        if (key.includes("listbox") && (nodeName == "strapi" || nodeName == "sndapimsg" || nodeName == "call" || nodeName == "runsqlprc")) {
+        if (key.includes("listbox") && (nodeName == "strapi" || nodeName == "sndapimsg" || nodeName == "call" || nodeName == "runsqlprc" || nodeName == "map" || nodeName == "scrread" || nodeName == "scrkeys")) {
             if (properties[key] != '') { parameters = properties[key]; }
-        } else if (key.includes("listbox") && (nodeName == "chgvar" || nodeName == "substr" || nodeName == "map")) {
-            if (properties[key] != '') { variables = properties[key]; }
-        } else if (key.includes("listbox") && (nodeName == "scrread" || nodeName == "scrkeys")) {
-            if (properties[key] != '') { scrProperties = properties[key]; }
         } else idCache[id][key] = properties[key];
     }
+
     if (parameters && parameters.length != 0) { idCache[id].listbox = parameters; }
-    if (variables && variables.length != 0) { idCache[id].listbox = variables; }
-    if (scrProperties && scrProperties.length != 0) { idCache[id].listbox = scrProperties; }
 
     return true;
 }
