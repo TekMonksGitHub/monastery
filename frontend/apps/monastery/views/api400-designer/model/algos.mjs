@@ -276,10 +276,10 @@
  };
  
  const _convertForQrcvdtaq = function (node) {
-     if ((node.library || node.queue) && node.wait && node.dropdown && node.data) {
-         if (node.library && node.library != '' && node.queue && node.queue != '')
-             return `QRCVDTAQ PARM(${node.library.trim()}/${node.queue.trim()} ${node.wait.trim()} ${node.dropdown} ${node.data.trim()})`;
-         else return `QRCVDTAQ PARM(${ node.library ? node.library.trim() : ''} ${node.wait.trim()} ${node.dropdown} ${node.data.trim()})`
+     if ((node.libraryname || node.queue) && node.wait && node.dropdown && node.data) {
+         if (node.libraryname && node.libraryname != '' && node.queue && node.queue != '')
+             return `QRCVDTAQ PARM(${node.libraryname.trim()}/${node.queue.trim()} ${node.wait.trim()} ${node.dropdown} ${node.data.trim()})`;
+         else return `QRCVDTAQ PARM(${ node.libraryname ? node.libraryname.trim() : ''} ${node.wait.trim()} ${node.dropdown} ${node.data.trim()})`
      }
      else return `QRCVDTAQ  PARM()`
  };
@@ -305,9 +305,9 @@
  
  const _convertForCall = function (node) {
     let cmdString;
-    if(node.library && node.library!='' && node.program && node.program!='' )
-      cmdString = `CALL PGM(${node.library.trim()}/${node.program.trim()})`;
-      else cmdString = `CALL PGM(${node.library ? node.library.trim():''})`;
+    if(node.libraryname && node.libraryname!='' && node.programname && node.programname!='' )
+      cmdString = `CALL PGM(${node.libraryname.trim()}/${node.programname.trim()})`;
+      else cmdString = `CALL PGM(${node.libraryname ? node.libraryname.trim():''})`;
      if (node.listbox) {
          let listBoxValues = JSON.parse(node.listbox);
          if (listBoxValues && listBoxValues.length > 0)
@@ -320,9 +320,9 @@
  
  const _convertForRunsqlprc = function (node) {
     let cmdString;
-    if(node.library && node.library!='' && node.procedure && node.procedure!='' )
-      cmdString = `RUNSQLPRC PRC(${node.library.trim()}/${node.procedure.trim()})`;
-      else cmdString = `RUNSQLPRC PRC(${node.library ? node.library.trim() : ''})`;
+    if(node.libraryname && node.libraryname!='' && node.procedurename && node.procedurename!='' )
+      cmdString = `RUNSQLPRC PRC(${node.libraryname.trim()}/${node.procedurename.trim()})`;
+      else cmdString = `RUNSQLPRC PRC(${node.libraryname ? node.libraryname.trim() : ''})`;
       
      let paramString = '';
      if (node.listbox) {

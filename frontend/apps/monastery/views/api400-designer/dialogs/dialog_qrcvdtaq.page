@@ -2,7 +2,7 @@ SCHEMA
 ======
 
 {
-    "library": {"html":"input", "type":"text", "placeholder":"{{i18n.LibraryName}}", "spellcheck":"false"},
+    "libraryname": {"html":"input", "type":"text", "placeholder":"{{i18n.LibraryName}}", "spellcheck":"false"},
     "queue": {"html":"input", "type":"text", "placeholder":"{{i18n.DataQueueName}}", "spellcheck":"false"},
     "wait":{"html":"input", "type":"text", "placeholder":"{{i18n.Wait}}","spellcheck":"false"},
     "dropdown": {"html":"drop-down","style":"width:100%; height:100%;","list":"[{'value':'true'},{'value':'false'}]","text":"Allow Peek"},
@@ -15,7 +15,7 @@ SCHEMA
 LAYOUT
 =================
 ----------------------------------------
-|     library         |      queue     |           
+|     libraryname     |      queue     |           
 ----------------------------------------
 |     wait            |      dropdown  |           
 ----------------------------------------
