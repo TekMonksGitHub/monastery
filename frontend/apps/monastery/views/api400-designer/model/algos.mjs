@@ -79,7 +79,6 @@ const convertIntoAPICL = function (nodes) {
         else if (node.nodeName == 'chgvar' && !nodeAlreadyAdded.includes(node.id))      { cmdString = _convertForChgvar(node) }
         else if (node.nodeName == 'condition')                                          { cmdString = _convertForCondition(node, nodes) }
         else if (node.nodeName == 'goto' && !nodeAlreadyAdded.includes(node.id))        { cmdString = _convertForGoto(node, nodes) }
-        else if (node.nodeName == 'endapi')                                             { cmdString = _convertForEndapi(node) }
         else if (node.nodeName == 'chgdtaara' && !nodeAlreadyAdded.includes(node.id))   { cmdString = _convertForChgdtaara(node) }
         else if (node.nodeName == 'rtvdtaara' && !nodeAlreadyAdded.includes(node.id))   { cmdString = _convertForRtvdtaara(node) }
         else if (node.nodeName == 'qrcvdtaq' && !nodeAlreadyAdded.includes(node.id))    { cmdString = _convertForQrcvdtaq(node) }
@@ -96,7 +95,8 @@ const convertIntoAPICL = function (nodes) {
         else if (node.nodeName == 'scrops' && !nodeAlreadyAdded.includes(node.id))      { cmdString = _convertForScrops(node) }
         else if (node.nodeName == 'mod' && !nodeAlreadyAdded.includes(node.id))         { cmdString = _convertForMod(node) }
         else if (node.nodeName == 'substr' && !nodeAlreadyAdded.includes(node.id))      { cmdString = _convertForSubstr(node) }
-
+        else if (node.nodeName == 'endapi')                                             { cmdString = _convertForEndapi(node) }
+        
         // checking for condition cases , to add the set of command after one case of condition, either true or false
         if (cmdString != '') {
             if (addLaterflag) { laterAPICLCmd[node.id] = cmdString; }
@@ -148,8 +148,8 @@ const _convertForChgvar = function (node) {
 
 const _convertForCondition = function (node, nodes) {
     let nextIdentifiedNodeObj;
-    let cmdString = [];
-    cmdString[0] = `IF COND(${node.condition || ''})`; // first add the condition command
+    let cmdStringArr = [];
+    cmdStringArr[0] = `IF COND(${node.condition || ''})`; // first add the condition command
     for (const nodeObj of nodes) {
         if (nodeObj && nodeObj.dependencies && nodeObj.dependencies.length > 0) {
             if (nodeObj.dependencies.includes(node.id)) {
@@ -181,17 +181,17 @@ const _convertForCondition = function (node, nodes) {
                         else if (nextIdentifiedNodeObj.nodeName == 'substr') { subCmdStr = _convertForSubstr(nextIdentifiedNodeObj); }
 
                         // add the THEN and ELSE part , also add any COMMAND inside THEN and ELSE
-                        (nodeObj.nodeName == 'iftrue') ? cmdString[1] = ` ${isThenElse}(${subCmdStr})` : cmdString[2] = ` ${isThenElse}(${subCmdStr})`;
+                        (nodeObj.nodeName == 'iftrue') ? cmdStringArr[1] = ` ${isThenElse}(${subCmdStr})` : cmdStringArr[2] = ` ${isThenElse}(${subCmdStr})`;
                         nodeAlreadyAdded.push(nextIdentifiedNodeObj.id);
                     }
                     else
-                        cmdString = cmdString.concat(` ${isThenElse}()`);
+                        cmdStringArr = cmdStringArr.concat(` ${isThenElse}()`);
                 }
             }
         }
     }
 
-    return cmdString.join(' ');
+    return cmdStringArr.join(' ');
 };
 
 const _convertForGoto = function (node, nodes) {
