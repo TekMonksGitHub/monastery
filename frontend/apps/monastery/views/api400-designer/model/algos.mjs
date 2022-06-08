@@ -15,11 +15,10 @@ const DIALOG = window.monkshu_env.components["dialog-box"];
 function sortDependencies(nodes) {
 
     const nodesToWorkOn = util.clone(nodes.commands), sortedSet = [], stopNodeIds = [], futureCurrentNode = [];
-    let nextCurrentNodeId;
+    let nextCurrentNodeId, dependencyCheck, icounter = [];
 
     for (const node of nodesToWorkOn) if ((!node.dependencies) || (!node.dependencies.length)) sortedSet.push(_arrayDelete(nodesToWorkOn, node));
 
-    let icounter = [], dependencyCheck;
     let currentNodeId = sortedSet.slice(-1)[0].id; // last command id , to be searched in dependencies of remaininge nodes/commands
     for (let i = 0; i < nodesToWorkOn.length; i++) {
         let flag = 0;
@@ -32,23 +31,21 @@ function sortDependencies(nodes) {
         }
         for (let nodeIn of nodesToWorkOn) {
             if (nodeIn.dependencies?.includes(currentNodeId)) {
-                if (nodeIn.dependencies.length > 1) {
-                    //- more than 2 dependencies 
+                if (nodeIn.dependencies.length > 1) { // if dependencies array has more than one ids
                     if (stopNodeIds.indexOf(nodeIn.id) === -1) { stopNodeIds.push(nodeIn.id); }
                 }
                 if (flag == 1) { futureCurrentNode.push(nodeIn); icounter.push(i); }
-                else { sortedSet.push(nodeIn); nextCurrentNodeId = nodeIn.id; flag = 1; }
+                else { sortedSet.push(nodeIn); nextCurrentNodeId = nodeIn.id; flag = 1; } // normal flow case
                 dependencyCheck = 1;
             }
         }
-        if (icounter && icounter.length > 0 && dependencyCheck == 0) {
+        if (icounter && icounter.length > 0 && dependencyCheck == 0) { // dependencyCheck == 0, is endapi case , endapi must not have its id in other node's dependencies
             i = icounter[0]; _arrayDelete(icounter, i);
-            if (futureCurrentNode[0] && futureCurrentNode[0].id) {
+            if (futureCurrentNode[0] && futureCurrentNode[0].id) { // in the case of true and false , after endapi , go for either case of true or false
                 sortedSet.push(futureCurrentNode[0]);
                 nextCurrentNodeId = futureCurrentNode[0].id;
                 _arrayDelete(futureCurrentNode, futureCurrentNode[0]);
             }
-
         }
     }
     return sortedSet;
@@ -158,27 +155,27 @@ const _convertForCondition = function (node, nodes) {
                     nextIdentifiedNodeObj = checkNodeInAllNodes(nodeObj, nodes); // check which command to be add inside THEN and ELSE
                     if (nextIdentifiedNodeObj) {
                         let subCmdStr = '';
-                        if (nextIdentifiedNodeObj.nodeName == 'runsql') { subCmdStr = _convertForRunsql(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'goto') { subCmdStr = _convertForGoto(nextIdentifiedNodeObj, nodes); _saveNextNodeIdsInFlow(nextIdentifiedNodeObj, nodes); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'scrops') { subCmdStr = _convertForScrops(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'runjs') { subCmdStr = _convertForRunjs(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'scrkeys') { subCmdStr = _convertForScrkeys(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'scrread') { subCmdStr = _convertForScrread(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'chgvar') { subCmdStr = _convertForChgvar(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'map') { subCmdStr = _convertForMap(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'jsonata') { subCmdStr = _convertForJsonata(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'rest') { subCmdStr = _convertForRest(nextIdentifiedNodeObj); }
+                        if (nextIdentifiedNodeObj.nodeName == 'runsql')         { subCmdStr = _convertForRunsql(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'goto')      { subCmdStr = _convertForGoto(nextIdentifiedNodeObj, nodes); _saveNextNodeIdsInFlow(nextIdentifiedNodeObj, nodes); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'scrops')    { subCmdStr = _convertForScrops(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'runjs')     { subCmdStr = _convertForRunjs(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'scrkeys')   { subCmdStr = _convertForScrkeys(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'scrread')   { subCmdStr = _convertForScrread(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'chgvar')    { subCmdStr = _convertForChgvar(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'map')       { subCmdStr = _convertForMap(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'jsonata')   { subCmdStr = _convertForJsonata(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'rest')      { subCmdStr = _convertForRest(nextIdentifiedNodeObj); }
                         else if (nextIdentifiedNodeObj.nodeName == 'runsqlprc') { subCmdStr = _convertForRunsqlprc(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'call') { subCmdStr = _convertForCall(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'log') { subCmdStr = _convertForLog(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'dsppfm') { subCmdStr = _convertForDsppfm(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'qsnddtaq') { subCmdStr = _convertForQsnddtaq(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'qrcvdtaq') { subCmdStr = _convertForQrcvdtaq(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'call')      { subCmdStr = _convertForCall(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'log')       { subCmdStr = _convertForLog(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'dsppfm')    { subCmdStr = _convertForDsppfm(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'qsnddtaq')  { subCmdStr = _convertForQsnddtaq(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'qrcvdtaq')  { subCmdStr = _convertForQrcvdtaq(nextIdentifiedNodeObj); }
                         else if (nextIdentifiedNodeObj.nodeName == 'rtvdtaara') { subCmdStr = _convertForRtvdtaara(nextIdentifiedNodeObj); }
                         else if (nextIdentifiedNodeObj.nodeName == 'chgdtaara') { subCmdStr = _convertForChgdtaara(nextIdentifiedNodeObj); }
                         else if (nextIdentifiedNodeObj.nodeName == 'sndapimsg') { subCmdStr = _convertForSndapimsg(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'mod') { subCmdStr = _convertForMod(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'substr') { subCmdStr = _convertForSubstr(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'mod')       { subCmdStr = _convertForMod(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'substr')    { subCmdStr = _convertForSubstr(nextIdentifiedNodeObj); }
 
                         // add the THEN and ELSE part , also add any COMMAND inside THEN and ELSE
                         (nodeObj.nodeName == 'iftrue') ? cmdStringArr[1] = ` ${isThenElse}(${subCmdStr})` : cmdStringArr[2] = ` ${isThenElse}(${subCmdStr})`;
@@ -214,6 +211,11 @@ const _convertForChgdtaara = function (node) {
     else return `CHGDTAARA DTAARA() TYPE() VALUE()`;
 };
 
+/**
+ * 
+ * @param node The incoming sorted graph 
+ * @returns 
+ */
 const _convertForRtvdtaara = function (node) {
     let cmdString;
     if ((node.libraryname || node.dataarea) && node.value && node.datatype) {
@@ -357,7 +359,7 @@ const _convertForScrops = function (node) {
 };
 
 const _convertForMod = function (node) {
-    return `RUNJS MOD(${node.moduleName || ''})`;
+    return `RUNJS MOD(${node.modulename || ''})`;
 };
 
 const _convertForSubstr = function (node) {
