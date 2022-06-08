@@ -142,23 +142,20 @@ const _convertForSndapimsg = function (node) {
     else return cmdString;
 };
 
-const _convertForMod = function (node) {
-    if (node.result) return `RUNJS MOD(${node.result || ''})`;
-    else return `RUNJS MOD()`;
-
+const _convertForChgvar = function (node) {
+    return `CHGVAR  VAR(${node.variable ? node.variable.trim() : ''})  VALUE(${node.value ? node.value.trim() : ''})`;
 };
 
 const _convertForCondition = function (node, nodes) {
     let nextIdentifiedNodeObj;
     let cmdString = [];
-    cmdString[0] = `IF COND(${node.condition || ''})`;
+    cmdString[0] = `IF COND(${node.condition || ''})`; // first add the condition command
     for (const nodeObj of nodes) {
         if (nodeObj && nodeObj.dependencies && nodeObj.dependencies.length > 0) {
             if (nodeObj.dependencies.includes(node.id)) {
                 if (nodeObj.nodeName == 'iftrue' || nodeObj.nodeName == 'iffalse') {
-                    let isThenElse = (nodeObj.nodeName == 'iftrue') ? `THEN` : `ELSE`;
-                    let valueOfThenElse = (nodeObj.nodeName == 'iftrue') ? nodeObj.true : nodeObj.false;
-                    nextIdentifiedNodeObj = checkNodeInAllNodes(nodeObj, nodes);
+                    const isThenElse = (nodeObj.nodeName == 'iftrue') ? `THEN` : `ELSE`;
+                    nextIdentifiedNodeObj = checkNodeInAllNodes(nodeObj, nodes); // check which command to be add inside THEN and ELSE
                     if (nextIdentifiedNodeObj) {
                         let subCmdStr = '';
                         if (nextIdentifiedNodeObj.nodeName == 'runsql') { subCmdStr = _convertForRunsql(nextIdentifiedNodeObj); }
@@ -183,11 +180,12 @@ const _convertForCondition = function (node, nodes) {
                         else if (nextIdentifiedNodeObj.nodeName == 'mod') { subCmdStr = _convertForMod(nextIdentifiedNodeObj); }
                         else if (nextIdentifiedNodeObj.nodeName == 'substr') { subCmdStr = _convertForSubstr(nextIdentifiedNodeObj); }
 
+                        // add the THEN and ELSE part , also add any COMMAND inside THEN and ELSE
                         (nodeObj.nodeName == 'iftrue') ? cmdString[1] = ` ${isThenElse}( ${subCmdStr})` : cmdString[2] = ` ${isThenElse}( ${subCmdStr})`;
                         nodeAlreadyAdded.push(nextIdentifiedNodeObj.id);
                     }
                     else
-                        cmdString = cmdString.concat(` ${isThenElse}(${valueOfThenElse || ''})`);
+                        cmdString = cmdString.concat(` ${isThenElse}( )`);
                 }
             }
         }
@@ -195,6 +193,14 @@ const _convertForCondition = function (node, nodes) {
 
     return cmdString.join(' ');
 };
+
+const _convertForMod = function (node) {
+    if (node.result) return `RUNJS MOD(${node.result || ''})`;
+    else return `RUNJS MOD()`;
+
+};
+
+
 
 
 const _saveNextNodeIdsInFlow = function (nodeObj, nodes) {
@@ -390,9 +396,7 @@ const _convertForSubstr = function (node) {
     return `CHGVAR     VAR(${node.variable ? node.variable.trim() : ''})     VALUE(SUBSTR DO(${node.string ? node.string.trim() : ''}:${node.index ? node.index.trim() : ''}:${node.noofchar ? node.noofchar.trim() : ''}))`
 };
 
-const _convertForChgvar = function (node) {
-    return `CHGVAR     VAR(${node.variable ? node.variable.trim() : ''})       VALUE(${node.value ? node.value.trim() : ''})`;
-};
+
 
 
 
