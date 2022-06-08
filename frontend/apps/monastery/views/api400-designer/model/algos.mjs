@@ -181,17 +181,22 @@ const _convertForCondition = function (node, nodes) {
                         else if (nextIdentifiedNodeObj.nodeName == 'substr') { subCmdStr = _convertForSubstr(nextIdentifiedNodeObj); }
 
                         // add the THEN and ELSE part , also add any COMMAND inside THEN and ELSE
-                        (nodeObj.nodeName == 'iftrue') ? cmdString[1] = ` ${isThenElse}( ${subCmdStr})` : cmdString[2] = ` ${isThenElse}( ${subCmdStr})`;
+                        (nodeObj.nodeName == 'iftrue') ? cmdString[1] = ` ${isThenElse}(${subCmdStr})` : cmdString[2] = ` ${isThenElse}(${subCmdStr})`;
                         nodeAlreadyAdded.push(nextIdentifiedNodeObj.id);
                     }
                     else
-                        cmdString = cmdString.concat(` ${isThenElse}( )`);
+                        cmdString = cmdString.concat(` ${isThenElse}()`);
                 }
             }
         }
     }
 
     return cmdString.join(' ');
+};
+
+const _convertForGoto = function (node, nodes) {
+    const gotoNextNode = checkNodeInAllNodes(node, nodes); // put the id of next Command , which will be sorted with index later in _putGotoIndexing
+    return `GOTO ${gotoNextNode.id || ''}`;
 };
 
 const _convertForMod = function (node) {
@@ -225,10 +230,7 @@ const checkNodeInAllNodes = function (node, allnodes) {
             }
         }
 }
-const _convertForGoto = function (node, nodes) {
-    let gotoNextNode = checkNodeInAllNodes(node, nodes);
-    return `GOTO ${gotoNextNode.id || ''}`;
-};
+
 
 const _convertForEndapi = function (node) {
     return `ENDAPI`;
