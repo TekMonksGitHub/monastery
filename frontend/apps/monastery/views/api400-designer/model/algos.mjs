@@ -255,7 +255,7 @@ const _convertForChgdtaara = function (node) {
         if (node.datatype.includes("Character"))        cmdString += ` TYPE(*CHAR)`;
         else if (node.datatype.includes("BigDecimal"))  cmdString += ` TYPE(*BIGDEC)`;
 
-        return `${cmdString} RTNVAR(${node.value.trim()})`;
+        return `${cmdString} VALUE(${node.value.trim()})`;
     }
     else return `CHGDTAARA DTAARA() TYPE() VALUE()`;
 };
