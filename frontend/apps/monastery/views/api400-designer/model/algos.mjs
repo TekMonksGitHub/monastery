@@ -135,24 +135,18 @@ const _convertForRunjs = function (node) {
     else return `CHGVAR VAR(${node.result}) VALUE(RUNJS JS(${node.code || ''}))`;
 };
 
+const _convertForSndapimsg = function (node) {
+
+    const cmdString = 'SNDAPIMSG  MSG()';
+    if (node.listbox) return cmdString.replace(`()`, `(${JSON.parse(node.listbox).filter(Boolean).join(' ')})`);
+    else return cmdString;
+};
+
 const _convertForMod = function (node) {
     if (node.result) return `RUNJS MOD(${node.result || ''})`;
     else return `RUNJS MOD()`;
 
 };
-
-const _convertForSndapimsg = function (node) {
-
-    let cmdString = 'SNDAPIMSG  MSG()';
-    if (node.listbox) {
-        let listBoxValues = JSON.parse(node.listbox);
-        return cmdString.replace(`()`, `(${listBoxValues.filter(Boolean).join(' ')})`);
-    }
-    else
-        return cmdString;
-};
-
-
 
 const _convertForCondition = function (node, nodes) {
     let nextIdentifiedNodeObj;
