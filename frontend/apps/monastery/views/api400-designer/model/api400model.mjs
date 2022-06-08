@@ -116,7 +116,7 @@ function getModel() {
     return APICL;
 }
 
-function runJsMod() {
+function getModules() {
     const api400 = util.clone(api400modelObj);
     let nameAndJsArray = []
     for (const command of api400.apicl[0].commands) {
@@ -149,11 +149,11 @@ function _nodeAdded(nodeName, id, properties) {
     const name = _getNameFromDescription(node.description);
 
     if (nodeName == "strapi" || nodeName == "runsql" || nodeName == "runjs" || nodeName == "goto" || nodeName == "chgvar" ||
-            nodeName == "sndapimsg" || nodeName == "condition" || nodeName == "iftrue" || nodeName == "iffalse" ||
-            nodeName == "chgdtaara" || nodeName == "rtvdtaara" || nodeName == "call" || nodeName == "runsqlprc" ||
-            nodeName == "rest" || nodeName == "map" || nodeName == "scrread" || nodeName == "scrkeys" ||nodeName == "scrops" ||
-            nodeName == "substr" || nodeName == "qrcvdtaq" || nodeName == "qsnddtaq" || nodeName == "dsppfm" || 
-            nodeName == "log" ||nodeName == "jsonata" || nodeName == "mod" || nodeName == "endapi") {
+        nodeName == "sndapimsg" || nodeName == "condition" || nodeName == "iftrue" || nodeName == "iffalse" ||
+        nodeName == "chgdtaara" || nodeName == "rtvdtaara" || nodeName == "call" || nodeName == "runsqlprc" ||
+        nodeName == "rest" || nodeName == "map" || nodeName == "scrread" || nodeName == "scrkeys" ||nodeName == "scrops" ||
+        nodeName == "substr" || nodeName == "qrcvdtaq" || nodeName == "qsnddtaq" || nodeName == "dsppfm" || 
+        nodeName == "log" ||nodeName == "jsonata" || nodeName == "mod" || nodeName == "endapi") {
             node.name = name;
             _findOrCreateCommand().commands.push(node);
     }
@@ -205,5 +205,5 @@ const _getNameFromDescription = description => description.split(" ")[0].split("
 
 export const api400model = {
     init, loadModel, modelNodesModified, modelConnectorsModified, isConnectable,
-    nodeDescriptionChanged, getModelAsFile, getModel, runJsMod, ADDED: "added", REMOVED: "removed", MODIFIED: "modified"
+    nodeDescriptionChanged, getModelAsFile, getModel, getModules, ADDED: "added", REMOVED: "removed", MODIFIED: "modified"
 };

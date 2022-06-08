@@ -33,7 +33,7 @@ async function openDialog() {
         async (typeOfClose, result, dialogElement) => { if (typeOfClose == "submit") {
             saved_props = util.clone(result, ["adminpassword"]); // don't save password, for security
             const model = api400model.getModel();
-            const jsModule = api400model.runJsMod()
+            const jsModule = api400model.getModules();
             if(jsModule.length!=0){
                 const pubModResult = await serverManager.publishModule( result.name, result.server, result.port, result.adminid, result.adminpassword);
                 if (!pubModResult.result) {DIALOG.showError(dialogElement, await i18n.get(pubModResult.key));  return null;}
