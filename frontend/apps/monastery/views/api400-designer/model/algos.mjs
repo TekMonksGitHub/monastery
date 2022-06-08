@@ -113,8 +113,8 @@ const convertIntoAPICL = function (nodes) {
 
 const _convertForStrapi = function (node) {
 
-    let cmdString = 'STRAPI PARM()';
-    if (node.listbox) return cmdString = cmdString.replace(`()`, `(${JSON.parse(node.listbox).filter(Boolean).join(' ')})`);
+    const cmdString = 'STRAPI PARM()';
+    if (node.listbox) return cmdString.replace(`()`, `(${JSON.parse(node.listbox).filter(Boolean).join(' ')})`);
     else return cmdString; 
 };
 
@@ -126,13 +126,13 @@ const _convertForRunsql = function (node) {
     if (node.sql && node.sql.includes("INSERT") && node.sql.split("INSERT").length - 1 > 1)
         cmdString += ` BATCH(TRUE)`;
     if (node.result && node.result != '')
-        cmdString = `CHGVAR     VAR(${node.result})   VALUE(${cmdString})`;
+        cmdString = `CHGVAR  VAR(${node.result})  VALUE(${cmdString})`;
     return cmdString;
 };
 
 const _convertForRunjs = function (node) {
-    if (!node.result) return `RUNJS JS(${node.code ? node.code : ''})`;
-    else return `CHGVAR VAR(${node.result}) VALUE(RUNJS JS(${node.code ? node.code : ''}))`;
+    if (!node.result) return `RUNJS JS(${node.code || ''})`;
+    else return `CHGVAR VAR(${node.result}) VALUE(RUNJS JS(${node.code || ''}))`;
 };
 
 const _convertForMod = function (node) {
