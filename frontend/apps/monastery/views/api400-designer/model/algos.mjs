@@ -105,7 +105,7 @@ const convertIntoAPICL = function (nodes) {
     }
 
     apicl = Object.assign(apicl, laterAPICLCmd);
-    apicl = _putGotoIndexing(apicl);
+    apicl = _setIndexing(apicl);
     laterAPICLCmd = {};
 
     return apicl;
@@ -195,74 +195,35 @@ const _convertForCondition = function (node, nodes) {
 };
 
 const _convertForGoto = function (node, nodes) {
-    const gotoNextNode = checkNodeInAllNodes(node, nodes); // put the id of next Command , which will be sorted with index later in _putGotoIndexing
+    const gotoNextNode = checkNodeInAllNodes(node, nodes); // put the id of next Command , which will be sorted with index later in _setIndexing
     return `GOTO ${gotoNextNode.id || ''}`;
-};
-
-const _convertForMod = function (node) {
-    if (node.result) return `RUNJS MOD(${node.result || ''})`;
-    else return `RUNJS MOD()`;
-
-};
-
-
-
-
-const _saveNextNodeIdsInFlow = function (nodeObj, nodes) {
-
-    let nextNodeObj = checkNodeInAllNodes(nodeObj, nodes);
-    if (nextNodeObj && nextNodeObj.id && nextNodeObj.nodeName != 'condition') {
-        nodeToAddLater.push(nextNodeObj.id);
-        _saveNextNodeIdsInFlow(nextNodeObj, nodes);
-    } else {
-        return;
-    }
-}
-
-const checkNodeInAllNodes = function (node, allnodes) {
-
-    if (allnodes && allnodes.length > 0)
-        for (const nodeObj of allnodes) {
-            if (nodeObj && nodeObj.dependencies && nodeObj.dependencies.length > 0) {
-                if (nodeObj.dependencies.includes(node.id)) {
-                    return nodeObj;
-                }
-            }
-        }
-}
-
-
-const _convertForEndapi = function (node) {
-    return `ENDAPI`;
 };
 
 const _convertForChgdtaara = function (node) {
     let cmdString;
     if ((node.libraryname || node.dataarea) && node.value && node.dropdown) {
+
         if (node.libraryname && node.libraryname != '' && node.dataarea && node.dataarea != '') cmdString = `CHGDTAARA DTAARA(${node.libraryname.trim()}/${node.dataarea.trim()})`;
         else cmdString = `CHGDTAARA DTAARA(${node.libraryname ? node.libraryname.trim() : ''})`
-        if (node.dropdown.includes("Character"))
-            cmdString += ` TYPE(*CHAR)`;
-        else if (node.dropdown.includes("BigDecimal"))
-            cmdString += ` TYPE(*BIGDEC)`;
-        cmdString += ` VALUE(${node.value.trim()})`;
-        return cmdString;
+
+        if (node.dropdown.includes("Character"))        cmdString += ` TYPE(*CHAR)`;
+        else if (node.dropdown.includes("BigDecimal"))  cmdString += ` TYPE(*BIGDEC)`;
+
+        return `${cmdString} RTNVAR(${node.value.trim()})`;
     }
     else return `CHGDTAARA DTAARA() TYPE() VALUE()`;
 };
-
 
 const _convertForRtvdtaara = function (node) {
     let cmdString;
     if ((node.libraryname || node.dataarea) && node.value && node.dropdown) {
         if (node.libraryname && node.libraryname != '' && node.dataarea && node.dataarea != '') cmdString = `RTVDTAARA DTAARA(${node.libraryname.trim()}/${node.dataarea.trim()})`;
         else cmdString = `RTVDTAARA DTAARA(${node.libraryname ? node.libraryname.trim() : ''})`
-        if (node.dropdown.includes("Character"))
-            cmdString += `  TYPE(*CHAR)`;
-        else if (node.dropdown.includes("BigDecimal"))
-            cmdString += `  TYPE(*BIGDEC)`;
-        cmdString += ` RTNVAR(${node.value.trim()})`;
-        return cmdString;
+
+        if (node.dropdown.includes("Character"))        cmdString += `  TYPE(*CHAR)`;
+        else if (node.dropdown.includes("BigDecimal"))  cmdString += `  TYPE(*BIGDEC)`;
+
+        return `${cmdString} RTNVAR(${node.value.trim()})`;
     }
     else return `RTVDTAARA DTAARA() TYPE() RTNVAR()`;
 };
@@ -300,6 +261,7 @@ const _convertForCall = function (node) {
     if (node.libraryname && node.libraryname != '' && node.programname && node.programname != '')
         cmdString = `CALL PGM(${node.libraryname.trim()}/${node.programname.trim()})`;
     else cmdString = `CALL PGM(${node.libraryname ? node.libraryname.trim() : ''})`;
+    // to fetch and process the params , which were added dynamically
     if (node.listbox) {
         let listBoxValues = JSON.parse(node.listbox);
         if (listBoxValues && listBoxValues.length > 0)
@@ -308,7 +270,6 @@ const _convertForCall = function (node) {
     else cmdString += ` PARM()`
     return cmdString;
 };
-
 
 const _convertForRunsqlprc = function (node) {
     let cmdString;
@@ -319,7 +280,9 @@ const _convertForRunsqlprc = function (node) {
     let paramString = '';
     if (node.listbox) {
         let listBoxValues = JSON.parse(node.listbox);
-        if (listBoxValues && listBoxValues.length > 0) for (let values of listBoxValues) if (values.some(value => value != "")) paramString += values.join("") + " ";
+        if (listBoxValues && listBoxValues.length > 0) for (let values of listBoxValues) 
+            if (values.some(value => value != "")) paramString += values.join("") + " ";
+
         cmdString += ` PARM(${paramString.trim()})`;
     }
     else cmdString += ` PARM()`
@@ -335,9 +298,8 @@ const _convertForRest = function (node) {
     return cmdString;
 };
 
-
 const _convertForJsonata = function (node) {
-    return `CHGVAR     VAR(${node.result ? node.result.trim() : ''})    VALUE(JSONATA EXPRESSION(${node.jsonata ? node.jsonata.trim() : ''}))`;
+    return `CHGVAR  VAR(${node.result ? node.result.trim() : ''})  VALUE(JSONATA EXPRESSION(${node.jsonata ? node.jsonata.trim() : ''}))`;
 };
 
 const _convertForMap = function (node) {
@@ -347,11 +309,11 @@ const _convertForMap = function (node) {
         if (listBoxValues && listBoxValues.length > 0)
             for (const variableObj of listBoxValues) {
                 if (variableObj.some(value => value != "")) {
-                    if (variableObj[4]) {
+                    if (variableObj[4]) { 
                         if (variableObj[0]) mapVariables.push(`${variableObj[0].trim()}:${variableObj[1].trim()}:${variableObj[2].trim()}:${variableObj[3].trim()}:${variableObj[4].trim()}`);
                         else mapVariables.push(`-:${variableObj[1].trim()}:${variableObj[2].trim()}:${variableObj[3].trim()}:${variableObj[4].trim()}`);
                     }
-                    else {
+                    else { // in some cases we do not have string functions
                         if (variableObj[0]) mapVariables.push(`${variableObj[0].trim()}:${variableObj[1].trim()}:${variableObj[2].trim()}:${variableObj[3].trim()}`);
                         else mapVariables.push(`-:${variableObj[1].trim()}:${variableObj[2].trim()}:${variableObj[3].trim()}`);
                     }
@@ -374,7 +336,7 @@ const _convertForScrread = function (node) {
         if (!node.result) return `SCR NAME(${node.session})   READ(${readVariables.join(" : ")})`;
         else return `CHGVAR     VAR(${node.result ? node.result.trim() : ''})   VALUE(SCR NAME(${node.session ? node.session.trim() : ''})   READ(${readVariables.join(" : ")}))`;
     }
-    else return `SCR NAME()   READ()`
+    else return `SCR NAME()   READ()`;
 };
 
 const _convertForScrkeys = function (node) {
@@ -391,18 +353,45 @@ const _convertForScrkeys = function (node) {
 };
 
 const _convertForScrops = function (node) {
-    return `SCR NAME(${node.session ? node.session : ''}) ${node.radiobutton ? node.radiobutton.toUpperCase() : 'START'}`;
+    return `SCR NAME(${node.session ? node.session : ''}) ${node.radiobutton ? node.radiobutton.toUpperCase() : ''}`;
+};
+
+const _convertForMod = function (node) {
+    return `RUNJS MOD(${node.result || ''})`;
 };
 
 const _convertForSubstr = function (node) {
-    return `CHGVAR     VAR(${node.variable ? node.variable.trim() : ''})     VALUE(SUBSTR DO(${node.string ? node.string.trim() : ''}:${node.index ? node.index.trim() : ''}:${node.noofchar ? node.noofchar.trim() : ''}))`
+    return `CHGVAR  VAR(${node.variable ? node.variable.trim() : ''})  VALUE(SUBSTR DO(${node.string ? node.string.trim() : ''}:${node.index ? node.index.trim() : ''}:${node.noofchar ? node.noofchar.trim() : ''}))`
 };
 
+const _convertForEndapi = function (node) {
+    return `ENDAPI`;
+};
 
+const _saveNextNodeIdsInFlow = function (nodeObj, nodes) {
+    // used for GOTO, to check next command node id
+    let nextNodeObj = checkNodeInAllNodes(nodeObj, nodes);
+    if (nextNodeObj && nextNodeObj.id && nextNodeObj.nodeName != 'condition') {
+        nodeToAddLater.push(nextNodeObj.id);
+        _saveNextNodeIdsInFlow(nextNodeObj, nodes);
+    } else {
+        return;
+    }
+};
 
+const checkNodeInAllNodes = function (node, allnodes) {
 
+    if (allnodes && allnodes.length > 0)
+        for (const nodeObj of allnodes) {
+            if (nodeObj && nodeObj.dependencies && nodeObj.dependencies.length > 0) {
+                if (nodeObj.dependencies.includes(node.id)) {
+                    return nodeObj;
+                }
+            }
+        }
+};
 
-const _putGotoIndexing = function (apicl) {
+const _setIndexing = function (apicl) {
 
     let finalAPICL = {};
     let index = 0;
@@ -412,7 +401,6 @@ const _putGotoIndexing = function (apicl) {
         idIndexMapping[id] = index;
     }
     return _assignIndexIfInGOTO(idIndexMapping, finalAPICL);
-
 };
 
 const _assignIndexIfInGOTO = function (idIndexMapping, finalAPICL) {
@@ -430,4 +418,4 @@ const _assignIndexIfInGOTO = function (idIndexMapping, finalAPICL) {
 }
 
 
-export const algos = { sortDependencies, convertIntoAPICL, _convertForStrapi, checkNodeInAllNodes };
+export const algos = { sortDependencies, convertIntoAPICL, checkNodeInAllNodes };
