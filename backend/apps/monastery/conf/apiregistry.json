@@ -1,5 +1,3 @@
 {
-    "/apps/{{app}}/login" : "/apis/login.js",
-    "/apps/monastery/apis/api400publish" : "/apis/api400publish.js",
-    "/apps/monastery/apis/api400modelobject" : "/apis/api400modelobject.js"
+    "/apps/{{app}}/login" : "/apis/login.js"
 }

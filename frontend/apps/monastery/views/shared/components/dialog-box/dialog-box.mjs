@@ -28,24 +28,18 @@ let _pendingRenderResolves;
  * @param hostID Optional: The ID to host the custom component inside the main HTML, only needed if default ID clashes
  */
 async function showDialog(themeOrThemePath, templateOrTemplateURL, templateData, retValIDs, callback, hostID=DEFAULT_HOST_ID) {
-   
     await _initDialogFramework(hostID); 
     await dialog_box.bindData(await _processTheme((typeof themeOrThemePath == "string" || themeOrThemePath instanceof URL) ?
         await $$.requireJSON(themeOrThemePath) : themeOrThemePath||DEFAULT_THEME), hostID );   // bind the theme data
 
-    
     const shadowRoot = dialog_box.getShadowRootByHostId(hostID); _resetUI(shadowRoot);
-   
     const templateHTML = typeof templateOrTemplateURL == "string" ? (templateData ? await router.expandPageData(
         templateOrTemplateURL, undefined, templateData) : templateOrTemplateURL) : await router.loadHTML(templateOrTemplateURL, templateData, false);
-        
     const templateRoot = new DOMParser().parseFromString(templateHTML, "text/html").documentElement;
-    
     shadowRoot.querySelector("div#dialogcontent").appendChild(templateRoot);    // add dialog content
     router.runShadowJSScripts(templateRoot, shadowRoot);
 
-    const memory = dialog_box.getMemory(hostID); memory.retValIDs = retValIDs; memory.callback = callback;
-   
+    const memory = dialog_box.getMemory(hostID); memory.retValIDs = retValIDs; memory.callback = callback; 
     document.querySelector(`#${hostID}`).style.display = "block";   // show the dialog
     // for some reason this otherwise adds in a visible block if the <!doctype HTML> is declared in the parent document, and transitions don't work if this is defined in HTML file 
     shadowRoot.querySelector("html").style.height = "0px";  shadowRoot.querySelector("html").style.width = "0px"; 
@@ -101,10 +95,10 @@ function showConfirm(message, callback, theme, hostID) {
  * @param element The element inside the dialog or ID of the dialog host element (if custom hostID was used in showDialog), else null
  */
 function cancel(element) {
-        const memory = element instanceof Element ? dialog_box.getMemoryByContainedElement(element) : 
+    const memory = element instanceof Element ? dialog_box.getMemoryByContainedElement(element) : 
         dialog_box.getMemory(element||DEFAULT_HOST_ID);
-        const retVals = _getRetVals(memory, dialog_box.getShadowRootByContainedElement(element));
-        hideDialog(element); if (memory.callback) memory.callback("cancel", retVals, element);
+    const retVals = _getRetVals(memory, dialog_box.getShadowRootByContainedElement(element));
+    hideDialog(element); if (memory.callback) memory.callback("cancel", retVals, element);
 }
 
 /**
@@ -127,7 +121,7 @@ function hideDialog(element) {
  */
 async function submit(element) {
     const memory = element instanceof Element ? dialog_box.getMemoryByContainedElement(element) : 
-        dialog_box.getMemory(element||DEFAULT_HOST_ID); 
+        dialog_box.getMemory(element||DEFAULT_HOST_ID);
     const retVals = _getRetVals(memory, dialog_box.getShadowRootByContainedElement(element));
     if (memory.callback && await memory.callback("submit", retVals, element)) hideDialog(element);
     else if (!memory.callback) hideDialog(element);
@@ -218,7 +212,6 @@ async function _processTheme(theme) {
     if (theme.showOKButton) clone.showOKButton = true; else delete clone.showOKButton;
     if (theme.showCancelButton) clone.showCancelButton = true; else delete clone.showCancelButton;
     return clone;
-   
 }
 
 export const dialog_box = {showDialog, trueWebComponentMode: true, hideDialog, showError, hideError, 
