@@ -22,7 +22,6 @@ async function elementRendered(element) {
 
   if (element.getAttribute("value")) {
     let values;
-    console.log(element.getAttribute("value"));
     if (element.getAttribute("value")) values = JSON.parse(element.getAttribute("value"));
     if (values && values.length && element.getAttribute("type") == "Parameter") _setValue(values, element.getAttribute("type"));
     else if (values && values.length && element.getAttribute("type") == "Message") _setValue(values, element.getAttribute("type"));
@@ -89,8 +88,6 @@ function _getTextBoxValues(textBoxContainer, shadowRoot, type) {
     for (const divBox of textBoxContainer.children) {
       const Values = [];
       for (const textBox of divBox.children) {
-        console.log(textBox);
-        console.log(textBox.getAttribute("id"));
         const retValue = shadowRoot.querySelector(`#${textBox.getAttribute("id")}`).value;
         Values.push(retValue.trim());
       }

@@ -1,18 +1,18 @@
 SCHEMA
 ======
 {
-     "result": {"html":"input", "type":"text", "placeholder":"{{i18n.module}}", "required":"true", "spellcheck":"false","required":"true"},
+     "modulename": {"html":"input", "type":"text", "placeholder":"{{i18n.module}}", "required":"true", "spellcheck":"false","required":"true"},
      "code": {"html":"text-editor","showToolbar":"true","mode":"javascript","mod":"mod"}
 }
 ======
 
 LAYOUT
 =================
-----------------
-|   result     |
-----------------
-|    code      |
-----------------
+------------------------
+|        modulename    |
+------------------------
+|          code        |
+------------------------
 =================
 Row Heights = 3em,calc(100vh - 152px - 3em )
 Col Widths = 100%
@@ -50,7 +50,7 @@ body {
     width: 100%;
 }
 
-input[type=text]#result {
+input[type=text]#modulename {
     width: 15%;
     margin: 0px 0px 20px 13px;
     outline: none;

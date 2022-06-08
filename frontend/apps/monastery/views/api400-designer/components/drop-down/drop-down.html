@@ -3,8 +3,6 @@
  * (C) 2022 TekMonks. All rights reserved.
  * License: See enclosed license.txt file.
  */
- 
-   
  -->
 
  
@@ -23,15 +21,13 @@
     cursor: pointer;
   
 }
-
-
- 
   </style>
+
+  
    {{{styleBody}}}
    <select name="choices" id="choices">
     <option value="" disabled selected hidden class="disabled"  >{{text}}</option>
     {{#values}}
     <option value="{{value}}" class="values" id="{{value}}"  >{{value}}</option>
-   
    {{/values}}
   </select>
