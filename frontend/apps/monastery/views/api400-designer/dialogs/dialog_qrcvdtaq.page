@@ -3,9 +3,9 @@ SCHEMA
 
 {
     "libraryname": {"html":"input", "type":"text", "placeholder":"{{i18n.LibraryName}}", "spellcheck":"false"},
-    "queue": {"html":"input", "type":"text", "placeholder":"{{i18n.DataQueueName}}", "spellcheck":"false"},
+    "dataqueue": {"html":"input", "type":"text", "placeholder":"{{i18n.DataQueueName}}", "spellcheck":"false"},
     "wait":{"html":"input", "type":"text", "placeholder":"{{i18n.Wait}}","spellcheck":"false"},
-    "dropdown": {"html":"drop-down","style":"width:100%; height:100%;","list":"[{'value':'true'},{'value':'false'}]","text":"Allow Peek"},
+    "allowpeek": {"html":"drop-down","style":"width:100%; height:100%;","list":"[{'value':'true'},{'value':'false'}]","text":"Allow Peek"},
     "data": {"html":"input", "type":"text", "placeholder":"{{i18n.Data}}","spellcheck":"false"}
 }
 
@@ -15,9 +15,9 @@ SCHEMA
 LAYOUT
 =================
 ----------------------------------------
-|     libraryname     |      queue     |           
+|     libraryname     |   dataqueue    |           
 ----------------------------------------
-|     wait            |      dropdown  |           
+|     wait            |   allowpeek    |           
 ----------------------------------------
 |                data                  |           
 ----------------------------------------

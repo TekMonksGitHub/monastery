@@ -5,7 +5,7 @@ SCHEMA
 {
     "libraryname": {"html":"input", "type":"text", "placeholder":"{{i18n.LibraryName}}", "spellcheck":"false"},
     "dataarea": {"html":"input", "type":"text", "placeholder":"{{i18n.DataAreaName}}", "spellcheck":"false"},
-    "dropdown": {"html":"drop-down","style":"width:100%; height:100%;","list":"[{'value':'BigDecimal'},{'value':'Character'}]","text":"Select Type"},
+    "datatype": {"html":"drop-down","style":"width:100%; height:100%;","list":"[{'value':'BigDecimal'},{'value':'Character'}]","text":"Select Type"},
     "value": {"html":"input", "type":"text", "placeholder":"{{i18n.Value}}","spellcheck":"false"}
 }
 ======
@@ -16,7 +16,7 @@ LAYOUT
 ----------------------------
 |   libraryname | dataarea |
 ----------------------------  
-|   dropdown    | value    |      
+|   datatype    | value    |      
 ----------------------------
 
 =================

@@ -394,7 +394,7 @@ async function _parseMod(command) {
     let ret = {};
     ret["nodeName"] = "mod";
     ret["description"] = "Mod";
-    ret["result"] = _patternMatch(command, /MOD\(([^)]+)\)/, 0);
+    ret["modulename"] = _patternMatch(command, /MOD\(([^)]+)\)/, 0);
     const jsData = await serverManager.getModule(_patternMatch(command, /MOD\(([^)]+)\)/, 0));
     ret["code"] = jsData.mod;
     return ret;
@@ -408,7 +408,7 @@ const _parseChgdtaara = async function (command) {
     let dataAreaName = _patternMatch(command, /DTAARA\(([^)]+)\)/, 0).split("/");
     ret["libraryname"] = dataAreaName[0];
     ret["dataarea"] = dataAreaName[1];
-    ret["dropdown"] = _patternMatch(command, /TYPE\(([^)]+)\)/, 1) == "CHAR" ? "Character" : "BigDecimal";
+    ret["datatype"] = _patternMatch(command, /TYPE\(([^)]+)\)/, 1) == "CHAR" ? "Character" : "BigDecimal";
     ret["value"] = _patternMatch(command, /VALUE\(([^)]+)\)/, 0);
     return ret;
 };
@@ -430,7 +430,7 @@ const _parseRtvdtaara = async function (command) {
     let dataAreaName = _patternMatch(command, /DTAARA\(([^)]+)\)/, 0).split("/");
     ret["libraryname"] = dataAreaName[0];
     ret["dataarea"] = dataAreaName[1];
-    ret["dropdown"] = _patternMatch(command, /TYPE\(([^)]+)\)/, 1) == "CHAR" ? "Character" : "BigDecimal";
+    ret["datatype"] = _patternMatch(command, /TYPE\(([^)]+)\)/, 1) == "CHAR" ? "Character" : "BigDecimal";
     ret["value"] = _patternMatch(command, /RTNVAR\(([^)]+)\)/, 0);
     return ret ;
 };
@@ -441,9 +441,9 @@ const _parseQrcvdtaq = async function (command) {
     ret["description"] = "Qrcvdtaq";
     let qrcvdtaqParm = _patternMatch(command, /PARM\(([^)]+)\)/, 0).split(/\s+/).filter(Boolean);
     ret["libraryname"] = qrcvdtaqParm[0].split("/")[0];
-    ret["queue"] = qrcvdtaqParm[0].split("/")[1];
+    ret["dataqueue"] = qrcvdtaqParm[0].split("/")[1];
     ret["wait"] = qrcvdtaqParm[1];
-    ret["dropdown"] = qrcvdtaqParm[2] == "true" ? "true" : "false";
+    ret["allowpeek"] = qrcvdtaqParm[2] == "true" ? "true" : "false";
     ret["data"] = qrcvdtaqParm[3].includes("&")?qrcvdtaqParm[3]: qrcvdtaqParm.slice(3).join(" ");
     return ret;
 };
@@ -473,7 +473,7 @@ const _parseScr = async function (command, isThisSubCmd,key) {
     if (subCmdVar.includes("START")) {
         ret["nodeName"] = "scrops";
         ret["description"] = "Scrops";
-        ret["radiobutton"] = "start";
+        ret["scrops"] = "start";
 
         if (subCmdVar.includes("KEYS")) {
             let attr;
@@ -490,11 +490,11 @@ const _parseScr = async function (command, isThisSubCmd,key) {
     } else if (subCmdVar.includes("STOP")) {
         ret["nodeName"] = "scrops";
         ret["description"] = "Scrops";
-        ret["radiobutton"] = "stop";
+        ret["scrops"] = "stop";
     } else if (subCmdVar.includes("RELEASE")) {
         ret["nodeName"] = "scrops";
         ret["description"] = "Scrops";
-        ret["radiobutton"] = "release";
+        ret["scrops"] = "release";
     } else if (subCmdVar.includes("READ")) {
         let allReads = [];
         let values;
@@ -600,7 +600,7 @@ const _parseDsppfm = async function (command, isThisSubCmd) {
     }
     let file = _subStrUsingNextIndex(subCmdVar, "FILE(", ")").split('/');
     ret["libraryname"] = file[0];
-    ret["physical"] = file[1];
+    ret["physicalfile"] = file[1];
     ret["member"] = _subStrUsingLastIndex(subCmdVar, "MBR(", ")") ? _subStrUsingLastIndex(subCmdVar, "MBR(", ")") : "";
     ret["nodeName"] = "dsppfm";
     ret["description"] = "Dsppfm";
