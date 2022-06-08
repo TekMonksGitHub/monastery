@@ -1,11 +1,10 @@
 /** 
- * Some algorithms for API400 application.
+ * Algorithms for API400 application.
  * (C) 2022 TekMonks. All rights reserved.
  * License: See enclosed LICENSE file.
  */
 import { util } from "/framework/js/util.mjs";
 let apicl = {}, laterAPICLCmd = {}, nodeAlreadyAdded = [], nodeToAddLater = [];
-const DIALOG = window.monkshu_env.components["dialog-box"];
 
 /**
 * Sorts a graph into a linear list with increasing order of indexing
@@ -92,7 +91,7 @@ const convertIntoAPICL = function (nodes) {
         else if (node.nodeName == 'scrops' && !nodeAlreadyAdded.includes(node.id))      { cmdString = _convertForScrops(node) }
         else if (node.nodeName == 'mod' && !nodeAlreadyAdded.includes(node.id))         { cmdString = _convertForMod(node) }
         else if (node.nodeName == 'substr' && !nodeAlreadyAdded.includes(node.id))      { cmdString = _convertForSubstr(node) }
-        else if (node.nodeName == 'endapi')                                             { cmdString = _convertForEndapi(node) }
+        else if (node.nodeName == 'endapi')                                             { cmdString = _convertForEndapi() }
         
         // checking for condition cases , to add the set of command after one case of condition, either true or false
         if (cmdString != '') {
@@ -108,6 +107,12 @@ const convertIntoAPICL = function (nodes) {
     return apicl;
 };
 
+/**
+ * Convert the STRAPI node into apicl command
+ * STRAPI : Start API
+ * @param node  Command Obect for STRAPI
+ * @returns STRAPI apicl command
+ */
 const _convertForStrapi = function (node) {
 
     const cmdString = 'STRAPI PARM()';
@@ -115,6 +120,12 @@ const _convertForStrapi = function (node) {
     else return cmdString; 
 };
 
+/**
+ * Convert the RUNSQL node into apicl command
+ * RUNSQL : Execute the SQL Query
+ * @param node  Command Obect for RUNSQL
+ * @returns RUNSQL apicl command
+ */
 const _convertForRunsql = function (node) {
 
     let cmdString = `RUNSQL SQL(${node.sql || ''})`;
@@ -127,11 +138,23 @@ const _convertForRunsql = function (node) {
     return cmdString;
 };
 
+/**
+ * Convert the RUNJS node into apicl command
+ * RUNJS : Execute the Javascript Code
+ * @param node  Command Obect for RUNJS
+ * @returns RUNJS apicl command
+ */
 const _convertForRunjs = function (node) {
     if (!node.result) return `RUNJS JS(${node.code || ''})`;
     else return `CHGVAR VAR(${node.result}) VALUE(RUNJS JS(${node.code || ''}))`;
 };
 
+/**
+ * Convert the SNDAPIMSG node into apicl command
+ * SNDAPIMSG : Send API Messages
+ * @param node  Command Obect for SNDAPIMSG
+ * @returns SNDAPIMSG apicl command
+ */
 const _convertForSndapimsg = function (node) {
 
     const cmdString = 'SNDAPIMSG  MSG()';
@@ -139,14 +162,27 @@ const _convertForSndapimsg = function (node) {
     else return cmdString;
 };
 
+/**
+ * Convert the CHGVAR node into apicl command
+ * CHGVAR : Change the Variable
+ * @param node  Command Obect for CHGVAR
+ * @returns CHGVAR apicl command
+ */
 const _convertForChgvar = function (node) {
     return `CHGVAR  VAR(${node.variable ? node.variable.trim() : ''})  VALUE(${node.value ? node.value.trim() : ''})`;
 };
 
+/**
+ * Convert the IF COND node into apicl command
+ * IF COND : Check the condtion
+ * @param node Command Obect for IF COND
+ * @param {*} nodes All the Commands Object
+ * @returns IF COND apicl command , along with THEN and ELSE , also the next Command inside THEN and ELSE
+ */
 const _convertForCondition = function (node, nodes) {
     let nextIdentifiedNodeObj;
     let cmdStringArr = [];
-    cmdStringArr[0] = `IF COND(${node.condition || ''})`; // first add the condition command
+    cmdStringArr[0] = `IF COND(${node.condition || ''})`; // add the condition command
     for (const nodeObj of nodes) {
         if (nodeObj && nodeObj.dependencies && nodeObj.dependencies.length > 0) {
             if (nodeObj.dependencies.includes(node.id)) {
@@ -191,11 +227,24 @@ const _convertForCondition = function (node, nodes) {
     return cmdStringArr.join(' ');
 };
 
+/**
+ * Convert the GOTO node into apicl command
+ * GOTO : Jump onto particular flow or command
+ * @param node  Command Obect for GOTO
+ * @param {*} nodes All the Commands Object
+ * @returns GOTO apicl command
+ */
 const _convertForGoto = function (node, nodes) {
     const gotoNextNode = checkNodeInAllNodes(node, nodes); // put the id of next Command , which will be sorted with index later in _setIndexing
     return `GOTO ${gotoNextNode.id || ''}`;
 };
 
+/**
+ * Convert the CHGDTAARA node into apicl command
+ * CHGDTAARA : Change Data Area
+ * @param node  Command Obect for CHGDTAARA
+ * @returns CHGDTAARA apicl command
+ */
 const _convertForChgdtaara = function (node) {
     let cmdString;
     if ((node.libraryname || node.dataarea) && node.value && node.datatype) {
@@ -212,9 +261,10 @@ const _convertForChgdtaara = function (node) {
 };
 
 /**
- * 
- * @param node The incoming sorted graph 
- * @returns 
+ * Convert the RTVDTAARA node into apicl command
+ * RTVDTAARA : Retrieve Data Area
+ * @param node  Command Obect for RTVDTAARA
+ * @returns RTVDTAARA apicl command
  */
 const _convertForRtvdtaara = function (node) {
     let cmdString;
@@ -230,6 +280,12 @@ const _convertForRtvdtaara = function (node) {
     else return `RTVDTAARA DTAARA() TYPE() RTNVAR()`;
 };
 
+/**
+ * Convert the QRCVDTAQ node into apicl command
+ * QRCVDTAQ : Recieve Data Queue
+ * @param node  Command Obect for QRCVDTAQ
+ * @returns QRCVDTAQ apicl command
+ */
 const _convertForQrcvdtaq = function (node) {
     if ((node.libraryname || node.dataqueue) && node.wait && node.allowpeek && node.data) {
         if (node.libraryname && node.libraryname != '' && node.dataqueue && node.dataqueue != '')
@@ -239,6 +295,12 @@ const _convertForQrcvdtaq = function (node) {
     else return `QRCVDTAQ  PARM()`
 };
 
+/**
+ * Convert the QSNDDTAQ node into apicl command
+ * QSNDDTAQ : Send Data Queue
+ * @param node  Command Obect for QSNDDTAQ
+ * @returns QSNDDTAQ apicl command
+ */
 const _convertForQsnddtaq = function (node) {
     if ((node.libraryname || node.dataqueue) && node.value) {
         if (node.libraryname && node.libraryname != '' && node.dataqueue && node.dataqueue != '')
@@ -248,16 +310,34 @@ const _convertForQsnddtaq = function (node) {
     else return `QSNDDTAQ PARM()`
 };
 
+/**
+ * Convert the DSPPFM node into apicl command
+ * DSPPFM : Display Physical File Member
+ * @param node  Command Obect for DSPPFM
+ * @returns DSPPFM apicl command
+ */
 const _convertForDsppfm = function (node) {
     if (node.libraryname && node.libraryname != '' && node.physicalfile && node.physicalfile != '')
         return `CHGVAR     VAR(${node.result ? node.result.trim() : ''})    VALUE(DSPPFM FILE(${node.libraryname.trim()}/${node.physicalfile.trim()}) MBR(${node.member ? node.member.trim() : ''}))`;
     else return `CHGVAR     VAR(${node.result ? node.result.trim() : ''})    VALUE(DSPPFM FILE(${node.libraryname ? node.libraryname.trim() : ''}) MBR(${node.member ? node.member.trim() : ''}))`
 };
 
+/**
+ * Convert the LOG node into apicl command
+ * LOG : Log out particular message or variable
+ * @param node  Command Obect for LOG
+ * @returns LOG apicl command
+ */
 const _convertForLog = function (node) {
     return `LOG MSG(${node.log ? node.log.trim() : ''})`;
 };
 
+/**
+ * Convert the CALL node into apicl command
+ * CALL : To Call the Program
+ * @param node  Command Obect for CALL
+ * @returns CALL apicl command
+ */
 const _convertForCall = function (node) {
     let cmdString;
     if (node.libraryname && node.libraryname != '' && node.programname && node.programname != '')
@@ -273,6 +353,12 @@ const _convertForCall = function (node) {
     return cmdString;
 };
 
+/**
+ * Convert the RUNSQLPRC node into apicl command
+ * RUNSQLPRC : Execute the Stored Procedure
+ * @param node  Command Obect for RUNSQLPRC
+ * @returns RUNSQLPRC apicl command
+ */
 const _convertForRunsqlprc = function (node) {
     let cmdString;
     if (node.libraryname && node.libraryname != '' && node.procedurename && node.procedurename != '')
@@ -291,6 +377,12 @@ const _convertForRunsqlprc = function (node) {
     return cmdString;
 };
 
+/**
+ * Convert the REST node into apicl command
+ * REST : To Call the REST URL
+ * @param node  Command Obect for REST
+ * @returns REST apicl command
+ */
 const _convertForRest = function (node) {
 
     let cmdString = `REST URL(${node.url ? node.url.trim() : ''}) METHOD(${node.method ? node.method.trim() : ''}) ` +
@@ -300,10 +392,22 @@ const _convertForRest = function (node) {
     return cmdString;
 };
 
+/**
+ * Convert the JSONATA node into apicl command
+ * JSONATA : To execute the JSONATA expression
+ * @param node  Command Obect for JSONATA
+ * @returns JSONATA apicl command
+ */
 const _convertForJsonata = function (node) {
     return `CHGVAR  VAR(${node.result ? node.result.trim() : ''})  VALUE(JSONATA EXPRESSION(${node.jsonata ? node.jsonata.trim() : ''}))`;
 };
 
+/**
+ * Convert the MAP node into apicl command
+ * MAP : To Extract the particular String
+ * @param node  Command Obect for MAP
+ * @returns MAP apicl command
+ */
 const _convertForMap = function (node) {
     if (node.listbox) {
         let listBoxValues = JSON.parse(node.listbox);
@@ -327,6 +431,12 @@ const _convertForMap = function (node) {
     else return `CHGVAR     VAR()   VALUE(MAP DO())`
 };
 
+/**
+ * Convert the SCR READ node into apicl command
+ * SCR READ : Screen Scrapping Read the coordinates
+ * @param node  Command Obect for SCR READ
+ * @returns SCR READ apicl command
+ */
 const _convertForScrread = function (node) {
     let readVariables = [];
     if (node.listbox) {
@@ -341,6 +451,12 @@ const _convertForScrread = function (node) {
     else return `SCR NAME()   READ()`;
 };
 
+/**
+ * Convert the SCR KEYS node into apicl command
+ * SCR KEYS : Screen Scrapping , hit the command and keys on particular coordinates
+ * @param node  Command Obect for SCR KEYS
+ * @returns SCR KEYS apicl command
+ */
 const _convertForScrkeys = function (node) {
     let keysVariables = [];
     let listBoxValues = JSON.parse(node.listbox);
@@ -354,24 +470,53 @@ const _convertForScrkeys = function (node) {
     else return `SCR NAME()   KEYS()`
 };
 
+/**
+ * Convert the SCR OPS node into apicl command
+ * SCR OPS : Screen Scrapping , start , release and stop the session
+ * @param node  Command Obect for SCR OPS
+ * @returns SCR OPS apicl command
+ */
 const _convertForScrops = function (node) {
     return `SCR NAME(${node.session ? node.session : ''}) ${node.scrops ? node.scrops.toUpperCase() : ''}`;
 };
 
+/**
+ * Convert the RUNJS MOD node into apicl command
+ * RUNJS MOD : Execute the Javascript Code
+ * @param node  Command Obect for RUNJS MOD
+ * @returns RUNJS MOD apicl command
+ */
 const _convertForMod = function (node) {
     return `RUNJS MOD(${node.modulename || ''})`;
 };
 
+/**
+ * Convert the SUBSTR node into apicl command
+ * SUBSTR : To Extract out the Substring from a String
+ * @param node  Command Obect for SUBSTR
+ * @returns SUBSTR apicl command
+ */
 const _convertForSubstr = function (node) {
     return `CHGVAR  VAR(${node.variable ? node.variable.trim() : ''})  VALUE(SUBSTR DO(${node.string ? node.string.trim() : ''}:${node.index ? node.index.trim() : ''}:${node.noofchar ? node.noofchar.trim() : ''}))`
 };
 
-const _convertForEndapi = function (node) {
+/**
+ * Convert the ENDAPI node into apicl command
+ * ENDAPI : To End the API
+ * @param node  Command Obect for ENDAPI
+ * @returns ENDAPI apicl command
+ */
+const _convertForEndapi = function () {
     return `ENDAPI`;
 };
 
+/**
+ * To check next command node id, particularly in GOTO case
+ * @param {*} nodeObj Command Object
+ * @param {*} nodes All the Command's Object
+ * @returns 
+ */
 const _saveNextNodeIdsInFlow = function (nodeObj, nodes) {
-    // used for GOTO, to check next command node id
     let nextNodeObj = checkNodeInAllNodes(nodeObj, nodes);
     if (nextNodeObj && nextNodeObj.id && nextNodeObj.nodeName != 'condition') {
         nodeToAddLater.push(nextNodeObj.id);
@@ -381,6 +526,12 @@ const _saveNextNodeIdsInFlow = function (nodeObj, nodes) {
     }
 };
 
+/**
+ * Fecth the node which was included in the dependencies of other node
+ * @param {*} node Command Object
+ * @param {*} allnodes All the Commmand's Object
+ * @returns found node object
+ */
 const checkNodeInAllNodes = function (node, allnodes) {
 
     if (allnodes && allnodes.length > 0)
@@ -393,6 +544,11 @@ const checkNodeInAllNodes = function (node, allnodes) {
         }
 };
 
+/**
+ * Set the Indexing of the APICL
+ * @param {*} apicl 
+ * @returns Final converted APICL
+ */
 const _setIndexing = function (apicl) {
 
     let finalAPICL = {};
@@ -405,6 +561,12 @@ const _setIndexing = function (apicl) {
     return _assignIndexIfInGOTO(idIndexMapping, finalAPICL);
 };
 
+/**
+ * To set the index on GOTO command
+ * @param {*} idIndexMapping Array which containg all the index, based on the id
+ * @param {*} finalAPICL Final APICL json , which has the index , but GOTO needs to be resolved with indexing
+ * @returns APICL after fix the GOTO command
+ */
 const _assignIndexIfInGOTO = function (idIndexMapping, finalAPICL) {
 
     let chgArr = [], index;
