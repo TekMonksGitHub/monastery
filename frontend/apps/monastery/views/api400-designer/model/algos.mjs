@@ -201,13 +201,13 @@ const _convertForGoto = function (node, nodes) {
 
 const _convertForChgdtaara = function (node) {
     let cmdString;
-    if ((node.libraryname || node.dataarea) && node.value && node.dropdown) {
+    if ((node.libraryname || node.dataarea) && node.value && node.datatype) {
 
         if (node.libraryname && node.libraryname != '' && node.dataarea && node.dataarea != '') cmdString = `CHGDTAARA DTAARA(${node.libraryname.trim()}/${node.dataarea.trim()})`;
         else cmdString = `CHGDTAARA DTAARA(${node.libraryname ? node.libraryname.trim() : ''})`
 
-        if (node.dropdown.includes("Character"))        cmdString += ` TYPE(*CHAR)`;
-        else if (node.dropdown.includes("BigDecimal"))  cmdString += ` TYPE(*BIGDEC)`;
+        if (node.datatype.includes("Character"))        cmdString += ` TYPE(*CHAR)`;
+        else if (node.datatype.includes("BigDecimal"))  cmdString += ` TYPE(*BIGDEC)`;
 
         return `${cmdString} RTNVAR(${node.value.trim()})`;
     }
@@ -216,12 +216,12 @@ const _convertForChgdtaara = function (node) {
 
 const _convertForRtvdtaara = function (node) {
     let cmdString;
-    if ((node.libraryname || node.dataarea) && node.value && node.dropdown) {
+    if ((node.libraryname || node.dataarea) && node.value && node.datatype) {
         if (node.libraryname && node.libraryname != '' && node.dataarea && node.dataarea != '') cmdString = `RTVDTAARA DTAARA(${node.libraryname.trim()}/${node.dataarea.trim()})`;
         else cmdString = `RTVDTAARA DTAARA(${node.libraryname ? node.libraryname.trim() : ''})`
 
-        if (node.dropdown.includes("Character"))        cmdString += `  TYPE(*CHAR)`;
-        else if (node.dropdown.includes("BigDecimal"))  cmdString += `  TYPE(*BIGDEC)`;
+        if (node.datatype.includes("Character"))        cmdString += `  TYPE(*CHAR)`;
+        else if (node.datatype.includes("BigDecimal"))  cmdString += `  TYPE(*BIGDEC)`;
 
         return `${cmdString} RTNVAR(${node.value.trim()})`;
     }
@@ -229,10 +229,10 @@ const _convertForRtvdtaara = function (node) {
 };
 
 const _convertForQrcvdtaq = function (node) {
-    if ((node.libraryname || node.queue) && node.wait && node.dropdown && node.data) {
-        if (node.libraryname && node.libraryname != '' && node.queue && node.queue != '')
-            return `QRCVDTAQ PARM(${node.libraryname.trim()}/${node.queue.trim()} ${node.wait.trim()} ${node.dropdown} ${node.data.trim()})`;
-        else return `QRCVDTAQ PARM(${node.libraryname ? node.libraryname.trim() : ''} ${node.wait.trim()} ${node.dropdown} ${node.data.trim()})`
+    if ((node.libraryname || node.dataqueue) && node.wait && node.allowpeek && node.data) {
+        if (node.libraryname && node.libraryname != '' && node.dataqueue && node.dataqueue != '')
+            return `QRCVDTAQ PARM(${node.libraryname.trim()}/${node.dataqueue.trim()} ${node.wait.trim()} ${node.allowpeek} ${node.data.trim()})`;
+        else return `QRCVDTAQ PARM(${node.libraryname ? node.libraryname.trim() : ''} ${node.wait.trim()} ${node.allowpeek} ${node.data.trim()})`
     }
     else return `QRCVDTAQ  PARM()`
 };
@@ -247,8 +247,8 @@ const _convertForQsnddtaq = function (node) {
 };
 
 const _convertForDsppfm = function (node) {
-    if (node.libraryname && node.libraryname != '' && node.physical && node.physical != '')
-        return `CHGVAR     VAR(${node.result ? node.result.trim() : ''})    VALUE(DSPPFM FILE(${node.libraryname.trim()}/${node.physical.trim()}) MBR(${node.member ? node.member.trim() : ''}))`;
+    if (node.libraryname && node.libraryname != '' && node.physicalfile && node.physicalfile != '')
+        return `CHGVAR     VAR(${node.result ? node.result.trim() : ''})    VALUE(DSPPFM FILE(${node.libraryname.trim()}/${node.physicalfile.trim()}) MBR(${node.member ? node.member.trim() : ''}))`;
     else return `CHGVAR     VAR(${node.result ? node.result.trim() : ''})    VALUE(DSPPFM FILE(${node.libraryname ? node.libraryname.trim() : ''}) MBR(${node.member ? node.member.trim() : ''}))`
 };
 
@@ -353,11 +353,11 @@ const _convertForScrkeys = function (node) {
 };
 
 const _convertForScrops = function (node) {
-    return `SCR NAME(${node.session ? node.session : ''}) ${node.radiobutton ? node.radiobutton.toUpperCase() : ''}`;
+    return `SCR NAME(${node.session ? node.session : ''}) ${node.scrops ? node.scrops.toUpperCase() : ''}`;
 };
 
 const _convertForMod = function (node) {
-    return `RUNJS MOD(${node.result || ''})`;
+    return `RUNJS MOD(${node.moduleName || ''})`;
 };
 
 const _convertForSubstr = function (node) {
