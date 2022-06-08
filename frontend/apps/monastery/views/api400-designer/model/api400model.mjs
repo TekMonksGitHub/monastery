@@ -148,14 +148,14 @@ function _nodeAdded(nodeName, id, properties) {
     if (idCache[id]) { _nodeModified(nodeName, id, properties); return; }  // node properties modified
     const name = _getNameFromDescription(node.description);
 
-    if (nodeName == "strapi") _findOrCreateCommand().commands.push(node);
-    else if (nodeName == "runsql" || nodeName == "runjs" || nodeName == "goto" || nodeName == "chgvar" ||
+    if (nodeName == "strapi" || nodeName == "runsql" || nodeName == "runjs" || nodeName == "goto" || nodeName == "chgvar" ||
             nodeName == "sndapimsg" || nodeName == "condition" || nodeName == "iftrue" || nodeName == "iffalse" ||
             nodeName == "chgdtaara" || nodeName == "rtvdtaara" || nodeName == "call" || nodeName == "runsqlprc" ||
             nodeName == "rest" || nodeName == "map" || nodeName == "scrread" || nodeName == "scrkeys" ||nodeName == "scrops" ||
             nodeName == "substr" || nodeName == "qrcvdtaq" || nodeName == "qsnddtaq" || nodeName == "dsppfm" || 
             nodeName == "log" ||nodeName == "jsonata" || nodeName == "mod" || nodeName == "endapi") {
-            api400modelObj.apicl[0].commands.push(node);
+            node.name = name;
+            _findOrCreateCommand().commands.push(node);
     }
 
     node.id = id; idCache[id] = node;   // transfer ID and cache the node
