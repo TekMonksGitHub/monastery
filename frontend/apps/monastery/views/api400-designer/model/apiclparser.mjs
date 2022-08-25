@@ -17,15 +17,21 @@ let xCounter, yCounter, counter = 0, dependencies ,result, storeIDS, flagNOthenY
 async function apiclParser(data) {
     xCounter = 100, yCounter = 80, dependencies = [], storeIDS = {}, commandCounter = [],
     result = [], nextElseDependency=[], apicl = JSON.parse(data), initAPICL = _initializeAPICLIndex(JSON.parse(data));
-
+    if (apicl[Object.keys(apicl).length-1].includes("NOP")) {
+        const lastCommand = apicl[Object.keys(apicl).length];
+        apicl[Object.keys(apicl).length] = apicl[Object.keys(apicl).length-1];
+        apicl[Object.keys(apicl).length-1] = lastCommand;
+    }
     for (const key in apicl) {
-        if (!initAPICL[key]) {
+        if (!initAPICL[key] ) {
             const modelObject = await _parseCommand(apicl[key],key);
             if (Object.keys(modelObject).length > 0) { result.push(modelObject); initAPICL[key] = modelObject.id; }
         }
     }
     const resolvedPromises = await Promise.all(result);
-    const finalCommands = _correctAPICL(resolvedPromises);
+    let finalCommands = _correctAPICL(resolvedPromises);
+    if (apicl[Object.keys(apicl).length].includes("NOP")) finalCommands = _updateCordiantes(finalCommands,apicl[Object.keys(apicl).length]);
+    else if(apicl[Object.keys(apicl).length+1] && apicl[Object.keys(apicl).length+1].includes("NOP")) finalCommands = _updateCordiantes(finalCommands,apicl[Object.keys(apicl).length+1]);
     counter = 0;
     return { "apicl": [{ "commands": finalCommands, "name": "commands", "id": counter }] };
 }
@@ -661,6 +667,19 @@ const _subStrUsingLastIndex = function (str, startStr, endStr) {
  */
 const _subStrUsingNextIndex = function (str, startStr, endStr) {
     return str.substring(str.indexOf(startStr) + startStr.length, str.indexOf(endStr));
+};
+const _updateCordiantes = function (finalCommands,NOP) {
+
+      const coordinatesData = NOP.match(/\(([^)]+)\)/) ? JSON.parse(NOP.match(/\(([^)]+)\)/)[1]).CORDINATES :[];
+      if(!(finalCommands.length == coordinatesData.length) ) return finalCommands;
+      else {finalCommands = finalCommands.map((node,index) => {
+       node["description"] = coordinatesData[index].description;
+       node["x"] = coordinatesData[index].x;
+       node["y"] = coordinatesData[index].y;
+     
+       return node;
+      })
+    return finalCommands;}
 };
 
 const _getUniqueID = _ => `${Date.now()}${Math.random() * 100}`; // return an unique ID

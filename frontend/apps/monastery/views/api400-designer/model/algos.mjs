@@ -3,6 +3,7 @@
  * (C) 2022 TekMonks. All rights reserved.
  * License: See enclosed LICENSE file.
  */
+
 import { util } from "/framework/js/util.mjs";
 let apicl = {}, laterAPICLCmd = {}, nodeAlreadyAdded = [], nodeToAddLater = [];
 
@@ -67,32 +68,32 @@ const convertIntoAPICL = function (nodes) {
         cmdString = '';
         addLaterflag = 0;
         if (nodeToAddLater.includes(node.id)) { addLaterflag = 1; }
-
-        if (node.nodeName == 'strapi')                                                  { cmdString = _convertForStrapi(node) }
-        else if (node.nodeName == 'runsql' && !nodeAlreadyAdded.includes(node.id))      { cmdString = _convertForRunsql(node) }
-        else if (node.nodeName == 'runjs' && !nodeAlreadyAdded.includes(node.id))       { cmdString = _convertForRunjs(node) }
-        else if (node.nodeName == 'sndapimsg' && !nodeAlreadyAdded.includes(node.id))   { cmdString = _convertForSndapimsg(node) }
-        else if (node.nodeName == 'chgvar' && !nodeAlreadyAdded.includes(node.id))      { cmdString = _convertForChgvar(node) }
-        else if (node.nodeName == 'condition')                                          { cmdString = _convertForCondition(node, nodes) }
-        else if (node.nodeName == 'goto' && !nodeAlreadyAdded.includes(node.id))        { cmdString = _convertForGoto(node, nodes) }
-        else if (node.nodeName == 'chgdtaara' && !nodeAlreadyAdded.includes(node.id))   { cmdString = _convertForChgdtaara(node) }
-        else if (node.nodeName == 'rtvdtaara' && !nodeAlreadyAdded.includes(node.id))   { cmdString = _convertForRtvdtaara(node) }
-        else if (node.nodeName == 'qrcvdtaq' && !nodeAlreadyAdded.includes(node.id))    { cmdString = _convertForQrcvdtaq(node) }
-        else if (node.nodeName == 'qsnddtaq' && !nodeAlreadyAdded.includes(node.id))    { cmdString = _convertForQsnddtaq(node) }
-        else if (node.nodeName == 'dsppfm' && !nodeAlreadyAdded.includes(node.id))      { cmdString = _convertForDsppfm(node) }
-        else if (node.nodeName == 'log' && !nodeAlreadyAdded.includes(node.id))         { cmdString = _convertForLog(node) }
-        else if (node.nodeName == 'call' && !nodeAlreadyAdded.includes(node.id))        { cmdString = _convertForCall(node) }
-        else if (node.nodeName == 'runsqlprc' && !nodeAlreadyAdded.includes(node.id))   { cmdString = _convertForRunsqlprc(node) }
-        else if (node.nodeName == 'rest' && !nodeAlreadyAdded.includes(node.id))        { cmdString = _convertForRest(node) }
-        else if (node.nodeName == 'jsonata' && !nodeAlreadyAdded.includes(node.id))     { cmdString = _convertForJsonata(node) }
-        else if (node.nodeName == 'map' && !nodeAlreadyAdded.includes(node.id))         { cmdString = _convertForMap(node) }
-        else if (node.nodeName == 'scrread' && !nodeAlreadyAdded.includes(node.id))     { cmdString = _convertForScrread(node) }
-        else if (node.nodeName == 'scrkeys' && !nodeAlreadyAdded.includes(node.id))     { cmdString = _convertForScrkeys(node) }
-        else if (node.nodeName == 'scrops' && !nodeAlreadyAdded.includes(node.id))      { cmdString = _convertForScrops(node) }
-        else if (node.nodeName == 'mod' && !nodeAlreadyAdded.includes(node.id))         { cmdString = _convertForMod(node) }
-        else if (node.nodeName == 'substr' && !nodeAlreadyAdded.includes(node.id))      { cmdString = _convertForSubstr(node) }
-        else if (node.nodeName == 'endapi')                                             { cmdString = _convertForEndapi() }
         
+        if (node.nodeName == 'strapi')  { cmdString = _convertForStrapi(node) }
+        else if (node.nodeName == 'runsql' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForRunsql(node) }
+        else if (node.nodeName == 'runjs' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForRunjs(node) }
+        else if (node.nodeName == 'sndapimsg' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForSndapimsg(node) }
+        else if (node.nodeName == 'chgvar' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForChgvar(node) }
+        else if (node.nodeName == 'condition') { cmdString = _convertForCondition(node, nodes) }
+        else if (node.nodeName == 'goto' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForGoto(node, nodes) }
+        else if (node.nodeName == 'chgdtaara' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForChgdtaara(node) }
+        else if (node.nodeName == 'rtvdtaara' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForRtvdtaara(node) }
+        else if (node.nodeName == 'qrcvdtaq' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForQrcvdtaq(node) }
+        else if (node.nodeName == 'qsnddtaq' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForQsnddtaq(node) }
+        else if (node.nodeName == 'dsppfm' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForDsppfm(node) }
+        else if (node.nodeName == 'log' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForLog(node) }
+        else if (node.nodeName == 'call' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForCall(node) }
+        else if (node.nodeName == 'runsqlprc' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForRunsqlprc(node) }
+        else if (node.nodeName == 'rest' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForRest(node) }
+        else if (node.nodeName == 'jsonata' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForJsonata(node) }
+        else if (node.nodeName == 'map' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForMap(node) }
+        else if (node.nodeName == 'scrread' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForScrread(node) }
+        else if (node.nodeName == 'scrkeys' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForScrkeys(node) }
+        else if (node.nodeName == 'scrops' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForScrops(node, nodes) }
+        else if (node.nodeName == 'mod' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForMod(node) }
+        else if (node.nodeName == 'substr' && !nodeAlreadyAdded.includes(node.id)) { cmdString = _convertForSubstr(node) }
+        else if (node.nodeName == 'endapi') { cmdString = _convertForEndapi() }
+
         // checking for condition cases , to add the set of command after one case of condition, either true or false
         if (cmdString != '') {
             if (addLaterflag) { laterAPICLCmd[node.id] = cmdString; }
@@ -117,7 +118,7 @@ const _convertForStrapi = function (node) {
 
     const cmdString = 'STRAPI PARM()';
     if (node.listbox) return cmdString.replace(`()`, `(${JSON.parse(node.listbox).filter(Boolean).join(' ')})`);
-    else return cmdString; 
+    else return cmdString;
 };
 
 /**
@@ -191,27 +192,27 @@ const _convertForCondition = function (node, nodes) {
                     nextIdentifiedNodeObj = checkNodeInAllNodes(nodeObj, nodes); // check which command to be add inside THEN and ELSE
                     if (nextIdentifiedNodeObj) {
                         let subCmdStr = '';
-                        if (nextIdentifiedNodeObj.nodeName == 'runsql')         { subCmdStr = _convertForRunsql(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'goto')      { subCmdStr = _convertForGoto(nextIdentifiedNodeObj, nodes); _saveNextNodeIdsInFlow(nextIdentifiedNodeObj, nodes); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'scrops')    { subCmdStr = _convertForScrops(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'runjs')     { subCmdStr = _convertForRunjs(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'scrkeys')   { subCmdStr = _convertForScrkeys(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'scrread')   { subCmdStr = _convertForScrread(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'chgvar')    { subCmdStr = _convertForChgvar(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'map')       { subCmdStr = _convertForMap(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'jsonata')   { subCmdStr = _convertForJsonata(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'rest')      { subCmdStr = _convertForRest(nextIdentifiedNodeObj); }
+                        if (nextIdentifiedNodeObj.nodeName == 'runsql') { subCmdStr = _convertForRunsql(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'goto') { subCmdStr = _convertForGoto(nextIdentifiedNodeObj, nodes); _saveNextNodeIdsInFlow(nextIdentifiedNodeObj, nodes); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'scrops') { subCmdStr = _convertForScrops(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'runjs') { subCmdStr = _convertForRunjs(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'scrkeys') { subCmdStr = _convertForScrkeys(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'scrread') { subCmdStr = _convertForScrread(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'chgvar') { subCmdStr = _convertForChgvar(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'map') { subCmdStr = _convertForMap(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'jsonata') { subCmdStr = _convertForJsonata(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'rest') { subCmdStr = _convertForRest(nextIdentifiedNodeObj); }
                         else if (nextIdentifiedNodeObj.nodeName == 'runsqlprc') { subCmdStr = _convertForRunsqlprc(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'call')      { subCmdStr = _convertForCall(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'log')       { subCmdStr = _convertForLog(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'dsppfm')    { subCmdStr = _convertForDsppfm(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'qsnddtaq')  { subCmdStr = _convertForQsnddtaq(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'qrcvdtaq')  { subCmdStr = _convertForQrcvdtaq(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'call') { subCmdStr = _convertForCall(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'log') { subCmdStr = _convertForLog(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'dsppfm') { subCmdStr = _convertForDsppfm(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'qsnddtaq') { subCmdStr = _convertForQsnddtaq(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'qrcvdtaq') { subCmdStr = _convertForQrcvdtaq(nextIdentifiedNodeObj); }
                         else if (nextIdentifiedNodeObj.nodeName == 'rtvdtaara') { subCmdStr = _convertForRtvdtaara(nextIdentifiedNodeObj); }
                         else if (nextIdentifiedNodeObj.nodeName == 'chgdtaara') { subCmdStr = _convertForChgdtaara(nextIdentifiedNodeObj); }
                         else if (nextIdentifiedNodeObj.nodeName == 'sndapimsg') { subCmdStr = _convertForSndapimsg(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'mod')       { subCmdStr = _convertForMod(nextIdentifiedNodeObj); }
-                        else if (nextIdentifiedNodeObj.nodeName == 'substr')    { subCmdStr = _convertForSubstr(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'mod') { subCmdStr = _convertForMod(nextIdentifiedNodeObj); }
+                        else if (nextIdentifiedNodeObj.nodeName == 'substr') { subCmdStr = _convertForSubstr(nextIdentifiedNodeObj); }
 
                         // add the THEN and ELSE part , also add any COMMAND inside THEN and ELSE
                         (nodeObj.nodeName == 'iftrue') ? cmdStringArr[1] = ` ${isThenElse}(${subCmdStr})` : cmdStringArr[2] = ` ${isThenElse}(${subCmdStr})`;
@@ -252,8 +253,8 @@ const _convertForChgdtaara = function (node) {
         if (node.libraryname && node.libraryname != '' && node.dataarea && node.dataarea != '') cmdString = `CHGDTAARA DTAARA(${node.libraryname.trim()}/${node.dataarea.trim()})`;
         else cmdString = `CHGDTAARA DTAARA(${node.libraryname ? node.libraryname.trim() : ''})`
 
-        if (node.datatype.includes("Character"))        cmdString += ` TYPE(*CHAR)`;
-        else if (node.datatype.includes("BigDecimal"))  cmdString += ` TYPE(*BIGDEC)`;
+        if (node.datatype.includes("Character")) cmdString += ` TYPE(*CHAR)`;
+        else if (node.datatype.includes("BigDecimal")) cmdString += ` TYPE(*BIGDEC)`;
 
         return `${cmdString} VALUE(${node.value.trim()})`;
     }
@@ -272,8 +273,8 @@ const _convertForRtvdtaara = function (node) {
         if (node.libraryname && node.libraryname != '' && node.dataarea && node.dataarea != '') cmdString = `RTVDTAARA DTAARA(${node.libraryname.trim()}/${node.dataarea.trim()})`;
         else cmdString = `RTVDTAARA DTAARA(${node.libraryname ? node.libraryname.trim() : ''})`
 
-        if (node.datatype.includes("Character"))        cmdString += `  TYPE(*CHAR)`;
-        else if (node.datatype.includes("BigDecimal"))  cmdString += `  TYPE(*BIGDEC)`;
+        if (node.datatype.includes("Character")) cmdString += `  TYPE(*CHAR)`;
+        else if (node.datatype.includes("BigDecimal")) cmdString += `  TYPE(*BIGDEC)`;
 
         return `${cmdString} RTNVAR(${node.value.trim()})`;
     }
@@ -368,7 +369,7 @@ const _convertForRunsqlprc = function (node) {
     let paramString = '';
     if (node.listbox) {
         let listBoxValues = JSON.parse(node.listbox);
-        if (listBoxValues && listBoxValues.length > 0) for (let values of listBoxValues) 
+        if (listBoxValues && listBoxValues.length > 0) for (let values of listBoxValues)
             if (values.some(value => value != "")) paramString += values.join("") + " ";
 
         cmdString += ` PARM(${paramString.trim()})`;
@@ -415,7 +416,7 @@ const _convertForMap = function (node) {
         if (listBoxValues && listBoxValues.length > 0)
             for (const variableObj of listBoxValues) {
                 if (variableObj.some(value => value != "")) {
-                    if (variableObj[4]) { 
+                    if (variableObj[4]) {
                         if (variableObj[0]) mapVariables.push(`${variableObj[0].trim()}:${variableObj[1].trim()}:${variableObj[2].trim()}:${variableObj[3].trim()}:${variableObj[4].trim()}`);
                         else mapVariables.push(`-:${variableObj[1].trim()}:${variableObj[2].trim()}:${variableObj[3].trim()}:${variableObj[4].trim()}`);
                     }
@@ -476,8 +477,19 @@ const _convertForScrkeys = function (node) {
  * @param node  Command Obect for SCR OPS
  * @returns SCR OPS apicl command
  */
-const _convertForScrops = function (node) {
-    return `SCR NAME(${node.session ? node.session : ''}) ${node.scrops ? node.scrops.toUpperCase() : ''}`;
+const _convertForScrops = function (node, nodes) {
+    const nextNode = checkNodeInAllNodes(node, nodes);
+    if (node && node.scrops == "start" && node.pool != "" && nextNode.nodeName == "scrkeys") {
+            let keys = _convertForScrkeys(nextNode).match(/KEYS\(.+\)/i)[0];
+             nodes.splice(nodes.indexOf(nextNode), 1);  
+             const nextNodeafterkeysnode = checkNodeInAllNodes(nextNode , nodes);  
+
+            if(nextNodeafterkeysnode) nextNodeafterkeysnode.dependencies=[node.id];
+            return `SCR NAME(${node.session ? node.session : ''}) START ${keys} POOL(${node.pool})`;;   
+    }
+
+    else return `SCR NAME(${node.session ? node.session : ''}) ${node.scrops ? node.scrops.toUpperCase() : ''}`;
+
 };
 
 /**

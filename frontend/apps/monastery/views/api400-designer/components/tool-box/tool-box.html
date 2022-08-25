@@ -1,0 +1,68 @@
+<!--
+/* 
+ * (C) 2022 TekMonks. All rights reserved.
+ * License: See enclosed license.txt file.
+ */
+  
+ -->
+
+ 
+ <style>
+  body {
+      margin: 0%;
+      height: 100%;
+      width: 100%;
+      
+  }
+
+  span#toolbar {
+      padding-bottom: 10px; 
+      display: inline-flex;
+      align-items: center;
+      width: 100%;
+      flex-direction: row;
+      justify-content: space-between;
+      max-width: calc(100vw - 192px);
+  }
+  
+  span#toolbar > span > span {
+      align-items: center;
+      display: inline-flex;
+      font-size: smaller;
+      font-family: 'Red Hat Text';
+      font-weight: bold;
+      padding-right: 4vw;
+  }
+  
+  span#toolbar > span > span:last-child {padding-right: 0vw;}
+  
+  span#toolbar > span > span.button {
+      padding: 5px 10px 5px 10px;
+      border: 1px solid #C6E3FF;
+      border-radius: 5px;
+      background-color: #D6EFFF;
+      cursor: default;
+      margin-right: 4vw;
+  }
+  
+  span#toolbar  {margin-left: 19px;}
+  span#toolbar > span > span.button:last-child {margin-right: 0vw;}
+  img.button {width: 20px;}
+  </style>
+   {{{styleBody}}}
+<span id="toolbar">
+  <span id="leftitems">
+    <span>
+      <img
+      src="{{{componentPath}}}/img/add.svg"
+      onclick="{{onclick}}"
+      class="button"
+      />
+      &nbsp;&nbsp;{{text}}&nbsp;&nbsp;
+      <img
+        src="{{{componentPath}}}/img/delete.svg"
+        onclick='{{onclickRemoveHandler}}' class='button' />
+     
+     </span>
+  </span>
+</span>
