@@ -1,0 +1,23 @@
+{
+    "__comment": "/** All paths in this file are required to be relative to the view's folder **/",
+
+    "components": {
+        "dialog-box": "../shared/components/dialog-box", 
+        "flow-diagram": "../shared/components/flow-diagram", 
+        "pluggable-ribbon": "components/pluggable-ribbon",
+        "pluggable-ribbon-home": "components/pluggable-ribbon-home",
+        "html-fragment": "../shared/components/html-fragment",
+        "image-button": "../shared/components/image-button",
+        "context-menu": "components/context-menu",
+        "item-list": "components/item-list",
+        "drop-down": "components/drop-down",
+        "spread-sheet": "components/spread-sheet",
+        "input-table": "components/input-table"
+    },
+    "initModules": { 
+        "apibossmodel": "model/apibossmodel.mjs", 
+        "nodeRepositoryHome": "components/pluggable-ribbon-home/lib/nodeRepositoryHome.mjs",
+        "openserverhelper": "js/openserverhelper.mjs",
+        "items":"js/items.mjs"
+    }
+}

@@ -1,0 +1,49 @@
+SCHEMA
+======
+{
+    "space": {"html":"span", "style":"height:100%; display:block; background:#DFF0FE;"},
+    "topribbon": {"html":"pluggable-ribbon", "styleBody":"url(./views/{{url.view}}/page/topribbon.styleBody.css)", "ribbonTitle":"{{i18n.APIBossView}}", "ribbonLogo":"./views/{{url.view}}/page/logo.png"},
+    "packages": {"html":"item-list", "label":"{{i18n.DoubleClickToOpen}}", 
+        "ondblclickHandler":"window.monkshu_env.components['item-list'].openClicked(this,this.id)", "style":"width:100%","styleBody":"span#label{ font-weight: 500;  color: #444444; font-family: 'Red Hat Text';font-size: smaller; text-align: center; background-color: #DFF0FE; padding: 5px;border-top: 1px solid #98CCFD; border-bottom: 1px solid #98CCFD; margin: 0px;} div#container{ border: none ; align-content: flex-start;} div#container>div {width:12em}"},                                                                                            
+    "contextmenumain": {"html":"context-menu", "styleBody":"body{font-family: Raleway; font-size: smaller;} span.menuicon{display:none;} span.menutext{font-size: small !important;} span.menuitem{padding-bottom: 5px;}"}
+}
+======
+
+
+LAYOUT
+=================
+-----------------------------
+|    space    |  topribbon  |
+-----------------------------
+|        packages           |
+-----------------------------
+|        contextmenumain    |
+-----------------------------
+=================
+Row Heights = 70px, calc(100vh - 70px), 0px
+Col Widths = 90px, calc(100% - 90px)
+=================
+
+
+CSS CLASSES
+===========
+CONTAINER CLASSES = grid-container-extension
+ITEM CLASSES = grid-item-extension
+PER ITEM CLASS = class
+===========
+
+CSS
+=======
+.grid-container-extension {
+    height: 100%;
+}
+
+.grid-item-extension {
+    background-color: rgba(255, 255, 255, 1);
+}
+
+html, body {
+    margin: 0%;
+}
+
+=======

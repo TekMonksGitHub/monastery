@@ -1,0 +1,9 @@
+[
+    "BEGIN TRANSACTION",
+    "CREATE TABLE products (product_id integer primary key  autoincrement, product_name varchar not null UNIQUE)",
+    "CREATE TABLE organizations (org_id integer primary key  autoincrement,org_name varchar not null UNIQUE)",
+    "CREATE TABLE organizations_products (id integer primary key  autoincrement, org_id  integer not null,product_id  integer not null, foreign key (org_id) REFERENCES organizations(org_id),foreign key (product_id) REFERENCES products(product_id))",
+    "CREATE TABLE users_login ( id integer primary key  autoincrement,user_id  varchar not null UNIQUE, pwph  varchar not null, name  varchar not null, org_id  integer not null,role varchar not null,totpsec varchar not null,approved integer DEFAULT 1 CHECK (approved IN (0, 1)),domain varchar not null, created_at text,foreign key (org_id) REFERENCES organizations(org_id))",
+    "INSERT INTO products (product_name) VALUES ('apiboss-designer'),('monkruls-designer'),('api400-designer'), ('asb-designer'),('monboss-designer'),('Kloudust')",
+    "COMMIT TRANSACTION"
+]
