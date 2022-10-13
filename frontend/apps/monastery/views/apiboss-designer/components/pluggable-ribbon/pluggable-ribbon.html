@@ -1,0 +1,32 @@
+<!--
+/* 
+ * (C) 2020 TekMonks. All rights reserved.
+ * License: MIT - see enclosed license.txt file.
+ */
+ -->
+<style>
+html, body {
+    margin: 0%;
+    height: 100%;
+    background: rgba(0, 0, 0, 1);
+    overflow: auto;
+    scrollbar-width:none;
+}
+::-webkit-scrollbar { width: 0 !important; height: 0 !important; }
+</style>
+
+{{{styleBody}}}
+
+<div id="ribbon">
+    {{#ribbonTitle}}<span>{{#ribbonLogo}}<img id="logo" src="{{ribbonLogo}}">{{/ribbonLogo}}{{ribbonTitle}}</span>{{/ribbonTitle}}
+    
+    {{#plugins}}
+    <div id="{{pluginName}}" 
+        onclick='monkshu_env.components["pluggable-ribbon"].extensions["{{id}}"]["{{pluginName}}"].clicked(this, event)'
+        {{#customEvents}}{{event}}='monkshu_env.components["pluggable-ribbon"].extensions["{{id}}"]["{{pluginName}}"].{{event}}(event)'{{/customEvents}}
+        {{#pluginCursor}}style="cursor:{{.}}"{{/pluginCursor}}>
+    <img src="{{img}}" title="{{title}}" id="img_{{pluginName}}" {{#pluginCursor}}style="cursor:{{.}}"{{/pluginCursor}}>
+    <span id="span_{{pluginName}}" {{#pluginCursor}}style="cursor:{{.}}"{{/pluginCursor}}>{{name}}</span>
+    </div>
+    {{/plugins}}
+</div>

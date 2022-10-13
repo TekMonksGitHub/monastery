@@ -1,112 +1,193 @@
-<!doctype html>
-
-<html>
-<head>
 <style>
-    @import url('https://fonts.googleapis.com/css?family=Raleway:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&amp;display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Text&display=swap');
-
+    @import url('./fonts/appfonts.css');
+    
     body {
-        background-color: #DFF0FE;
-        font-family: 'Red Hat Text';
-        color: #444444;
+        margin: 0; 
+        padding: 0; 
+        font-family: 'Red Hat Text'; 
+        background-color: #FFFFFF;
     }
-
-    div {
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+    
+    a:link {text-decoration:none; color:black;}    /* unvisited link */
+    a:visited {text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.35);} /* visited link */
+    a:hover {text-decoration:underline;}   /* mouse over link */
+    a:active {text-decoration:underline;}  /* selected link */
+    
+    div#bodydiv {
         display: flex;
         flex-direction: column;
-        position: absolute;
-        align-items: center;
+        flex: 1;
+        justify-content: space-between;
+        min-height: 100%;
     }
-
-    input {
-        margin: 2em 4em 0em 0em;
-        border-radius: 10px;
-        padding: 1em 1em 1em 4em;
-        font: inherit;
-        border: none;
-        outline: none;
-        box-sizing: border-box;
+    
+    body::after {
+        content: "";
+        background-size: auto 100%;
         width: 100%;
+        height: 100%;
+        background-repeat: no-repeat;
+        position: absolute;
+        z-index: -1;   
+        top: 0;
+        left: 0;
+    }
+    
+    div#header {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        margin: 1em;
+        width: calc(100% - 2em);
+        height: 4em;
+    }
+    span#imgheader {text-align: center;}
+
+    img.logo {
+	height: 20em;
+	cursor: not-allowed;
+}
+    span#signin {
+        font-size: 1em;
+	   font-weight: 1000;
+        color: #ffffff;
+        cursor: default;
+        overflow: hidden;
+        text-align: right;
+        flex-grow: 1;
+    }
+    span#signin > span {padding-right: 3em;
+	color:#4788C7;}
+
+    span#signin > span:last-child {
+        padding-right: 0px;
+    }
+    span#signin > span > a {
+        text-decoration: none;
         color: inherit;
     }
-
-    span.button {
-        padding: 1em;
-        box-sizing: border-box;
-        background-color: #B6DCFE;
-        border-radius: 10px;
+    
+    div#maincontent {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
         width: 100%;
-        margin-top: 2em;
+        flex-direction: row;
+    }
+    
+    .lgbox {
+        width: 30em;
+        background-color: #DFF0FE;
+        border-radius: 20px;
+        padding: 3em;
         text-align: center;
+        font-size: smaller;
+        margin-bottom: 1em;
+       
+    }
+    
+    div.lgbox > span {
+        font-weight: 600;
+        font-size: small;
+    }
+    
+    .advtextbox{
+        color: #ffffff;
+        text-align: center;
+        max-width: 30em;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: fit-content;
+        margin-bottom: min(10%, 4em);
+    }
+    .advtextbox > h1 {
+        font-weight: 250;
+        margin: 0em;
+    }
+    .advtextbox > h2 {
+        font-weight: 250;
+        font-size: medium;
+        margin: 0em;
+    }
+    .advtextbox > p {
+        font-weight: 400;
+        background-color: #ffffff;
+        color: #444444;
+        border-radius: 0.8em;
+        padding: 1em;
+        font-size: smaller;
+        margin: 1em 0em 0em 0em;
         cursor: default;
-        user-select: none;
     }
-    span.button:hover {filter: brightness(101%); transition: all 0.5s ease;}
-    span.button:active{filter: brightness(150%);}
-
-    img#logo {
-        width: 10em;
-    }
-
-    span.input {
-        position: relative;
-    }
-    img.inputimg {
-        position: absolute;
-        top: 2.6em;
-        left: 0.5em;
-        width: 2.2em;
-    }
-
-    div#langchooser {
-        left: 50%;
-        top: calc(100% - 2em);
-        transform: translateX(-50%);
-        font-size: x-small;
-        display: inline;
-        font-family: sans-serif;
-    }
-    div#langchooser > span {
-        margin-right: 2em;
+    
+    .langbox {
+	cursor: default;
+	margin-bottom: 0.5em;
+	text-align: center;
+     margin-left: 45%;
+}
+    .langsel {
         cursor: pointer;
+        font-size: x-small;
     }
-
-    span#error {
-        margin-top: 2em;
-        color: #D1251A;
-        display: none;
-    }
-</style>
-<title>{{i18n.Title}}</title>
-</head>
-
-<script type="module">
-    import {login} from "./js/login.mjs"; window.monkshu_env.__login = login;
-    import {i18n} from "/framework/js/i18n.mjs"; window.monkshu_env.__i18n = i18n;
-    import {router} from "/framework/js/router.mjs"; window.monkshu_env.__router = router;
-</script>
-
-<body style="margin:0px" onload="document.querySelector('input#id').focus()">
-<div>
-<img id="logo" src="./img/monastery.svg">
-<span id="error">{{i18n.LoginError}}</span>
-<span class="input"><input id="id" type="text" placeholder="{{i18n.UserID}}"
-        onkeyup="if (event.keyCode == 13) {event.preventDefault(); document.querySelector('input#pw').focus();}">
-    <img class="inputimg" src="./img/user.svg"></span>
-<span class="input"><input id="pw" type="password" placeholder="{{i18n.Password}}" 
-        onkeyup="if (event.keyCode == 13) {event.preventDefault(); document.querySelector('span#login').click();}">
-    <img class="inputimg" src="./img/lock.svg"></span>
-<span id="login" class="button" onclick="window.monkshu_env.__login.signin(this.parentNode.querySelector('input#id').value, this.parentNode.querySelector('input#pw').value)">{{i18n.Login}}</span>
-</div>
-
-<div id="langchooser">
-    <span onclick="window.monkshu_env.__i18n.setSessionLang('en'); window.monkshu_env.__router.reload();">English</span>
-    <span onclick="window.monkshu_env.__i18n.setSessionLang('ja'); window.monkshu_env.__router.reload();">日本</span>
-    <span onclick="window.monkshu_env.__i18n.setSessionLang('hi'); window.monkshu_env.__router.reload();">हिंदी</span>
-</div>
-</body>
-</html>
+    </style>
+    {{{APP_CONSTANTS.MOBILE_MEDIA_QUERY_START}}}
+        div#maincontent {flex-direction: column;}
+        div#header {flex-direction: column-reverse; height: 6em;}
+        span#signin {text-align: center;}
+        .lgbox {padding: 1em; box-shadow: none;}
+    {{{APP_CONSTANTS.MOBILE_MEDIA_QUERY_END}}}
+    
+    
+    <!doctype html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        {{{headers}}}
+    
+        <link  rel="icon" type="image/x-icon">
+        
+        <title>{{i18n.Title}}</title>
+        
+        <script type="module">
+        import "./components/login-box/login-box.mjs"; 
+        import "./components/dialog-box/dialog-box.mjs";
+        import {language} from "./js/language.mjs"; window.language=language;
+        </script>
+    </head>
+    
+    <body>
+    <div id="bodydiv">
+    <div id="header">
+    <span id="signin">
+        <span><a href="{{#_org_monkshu_makeLink}}./register.html{{/_org_monkshu_makeLink}}">{{i18n.Register}}</a></span>
+        <span><a href="{{#_org_monkshu_makeLink}}./login.html{{/_org_monkshu_makeLink}}">{{i18n.SignIn}}</a></span>
+    </span>
+    </div>
+    
+    <div id="maincontent">
+    <div class="advtextbox">
+        <span id="imgheader">
+            <img class="logo" src="./img/monastery.svg" ></img>
+        </span>
+    </div>
+    
+    <div class="lgbox">
+        <login-box roles='["{{APP_CONSTANTS.GUEST_ROLE}}", "{{APP_CONSTANTS.USER_ROLE}}"]' routeOnSuccess="./chooser.html"
+          routeOnNotApproved="./notapproved.html"   minlength="{{APP_CONSTANTS.MIN_PASS_LENGTH}}"></login-box>
+    </div>
+    </div>
+    
+    <div class="langbox">
+        <span class="langsel" onclick="language.changeLanguage('en')">English</span>&nbsp;&nbsp;
+        <span class="langsel" onclick="language.changeLanguage('hi')">हिंदी</span>&nbsp;&nbsp;
+        <span class="langsel" onclick="language.changeLanguage('ja')">日本語</span>
+    </div>	
+    </div>
+    
+    <dialog-box1 id="dialog"></dialog-box1>
+    </body>
+    
+    </html>

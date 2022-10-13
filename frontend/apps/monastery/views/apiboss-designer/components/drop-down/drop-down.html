@@ -1,0 +1,128 @@
+<!--
+/* 
+ * (C) 2022 TekMonks. All rights reserved.
+ * License: See enclosed license.txt file.
+ */
+ -->
+
+<style>
+  body {
+    width: 100%;
+  }
+
+  select#choices {
+    /* for Firefox */
+    -moz-appearance: none;
+    /* for Safari, Chrome, Opera */
+    -webkit-appearance: none;
+  }
+
+  /* for IE10 */
+  select#choices ::-ms-expand {
+    display: none;
+  }
+
+  .cselect::after {
+    content: "\25b6";
+  }
+
+  /* (A3) POSITION CUSTOM ARROW */
+  .cselect {
+    position: relative;
+  }
+
+  .cselect::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  /* (B) DIMENSTIONS */
+  /* (B1) MAKE <SELECT> FILL THE WRAPPER */
+  .cselect select {
+    width: 100%;
+  }
+
+  .cselect {
+    max-width: 400px;
+  }
+
+  /* OPTIONAL */
+
+  /* (B2) ALL SAME HEIGHT */
+  .cselect,
+  .cselect::after,
+  .cselect select {
+    box-sizing: border-box;
+    height: 40px;
+  }
+
+  /* (B3) A SQUARE CUSTOM ARROW BOX */
+  /* ADD BORDER-RADIUS: 50% TO TURN IT CIRCLE */
+  .cselect::after {
+    width: 40px;
+  }
+
+  /* (C) COSMETICS */
+  /* (C1) OVERRIDE DEFAULT SELECT BOX STYLES */
+  .cselect select {
+    border: 1px solid #ccc;
+    background: rgba(152, 204, 253, 1);
+    padding: 5px 10px;
+  }
+
+  /* (C2) DROPDOWN ARROW BOX */
+  .cselect::after {
+    /* COLORS */
+    color: rgba(152, 204, 253, 1);
+    background: rgba(255, 255, 255, 1);
+    /* CENTER ARROW IN BOX */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(90deg);
+  }
+
+  /* (C3) FUNKY ANIMATIONS */
+
+
+  /* (C4) REMOVE DEFAULT HIGHLIGHTS */
+  .cselect select:active,
+  .cselect select:focus,
+  .cselect select:hover {
+    outline: none;
+  }
+
+  .left.cselect select {
+    padding-left: 50px;
+  }
+
+  .left.cselect::after {
+    right: auto;
+    left: 0;
+    border-radius: 50%;
+  }
+
+  select#choices {
+    width: 100%;
+    font-family: inherit;
+    background-color: rgba(255, 255, 255, 1);
+    padding: 8px;
+    border: 0px;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    resize: none;
+  }
+</style>
+
+
+{{{styleBody}}}
+<div class="cselect">
+  <select name="choices" id="choices">
+    <option value="" disabled selected hidden class="disabled">{{text}}</option>
+    {{#values}}
+    <option value="{{value}}" class="values" id="{{value}}">{{value}}</option>
+    {{/values}}
+  </select>
+</div>

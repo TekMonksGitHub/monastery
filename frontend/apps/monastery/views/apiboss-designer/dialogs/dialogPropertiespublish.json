@@ -1,0 +1,26 @@
+{
+    "showOKButton": true,
+    "okLabel": "{{i18n.Publish}}",
+    "showCancelButton": false,
+    "modal": false,
+    "okIcon": "./views/{{url.view}}/dialogs/ok.svg",
+    "closeIcon": "./views/{{url.view}}/dialogs/close.svg",
+    "showOKIcon": false,
+    "showCancelIcon": true,
+    "showErrorNotifier": true,
+
+    "styleBody": "div#buttonbar {justify-content: flex-end;} span#ok {margin-top: 10px;}",
+    
+    "var--dialog-font": "Raleway",
+    "var--dialog-background": "#DFF0FE",
+    "var--dialog-left": "120px",
+    "var--dialog-width": "calc(100vw - 240px)",
+    "var--animation-name": "flyinbottom",
+    "var--animation-duration": "0.18s",
+    "var--animation-left-transform": "0%",
+    "var--button-background-color": "#B6DCFE",
+    "var--button-text-color": "black",
+    "var--margin-bottom": "0px",
+    "var--box-shadow": "0px 10px 0px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)",
+    "var--dialog-border": "none"
+}

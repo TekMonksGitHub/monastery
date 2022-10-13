@@ -46,12 +46,13 @@ async function init(viewPath) {
         {graphID: GRAPH_ID, sourceID: message.sourceID, targetID: message.targetID, labelID: message.labelID, label: message.description}));
     blackboard.registerListener(MSG_MODEL_LABEL_NODE, message => blackboard.broadcastMessage(MSG_LABEL_SHAPE, 
         {graphID: GRAPH_ID, shapeid: message.shapeid, label: message.label}));
-    blackboard.registerListener(MSG_MODEL_ADD_NODE, message => { ID_CACHE[message.id] = message.properties; 
-        if (window.monkshu_env.NODE_REPOSITORY) window.monkshu_env.NODE_REPOSITORY.registerNode(message.description, message.nodeName);
+   
+   blackboard.registerListener(MSG_MODEL_ADD_NODE, message => { ID_CACHE[message.id] = message.properties; 
+        if (window.monkshu_env.NODE_REPOSITORY_HOME) window.monkshu_env.NODE_REPOSITORY_HOME.registerNode(message.description, message.nodeName);
         blackboard.broadcastMessage(MSG_ADD_SHAPE, {name: _generateShapeName(message.nodeName), id: message.id, 
             graphID: GRAPH_ID, label: message.description, x:message.properties.x||_generateShapeX(), 
             y:message.properties.y||_generateShapeY(), width:IMG_SIZE.width, height:IMG_SIZE.height, 
-            connectable:message.connectable==undefined?true:message.connectable}); }); 
+            connectable:message.connectable==undefined?true:message.connectable}); });             
     blackboard.registerListener(MSG_FILE_UPLOADED, async message => { await reset(); blackboard.broadcastMessage(MSG_MODEL_LOAD_MODEL,
         {data: message.data, name: message.name}) });
     blackboard.registerListener(MSG_SHAPE_MOVED, message => blackboard.broadcastMessage(MSG_MODEL_NODES_MODIFIED, 
@@ -63,6 +64,7 @@ async function init(viewPath) {
     // import required components, and init required modules
     for (const component in CONF.components) import (`${VIEW_PATH}/${CONF.components[component]}/${component}.mjs`);
     for (const initModule in CONF.initModules) (await import(`${VIEW_PATH}/${CONF.initModules[initModule]}`))[initModule].init();
+    console.log(ID_CACHE);
 }
 
 async function reset() {

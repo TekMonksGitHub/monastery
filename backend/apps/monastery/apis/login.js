@@ -1,56 +1,69 @@
 /**
- * (C) 2020 TekMonks. All rights reserved.
- *
- * Monastery login
+ * Logs a user in. 
+ * (C) 2015 TekMonks. All rights reserved.
  */
-const fspromises = require("fs").promises; 
-const cryptMod = require(CONSTANTS.LIBDIR+"/crypt.js");
-const LOGIN_REG_DISTM_KEY = "__org_monastery_loginregistry_key";
-const USERS_JSON = `${APP_CONSTANTS.MONASTERY.CONF_DIR}/users.json`;
+const totp = require(`${APP_CONSTANTS.LIB_DIR}/totp.js`);
+const userid = require(`${APP_CONSTANTS.LIB_DIR}/userid.js`);
+const jwttokenmanager = APIREGISTRY.getExtension("JWTTokenManager");
 
+exports.init = _ => {
+	jwttokenmanager.addListener((event, object) => {
+		if (event == "token_generated") try {
+			const token = ("Bearer "+object.token).toLowerCase(); 
+			const logins = CLUSTER_MEMORY.get("__org_monkshu_loginapp_logins") || {};
+			logins[token] = {id: object.response.id, org: object.response.org, name: object.response.name, role: object.response.role}; 
+			CLUSTER_MEMORY.set("__org_monkshu_loginapp_logins", logins);
+		} catch (err) {LOG.error(`Could not init home for the user with ID ${object.response.id}, name ${object.response.name}, error was: ${err}`);}
+
+		if (event == "token_expired") {
+			const logins = CLUSTER_MEMORY.get("__org_monkshu_loginapp_logins") || {};
+			const token = ("Bearer "+object.token).toLowerCase();
+			delete logins[token]; CLUSTER_MEMORY.set("__org_monkshu_loginapp_logins", logins);
+		}
+	});
+}
 exports.doService = async jsonReq => {
-	if (jsonReq && (!jsonReq.op)) jsonReq.op = "login";
-	if (!validateRequest(jsonReq)) {LOG.error(`Bad login request ${jsonReq?JSON.stringify(jsonReq):"null"}.`); return CONSTANTS.FALSE_RESULT;}
+	if (!validateRequest(jsonReq)) {LOG.error("Validation failure."); return CONSTANTS.FALSE_RESULT;}
+	
+	LOG.debug(`Got login request for ID ${jsonReq.id}`);
 
-	const loginReg = CLUSTER_MEMORY.get(LOGIN_REG_DISTM_KEY) || JSON.parse(await fspromises.readFile(USERS_JSON));
-	if (!CLUSTER_MEMORY.get(LOGIN_REG_DISTM_KEY)) CLUSTER_MEMORY.set(LOGIN_REG_DISTM_KEY, loginReg);
+	const result = await userid.checkPWPH(jsonReq.id, jsonReq.pwph); 
+        let org_name, products = [];
+	if (result.result && result.approved) {	// perform second factor
+		result.result = totp.verifyTOTP(result.totpsec, jsonReq.otp); ; 
+		if (!result.result) LOG.error(`Bad OTP given for: ${result.user_id}.`);
+                else result.tokenflag = true;
+	} else if (result.result && (!result.approved)) { LOG.info(`User not approved, ${result.id}.`); result.result = false; }
+	else LOG.error(`Bad PWPH, given for ID: ${jsonReq.user_id}.`);
 
-	let result = false;
-	if (jsonReq.op.toLowerCase() == "add") result = await _addUser(jsonReq.id, jsonReq.pw, jsonReq.org, jsonReq.name, jsonReq.role, loginReg);
-	else if (jsonReq.op.toLowerCase() == "delete") result = await _deleteUser(jsonReq.id, loginReg);
-	else if (jsonReq.op.toLowerCase() == "login") result = _loginUser(jsonReq.id, jsonReq.pw, loginReg);
-	else if (jsonReq.op.toLowerCase() == "changepw") result = await _changeUserPw(jsonReq.id, jsonReq.oldpw, jsonReq.newpw, loginReg);
-	else {LOG.error(`Unkown ID operation in request: ${jsonReq?JSON.stringify(jsonReq):"null"}.`); return CONSTANTS.FALSE_RESULT;};
+        if (result.result && result.org_id) {
+	const result1 = await userid.getOrgsMatching(result.org_name);
+	if (result1.result) org_name = result1.org_name;
+	const result2 = await userid.getOrgsMatchingProducts(result.org_id);
+	if (result2 && result2.products && result2.products.length > 0) for (let product of result2.products) products.push(product.product_name);}
 
-	if (result) return {result:result, ...loginReg[jsonReq.id]}; else return CONSTANTS.FALSE_RESULT;
+
+if (result.tokenflag) LOG.info(`User logged in: ${result.user_id}.`); else LOG.error(`Bad login for ID: ${jsonReq.id}.`);
+
+	if (result.result) return { result: result.result, name: result.name, id: result.user_id, "org": org_name, role: result.role, "products": products,tokenflag: result.tokenflag };
+	else return CONSTANTS.FALSE_RESULT;
 }
 
-const _loginUser = (id, pw, loginReg) => (loginReg[id] && cryptMod.decrypt(loginReg[id].pw) == pw);
-
-async function _addUser(id, pw, org, name, role, loginReg) {
-	if (loginReg[id]) {LOG.error(`ID ${id} to be added already exists.`); return false;} else loginReg[id] = {pw: cryptMod.encrypt(pw), org, name, role};
-	await fspromises.writeFile(USERS_JSON, JSON.stringify(loginReg, null, 4));
-	CLUSTER_MEMORY.set(LOGIN_REG_DISTM_KEY, loginReg);
-	return true;
+exports.getID = headers => {
+	if (!headers["authorization"]) return null; const logins = CLUSTER_MEMORY.get("__org_monkshu_loginapp_logins") || {};
+	return logins[headers["authorization"].toLowerCase()]?logins[headers["authorization"].toLowerCase()].id:null;
 }
 
-async function _deleteUser(id, loginReg) {
-	if (!loginReg[id]) {LOG.error(`ID ${id} to be deleted doesn't exist.`); return false;} else delete loginReg[id];
-	await fspromises.writeFile(USERS_JSON, JSON.stringify(loginReg, null, 4));
-	CLUSTER_MEMORY.set(LOGIN_REG_DISTM_KEY, loginReg);
-	return true;
+exports.getOrg = headers => {
+	if (!headers["authorization"]) return null; const logins = CLUSTER_MEMORY.get("__org_monkshu_loginapp_logins") || {};
+	return logins[headers["authorization"].toLowerCase()]?logins[headers["authorization"].toLowerCase()].org:null;
 }
 
-async function _changeUserPw(id, oldpw, newpw, loginReg) {
-	if (!_loginUser(id, oldpw, loginReg)) {LOG.error(`ID ${id}, bad old password for change request.`); return false;}
-	loginReg[id].pw = cryptMod.encrypt(newpw);
-	await fspromises.writeFile(USERS_JSON, JSON.stringify(loginReg, null, 4));
-	CLUSTER_MEMORY.set(LOGIN_REG_DISTM_KEY, loginReg);
-	return true;
+exports.getRole = headers => {
+	if (!headers["authorization"]) return null; const logins = CLUSTER_MEMORY.get("__org_monkshu_loginapp_logins") || {};
+	return logins[headers["authorization"].toLowerCase()]?logins[headers["authorization"].toLowerCase()].role:null;
 }
 
-const validateRequest = jsonReq => jsonReq && jsonReq.id && ( 
-	(jsonReq.op.toLowerCase() == "login" && jsonReq.pw) || 
-	jsonReq.op.toLowerCase() == "delete" ||
-	(jsonReq.op.toLowerCase() == "changepw" && jsonReq.oldpw && jsonReq.newpw) ||
-	(jsonReq.op.toLowerCase() == "add" && jsonReq.org && jsonReq.pw && jsonReq.name && jsonReq.role) );
+exports.isAdmin = headers => (exports.getRole(headers))?.toLowerCase() == "admin";
+
+const validateRequest = jsonReq => (jsonReq && jsonReq.pwph && jsonReq.otp && jsonReq.id);

@@ -1,6 +1,9 @@
 export const i18n = {
     en: {
-        "Description": "APIBoss\nAPI Security "
+        "Description": "APIBoss\nAPI Security ",
+        "APIBossView":"APIBoss Developer - Connected",
+        "DoubleClickToOpen":"Please doubleclick the API package to explore"
+
     },
 
     hi: {
