@@ -12,7 +12,8 @@
         "item-list": "components/item-list",
         "drop-down": "components/drop-down",
         "spread-sheet": "components/spread-sheet",
-        "input-table": "components/input-table"
+        "input-table": "components/input-table",
+        "text-div": "components/text-div"
     },
     "initModules": { 
         "apibossmodel": "model/apibossmodel.mjs", 
