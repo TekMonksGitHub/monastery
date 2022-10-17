@@ -7,11 +7,23 @@ SCHEMA
     "backendurl": {"html":"input", "type":"text", "placeholder":"{{i18n.BackendURL}}","spellcheck":"false"},
     "method": {"html":"drop-down","style":"width:100%; height:100%;","list":"[{'value':'POST'},{'value':'GET'}]","text":"Select Method","styleBody":"select#choices{padding:12px}"},
     "method1": {"html":"drop-down","style":"width:100%; height:100%;","list":"[{'value':'POST'},{'value':'GET'}]","text":"Select Method","styleBody":"select#choices{padding:12px}"},
-    "injected": {"html":"input-table", "rows":4, "columns":2, "onlyText": "true", "barstyle": "0px solid #4788C7",
-        "styleBody":"url(./views/{{url.view}}/dialogs/monkrulsTable.styleBody.decision.css)",
-         "headers1":"[{'header':'Header Name'},{'header':'Value'}]",
-        "dialogTheme": "encodeURIComponent(url(./views/{{url.view}}/dialogs/dialogPropertiesPrompt.json))" }
-
+    "injected": {"html":"input-table", "rows":2, "columns":2, "onlyText": "true", "barstyle": "0px solid #4788C7",
+               "styleBody":"url(./views/{{url.view}}/dialogs/inputTable.styleBody.css)",
+               "headers1":"[{'header':'Header Name'},{'header':'Value'}]","Header":"Injected Headers",
+              "dialogTheme": "encodeURIComponent(url(./views/{{url.view}}/dialogs/dialogPropertiesPrompt.json))" },
+    "connect": {"html":"image-button", "img":"./views/{{url.view}}/dialogs/upload.svg", "text":"{{i18n.Upload}}", 
+               "style":"width:100%; height: 100%;", "onclickHandler":"window.monkshu_env['OPEN_SERVER_HELPER'].connectServerClicked()", "type":"column", 
+               "color":"#444444", "border":"0.5px solid #98CCFD", "background-color":"#F8FCFF", "active-background-color":"white","styleBody":"div#button{margin-top:2.3em; height:84%;}"},
+  "passthrough": {"html":"input-table", "rows":2, "columns":1, "onlyText": "true", "barstyle": "0px solid #4788C7",
+                 "styleBody":"url(./views/{{url.view}}/dialogs/inputTable.styleBody.css)","headers1":"[{'header':'Header Name'}]",
+                "Header":"Passthrough Headers",
+                "dialogTheme": "encodeURIComponent(url(./views/{{url.view}}/dialogs/dialogPropertiesPrompt.json))" },
+    "rest":    {"html":"text-div","text":"REST API"},
+    "yesorno": {"html":"drop-down","style":"width:100%; height:100%;","list":"[{'value':'YES'},{'value':'NO'}]","text":"Choose One","styleBody":"select#choices{padding:12px}"},
+    "content": {"html":"text-div","text":"Custom Content Type"},
+    "contentinput": {"html":"input", "type":"text",  "spellcheck":"false"}
+    
+   
 }
 ======
 
@@ -19,21 +31,24 @@ SCHEMA
 LAYOUT
 =================
 
-------------------------------------------------
-|                  apiname                     |
-------------------------------------------------
-|                  apidescription              |
-------------------------------------------------
-|        exposedpath      |     method         |
-------------------------------------------------
-|        backendurl       |     method1        |
-------------------------------------------------
-|               injected                       |
-------------------------------------------------
-
+------------------------------------------------------
+|                  apiname                           |
+------------------------------------------------------
+|                  apidescription                    |
+------------------------------------------------------
+|        exposedpath    |          method            |       
+------------------------------------------------------
+|        backendurl     |          method1           |       
+------------------------------------------------------
+|          injected     |           connect          |     
+------------------------------------------------------
+|   passthrough         |     rest    | yesorno      |
+------------------------------------------------------
+|   passthrough         | content     | contentinput |
+------------------------------------------------------
 =================
-Row Heights = 4em, 4em, 4em, 4em,15em
-Col Widths = 82%,18%
+Row Heights = 4em, 4em, 4em, 4em, 9.5em,5.5em,5em
+Col Widths = 55%, 20%, 5% , 20%
 =================
 
 
@@ -49,6 +64,7 @@ CSS
 .grid-container-extension {
     height: 100%;
     overflow-y: auto;
+    grid-row-gap: 0.5em;
 }
 
 .grid-item-extension {
@@ -64,7 +80,7 @@ CSS
     border-radius: 10px;
     border: 0px;
     outline: none;
-    padding: 10px;
+    padding: 12px;
     resize: none;
     font-family: inherit;
     box-sizing: border-box;
@@ -72,12 +88,59 @@ CSS
 
 ::placeholder {opacity: 0.8;}
 
-.class-method,.class-method1{
-     padding: 3px 25px 0px 11px;
+.class-method,.class-method1,.class-yesorno{
+     padding: 3px 20px 0px 0px;
 }
-.item6{
-    overflow:auto;
+
+
+.item0 {
+  grid-column: 1 / 6;
 }
+.item1 {
+  grid-column: 1 / 6;
+}
+.item2 {
+  grid-column: 1 / 4;
+}
+
+.item3 {
+  grid-column: 4/6;
+}
+.item4{
+  grid-column: 1 / 4;
+}
+.item5 {
+  grid-column: 4/6;
+}
+.item6 {
+  grid-column: 1 / 4;
+  overflow-y: auto;
+}
+.item7 {
+  grid-column: 4/6;
+}
+.item8{
+  overflow-y: auto;
+}
+.item9, .item11{
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+
+.item10 {
+  grid-column: 3/6;
+  margin-top:auto;
+  margin-bottom:auto;
+}
+
+.item12 {
+  grid-column: 3/6;
+  margin-top:auto;
+  margin-bottom:auto;
+
+}
+
 
 body {
     margin: 0%;
