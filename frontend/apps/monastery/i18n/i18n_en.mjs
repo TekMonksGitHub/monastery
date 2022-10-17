@@ -147,6 +147,21 @@ export const i18n = {
 "OpenGoogleAuthenticator": "Open Authenticator",
 "APIName":"API Name",
 "APIDescription":"API Description",
+"APIKey":"API Key",
 "ExposedPath":"Exposed Path",
-"BackendURL":"Backend URL"
+"BackendURL":"Backend URL",
+"USERID":"User ID",
+"JWTSubject": "JWT Token Subject",
+"PerSec":"Per Second",
+"PerMin":"Per Minute",
+"PerHour":"Per Hour",
+"PerDay":"Per Day",
+"PerMonth":"Per Month",
+"PerYear":"Per Year",
+"PackageName":"Package Name",
+"Server": "Server IP Address",
+"Port": "Port",
+"AdminID": "Admin ID",
+"AdminPassword":"Admin Password",
+"Upload":"Upload OpenAPI Spec"
 }
