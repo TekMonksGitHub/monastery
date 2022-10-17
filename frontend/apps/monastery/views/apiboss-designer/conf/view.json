@@ -14,7 +14,7 @@
         "spread-sheet": "components/spread-sheet",
         "input-table": "components/input-table",
         "text-div": "components/text-div"
-    },
+        },
     "initModules": { 
         "apibossmodel": "model/apibossmodel.mjs", 
         "nodeRepositoryHome": "components/pluggable-ribbon-home/lib/nodeRepositoryHome.mjs",

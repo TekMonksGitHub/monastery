@@ -11,12 +11,11 @@
  import {i18n as i18nFramework} from "/framework/js/i18n.mjs";
  import {monkshu_component} from "/framework/js/monkshu_component.mjs";
  
- const COMPONENT_PATH = util.getModulePath(import.meta), ROW_PROP = "__org_monkshu_components_spreadsheet_rows",
-	 COLUMN_PROP = "__org_monkshu_components_spreadsheet_columns", DEFAULT_TAB="default", CONTEXT_MENU_ID = "spreadsheetContextMenu",
-	 DIALOG = window.monkshu_env.components["dialog-box"], CONTEXT_MENU = window.monkshu_env.components["context-menu"],
-	 DIALOG_HOST_ID = "org_monkshu_spreadsheet_component_dialog";
- 
+ const ROW_PROP = "__org_monkshu_components_spreadsheet_rows",
+	 COLUMN_PROP = "__org_monkshu_components_spreadsheet_columns", DEFAULT_TAB="default", CONTEXT_MENU_ID = "spreadsheetContextMenu",  COMPONENT_PATH = util.getModulePath(import.meta);	 
  async function elementConnected(element) {
+	console.log(COMPONENT_PATH);
+	console.log(element);
 	 Object.defineProperty(element, "value", {get: _=>_getValue(element), set: value=>_setValue(value, element)});
 	 await $$.require(`${COMPONENT_PATH}/3p/papaparse.min.js`);	// we need this to export and import data as CSV
  
@@ -37,13 +36,20 @@
  
 	 const data = await _createElementData(element, rows, columns);
 	 data.headers1 = JSON.parse(element.getAttribute("headers1").replace(/'/g, '\"'));
+	 data.Header = element.getAttribute("Header");
 	 console.log(data);
+	 console.log(input_table);
+	 console.log(element);
 	 if (element.id) if (!input_table.datas) {
-		 input_table.datas = {}; input_table.datas[element.id] = data; } else input_table.data = data;
+		 input_table.datas = {};  } else{ input_table.data = data;}
+		 input_table.datas[element.id] = data;
 
+
+		 console.log(input_table);
  }
  
  async function elementRendered(element, initialRender) {
+	console.log(COMPONENT_PATH);
 	 if (element.getAttribute("value") && initialRender) await _setValue(element.getAttribute("value"), element);
  
 	 // make table resizable and all elements to auto-resize when the columns are resized
@@ -59,49 +65,24 @@
 			 resizeRowInputsForLargestScroll(textarea)} });
  }
  
- function cellpastedon(element, event) {
-	 const hostElement = input_table.getHostElement(element);
-	 const textPasted = event.clipboardData.getData("text"); if ((!textPasted || textPasted == "") && hostElement.getAttribute("onlyText")?.toLowerCase() == "true") return;	
-	 const asCSV = Papa.parse(textPasted||"", {header: false, skipEmptyLines: true}).data, isCSV = asCSV.length > 1 || asCSV[0]?.length > 1;
-	 const pasteAsCSV = (content, event) => {_setSpreadSheetFromCSV(content, input_table.getHostElementID(element)); event.preventDefault();};
-	 let dialogThemeProvided = hostElement.getAttribute("dialogTheme"); if (dialogThemeProvided) dialogThemeProvided = decodeURIComponent(dialogThemeProvided); else dialogThemeProvided = "{}";
-	 if (isCSV) DIALOG.showConfirm(i18n.PasteWarning[i18nFramework.getSessionLang()], result => {if (result) pasteAsCSV(asCSV, event)} , 
-		 JSON.parse(dialogThemeProvided), DIALOG_HOST_ID);
- }
+
  
  async function rowop(op, element) {
+	console.log(COMPONENT_PATH);
+	console.log(element);
 	 const host = input_table.getHostElement(element);
 	 console.log(host);
 	 let numOfRows = parseInt(_getActiveTabObject(host)[ROW_PROP], 10); const numOfColumns = _getActiveTabObject(host)[COLUMN_PROP];
 	 numOfRows = op=="add"?numOfRows+1:numOfRows-1; _getActiveTabObject(host)[ROW_PROP] = numOfRows;
 	 const data = await _createElementData(host, numOfRows, numOfColumns);
 	 data.headers1 = JSON.parse(host.getAttribute("headers1").replace(/'/g, '\"'));
-
 	 console.log(data);
 	 const currentData = _getSpreadSheetAsCSV(host.id); await input_table.bindData(data, host.id); _setSpreadSheetFromCSV(currentData, host.id);
 	 console.log(currentData);
  }
  
- async function columnop(op, element) {
-	 const host = input_table.getHostElement(element);
-	 const numOfRows = _getActiveTabObject(host)[ROW_PROP]; let numOfColumns = parseInt(_getActiveTabObject(host)[COLUMN_PROP], 10);
-	 numOfColumns = op=="add"?numOfColumns+1:numOfColumns-1; _getActiveTabObject(host)[COLUMN_PROP] = numOfColumns;
-	 const data = await _createElementData(host, numOfRows, numOfColumns); 
-	 const currentData = _getSpreadSheetAsCSV(host.id); await input_table.bindData(data, host.id); _setSpreadSheetFromCSV(currentData, host.id);
- }
  
- async function open(element) {
-	 try {
-		 const sheetData = (await util.uploadAFile(".csv,.json")).data;
-		 if (sheetData) await _setValue(sheetData, input_table.getHostElement(element));
-	 } catch (err) {LOG.error(`Error opening file, ${err}`);}
- }
- 
- async function save(element) {
-	 const host = input_table.getHostElement(element), sheetData = _getValue(host); let isJSON = true; try{JSON.parse(sheetData)} catch (err) {isJSON=false};
-	 util.downloadFile(sheetData, isJSON?"application/json":"text/csv", `${decodeURIComponent(host.getAttribute("downloadfilename")||"spreadsheet")}${isJSON?".json":".csv"}`);
- }
- 
+
  function resizeRowInputsForLargestScroll(element) {
 	 const _getScrollHeight = element => { const saved = element.style.height; element.style.height = "auto"; 
 		 const scrollHeight = element.scrollHeight; element.style.height = saved; return scrollHeight; }
@@ -116,37 +97,8 @@
 	 else for (const element of rowElements) element.style.height = largestScrollHeight+"px"; 
  }
  
- async function switchSheet(elementOrHostID, sheetID, forceReload) {
-	 const host = elementOrHostID instanceof Element?input_table.getHostElement(elementOrHostID):input_table.getHostElementByID(elementOrHostID);  	
-	 if (sheetID == _getActiveTab(host) && (!forceReload)) return;	// no need to switch
-	 _getActiveTabObject(host).data = _getSpreadSheetAsCSV(host.id);	// save active data etc.
- 
-	 // set this sheet as active and switch data
-	 _setActiveTab(host, sheetID); await _setSpreadSheetFromCSV(_getTabObject(host, sheetID).data, host.id);	
- }
- 
- async function tabMenuClicked(event, element, sheetID) {
-	 const host = input_table.getHostElement(element);
-	 const _renameTab = newName => {
-		 const allTabs = _getAllTabs(host); if (allTabs[newName]) return;	// name already exists
-		 const newTabs = {}; for (const tabID in allTabs) {
-			 if (tabID == sheetID) {newTabs[newName] = allTabs[sheetID]; newTabs[newName].name = newName; newTabs[newName].id = newName;}
-			 else newTabs[tabID] = allTabs[tabID];
-		 }; _setAllTabs(host, newTabs);
-		 
-		 if (_getActiveTab(host) == sheetID) _setActiveTab(host, newName); reloadSheets(host);
-	 }
-	 const _editTab = _ => {
-		 const inputBox = element.querySelector("input#tabLabel");
-		 inputBox.onchange = _=>_renameTab(inputBox.value);
-		 inputBox.readOnly = false; inputBox.select(); 
-		 inputBox.addEventListener("focusout", _=>inputBox.readOnly = true);
-	 }
-	 const renameMenuItem = i18n.Rename[i18nFramework.getSessionLang()], menus = {}; menus[renameMenuItem] = _=>_editTab();
-	 CONTEXT_MENU.showMenu(CONTEXT_MENU_ID, menus, event.pageX, event.pageY, 2, 2);
- }
- 
- const reloadSheets = host => switchSheet(host.id, _getActiveTab(host), true)
+
+
  
  function _getValue(host) {
 	 const activeSheetValue = _getSpreadSheetAsCSV(host.id);
@@ -246,6 +198,7 @@
 	 // expand toolbar plugin HTML now that data object is complete, as it may need expansion
 	 if (data.toolbarPluginHTML) data.toolbarPluginHTML = await router.expandPageData(data.toolbarPluginHTML, undefined, data);
 	 data.headers1 = JSON.parse(host.getAttribute("headers1").replace(/'/g, '\"'));
+	 data.Header = host.getAttribute("Header");
 
 	 return data;
  }
@@ -273,6 +226,6 @@
  }
  
  // convert this all into a WebComponent so we can use it
- export const input_table = {trueWebComponentMode: true, elementConnected, elementRendered, cellpastedon, 
-	 rowop, columnop, open, save, resizeRowInputsForLargestScroll, switchSheet, tabMenuClicked, reloadSheets}
+ export const input_table = {trueWebComponentMode: true, elementConnected, elementRendered,  
+	 rowop,resizeRowInputsForLargestScroll}
  monkshu_component.register("input-table", `${COMPONENT_PATH}/input-table.html`, input_table);
