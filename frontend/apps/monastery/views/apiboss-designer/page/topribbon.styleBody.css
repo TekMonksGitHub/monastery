@@ -75,6 +75,23 @@ div#ribbon > div#admin > img {
 }
 
 div#ribbon > div#admin > span {display: none;}
+
+div#ribbon > div#backhome {
+    position: absolute;
+    left: 20px;
+    padding-right: 0px;
+    margin-right: 0px;
+    height: 35px;
+    border: 0px;
+    background-color: inherit;
+} 
+
+div#ribbon > div#backhome > img {
+    height: 40px; 
+    width: 40px;
+}
+
+div#ribbon > div#backhome > span {display: none;}
 div#ribbon > div:hover {
     filter: brightness(101%);
     transition: all 0.5s ease;

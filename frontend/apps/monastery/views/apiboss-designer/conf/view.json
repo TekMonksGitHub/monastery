@@ -6,14 +6,17 @@
         "flow-diagram": "../shared/components/flow-diagram", 
         "pluggable-ribbon": "components/pluggable-ribbon",
         "pluggable-ribbon-home": "components/pluggable-ribbon-home",
+        "pluggable-ribbon-developer": "components/pluggable-ribbon-developer",
         "html-fragment": "../shared/components/html-fragment",
         "image-button": "../shared/components/image-button",
         "context-menu": "components/context-menu",
         "item-list": "components/item-list",
+        "api-list": "components/api-list",
         "drop-down": "components/drop-down",
-        "spread-sheet": "components/spread-sheet",
         "input-table": "components/input-table",
-        "text-div": "components/text-div"
+        "text-div": "components/text-div",
+        "api-contents": "components/api-contents",
+        "apiinput-apioutput": "components/apiinput-apioutput"
         },
     "initModules": { 
         "apibossmodel": "model/apibossmodel.mjs", 

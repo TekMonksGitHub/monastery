@@ -33,7 +33,7 @@ function _addDBLClickHandlerToItems(items, ondblclick) {
 	return items;
 }
 function openClicked() {
-	 router.loadPage(`${APP_CONSTANTS.HOME_HTML}?view=apiboss-designer`);
+	 router.loadPage(`${APP_CONSTANTS.DEVELOPER_HTML}?view=apiboss-designer`);
 }
 
 export const item_list = {trueWebComponentMode: true, elementConnected,openClicked};
