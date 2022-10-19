@@ -1,0 +1,62 @@
+SCHEMA
+======
+{
+    "space": {"html":"span", "style":"height:100%; display:block; background:#DFF0FE;"},
+    "topribbon": {"html":"pluggable-ribbon-developer", "styleBody":"url(./views/{{url.view}}/page/topribbon.styleBody.css)", "ribbonTitle":"{{i18n.APIBossView}}", "ribbonLogo":"./views/{{url.view}}/page/logo.png"},
+    "packages": {"html":"api-list", "label":"{{i18n.DoubleClickToOpen}}", 
+        "ondblclickHandler":"window.monkshu_env.components['api-list'].openClicked(this,this.id)","styleBody":"span#label{ font-weight: 500;  color: #444444; font-family: 'Red Hat Text';font-size: smaller; text-align: center; background-color: #DFF0FE; padding: 5px;border-top: 1px solid #98CCFD; border-bottom: 1px solid #98CCFD; margin: 0px;} div#container{ border: none ; align-content: flex-start;}"},                                                                                                                                                                                        
+    "contextmenumain": {"html":"context-menu", "styleBody":"body{font-family: Raleway; font-size: smaller;} span.menuicon{display:none;} span.menutext{font-size: small !important;} span.menuitem{padding-bottom: 5px;}"},
+    "apicontent": {"html":"api-contents"},
+    "inputoutput": {"html":"apiinput-apioutput"}
+
+}
+======
+
+
+LAYOUT
+=================
+----------------------------------
+|    space    |  topribbon       |
+----------------------------------
+|    packages |  apicontent      |
+----------------------------------
+=================
+Row Heights = 70px, calc(100vh - 70px)
+Col Widths = 90px, 150px, calc(100% - 240px)
+=================
+
+
+CSS CLASSES
+===========
+CONTAINER CLASSES = grid-container-extension
+ITEM CLASSES = grid-item-extension
+PER ITEM CLASS = class
+===========
+
+CSS
+=======
+.grid-container-extension {
+    height: 100%;
+}
+
+.grid-item-extension {
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.item1{
+    grid-column: 2/4;
+}
+
+.item2{
+    grid-column: 1/3;
+}
+
+.item3{
+    grid-column: 3/4;
+}
+
+html, body {
+    margin: 0%;
+}
+
+=======
