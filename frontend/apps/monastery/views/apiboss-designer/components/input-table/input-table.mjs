@@ -1,231 +1,157 @@
 /** 
- * Spread sheet component. This component is dependent
- * on two other components - context-menu and dialog-box.
- * (C) 2020 TekMonks. All rights reserved.
+ * input table component.
+ * (C) 2022 TekMonks. All rights reserved.
  * License: See enclosed LICENSE file.
  */
- import {util} from "/framework/js/util.mjs";
- import {i18n} from "./input-table.i18n.mjs";
- import {resizable} from "./lib/resizable.mjs";
- import {router} from "/framework/js/router.mjs";
- import {i18n as i18nFramework} from "/framework/js/i18n.mjs";
- import {monkshu_component} from "/framework/js/monkshu_component.mjs";
- 
- const ROW_PROP = "__org_monkshu_components_spreadsheet_rows",
-	 COLUMN_PROP = "__org_monkshu_components_spreadsheet_columns", DEFAULT_TAB="default", CONTEXT_MENU_ID = "spreadsheetContextMenu",  COMPONENT_PATH = util.getModulePath(import.meta);	 
- async function elementConnected(element) {
-	console.log(COMPONENT_PATH);
-	console.log(element);
-	 Object.defineProperty(element, "value", {get: _=>_getValue(element), set: value=>_setValue(value, element)});
-	 await $$.require(`${COMPONENT_PATH}/3p/papaparse.min.js`);	// we need this to export and import data as CSV
- 
-	 // first tab in the attribute is active, or default (hidden) tab is active if multiple tabs are not being used
-	 _setActiveTab(element, element.getAttribute("tabs") ? 
-		 element.getAttribute("tabs").split(",")[0].split(":")[0].trim() : DEFAULT_TAB);
- 
-	 // init data and tab objects
-	 const rows=element.getAttribute("rows")||4, columns=element.getAttribute("columns")||2;
-	 const tabs = element.getAttribute("tabs"); if (tabs) for (const tabTuple of tabs.split(",")) {	// setup tabs in element attr
-		 const tabReadableName = tabTuple.trim().split(":")[1].trim(), tabID = tabTuple.trim().split(":")[0].trim();
-		 const tabObject = _getTabObject(element, tabID); tabObject[ROW_PROP] = rows; tabObject[COLUMN_PROP] = columns; tabObject.data = "";
-		 tabObject.name = tabReadableName; tabObject.data = ""; tabObject.id = tabID;
-	 } else {	// setup default tab object otherwise
-		 const tabObject = _getTabObject(element, DEFAULT_TAB); tabObject[ROW_PROP] = rows; tabObject[COLUMN_PROP] = columns; tabObject.data = "";
-		 tabObject.name = DEFAULT_TAB; tabObject.data = ""; tabObject.id = DEFAULT_TAB;
-	 }
- 
-	 const data = await _createElementData(element, rows, columns);
-	 data.headers1 = JSON.parse(element.getAttribute("headers1").replace(/'/g, '\"'));
-	 data.Header = element.getAttribute("Header");
-	 console.log(data);
-	 console.log(input_table);
-	 console.log(element);
-	 if (element.id) if (!input_table.datas) {
-		 input_table.datas = {};  } else{ input_table.data = data;}
-		 input_table.datas[element.id] = data;
+import { util } from "/framework/js/util.mjs";
+import { i18n } from "./input-table.i18n.mjs";
+import { resizable } from "./lib/resizable.mjs";
+import { i18n as i18nFramework } from "/framework/js/i18n.mjs";
+import { monkshu_component } from "/framework/js/monkshu_component.mjs";
+
+const ROW_PROP = "__org_monkshu_components_inputtable_rows",
+	COLUMN_PROP = "__org_monkshu_components_inputtable_columns", COMPONENT_PATH = util.getModulePath(import.meta);
 
 
-		 console.log(input_table);
- }
- 
- async function elementRendered(element, initialRender) {
-	console.log(COMPONENT_PATH);
-	 if (element.getAttribute("value") && initialRender) await _setValue(element.getAttribute("value"), element);
- 
-	 // make table resizable and all elements to auto-resize when the columns are resized
-	 const _getAllTextAreasForThisColumn = td => {
-		 const columnNumberThisTD = Array.prototype.slice.call(td.parentElement.querySelectorAll("td")).indexOf(td);
-		 const allTRs = td.parentElement.parentElement.querySelectorAll("tr");
-		 const retList = []; for (const tr of allTRs) for (const [index, textarea] of Array.prototype.slice.call(tr.querySelectorAll("textarea")).entries())
-			 if (index == columnNumberThisTD) retList.push(textarea);
-		 return retList;
-	 }
-	 resizable.makeResizableTable(input_table.getShadowRootByHost(element).querySelector("table#spreadsheet"),
-		 element.getAttribute("barstyle"), { onresize: td => {for (const textarea of _getAllTextAreasForThisColumn(td)) 
-			 resizeRowInputsForLargestScroll(textarea)} });
- }
- 
+async function elementConnected(element) {
+	Object.defineProperty(element, "value", { get: _ => _getValue(element), set: value => _setValue(value, element) });
+	let data;const rows = element.getAttribute("rows") || 4, columns = element.getAttribute("columns") || 2;
+	const elementObject = _getelementMemory(element); elementObject[COLUMN_PROP] = columns;
+	if (!elementObject[ROW_PROP]) {
+		elementObject[ROW_PROP] = rows;
+		data = await _createElementData(element, rows, columns);
+	}
 
- 
- async function rowop(op, element) {
-	console.log(COMPONENT_PATH);
-	console.log(element);
-	 const host = input_table.getHostElement(element);
-	 console.log(host);
-	 let numOfRows = parseInt(_getActiveTabObject(host)[ROW_PROP], 10); const numOfColumns = _getActiveTabObject(host)[COLUMN_PROP];
-	 numOfRows = op=="add"?numOfRows+1:numOfRows-1; _getActiveTabObject(host)[ROW_PROP] = numOfRows;
-	 const data = await _createElementData(host, numOfRows, numOfColumns);
-	 data.headers1 = JSON.parse(host.getAttribute("headers1").replace(/'/g, '\"'));
-	 console.log(data);
-	 const currentData = _getSpreadSheetAsCSV(host.id); await input_table.bindData(data, host.id); _setSpreadSheetFromCSV(currentData, host.id);
-	 console.log(currentData);
- }
- 
- 
+	else data = await _createElementData(element, elementObject[ROW_PROP], columns);
+	data.headers1 = JSON.parse(element.getAttribute("headers1").replace(/'/g, '\"'));
+	data.Header = element.getAttribute("Header");
+	if (element.id) if (!input_table.datas) {
+		input_table.datas = {};
+	} else { input_table.data = data; }
+	input_table.datas[element.id] = data;
+}
 
- function resizeRowInputsForLargestScroll(element) {
-	 const _getScrollHeight = element => { const saved = element.style.height; element.style.height = "auto"; 
-		 const scrollHeight = element.scrollHeight; element.style.height = saved; return scrollHeight; }
-	 const _getLargestScrollHeight = elementList => { let largest = 0; for (const element of elementList) {
-		 const scrollHeightThisElement = _getScrollHeight(element);
-		 if (scrollHeightThisElement > largest) largest = scrollHeightThisElement;
-	 } return largest; }
-	 if (!element.parentElement.parentElement) LOG.info("Resize skipped as no grandparents found.");
- 
-	 const rowElements = element.parentElement.parentElement.querySelectorAll("textarea"), largestScrollHeight = parseInt(_getLargestScrollHeight(rowElements));
-	 if (parseInt(element.style.height, 10) == largestScrollHeight) return;	// no change needed
-	 else for (const element of rowElements) element.style.height = largestScrollHeight+"px"; 
- }
- 
+async function elementRendered(element, initialRender) {
+	if (element.getAttribute("value") && initialRender) await _setValue(element.getAttribute("value"), element);
+
+	// make table resizable and all elements to auto-resize when the columns are resized
+	const _getAllTextAreasForThisColumn = td => {
+		const columnNumberThisTD = Array.prototype.slice.call(td.parentElement.querySelectorAll("td")).indexOf(td);
+		const allTRs = td.parentElement.parentElement.querySelectorAll("tr");
+		const retList = []; for (const tr of allTRs) for (const [index, textarea] of Array.prototype.slice.call(tr.querySelectorAll("textarea")).entries())
+			if (index == columnNumberThisTD) retList.push(textarea);
+		return retList;
+	}
+	resizable.makeResizableTable(input_table.getShadowRootByHost(element).querySelector("table#inputtable"),
+		element.getAttribute("barstyle"), {
+			onresize: td => {
+				for (const textarea of _getAllTextAreasForThisColumn(td))
+					resizeRowInputsForLargestScroll(textarea)
+			}
+	});
+}
+
+async function rowop(op, element) {
+
+	const host = input_table.getHostElement(element);
+	let numOfRows = parseInt(_getelementMemory(host)[ROW_PROP], 10); const numOfColumns = _getelementMemory(host)[COLUMN_PROP];
+	if(numOfRows<0) numOfRows = 0;
+	numOfRows = op == "add" ? numOfRows + 1 : numOfRows - 1; _getelementMemory(host)[ROW_PROP] = numOfRows;
+	const data = await _createElementData(host, numOfRows, numOfColumns);
+	data.headers1 = JSON.parse(host.getAttribute("headers1").replace(/'/g, '\"'));
+	const currentData = _getTableData(host.id); await input_table.bindData(data, host.id); _setTableData(currentData, host.id);
+}
 
 
- 
- function _getValue(host) {
-	 const activeSheetValue = _getSpreadSheetAsCSV(host.id);
-	 if (host.getAttribute("needPluginValues") || Object.keys(_getAllTabs(host)).length > 1) {
-		 const retValue = [], shadowRoot = input_table.getShadowRootByHost(host); 
-		 _getActiveTabObject(host).data = activeSheetValue;	// update active tab so its value is correct
-		 for (const tabID in _getAllTabs(host)) retValue.push({type: "tab", ..._getTabObject(host, tabID)});
-		 if (host.getAttribute("needPluginValues")) for (const pluginValueID of host.getAttribute("needPluginValues").split(","))
-			 retValue.push({type:"plugin", id: pluginValueID, data: shadowRoot.querySelector(`#${pluginValueID}`)?.value});
-		 return JSON.stringify(retValue, null, 4);
-	 } else return activeSheetValue;
- }
- 
- async function _setValue(value, host) {
-	 const shadowRoot = input_table.getShadowRootByHost(host); let isJSONValue = true; try {JSON.parse(value)} catch (err) {isJSONValue  = false;}
-	 if (isJSONValue) {
-		 const parsedObjects = JSON.parse(value), allTabs = {}; 
- 
-		 // setup tabs
-		 for (const object of parsedObjects) if (object.type == "tab") { allTabs[object.id] = util.clone(object, ["type"]); } 
-		 _setAllTabs(host, allTabs); const firstTabID = Object.keys(allTabs)[0]; _setActiveTab(host, firstTabID);
- 
-		 // fill in the active sheet
-		 await _setSpreadSheetFromCSV(allTabs[firstTabID].data, host.id);
- 
-		 // plug in plugin values
-		 for (const object of parsedObjects) if (object.type != "tab") if (object.data && shadowRoot.querySelector(
-			 `#${object.id}`)) _setHTMLElementValue(shadowRoot.querySelector(`#${object.id}`), object.data); 
-	 } else await _setSpreadSheetFromCSV(value, host.id);
- }
- 
- function _getSpreadSheetAsCSV(hostID, dontTrim) {
-	 const _isEmptyArray = array => {for (const cell of array) if (cell.trim() != '') return false; return true;}
-	 const shadowRoot = input_table.getShadowRootByHostId(hostID), rows = shadowRoot.querySelectorAll(".tr");
-	 const csvObject = []; for (const row of rows) {
-		 const rowData = Array.prototype.slice.call(row.getElementsByTagName("textarea")).map(e => e.value);
-		 console.log(rowData);
-		 if (_isEmptyArray(rowData) && !dontTrim) continue;	// skip totally empty rows, unless don't trim was specified.
-		 else csvObject.push(rowData);
-	 }
-	 console.log(csvObject);
 
- 
-	 // trim away totally empty columns, unless don't trim was specified.
-	 const columnsToDelete = []; if (!dontTrim) for (let columnNum = 0; columnNum < csvObject[0]?.length||0; columnNum++) {
-		 const column = []; for (let rowNum = 0; rowNum < csvObject.length; rowNum++) column[rowNum] = csvObject[rowNum][columnNum];
-		 if (_isEmptyArray(column)) columnsToDelete.push(columnNum);
-	 }
-	 const csvObjectTrimmed = dontTrim?csvObject:[]; if (!dontTrim) for (const rowData of csvObject) {
-		 const row = [];
-		 for (const [columnNum,column] of rowData.entries()) { if (!columnsToDelete.includes(columnNum)) row.push(column) }
-		 csvObjectTrimmed.push(row);
-	 }
- 
-	 const csv = Papa.unparse(csvObjectTrimmed, {header: true, skipEmptyLines: true});
-	 console.log(csv);
-	 return csv;
- }
- 
- async function _setSpreadSheetFromCSV(value, hostID) {	// will set data for the active sheet only
-	 const csvArrayOfArrays = value == "" ? [[]] : Array.isArray(value) ?
-		 value : Papa.parse(value.trim(), {header: false, skipEmptyLines: true}).data;
-	 if ((!Array.isArray(csvArrayOfArrays)) || (!Array.isArray(csvArrayOfArrays[0]))) {LOG.error("Bad CSV data"); return;}	// bad CSV data
-	 
-	 const numOfColumnsInCSV = csvArrayOfArrays[0].length, numOfRowsInCSV = csvArrayOfArrays.length;
-	 const host = input_table.getHostElementByID(hostID), data = await _createElementData(host, 
-		 numOfRowsInCSV>_getActiveTabObject(host)[ROW_PROP]?numOfRowsInCSV:_getActiveTabObject(host)[ROW_PROP], 
-		 numOfColumnsInCSV>_getActiveTabObject(host)[COLUMN_PROP]?numOfColumnsInCSV:_getActiveTabObject(host)[COLUMN_PROP]);
-		 data.headers1 = JSON.parse(host.getAttribute("headers1").replace(/'/g, '\"'));
+function resizeRowInputsForLargestScroll(element) {
+	const _getScrollHeight = element => {
+		const saved = element.style.height; element.style.height = "auto";
+		const scrollHeight = element.scrollHeight; element.style.height = saved; return scrollHeight;
+	}
+	const _getLargestScrollHeight = elementList => {
+		let largest = 0; for (const element of elementList) {
+			const scrollHeightThisElement = _getScrollHeight(element);
+			if (scrollHeightThisElement > largest) largest = scrollHeightThisElement;
+		} return largest;
+	}
+	if (!element.parentElement.parentElement) LOG.info("Resize skipped as no grandparents found.");
 
-	 await input_table.bindData(data, host.id);	// adjust the sheet size to match the data, this will call elementRendered
- 
-	 // fill in the data
-	 const shadowRoot = input_table.getShadowRootByHost(host), rows = Array.prototype.slice.call(shadowRoot.querySelectorAll(".tr"));
-	 for (let [rowNumber, row] of rows.entries()) {
-		 const column = Array.prototype.slice.call(row.children);
-		 for (const [colNumber, tdElement] of column.entries()) if (csvArrayOfArrays[rowNumber] && csvArrayOfArrays[rowNumber][colNumber]) {
-			 const textarea = tdElement.getElementsByTagName("textarea")[0];
-			 textarea.value = csvArrayOfArrays[rowNumber][colNumber]; textarea.onchange();
-		 }
-	 }
-	 return true;
- }
- 
- async function _createElementData(host, rows=host.getAttribute("rows")||6, columns=host.getAttribute("columns")||2) {
-	 const data = {componentPath: COMPONENT_PATH, i18n: {}, CONTEXT_MENU_ID,
-		 toolbarPluginHTML: host.getAttribute("toolbarPluginHTML")?decodeURIComponent(host.getAttribute("toolbarPluginHTML")):undefined};
-	 for (const i18nKey in i18n) data.i18n[i18nKey] = i18n[i18nKey][i18nFramework.getSessionLang()];
- 
-	 data.rows = []; data.columns = []; for (let j = 0; j < columns; j++) data.columns.push(' ');
-	 for (let i = 0; i < rows; i++) data.rows.push(' '); 
-	 if (host.getAttribute("styleBody")) data.styleBody = `<style>${host.getAttribute("styleBody")}</style>`;
- 
-	 data.tabs = []; const allTabs = _getAllTabs(host); for (const tabID in allTabs) if (tabID != DEFAULT_TAB)
-		 data.tabs.push( {name: allTabs[tabID].name, id: tabID, active: tabID == _getActiveTab(host)?"true":undefined} );
- 
-	 // expand toolbar plugin HTML now that data object is complete, as it may need expansion
-	 if (data.toolbarPluginHTML) data.toolbarPluginHTML = await router.expandPageData(data.toolbarPluginHTML, undefined, data);
-	 data.headers1 = JSON.parse(host.getAttribute("headers1").replace(/'/g, '\"'));
-	 data.Header = host.getAttribute("Header");
+	const rowElements = element.parentElement.parentElement.querySelectorAll("textarea"), largestScrollHeight = parseInt(_getLargestScrollHeight(rowElements));
+	if (parseInt(element.style.height, 10) == largestScrollHeight) return;	// no change needed
+	else for (const element of rowElements) element.style.height = largestScrollHeight + "px";
+}
 
-	 return data;
- }
- 
- const _getActiveTab = hostOrHostID => input_table[hostOrHostID instanceof HTMLElement ? "getMemoryByHost":"getMemory"](hostOrHostID).activeTab;
- const _setActiveTab = (hostOrHostID, tab) => input_table[hostOrHostID instanceof HTMLElement ? "getMemoryByHost":"getMemory"](hostOrHostID).activeTab = tab;
- const _getActiveTabObject = hostOrHostID => _getTabObject(hostOrHostID, _getActiveTab(hostOrHostID));
- function _getTabObject(hostOrHostID, tabID) {
-	 const allTabs = _getAllTabs(hostOrHostID); if (!allTabs[tabID]) allTabs[tabID] = {}; return allTabs[tabID];
- }
- function _getAllTabs(hostOrHostID) {
-	 const memory = input_table[hostOrHostID instanceof HTMLElement ? "getMemoryByHost":"getMemory"](hostOrHostID);
-	 if (!memory.tabs) memory.tabs = {}; return memory.tabs;
- }
- function _setAllTabs(hostOrHostID, tabs) {
-	 const memory = input_table[hostOrHostID instanceof HTMLElement ? "getMemoryByHost":"getMemory"](hostOrHostID);
-	 memory.tabs = util.clone(tabs);
- }
- function _setHTMLElementValue(element, value) {
-	 if (element.tagName.toLowerCase() == "input" && element.type.toLowerCase() == "checkbox") {
-		 if (value.toLowerCase() == "true") element.setAttribute("checked", undefined);
-		 element.setAttribute("value", value);
-	 } else if (element.tagName.toLowerCase() == "textarea") element.innerHTML = value;
-	 else element.setAttribute("value", value);
- }
- 
- // convert this all into a WebComponent so we can use it
- export const input_table = {trueWebComponentMode: true, elementConnected, elementRendered,  
-	 rowop,resizeRowInputsForLargestScroll}
- monkshu_component.register("input-table", `${COMPONENT_PATH}/input-table.html`, input_table);
+function _getValue(host) {
+
+	const inputTableValue = _getTableData(host.id);
+	_getelementMemory(host)[ROW_PROP] =  inputTableValue.length.toString()
+	return JSON.stringify( inputTableValue);
+}
+
+async function _setValue(value, host) {
+	_getelementMemory(host)[ROW_PROP] =JSON.parse(value).length.toString();
+	if(_getelementMemory(host)[ROW_PROP] < 1) _getelementMemory(host)[ROW_PROP] = host.getAttribute("rows");
+	await _setTableData(JSON.parse(value), host.id);
+}
+
+function _getTableData(hostID, dontTrim) {
+	const _isEmptyArray = array => { for (const cell of array) if (cell.trim() != '') return false; return true; }
+	const shadowRoot = input_table.getShadowRootByHostId(hostID), rows = shadowRoot.querySelectorAll(".tr");
+	const tableData = []; for (const row of rows) {
+		const rowData = Array.prototype.slice.call(row.getElementsByTagName("textarea")).map(e => e.value);
+		if (_isEmptyArray(rowData) && !dontTrim) continue;	// skip totally empty rows, unless don't trim was specified.
+		else tableData.push(rowData);
+	}
+	return tableData;
+}
+
+async function _setTableData(value, hostID) {
+	const tableDataArrayOfArrays = value == "" ? [[]] : value;
+	const host = input_table.getHostElementByID(hostID), data = await _createElementData(host,
+		_getelementMemory(host)[ROW_PROP] ,
+		 _getelementMemory(host)[COLUMN_PROP] );
+	data.headers1 = JSON.parse(host.getAttribute("headers1").replace(/'/g, '\"'));
+
+	await input_table.bindData(data, host.id);	// adjust the sheet size to match the data, this will call elementRendered
+
+	// fill in the data
+	const shadowRoot = input_table.getShadowRootByHost(host), rows = Array.prototype.slice.call(shadowRoot.querySelectorAll(".tr"));
+	for (let [rowNumber, row] of rows.entries()) {
+		const column = Array.prototype.slice.call(row.children);
+		for (const [colNumber, tdElement] of column.entries()) if (tableDataArrayOfArrays[rowNumber] && tableDataArrayOfArrays[rowNumber][colNumber]) {
+			const textarea = tdElement.getElementsByTagName("textarea")[0];
+			textarea.value = tableDataArrayOfArrays[rowNumber][colNumber]; textarea.onchange();
+		}
+	}
+	return true;
+}
+
+async function _createElementData(host, rows = host.getAttribute("rows") || 6, columns = host.getAttribute("columns") || 2) {
+	const data = {
+		componentPath: COMPONENT_PATH, i18n: {}
+	};
+	for (const i18nKey in i18n) data.i18n[i18nKey] = i18n[i18nKey][i18nFramework.getSessionLang()];
+
+	data.rows = []; data.columns = []; for (let j = 0; j < columns; j++) data.columns.push(' ');
+	for (let i = 0; i < rows; i++) data.rows.push(' ');
+	if (host.getAttribute("styleBody")) data.styleBody = `<style>${host.getAttribute("styleBody")}</style>`;
+
+	data.headers1 = JSON.parse(host.getAttribute("headers1").replace(/'/g, '\"'));
+	data.Header = host.getAttribute("Header");
+
+	return data;
+}
+
+const _getelementMemory = hostOrHostID => {
+	const memory = input_table[hostOrHostID instanceof HTMLElement ? "getMemoryByHost" : "getMemory"](hostOrHostID)
+	if (!memory.data) memory.data = {}; return memory.data;
+
+};
+
+// convert this all into a WebComponent so we can use it
+export const input_table = {
+	trueWebComponentMode: true, elementConnected, elementRendered,
+	rowop, resizeRowInputsForLargestScroll
+}
+monkshu_component.register("input-table", `${COMPONENT_PATH}/input-table.html`, input_table);

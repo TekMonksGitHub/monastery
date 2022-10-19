@@ -8,38 +8,38 @@ import { util } from "/framework/js/util.mjs";
 import { blackboard } from "/framework/js/blackboard.mjs";
 
 const EMPTY_MODEL = { apicl: [] }, DEFAULT_BUNDLE = "commands";
-let api400modelObj = EMPTY_MODEL, idCache = {}, current_command_bundle = DEFAULT_BUNDLE;
+let apibossmodelObj = EMPTY_MODEL, idCache = {}, current_command_bundle = DEFAULT_BUNDLE;
 const MSG_NODES_MODIFIED = "NODES_MODIFIED", MSG_CONNECTORS_MODIFIED = "CONNECTORS_MODIFIED",
     MSG_NODE_DESCRIPTION_CHANGED = "NODE_DESCRIPTION_CHANGED", MSG_ARE_NODES_CONNECTABLE = "ARE_NODES_CONNECTABLE",
     MSG_GET_MODEL = "GET_MODEL", MSG_RESET = "RESET", MSG_LOAD_MODEL = "LOAD_MODEL",
     MSG_CONNECT_NODES = "CONNECT_NODES", MSG_ADD_NODE = "ADD_NODE";
 
 function init() {
-
+     console.log("init");
     blackboard.registerListener(MSG_NODES_MODIFIED, message => modelNodesModified(message.type, message.nodeName,
         message.id, message.properties), true);
-    blackboard.registerListener(MSG_CONNECTORS_MODIFIED, message => modelConnectorsModified(message.type,
-        message.sourceNode, message.targetNode, message.sourceID, message.targetID));
+    blackboard.registerListener(MSG_CONNECTORS_MODIFIED, message =>{console.log(message); modelConnectorsModified(message.type,
+        message.sourceNode, message.targetNode, message.sourceID, message.targetID)});
     blackboard.registerListener(MSG_NODE_DESCRIPTION_CHANGED, message => nodeDescriptionChanged(message.nodeName,
         message.id, message.description));
     blackboard.registerListener(MSG_ARE_NODES_CONNECTABLE, message => isConnectable(message.sourceName,
         message.targetName, message.sourceID, message.targetID), true);
     blackboard.registerListener(MSG_GET_MODEL, message => getModelAsFile(message.name), true);
-    blackboard.registerListener(MSG_RESET, _ => { api400modelObj = EMPTY_MODEL, idCache = {}, current_command_bundle = DEFAULT_BUNDLE; }, true);
+    blackboard.registerListener(MSG_RESET, _ => { apibossmodelObj = EMPTY_MODEL, idCache = {}, current_command_bundle = DEFAULT_BUNDLE; }, true);
     blackboard.registerListener(MSG_LOAD_MODEL, message => loadModel(message.data));
 }
 
 function loadModel(jsonModel) {
-
+console.log(jsonModel);
     try {
-        api400modelObj = JSON.parse(jsonModel);
-        console.log(api400modelObj);
+        apibossmodelObj = JSON.parse(jsonModel);
+        console.log(apibossmodelObj);
     }
     catch (err) { LOG.error(`Bad API400 model, error ${err}, skipping.`); return; }
-    if (!(api400modelObj.apicl)) { LOG.error(`Bad API400 model, not in right format.`); return; }
+    if (!(apibossmodelObj.apicl)) { LOG.error(`Bad API400 model, not in right format.`); return; }
 
     // first add all the commands
-    for (const apicl of api400modelObj.apicl) for (const command of apicl.commands) {
+    for (const apicl of apibossmodelObj.apicl) for (const command of apicl.commands) {
         const id = command.id || _getUniqueID(); idCache[id] = command; const clone = util.clone(command);
         const nodeName = clone.nodeName;
         blackboard.broadcastMessage(MSG_ADD_NODE, { nodeName, id, description: clone.description, properties: { ...clone }, connectable: true });
@@ -51,9 +51,9 @@ function loadModel(jsonModel) {
         const sourceName = idCache[sourceID].nodeName, targetName = idCache[targetID].nodeName;
         blackboard.broadcastMessage(MSG_CONNECT_NODES, { sourceName, targetName, sourceID, targetID });
     }
-
+    console.log(apibossmodelObj);
     // add connections between commands
-    for (const command of api400modelObj.apicl[0].commands)
+    for (const command of apibossmodelObj.apicl[0].commands)
         if (command.dependencies) for (const dependency of command.dependencies) connectNodes(dependency, command.id);
 
 }
@@ -68,6 +68,7 @@ function modelNodesModified(type, nodeName, id, properties) {
 }
 
 function modelConnectorsModified(type, sourceName, targetName, sourceID, targetID) {
+console.log(type);
 
     if ((!idCache[sourceID]) || (!idCache[targetID])) return;   // not connected
 
@@ -88,13 +89,9 @@ function modelConnectorsModified(type, sourceName, targetName, sourceID, targetI
 }
 
 function isConnectable(sourceName, targetName, sourceID, targetID) {    // are these nodes connectable
-
-    if (sourceID == targetID) return false;  // can't loop from same node to itself
-    if (targetName == "strapi") return false; // strapi can't be target, so that it will always be first command only
-    if (sourceName == "endapi") return false; // endapi can't be connect to any next command
-    if (((sourceName == "condition") && !((targetName == "iftrue") || (targetName == "iffalse")))) return false; // condition can only connect to iftrue and iffalse
-    if (((sourceName != "condition") && ((targetName == "iftrue") || (targetName == "iffalse")))) return false; // iftrue and iffalse , can only be connect by condition
-    if ((sourceName == "goto") && (targetName == "goto")) return false; // can't connect goto to goto
+    if (sourceID == targetID) return false;
+    if (targetName == "policy_tag") return false;
+    if(sourceName == targetName ) return false;
 
     return true;
 }
@@ -111,7 +108,8 @@ function nodeDescriptionChanged(_nodeName, id, description) {
 }
 
 function getModel() {
-    const retModel = util.clone(api400modelObj);
+    const retModel = util.clone(apibossmodelObj);
+    console.log(retModel);
     const sortedCommands = algos.sortDependencies(retModel.apicl[0]);  // sort apicl commands in the order of dependencies
     const NOPparams = saveCordinates(sortedCommands);
     let APICL = algos.convertIntoAPICL(sortedCommands); // converting into the final APICL
@@ -142,7 +140,7 @@ function saveCordinates(modelObject) {
 }
 
 function getModules() {
-    const api400 = util.clone(api400modelObj);
+    const api400 = util.clone(apibossmodelObj);
     let nameAndJsArray = []
     for (const command of api400.apicl[0].commands) {
         let nameAndJs = [];
@@ -161,14 +159,14 @@ const getModelAsFile = name => { return { data: JSON.stringify(getModel(), null,
 const _getUniqueID = _ => `${Date.now()}${Math.random() * 100}`;
 
 function _findOrCreateCommand(name = current_command_bundle, forceNew) {
-    if (!forceNew) for (const command of api400modelObj.apicl) if (command.name == name) return command;
+    if (!forceNew) for (const command of apibossmodelObj.apicl) if (command.name == name) return command;
     const newCommand = { name, commands: [], id: _getUniqueID() };
-    api400modelObj.apicl.push(newCommand);
+    apibossmodelObj.apicl.push(newCommand);
     return newCommand;
 }
 
 function _nodeAdded(nodeName, id, properties) {
-
+     console.log(nodeName);
     const node = idCache[id] ? idCache[id] : JSON.parse(JSON.stringify(properties)); node.nodeName = nodeName;
     if (idCache[id]) { _nodeModified(nodeName, id, properties); return; }  // node properties modified
     const name = _getNameFromDescription(node.description);
@@ -179,25 +177,27 @@ function _nodeAdded(nodeName, id, properties) {
     }
 
     node.id = id; idCache[id] = node;   // transfer ID and cache the node
+    console.log(idCache);
     return true;
 }
 
 function _nodeRemoved(nodeName, id) {
-    if (idCache && Object.keys(idCache).length === 0) api400modelObj = { apicl: [] };
+    if (idCache && Object.keys(idCache).length === 0) apibossmodelObj = { apicl: [] };
     if (!idCache[id]) return;   // we don't know of this node
     const node = idCache[id];
 
-    const nextTargetNode = algos.checkNodeInAllNodes(node, api400modelObj.apicl[0].commands);
+    const nextTargetNode = algos.checkNodeInAllNodes(node, apibossmodelObj.apicl[0].commands);
     if (nextTargetNode) modelConnectorsModified(apibossmodel.REMOVED, nodeName, nextTargetNode.nodeName, id, nextTargetNode.id);
     if (nodeName == "api" || nodeName == "policy_tag")
-        _arrayDelete(api400modelObj.apicl[0].commands, node);
+        _arrayDelete(apibossmodelObj.apicl[0].commands, node);
 
     delete idCache[id]; // uncache
     return true;
 }
 
 function _nodeModified(nodeName, id, properties) {
-
+console.log(properties);
+console.log(idCache);
     let parameters = [];
     if (!idCache[id]) return false; // we don't know of this node
     for (const key in properties) { // transfer the new properties

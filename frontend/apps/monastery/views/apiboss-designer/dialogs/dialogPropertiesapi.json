@@ -4,7 +4,7 @@
     "modal": false,
     "okIcon": "./views/{{url.view}}/dialogs/ok.svg",
     "closeIcon": "./views/{{url.view}}/dialogs/close.svg",
-    "showOKIcon": false,
+    "showOKIcon": true,
     "showCancelIcon": true,
 
     "styleBody": "div#buttonbar {justify-content: flex-end;} span#ok {margin-top: 10px;}",
