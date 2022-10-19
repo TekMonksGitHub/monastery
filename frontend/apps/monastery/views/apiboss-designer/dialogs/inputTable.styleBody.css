@@ -39,7 +39,7 @@ td>textarea {
     resize: none;
     padding: 4px;
     width: 100%;
-    overflow: auto;
+    overflow: hidden;
     font-family: inherit;
     display: block;
     box-sizing: border-box;
