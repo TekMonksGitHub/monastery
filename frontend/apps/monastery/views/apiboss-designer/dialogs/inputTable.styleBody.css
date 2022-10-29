@@ -55,6 +55,7 @@ tr:first-child > td {
     font-weight: 400;
     font-size: 16px;
     color: #444444;
+    overflow: hidden;
 }
 
 
@@ -78,4 +79,21 @@ span#tabbar > span.tabbutton {
     background-color: #D6EFFF;
     border: 1px solid #4788C7;
     border-top: transparent;
+}
+
+table::-webkit-scrollbar {
+    width: 0.3em !important;
+    scroll-behavior: smooth !important;
+}
+
+table::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    margin: 40px;
+    border-radius: 10px !important;
+}
+table::-webkit-scrollbar-thumb {
+    background-color: darkgrey !important;
+    border-radius: 10px !important;
+    background-clip: padding-box;
 }

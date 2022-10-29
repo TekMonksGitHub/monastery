@@ -1,0 +1,16 @@
+div#button {
+    background: #DFF0FE;
+    border: 4px solid #98CCFD;
+    border-radius: 10px;
+    }
+ div#button > img.row {
+    width: 20%;
+}
+div#button > span.row {
+    width: 80%;
+    margin-left:10px;
+}
+
+div#button:hover {
+border-color: rgba(0, 0, 255, 0.25);
+}
