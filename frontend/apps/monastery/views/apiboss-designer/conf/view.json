@@ -16,7 +16,9 @@
         "input-table": "components/input-table",
         "text-div": "components/text-div",
         "api-contents": "components/api-contents",
-        "apiinput-apioutput": "components/apiinput-apioutput"
+        "apiinput-apioutput": "components/apiinput-apioutput",
+        "text-editor": "components/text-editor",
+        "api-details": "components/api-details"
         },
     "initModules": { 
         "apibossmodel": "model/apibossmodel.mjs", 

@@ -165,5 +165,11 @@ export const i18n = {
 "AdminPassword":"Admin Password",
 "Upload":"Upload OpenAPI Spec",
 "Injected":"Injected Headers",
-"Passthrough":"Passthrough Headers"
+"Passthrough":"Passthrough Headers",
+"Nodejs":"NodeJS Client",
+"Java":"Java Client",
+"Curl":"Curl Client",
+"Copy":"Copy",
+"try":"Try it",
+"json":"JSON"
 }

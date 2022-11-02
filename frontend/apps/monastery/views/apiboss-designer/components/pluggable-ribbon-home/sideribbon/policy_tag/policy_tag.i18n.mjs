@@ -5,7 +5,7 @@ export const i18n = {
         ja: "データ\nルールにデータを追加する"
     },
     DESCRIPTIVE_NAME : {
-        en:"POLICY_TAG", 
+        en:"Policy Tag", 
         hi: "डेटा", 
         ja: "データ"
     }

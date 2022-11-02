@@ -1,0 +1,19 @@
+div#button.row {
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+div#button {
+    padding: 5px 5px 5px 20px;
+}
+
+div#button>img.row {
+    width: 2em;
+    height: 100%;
+}
+
+div#button>span {
+    color: #4788C7;
+    font-weight: 700;
+
+}

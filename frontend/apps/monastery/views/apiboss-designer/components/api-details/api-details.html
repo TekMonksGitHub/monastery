@@ -1,0 +1,243 @@
+<style>
+    body {
+        margin: 1.3em;
+    }
+
+    div#container {
+        background: #FFFFFF;
+        border-radius: 10px;
+        border: 1px solid #98CCFD;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        padding-bottom: 0.5em;
+    }
+
+    span#method {
+        font-family: 'Red Hat Text';
+        font-style: normal;
+        font-weight: 700;
+        text-align: center;
+        color: #FFFFFF;
+        background: #535AFF;
+        border-radius: 5px;
+        padding: 3px;
+    }
+
+    image-button {
+        display: inline-block;
+    }
+
+    div#headcontainer {
+        background: #98CCFD;
+        border: 1px solid #98CCFD;
+        border-radius: 10px;
+        padding: 5px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom-left-radius: 0%;
+        border-bottom-right-radius: 0%;
+    }
+
+    div.input-form {
+        margin: 1em 0.5em;
+        border: 1px solid rgba(152, 204, 253, 0.99);
+        border-radius: 2px;
+        display: flex;
+        margin-bottom: 0em;
+    }
+
+    span.input-label {
+        padding: 6px;
+        text-align: center;
+        color: #444444;
+        background: #DFF0FE;
+    }
+
+    input.input-text {
+        padding: 6px;
+        flex: 2;
+        border: 0px;
+        outline: none;
+        resize: none;
+        font-family: inherit;
+        box-sizing: border-box;
+        background: #FFFFFF;
+        border: 1px solid #98CCFD;
+        border-radius: 5px;
+    }
+
+    input#MyInput {
+        margin: 0px 0.6em 0px 3em;
+    }
+
+    input#Mypwd {
+        margin: 0px 0.6em 0px 2em;
+    }
+    input#Myname {
+        margin: 0px 0.6em 0px 2em;
+        flex:1
+    }
+
+    div.input-fields {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        text-align: center;
+        margin-top: 1em;
+        color: #444444;
+
+    }
+
+    div#text {
+        margin-top: 1em;
+        margin-left: 1em;
+        font-family: 'Red Hat Text';
+        font-style: normal;
+        font-weight: 400;
+        color: #000000;
+    }
+
+    .container-header {
+        position: relative;
+        background: #DFF0FE;
+        margin-top: 0.4em;
+    }
+
+    /* Positions the labels relative to the .container. Adds padding to the top and bottom and increases font size. Also makes its cursor a pointer */
+
+    .label {
+        position: relative;
+        padding: 10px 10px;
+        color: black;
+        cursor: pointer;
+    }
+
+    .label .parameters {
+        padding: 10px 10px;
+        color: black;
+        font-family: 'Red Hat Text';
+        font-style: normal;
+        text-align: center;
+    }
+
+    .content {
+        position: relative;
+        background: white;
+        display: none;
+        text-align: justify;
+        overflow: hidden;
+        transition: 0.5s;
+    }
+
+    .label::before {
+        content: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTciIGhlaWdodD0iMTciIHZpZXdCb3g9IjAgMCAxNyAxNyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjkyNzQgNS4xOTgxN0wxMi41MDA2IDUuNjI0OTVIMTMuMTA0MkgxNS43OTE3QzE2LjAwMTYgNS42MjQ5NSAxNi4yMDMgNS43MDgzNiAxNi4zNTE1IDUuODU2ODJDMTYuNDk5OSA2LjAwNTI5IDE2LjU4MzQgNi4yMDY2NSAxNi41ODM0IDYuNDE2NjJDMTYuNTgzNCA2LjYyNjU4IDE2LjQ5OTkgNi44Mjc5NCAxNi4zNTE1IDYuOTc2NDFDMTYuMjAzIDcuMTI0ODcgMTYuMDAxNiA3LjIwODI4IDE1Ljc5MTcgNy4yMDgyOEgxMC41ODM0QzEwLjM3MzQgNy4yMDgyOCAxMC4xNzIgNy4xMjQ4NyAxMC4wMjM2IDYuOTc2NDFDOS44NzUwOSA2LjgyNzk0IDkuNzkxNjggNi42MjY1OCA5Ljc5MTY4IDYuNDE2NjJWMS4yMDgyOEM5Ljc5MTY4IDAuOTk4MzIgOS44NzUwOSAwLjc5Njk1NiAxMC4wMjM2IDAuNjQ4NDlDMTAuMTcyIDAuNTAwMDIzIDEwLjM3MzQgMC40MTY2MTYgMTAuNTgzNCAwLjQxNjYxNkMxMC43OTMzIDAuNDE2NjE2IDEwLjk5NDcgMC41MDAwMjMgMTEuMTQzMSAwLjY0ODQ4OUMxMS4yOTE2IDAuNzk2OTU2IDExLjM3NSAwLjk5ODMxOSAxMS4zNzUgMS4yMDgyOFYzLjg4NTM3VjQuNDg3NjJMMTEuODAxNSA0LjA2MjQxTDE1LjIyODYgMC42NDU3NDVMMTUuMjI4OSAwLjY0NTQ3NkMxNS4zNzgxIDAuNDk2MjEgMTUuNTgwNiAwLjQxMjM1NCAxNS43OTE3IDAuNDEyMzU0QzE2LjAwMjggMC40MTIzNTQgMTYuMjA1MiAwLjQ5NjIxIDE2LjM1NDUgMC42NDU0NzVDMTYuNTAzOCAwLjc5NDc0MSAxNi41ODc2IDAuOTk3MTkgMTYuNTg3NiAxLjIwODI4QzE2LjU4NzYgMS40MTkzOCAxNi41MDM4IDEuNjIxODIgMTYuMzU0NSAxLjc3MTA5TDEyLjkyNzQgNS4xOTgxN1pNNC4wNjI0OCAxMS44MDE1TDQuNDg3NjkgMTEuMzc0OUgzLjg4NTQzSDEuMjA4MzVDMC45OTgzODggMTEuMzc0OSAwLjc5NzAyNSAxMS4yOTE1IDAuNjQ4NTU5IDExLjE0MzFDMC41MDAwOTIgMTAuOTk0NiAwLjQxNjY4NCAxMC43OTMyIDAuNDE2Njg0IDEwLjU4MzNDMC40MTY2ODQgMTAuMzczMyAwLjUwMDA5MiAxMC4xNzIgMC42NDg1NTkgMTAuMDIzNUMwLjc5NzAyNSA5Ljg3NTAyIDAuOTk4Mzg5IDkuNzkxNjEgMS4yMDgzNSA5Ljc5MTYxSDYuNDE2NjhDNi42MjY2NSA5Ljc5MTYxIDYuODI4MDEgOS44NzUwMiA2Ljk3NjQ4IDEwLjAyMzVDNy4xMjQ5NCAxMC4xNzIgNy4yMDgzNSAxMC4zNzMzIDcuMjA4MzUgMTAuNTgzM1YxNS43OTE2QzcuMjA4MzUgMTYuMDAxNiA3LjEyNDk0IDE2LjIwMjkgNi45NzY0OCAxNi4zNTE0QzYuODI4MDEgMTYuNDk5OSA2LjYyNjY1IDE2LjU4MzMgNi40MTY2OCAxNi41ODMzQzYuMjA2NzIgMTYuNTgzMyA2LjAwNTM2IDE2LjQ5OTkgNS44NTY4OSAxNi4zNTE0QzUuNzA4NDMgMTYuMjAyOSA1LjYyNTAyIDE2LjAwMTYgNS42MjUwMiAxNS43OTE2VjEzLjEwNDFWMTIuNTAwNkw1LjE5ODI0IDEyLjkyNzNMMS43NzExNiAxNi4zNTQ0TDEuNzcwNDMgMTYuMzU1MUMxLjY5Njg0IDE2LjQyOTMgMS42MDkyOCAxNi40ODgyIDEuNTEyODEgMTYuNTI4NEMxLjQxNjM0IDE2LjU2ODYgMS4zMTI4NiAxNi41ODkzIDEuMjA4MzUgMTYuNTg5M0MxLjEwMzg0IDE2LjU4OTMgMS4wMDAzNyAxNi41Njg2IDAuOTAzODkzIDE2LjUyODRDMC44MDc0MjUgMTYuNDg4MiAwLjcxOTg2NiAxNi40MjkzIDAuNjQ2MjczIDE2LjM1NTFMMC42NDQ4MTggMTYuMzUzN0MwLjU3MDYxNiAxNi4yODAxIDAuNTExNzIxIDE2LjE5MjUgMC40NzE1MyAxNi4wOTYxQzAuNDMxMzM4IDE1Ljk5OTYgMC40MTA2NDUgMTUuODk2MSAwLjQxMDY0NSAxNS43OTE2QzAuNDEwNjQ1IDE1LjY4NzEgMC40MzEzMzcgMTUuNTgzNiAwLjQ3MTUyOSAxNS40ODcyQzAuNTExNzIxIDE1LjM5MDcgMC41NzA2MTYgMTUuMzAzMSAwLjY0NDgyMSAxNS4yMjk1TDAuNjQ1ODEzIDE1LjIyODVMNC4wNjI0OCAxMS44MDE1WiIgZmlsbD0iIzk4Q0NGRCIgc3Ryb2tlPSIjNDc4OEM3IiBzdHJva2Utd2lkdGg9IjAuNSIvPgo8L3N2Zz4K);
+
+        color: black;
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+    }
+
+
+    /* Unhides the content part when active. Sets the height */
+
+    .container-header.active .content {
+        display: block;
+    }
+
+    /* Changes from plus sign to negative sign once active */
+
+    .container-header.active .label::before {
+        content: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTciIGhlaWdodD0iMTciIHZpZXdCb3g9IjAgMCAxNyAxNyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEzLjQzNzQgMi40MjY0N0wxMy44NjI2IDEuOTk5OTZIMTMuMjYwNEgxMC41ODMzQzEwLjM3MzMgMS45OTk5NiAxMC4xNzIgMS45MTY1NSAxMC4wMjM1IDEuNzY4MDlDOS44NzUwMyAxLjYxOTYyIDkuNzkxNjMgMS40MTgyNiA5Ljc5MTYzIDEuMjA4MjlDOS43OTE2MyAwLjk5ODMzIDkuODc1MDMgMC43OTY5NjYgMTAuMDIzNSAwLjY0ODVDMTAuMTcyIDAuNTAwMDMzIDEwLjM3MzMgMC40MTY2MjYgMTAuNTgzMyAwLjQxNjYyNkgxNS43OTE2QzE2LjAwMTYgMC40MTY2MjYgMTYuMjAzIDAuNTAwMDM0IDE2LjM1MTQgMC42NDg1QzE2LjQ5OTkgMC43OTY5NjYgMTYuNTgzMyAwLjk5ODMyOSAxNi41ODMzIDEuMjA4MjlWNi40MTY2M0MxNi41ODMzIDYuNjI2NTkgMTYuNDk5OSA2LjgyNzk1IDE2LjM1MTQgNi45NzY0MkMxNi4yMDMgNy4xMjQ4OCAxNi4wMDE2IDcuMjA4MjkgMTUuNzkxNiA3LjIwODI5QzE1LjU4MTcgNy4yMDgyOSAxNS4zODAzIDcuMTI0ODggMTUuMjMxOCA2Ljk3NjQyQzE1LjA4MzQgNi44Mjc5NSAxNSA2LjYyNjU5IDE1IDYuNDE2NjNWMy43MjkxM1YzLjEyNTU3TDE0LjU3MzIgMy41NTIzNUwxMS4xNDYxIDYuOTc5NDNMMTEuMTQ1NCA2Ljk4MDE2QzExLjA3MTggNy4wNTQzNiAxMC45ODQyIDcuMTEzMjYgMTAuODg3NyA3LjE1MzQ1QzEwLjc5MTMgNy4xOTM2NCAxMC42ODc4IDcuMjE0MzMgMTAuNTgzMyA3LjIxNDMzQzEwLjQ3ODggNy4yMTQzMyAxMC4zNzUzIDcuMTkzNjQgMTAuMjc4OCA3LjE1MzQ1QzEwLjE4MjQgNy4xMTMyNiAxMC4wOTQ4IDcuMDU0MzYgMTAuMDIxMiA2Ljk4MDE2TDEwLjAxOTggNi45Nzg3MUM5Ljk0NTU2IDYuOTA1MTEgOS44ODY2NiA2LjgxNzU1IDkuODQ2NDcgNi43MjEwOEM5LjgwNjI4IDYuNjI0NjEgOS43ODU1OSA2LjUyMTE0IDkuNzg1NTkgNi40MTY2M0M5Ljc4NTU5IDYuMzEyMTIgOS44MDYyOCA2LjIwODY0IDkuODQ2NDcgNi4xMTIxN0M5Ljg4NjY2IDYuMDE1NyA5Ljk0NTU2IDUuOTI4MTQgMTAuMDE5OCA1Ljg1NDU1TDEwLjAyMDggNS44NTM1NUwxMy40Mzc0IDIuNDI2NDdaTTYuOTc4NzEgMTAuMDE5OEw2Ljk4MDE2IDEwLjAyMTJDNy4wNTQzNiAxMC4wOTQ4IDcuMTEzMjYgMTAuMTgyNCA3LjE1MzQ1IDEwLjI3ODhDNy4xOTM2NCAxMC4zNzUzIDcuMjE0MzMgMTAuNDc4OCA3LjIxNDMzIDEwLjU4MzNDNy4yMTQzMyAxMC42ODc4IDcuMTkzNjQgMTAuNzkxMyA3LjE1MzQ1IDEwLjg4NzdDNy4xMTMyNiAxMC45ODQyIDcuMDU0MzYgMTEuMDcxOCA2Ljk4MDE2IDExLjE0NTRMNi45Nzk0MyAxMS4xNDYxTDMuNTUyMzUgMTQuNTczMkwzLjEyNTU3IDE1SDMuNzI5MTNINi40MTY2M0M2LjYyNjU5IDE1IDYuODI3OTUgMTUuMDgzNCA2Ljk3NjQyIDE1LjIzMThDNy4xMjQ4OCAxNS4zODAzIDcuMjA4MjkgMTUuNTgxNyA3LjIwODI5IDE1Ljc5MTZDNy4yMDgyOSAxNi4wMDE2IDcuMTI0ODggMTYuMjAzIDYuOTc2NDIgMTYuMzUxNEM2LjgyNzk1IDE2LjQ5OTkgNi42MjY1OSAxNi41ODMzIDYuNDE2NjMgMTYuNTgzM0gxLjIwODI5QzAuOTk4MzI5IDE2LjU4MzMgMC43OTY5NjYgMTYuNDk5OSAwLjY0ODUgMTYuMzUxNEMwLjUwMDAzNCAxNi4yMDMgMC40MTY2MjYgMTYuMDAxNiAwLjQxNjYyNiAxNS43OTE2VjEwLjU4MzNDMC40MTY2MjYgMTAuMzczMyAwLjUwMDAzMyAxMC4xNzIgMC42NDg1IDEwLjAyMzVDMC43OTY5NjYgOS44NzUwMyAwLjk5ODMzIDkuNzkxNjMgMS4yMDgyOSA5Ljc5MTYzQzEuNDE4MjYgOS43OTE2MyAxLjYxOTYyIDkuODc1MDMgMS43NjgwOSAxMC4wMjM1QzEuOTE2NTUgMTAuMTcyIDEuOTk5OTYgMTAuMzczMyAxLjk5OTk2IDEwLjU4MzNWMTMuMjYwNFYxMy44NjI2TDIuNDI2NDcgMTMuNDM3NEw1Ljg1MzU1IDEwLjAyMDhMNS44NTQ1NCAxMC4wMTk4QzUuOTI4MTQgOS45NDU1NiA2LjAxNTcgOS44ODY2NiA2LjExMjE3IDkuODQ2NDdDNi4yMDg2NCA5LjgwNjI4IDYuMzEyMTIgOS43ODU1OSA2LjQxNjYzIDkuNzg1NTlDNi41MjExNCA5Ljc4NTU5IDYuNjI0NjEgOS44MDYyOCA2LjcyMTA4IDkuODQ2NDdDNi44MTc1NSA5Ljg4NjY2IDYuOTA1MTEgOS45NDU1NiA2Ljk3ODcxIDEwLjAxOThaIiBmaWxsPSIjOThDQ0ZEIiBzdHJva2U9IiM0Nzg4QzciIHN0cm9rZS13aWR0aD0iMC41Ii8+Cjwvc3ZnPgo=);
+    }
+
+    .parameter-header .label {
+        padding: 5px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    span#parameters {
+        position: relative;
+        margin-left: 0.2em;
+    }
+
+    image-button#json {
+        margin-right: 3em;
+    }
+</style>
+
+<div id="container">
+
+    <div id="headcontainer">
+        <span>
+            <span id="method">POST</span>
+            <span id="path"> /exposed/path</span>
+        </span>
+
+        <image-button img="{{{componentPath}}}/img/try.svg" text="{{i18n.try}}" style="width:8em; height: 100%;"
+            id="try" onclickHandler="window.monkshu_env['OPEN_SERVER_HELPER'].connectServerClicked()" type="row"
+            styleBody="div#button.row {flex-direction: row; justify-content: flex-start;} div#button {padding: 5px 5px 5px 20px;} div#button>img.row {width: 2em;height: 100%;} div#button>span {color: #4788C7; font-weight: 700; margin-left:5px}"
+            color="#444444" border="0.5px solid #98CCFD" background-color="#F8FCFF" active-background-color="white"
+            display="inline-block;">
+
+        </image-button>
+    </div>
+
+
+    <div class="container-header header-header">
+        <div class="label">Headers</div>
+        <div class="content">
+            <div id="api-key" class="input-form">
+                <span id="api-key" class="input-label"> API Key</span>
+                <input type="text" id="apikey" class="input-text">
+            </div>
+
+            <div id="jwt-token" class="input-form">
+                <span id="jwt-token" class="input-label">JWT Token</span>
+                <input type="text" id="jwt-token" class="input-text">
+            </div>
+
+            <div id="text"> HTTP Authentication</div>
+
+            <div id="userid" class="input-fields">
+                <label for="MyInput" style="text-align: center; color: #444444;
+               margin-left: 1.2em; ">User ID</label>
+                <input type="text" id="MyInput" class="input-text" />
+            </div>
+
+            <div id="password" class="input-fields">
+                <label for="Mypwd" style="text-align: center; color: #444444;
+                margin-left: 1.2em;">Password</label>
+                <input type="text" id="Mypwd" class="input-text" />
+            </div>
+        </div>
+    </div>
+
+    <div class="container-header parameter-header">
+        <div class="label"><span id="parameters">Parameters</span>
+            <image-button img="{{{componentPath}}}/img/json.svg" text="{{i18n.json}}" style="width:6em; height: 100%;"
+                id="json" onclickHandler="window.monkshu_env['OPEN_SERVER_HELPER'].connectServerClicked()" type="row"
+                styleBody="div#button.row {flex-direction: row; justify-content: flex-start;} div#button {padding: 5px 5px 5px 5px;} div#button>img.row {width: 2em;height: 100%;} div#button>span {color: #000000                ; font-weight: 700; margin-left:5px}"
+                color="#444444" border="0.5px solid #98CCFD" background-color="#F8FCFF" active-background-color="white"
+                display="inline-block;">
+
+            </image-button>
+        </div>
+        <div class="content">
+            <div id="name" class="input-fields">
+                <label for="Myname" style="text-align: center; color: #444444;
+               margin-left: 1.2em; ">name</label>
+                <input type="text" id="Myname" class="input-text" />
+            </div>
+
+        </div>
+    </div>
+
+
+</div>

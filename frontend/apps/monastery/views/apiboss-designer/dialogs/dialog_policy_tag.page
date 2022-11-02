@@ -52,7 +52,7 @@ CSS
 =======
 .grid-container-extension {
     height: 100%;
-    row-gap: 40%;
+    row-gap: 5.5em%;
 }
 
 .grid-item-extension {
