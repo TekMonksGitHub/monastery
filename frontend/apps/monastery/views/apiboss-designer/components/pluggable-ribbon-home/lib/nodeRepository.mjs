@@ -8,7 +8,7 @@ const MSG_RESET = "RESET";
 let NODE_REPOSITORY = {};
 
 function init() {
-    window.monkshu_env["NODE_REPOSITORY_HOME"] = nodeRepositoryHome;
+    window.monkshu_env["NODE_REPOSITORY"] = nodeRepository;
     blackboard.registerListener(MSG_RESET, _ => NODE_REPOSITORY = {}, true);
 }
 
@@ -37,4 +37,4 @@ function getNodeUniquePrefix(type) {
 
 const _arrayContainsCaseInsensitive = (array, string) => {for (const stringThis of array) if (string.toLowerCase() == stringThis.toLowerCase()) return true; return false;}
 
-export const nodeRepositoryHome = {init, registerNode, getNodeUniquePrefix};
+export const nodeRepository = {init, registerNode, getNodeUniquePrefix};

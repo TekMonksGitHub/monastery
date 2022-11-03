@@ -49,7 +49,7 @@ async function init(viewPath) {
    
    blackboard.registerListener(MSG_MODEL_ADD_NODE, message => { ID_CACHE[message.id] = message.properties; 
     console.log(message);
-        if (window.monkshu_env.NODE_REPOSITORY_HOME) window.monkshu_env.NODE_REPOSITORY_HOME.registerNode(message.description, message.nodeName);
+        if (window.monkshu_env.NODE_REPOSITORY) window.monkshu_env.NODE_REPOSITORY.registerNode(message.description, message.nodeName);
         blackboard.broadcastMessage(MSG_ADD_SHAPE, {name: _generateShapeName(message.nodeName), id: message.id, 
             graphID: GRAPH_ID, label: message.description, x:message.properties.x||_generateShapeX(), 
             y:message.properties.y||_generateShapeY(), width:IMG_SIZE.width, height:IMG_SIZE.height, 

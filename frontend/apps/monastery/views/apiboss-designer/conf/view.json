@@ -22,7 +22,7 @@
         },
     "initModules": { 
         "apibossmodel": "model/apibossmodel.mjs", 
-        "nodeRepositoryHome": "components/pluggable-ribbon-home/lib/nodeRepositoryHome.mjs",
+        "nodeRepository": "components/pluggable-ribbon-home/lib/nodeRepository.mjs",
         "openserverhelper": "js/openserverhelper.mjs",
         "items":"js/items.mjs"
     }

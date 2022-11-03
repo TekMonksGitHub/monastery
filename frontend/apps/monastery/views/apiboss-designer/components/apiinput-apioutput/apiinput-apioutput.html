@@ -1,14 +1,193 @@
 <style>
+    .json-container {
+        font-family: 'Red Hat Text';
+        font-size: 17px;
+        color: #808080;
+        box-sizing: border-box;
+    }
 
+    .json-container .line {
+        margin: 4px 0;
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    .json-container .caret-icon {
+        width: 18px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .json-container .empty-icon {
+        width: 18px;
+    }
+
+    .json-container .json-type {
+        margin-right: 4px;
+        margin-left: 4px;
+    }
+
+    .json-container .json-key {
+        color: #000;
+        margin-right: 4px;
+        margin-left: 4px;
+    }
+
+    .json-container .json-index {
+        margin-right: 4px;
+        margin-left: 4px;
+    }
+
+    .json-container .json-value {
+        margin-left: 8px;
+    }
+
+    .json-container .json-number {
+        color: #0032E4;
+        font-weight: bolder;
+    }
+
+    .json-container .json-boolean {
+        color: #0032E4;
+        font-weight: bolder;
+    }
+
+    .json-container .json-string {
+        color: #0032E4;
+        font-weight: bolder;
+    }
+
+    .json-container .json-size {
+        margin-right: 4px;
+        margin-left: 4px;
+        color: #000;
+    }
+
+    .json-container .hidden {
+        display: none;
+    }
+
+    .json-container .fas {
+        display: inline-block;
+        border-style: solid;
+        width: 0;
+        height: 0;
+    }
+
+    .json-container .fa-caret-down {
+        border-width: 8px 6px 0 6px;
+       border-color: #444 transparent    }
+
+    .json-container .fa-caret-right {
+        border-width: 6px 0 6px 8px;
+        border-color: transparent transparent transparent #444;
+    }
+
+    table {
+        font-size: smaller;
+        font-family: sans-serif;
+        border-radius: 5px 5px 5px 0px;
+        border: 0.5px solid #4788C7;
+        overflow-y: scroll;
+        width: 100%;
+        border-spacing: 0px;
+        table-layout: fixed;
+        overscroll-behavior: auto;
+    }
+
+
+    td {
+        border: 1px solid #4788C7;
+        color: #444444;
+        padding: 0px;
+        width: 10em;
+        border-radius: 0px;
+        overflow: auto;
+        background: #DFF0FE;
+
+
+    }
+
+
+
+    tr {
+        border: 1px solid #98CCFD;
+    }
+
+
+
+    td>div {
+        background: #DFF0FE;
+        border: 0px;
+        outline: none;
+        color: inherit;
+        resize: none;
+        padding: 4px;
+        width: 100%;
+        overflow: hidden;
+        font-family: inherit;
+        display: block;
+        box-sizing: border-box;
+    }
+
+
+
+    tr:first-child>td {
+        background-color: #98CCFD;
+        padding: 10px;
+        font-family: 'Red Hat Text';
+        font-style: normal;
+        font-weight: bolder;
+        font-size: 18px;
+        color: #444444;
+        overflow: hidden;
+    }
+
+
+
+    tr:first-child>td:last-child {
+        border-color: #4788C7;
+        border-top-right-radius: 4px;
+    }
+
+    tr:last-child>td:last-child {
+        border-color: #4788C7;
+        border-bottom-right-radius: 4px;
+    }
+
+
+    td>div:focus {
+        background-color: #DFF0FE;
+        outline: none;
+        color: #444444;
+    }
+
+
+    td:focus-within {
+        background-color: #DFF0FE;
+        color: #444444;
+    }
+    div.input-root, div.output-root{
+        height: 15em;
+        overflow: auto;
+    }
 </style>
 
-<div style="display: flex;">
-    <div>
-        <div>Input Fields</div>
-        <div></div>
-    </div>
-    <div>
-        <div>Output Fields</div>
-        <div></div>
-    </div>
-</div>
+<table id="inputtable" style="overflow-y: auto;">
+    <tr>
+
+        <td> Input Fields </td>
+        <td> Output Fields </td>
+    </tr>
+
+    <tr class="tr">
+        <td>
+            <div class="input-root"></div>
+        </td>
+        <td>
+            <div class="output-root"></div>
+        </td>
+
+    </tr>
+
+</table>
