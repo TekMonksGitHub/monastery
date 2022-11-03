@@ -21,7 +21,8 @@ SCHEMA
                "style":"width:100%; height: 100%;", "onclickHandler":"window.monkshu_env['OPEN_SERVER_HELPER'].connectServerClicked()", "type":"row", 
                "color":"#444444", "border":"0.5px solid #98CCFD", "background-color":"#F8FCFF", "active-background-color":"white"},
     "response": {"html":"text-editor", "downloadfilename":"{{{uriEncodedDescription}}}.js"},
-    "apidetails":{"html":"api-details"}
+    "apidetails":{"html":"api-details"},
+    "treeview":{"html":"apiinput-apioutput"}
    
 }
 ======
@@ -34,14 +35,17 @@ LAYOUT
 ------------------------------------------------------
 |    packages |             apicontent               |
 ------------------------------------------------------
+|    packages |           treeview                   |
+------------------------------------------------------
 |   packages  |   snippet |  nodejs  |  java  | curl |
 ------------------------------------------------------
 |    packages |      apidetails      |     response  |
 ------------------------------------------------------
 |    packages |     apidetails       |    response   |
 ------------------------------------------------------
+
 =================
-Row Heights = 70px, 42em ,3em,18em,18em
+Row Heights = 70px, 42em ,18em,3em,18em,18em
 Col Widths = 20%, 20%, 20%, 20%, 20%
 =================
 
@@ -76,6 +80,11 @@ CSS
 .class-apidetails{
     grid-column:2/4;
     margin:0.7em 1em 1em 0em;
+}
+
+.class-treeview{
+    margin-left:1.4em;
+    margin-right:1.4em;
 }
 html, body {
     margin: 0%;

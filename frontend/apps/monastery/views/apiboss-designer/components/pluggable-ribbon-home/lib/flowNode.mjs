@@ -33,7 +33,7 @@ class FlowNode {
     // Private Members    
     #clicked() {
         const uniqueID = FlowNode.#getUniqueID(); this.ID_MAP[uniqueID] = this.PLUGIN_PATH;
-        const NODE_REPOSITORY = window.monkshu_env.NODE_REPOSITORY_HOME;
+        const NODE_REPOSITORY = window.monkshu_env.NODE_REPOSITORY;
         const name = FlowNode.#capitalizeFirstChar(this.SHAPE_NAME)+NODE_REPOSITORY.getNodeUniquePrefix(this.SHAPE_NAME);
         NODE_REPOSITORY.registerNode(name, this.SHAPE_NAME);
         blackboard.broadcastMessage(MSG_SHAPE_CLICKED_ON_RIBBON, {name:this.SHAPE_NAME, id:uniqueID, 
