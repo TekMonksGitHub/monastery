@@ -227,6 +227,226 @@
         border-color: transparent transparent transparent #444;
     }
 
+    li {
+    list-style: none;
+}
+
+input.input-text {
+    flex: 2;
+    border: 0px;
+    outline: none;
+    resize: none;
+    font-family: inherit;
+    box-sizing: border-box;
+    background: #FFFFFF;
+    border: 1px solid #98CCFD;
+    border-radius: 5px;
+}
+
+select#ftype {
+    /* for Firefox */
+    -moz-appearance: none;
+    /* for Safari, Chrome, Opera */
+    -webkit-appearance: none;
+}
+
+/* for IE10 */
+select#ftype ::-ms-expand {
+    display: none;
+}
+
+
+/* (A3) POSITION CUSTOM ARROW */
+.cselect {
+    position: relative;
+}
+
+.cselect::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+/* (B) DIMENSTIONS */
+/* (B1) MAKE <SELECT> FILL THE WRAPPER */
+.cselect select {
+    width: 100%;
+}
+
+.cselect {
+    max-width: 400px;
+}
+
+/* OPTIONAL */
+
+/* (B2) ALL SAME HEIGHT */
+.cselect,
+.cselect::after,
+.cselect select {
+    box-sizing: border-box;
+    /* height: 42px; */
+}
+
+/* (B3) A SQUARE CUSTOM ARROW BOX */
+/* ADD BORDER-RADIUS: 50% TO TURN IT CIRCLE */
+/* .cselect::after { */
+/* width: 42px; */
+/* } */
+
+/* (C) COSMETICS */
+/* (C1) OVERRIDE DEFAULT SELECT BOX STYLES */
+.cselect select {
+    background: rgba(152, 204, 253, 1);
+    border: 1px solid #98CCFD;
+}
+
+/* (C2) DROPDOWN ARROW BOX */
+.cselect::after {
+    /* COLORS */
+    color: rgba(152, 204, 253, 1);
+    background: rgba(255, 255, 255, 1);
+    /* CENTER ARROW IN BOX */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(90deg);
+}
+
+/* (C3) FUNKY ANIMATIONS */
+
+
+/* (C4) REMOVE DEFAULT HIGHLIGHTS */
+.cselect select:active,
+.cselect select:focus,
+.cselect select:hover {
+    outline: none;
+}
+
+.left.cselect select {
+    padding-left: 50px;
+}
+
+.left.cselect::after {
+    right: auto;
+    left: 0;
+    border-radius: 50%;
+}
+
+select#ftype {
+    width: 15%;
+    font-family: inherit;
+    background-color: rgba(255, 255, 255, 1);
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    resize: none;
+}
+
+#arrayOf{
+    padding-right: 5px;
+}
+
+select#arrayType {
+    width: 15%;
+    font-family: inherit;
+    background-color: rgba(255, 255, 255, 1);
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    resize: none;
+}
+
+
+textarea {
+    background-color: transparent;
+    border: 1px solid #98CCFD;
+    outline: none;
+    color: inherit;
+    resize: none;
+    padding: 4px;
+    width: 100%;
+    overflow: hidden;
+    font-family: inherit;
+    display: block;
+    box-sizing: border-box;
+    margin-top: 1em;
+}
+
+span.ok {
+    float: right;
+}
+
+.deleteChild {
+    float: right;
+}
+
+ul {
+    list-style: none;
+    /* background-color: white; */
+}
+
+li:hover .deleteChild,
+li:hover {
+    background-color: #D9D9D9;
+    fill: #FF0000;
+    cursor: pointer;
+}
+
+.parent li:hover .deleteChild,
+.parent li:hover {
+    background-color: white;
+    fill: #FF0000;
+}
+
+.child li:hover .deleteChild,
+.child li:hover {
+    background-color: white;
+}
+
+.align {
+    display: flex;
+    align-items: center;
+}
+
+.addIcon {
+    display: flex;
+    align-items: center;
+}
+
+.delete {
+    flex: 1;
+}
+
+.collapse,
+.collapsed {
+    cursor: pointer;
+    /* padding: 6px; */
+    /* width: 100%; */
+    border: none;
+    outline: none;
+    font-size: 15px;
+}
+
+.active .collapse img {
+    transform: rotate(90deg);
+}
+
+.active .collapse-arrow img {
+    transform: rotate(90deg);
+}
+
+.content {
+    /* padding: 0 6px; */
+    display: none;
+    /* overflow: hidden; */
+}
+
+.collapse-arrow {
+    display: flex;
+    align-items: center;
+    padding: 0px 4px;
+}
+
 </style>
 
 <table id="inputtable" style="overflow-y: auto;">
@@ -248,12 +468,24 @@
 
     <tr class="tr">
         <td>
-            <div class="input-root"></div>
+            <div class="input-root">
+                <div id="tree" class="align" onclick='monkshu_env.components["input-output-fields"].addMainChild(event,this)'><span class="collapse-arrow collapse"><img class="collapse" src="{{{componentPath}}}/img/collapse.svg" alt="collapse-arrow"></span><span>object</span> <span id="parent-count">{0}</span><span class="addIcon"><img class="addChild" src="{{{componentPath}}}/img/add.svg"></span>
+                </div>
+                <div id="newTree" class="content" onclick='monkshu_env.components["input-output-fields"].addSubChild(event,this)'></div>
+            </div>
         </td>
         <td>
-            <div class="output-root"></div>
+            <div class="output-root">
+                <div id="outputTree" class="align" onclick='monkshu_env.components["input-output-fields"].addOutputChild(event,this)'><span class="collapse-arrow collapse"><img class="collapse" src="{{{componentPath}}}/img/collapse.svg" alt="collapse-arrow"></span><span>object</span> <span id="output-count">{0}</span><span class="addIcon"><img class="addChild" src="{{{componentPath}}}/img/add.svg"></span>
+                </div>
+                <div id="childTree" class="content" onclick='monkshu_env.components["input-output-fields"].addOutputSubChild(event,this)'></div>
+            </div>
         </td>
 
     </tr>
 
 </table>
+
+<!-- <div id="tree" class="align"><span class="collapse-arrow collapse"><img src="{{{componentPath}}}/img/collapse.svg" alt="collapse-arrow"></span><span>object</span> <span id="parent-count">{0}</span><span class="addIcon"><img class="addChild" src="{{{componentPath}}}/img/add.svg"></span>
+</div>
+<div id="newTree" class="content"></div> -->
