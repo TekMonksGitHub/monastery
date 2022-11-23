@@ -24,19 +24,19 @@ const elementRendered = async function (element) {
  
   const shadowRoot = input_output_fields.getShadowRootByHost(element);
 
+  console.log(shadowRoot)
+  console.log(element)
+
   
   const outputdata = {
    
 
   }
-  const tree = jsonview.create(inputdata);
-  jsonview.render(tree, shadowRoot.querySelector('div.input-root'));
-  jsonview.expand(tree);
 
 
-  const tree2 = jsonview.create(outputdata);
-  jsonview.render(tree2, shadowRoot.querySelector('div.output-root'));
-  jsonview.expand(tree2);
+  // const tree2 = jsonview.create(outputdata);
+  // jsonview.render(tree2, shadowRoot.querySelector('div.output-root'));
+  // jsonview.expand(tree2);
   // const shadowRoot1 = input_output_fields.getShadowRootByContainedElement(e);
   const container =  shadowRoot.querySelector('div.input-root');
 
@@ -46,18 +46,18 @@ const elementRendered = async function (element) {
   // const line = shadowRoot.querySelector('div.line')
 console.log(shadowRoot);
 console.log(container);
-container.innerHTML=`
-<div class = "json-container">
-<div class="line">
-  <div class="empty-icon"></div>
-  <div class="json-key">object</div>
-  <div class="json-size" >{0}</div>
-  <img src=${COMPONENT_PATH}/img/add.svg
-                        onclick="monkshu_env.components['input-output-fields'].addChild(this)">
-</div>
-</div>
-`;
-shadowRoot.querySelector('div.input-root').appendChild(container);
+// container.innerHTML=`
+// <div class = "json-container">
+// <div class="line">
+//   <div class="empty-icon"></div>
+//   <div class="json-key">object</div>
+//   <div class="json-size" >{0}</div>
+//   <img src=${COMPONENT_PATH}/img/add.svg
+//                         onclick="monkshu_env.components['input-output-fields'].addChild(this)">
+// </div>
+// </div>
+// `;
+// shadowRoot.querySelector('div.input-root').appendChild(container);
 
 }
 
@@ -71,9 +71,9 @@ function addChild(e) {
   const shadowRoot = input_output_fields.getShadowRootByContainedElement(e);
   const container =  shadowRoot.querySelector('div.input-root');
   container.innerHTML='';
-  const tree = jsonview.create(inputdata);
-  jsonview.render(tree, shadowRoot.querySelector('div.input-root'));
-  jsonview.expand(tree);
+  // const tree = jsonview.create(inputdata);
+  // jsonview.render(tree, shadowRoot.querySelector('div.input-root'));
+  // jsonview.expand(tree);
 
 //   // const createJsonContainer = document.createElement('div');
 //   // createJsonContainer.cla
@@ -111,8 +111,418 @@ function addChild(e) {
 //   // })
 // }
 
+
+function fieldAdd(classname) {
+
+  let child = document.createElement('ul');
+  child.classList.add(classname);
+  child.innerHTML = `<li>
+      <div class='container'>
+          <div>
+          <span><input type="text" id="fname" name="fname" required class="input-text" placeholder="Field Name"></span>
+          <span class="cselect">
+              <select name="ftype" id="ftype">
+                  <option class="values"  value="">Field Type</option>
+                  <option class="values" value="string">String</option>
+                  <option class="values"  value="number">Number</option>
+                  <option class="values" value="integer">Integer</option>
+                  <option class="values" value="object">Object</option>
+                  <option class="values" value="array">Array</option>
+                  <option class="values" value="null">Null</option>
+              </select>
+          </span>
+          <span class="ok"><img class="addChild" src="${COMPONENT_PATH}/img/ok.svg"></span>
+          <svg class="deleteChild" width="20" height="20" viewBox="0 0 20 20" fill="#C4C4C4" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8.33333 5H11.6667C11.6667 4.55797 11.4911 4.13405 11.1785 3.82149C10.866 3.50893 10.442 3.33333 10 3.33333C9.55797 3.33333 9.13405 3.50893 8.82149 3.82149C8.50893 4.13405 8.33333 4.55797 8.33333 5ZM6.66667 5C6.66667 4.11594 7.01786 3.2681 7.64298 2.64297C8.2681 2.01785 9.11595 1.66666 10 1.66666C10.8841 1.66666 11.7319 2.01785 12.357 2.64297C12.9821 3.2681 13.3333 4.11594 13.3333 5H17.5C17.721 5 17.933 5.0878 18.0893 5.24408C18.2455 5.40036 18.3333 5.61232 18.3333 5.83333C18.3333 6.05434 18.2455 6.26631 18.0893 6.42259C17.933 6.57887 17.721 6.66666 17.5 6.66666H16.765L16.0267 15.2833C15.9557 16.1154 15.575 16.8905 14.9599 17.4553C14.3448 18.0201 13.5401 18.3334 12.705 18.3333H7.295C6.45993 18.3334 5.65523 18.0201 5.04013 17.4553C4.42502 16.8905 4.04432 16.1154 3.97333 15.2833L3.235 6.66666H2.5C2.27899 6.66666 2.06703 6.57887 1.91075 6.42259C1.75447 6.26631 1.66667 6.05434 1.66667 5.83333C1.66667 5.61232 1.75447 5.40036 1.91075 5.24408C2.06703 5.0878 2.27899 5 2.5 5H6.66667ZM12.5 10C12.5 9.77898 12.4122 9.56702 12.2559 9.41074C12.0996 9.25446 11.8877 9.16666 11.6667 9.16666C11.4457 9.16666 11.2337 9.25446 11.0774 9.41074C10.9211 9.56702 10.8333 9.77898 10.8333 10V13.3333C10.8333 13.5543 10.9211 13.7663 11.0774 13.9226C11.2337 14.0789 11.4457 14.1667 11.6667 14.1667C11.8877 14.1667 12.0996 14.0789 12.2559 13.9226C12.4122 13.7663 12.5 13.5543 12.5 13.3333V10ZM8.33333 9.16666C8.55435 9.16666 8.76631 9.25446 8.92259 9.41074C9.07887 9.56702 9.16667 9.77898 9.16667 10V13.3333C9.16667 13.5543 9.07887 13.7663 8.92259 13.9226C8.76631 14.0789 8.55435 14.1667 8.33333 14.1667C8.11232 14.1667 7.90036 14.0789 7.74408 13.9226C7.5878 13.7663 7.5 13.5543 7.5 13.3333V10C7.5 9.77898 7.5878 9.56702 7.74408 9.41074C7.90036 9.25446 8.11232 9.16666 8.33333 9.16666ZM5.63333 15.1417C5.66884 15.5578 5.85931 15.9455 6.16704 16.2279C6.47477 16.5103 6.87732 16.6669 7.295 16.6667H12.705C13.1224 16.6665 13.5245 16.5097 13.8319 16.2274C14.1393 15.945 14.3295 15.5575 14.365 15.1417L15.0917 6.66666H4.90833L5.635 15.1417H5.63333Z"/>
+          </svg>
+          </div>
+          <div class="fdesc">
+              <textarea id="fdesc" name="fdesc" placeholder="Field Description" rows="2" cols="50"></textarea>
+          </div>
+      </div>
+      </li>`
+  return child;
+}
+
+function addMainChild(event, element){
+  console.log(event.target);
+  const host = input_output_fields.getHostElement(element);
+  const shadowRoot = input_output_fields.getShadowRootByHost(host);
+  console.log(element)
+  console.log(host)
+  console.log(shadowRoot)
+  console.log(shadowRoot.querySelector('.container'))
+  if (shadowRoot.querySelector('.container') && event.target.classList == 'addChild') return;
+    console.log(event.target.classList[0] == 'addChild')
+    if (event.target.classList[0] == 'addChild') {
+      event.target.parentElement.parentElement.classList.add('active');
+        var content = event.target.parentElement.parentElement.nextElementSibling;
+        content.style.display = 'block'
+        let child = fieldAdd('parent')
+        shadowRoot.querySelector('#newTree').append(child)
+    }
+    if(event.target.classList == 'collapse'){
+      event.target.parentElement.parentElement.classList.toggle('active');
+        var content = event.target.parentElement.parentElement.nextElementSibling;
+        console.log(content)
+        if (content.style.display === "block") {
+            content.style.display = "none";
+        } else {
+            content.style.display = "block";
+        }
+    }
+}
+
+function addSubChild(event, element){
+  const host = input_output_fields.getHostElement(element);
+  const shadowRoot = input_output_fields.getShadowRootByHost(host);
+  if (event.target.classList == 'addChild' && !shadowRoot.querySelector('.child')) {
+    console.log(event.target.parentElement.parentElement);
+    let parentSelect = event.target.parentElement.parentElement.children;
+    if (parentSelect[0].classList[2] != 'active') {
+        parentSelect[0].classList.add('active');
+        for (let i = 1; i < parentSelect.length; i++) {
+            parentSelect[i].style.display = 'block';
+        }
+    }
+    let child = fieldAdd('child');
+    event.target.parentElement.parentElement.append(child);
+}
+
+if (shadowRoot.querySelector('.parent') && !shadowRoot.querySelector('#arrayType')) {
+  if (shadowRoot.querySelector('#ftype').value === 'array') {
+      let text = document.createElement('span');
+      text.id = 'arrayOf';
+      text.innerText = 'of';
+      shadowRoot.querySelector('.cselect').appendChild(text);
+      let arrayType = document.createElement('select');
+      arrayType.id = 'arrayType';
+      arrayType.innerHTML = `<option class="values"  value="">Field Type</option>
+          <option class="values" value="string">String</option>
+          <option class="values"  value="number">Number</option>
+          <option class="values" value="integer">Integer</option>
+          <option class="values" value="object">Object</option>
+          <option class="values" value="array">Array</option>
+          <option class="values" value="null">Null</option>`
+      shadowRoot.querySelector('.cselect').appendChild(arrayType);
+  }
+}
+if (shadowRoot.querySelector('.child') && !shadowRoot.querySelector('#arrayType')) {
+  if (shadowRoot.querySelector('#ftype').value === 'array') {
+      let text = document.createElement('span');
+      text.id = 'arrayOf';
+      text.innerText = 'of';
+      shadowRoot.querySelector('.cselect').appendChild(text);
+      let arrayType = document.createElement('select');
+      arrayType.id = 'arrayType';
+      arrayType.innerHTML = `<option class="values"  value="">Field Type</option>
+          <option class="values" value="string">String</option>
+          <option class="values"  value="number">Number</option>
+          <option class="values" value="integer">Integer</option>
+          <option class="values" value="object">Object</option>
+          <option class="values" value="array">Array</option>
+          <option class="values" value="null">Null</option>`
+      shadowRoot.querySelector('.cselect').appendChild(arrayType);
+  }
+}
+if (event.target.classList == 'deleteChild') {
+  if (shadowRoot.querySelector('.parent')) shadowRoot.querySelector('.parent').remove();
+  else if (shadowRoot.querySelector('.child')) shadowRoot.querySelector('.child').remove();
+  else {
+      if(event.target.parentElement.parentElement.classList[2] == 'arrayObj'){
+          event.target.parentElement.parentElement.parentElement.parentElement.remove();
+          shadowRoot.querySelector('#parent-count').innerText = `{${shadowRoot.querySelector('#newTree').childElementCount}}`
+      } else {
+      event.target.parentElement.parentElement.parentElement.remove();
+      shadowRoot.querySelector('#parent-count').innerText = `{${shadowRoot.querySelector('#newTree').childElementCount}}`
+      if (event.path[4].id !== 'newTree') {
+          let target = event.path[4];
+          if (target.firstChild.children[2].classList == 'object') target.firstChild.children[2].innerText = `{${target.childElementCount - 1}}`;
+      }
+  }
+  }
+}
+
+let field = shadowRoot.querySelector("#fname");
+let fielDesc = shadowRoot.querySelector("#fdesc");
+let fielType = shadowRoot.querySelector("#ftype");
+let arrayType = shadowRoot.querySelector("#arrayType");
+
+if (event.target.parentElement.classList == 'ok' && shadowRoot.querySelector('.parent')) {
+  console.log(field.value)
+  console.log(fielDesc.value)
+  console.log(fielType.value)
+  shadowRoot.querySelector('.parent').remove();
+  let child = document.createElement('ul');
+  child.classList.add('collapsedTry')
+  child.innerHTML = `<li class="align collapsed">
+  ${fielType.value == 'object' || fielType.value == 'array' ? `<span class="collapse-arrow"><img src="${COMPONENT_PATH}/img/collapse.svg" alt="collapse-arrow"></span>` : ''}
+  ${fielType.value == 'array' ? `<span class="value">${field.value} : ${fielType.value} of ${arrayType.value}</span>` : ''}
+  ${fielType.value == 'object' ? `<span class="value">${field.value} : ${fielType.value}</span>` : ''}
+  ${fielType.value !== 'object' && fielType.value !== 'array' ? `<span class="value" style='padding-left:28px'>${field.value} : ${fielType.value}</span>` : ""}
+  ${fielType.value == "object" ? `<span class="object">{0}</span>` : ''}
+  ${fielType.value == "object" ? `<img class="addChild" src="${COMPONENT_PATH}/img/add.svg">` : ''}
+  <span class="delete"><svg class="deleteChild" width="20" height="20" viewBox="0 0 20 20" fill="#C4C4C4" xmlns="http://www.w3.org/2000/svg">
+  <path d="M8.33333 5H11.6667C11.6667 4.55797 11.4911 4.13405 11.1785 3.82149C10.866 3.50893 10.442 3.33333 10 3.33333C9.55797 3.33333 9.13405 3.50893 8.82149 3.82149C8.50893 4.13405 8.33333 4.55797 8.33333 5ZM6.66667 5C6.66667 4.11594 7.01786 3.2681 7.64298 2.64297C8.2681 2.01785 9.11595 1.66666 10 1.66666C10.8841 1.66666 11.7319 2.01785 12.357 2.64297C12.9821 3.2681 13.3333 4.11594 13.3333 5H17.5C17.721 5 17.933 5.0878 18.0893 5.24408C18.2455 5.40036 18.3333 5.61232 18.3333 5.83333C18.3333 6.05434 18.2455 6.26631 18.0893 6.42259C17.933 6.57887 17.721 6.66666 17.5 6.66666H16.765L16.0267 15.2833C15.9557 16.1154 15.575 16.8905 14.9599 17.4553C14.3448 18.0201 13.5401 18.3334 12.705 18.3333H7.295C6.45993 18.3334 5.65523 18.0201 5.04013 17.4553C4.42502 16.8905 4.04432 16.1154 3.97333 15.2833L3.235 6.66666H2.5C2.27899 6.66666 2.06703 6.57887 1.91075 6.42259C1.75447 6.26631 1.66667 6.05434 1.66667 5.83333C1.66667 5.61232 1.75447 5.40036 1.91075 5.24408C2.06703 5.0878 2.27899 5 2.5 5H6.66667ZM12.5 10C12.5 9.77898 12.4122 9.56702 12.2559 9.41074C12.0996 9.25446 11.8877 9.16666 11.6667 9.16666C11.4457 9.16666 11.2337 9.25446 11.0774 9.41074C10.9211 9.56702 10.8333 9.77898 10.8333 10V13.3333C10.8333 13.5543 10.9211 13.7663 11.0774 13.9226C11.2337 14.0789 11.4457 14.1667 11.6667 14.1667C11.8877 14.1667 12.0996 14.0789 12.2559 13.9226C12.4122 13.7663 12.5 13.5543 12.5 13.3333V10ZM8.33333 9.16666C8.55435 9.16666 8.76631 9.25446 8.92259 9.41074C9.07887 9.56702 9.16667 9.77898 9.16667 10V13.3333C9.16667 13.5543 9.07887 13.7663 8.92259 13.9226C8.76631 14.0789 8.55435 14.1667 8.33333 14.1667C8.11232 14.1667 7.90036 14.0789 7.74408 13.9226C7.5878 13.7663 7.5 13.5543 7.5 13.3333V10C7.5 9.77898 7.5878 9.56702 7.74408 9.41074C7.90036 9.25446 8.11232 9.16666 8.33333 9.16666ZM5.63333 15.1417C5.66884 15.5578 5.85931 15.9455 6.16704 16.2279C6.47477 16.5103 6.87732 16.6669 7.295 16.6667H12.705C13.1224 16.6665 13.5245 16.5097 13.8319 16.2274C14.1393 15.945 14.3295 15.5575 14.365 15.1417L15.0917 6.66666H4.90833L5.635 15.1417H5.63333Z"/>
+  </svg></span></li>`
+  shadowRoot.querySelector('#newTree').append(child)
+  shadowRoot.querySelector('#parent-count').innerText = `{${shadowRoot.querySelector('#newTree').childElementCount}}`
+  if(fielType.value == 'array' && arrayType.value == 'object'){
+      let arrayObj = document.createElement('ul');
+      arrayObj.classList.add('collapsedTry');
+      arrayObj.innerHTML = `<li class="align collapsed arrayObj">
+      <span class="collapse-arrow"><img src="${COMPONENT_PATH}/img/collapse.svg" alt="collapse-arrow"></span>
+      <span>object</span>
+      <span class="object" >{0}</span>
+      <img class="addChild" src="${COMPONENT_PATH}/img/add.svg">
+      </li>
+      `
+      shadowRoot.querySelector('#newTree').lastChild.appendChild(arrayObj);
+  }
+}
+if (event.target.parentElement.classList == 'ok' && shadowRoot.querySelector('.child')) {
+  console.log(field.value)
+  console.log(fielDesc.value)
+  console.log(fielType.value)
+  let child = document.createElement('ul');
+  child.classList.add('collapsedTry')
+  child.innerHTML = `<li class="align collapsed">
+  ${fielType.value == 'object' || fielType.value == 'array' ? `<span class="collapse-arrow"><img src="${COMPONENT_PATH}/img/collapse.svg" alt="collapse-arrow"></span>` : ''}
+  ${fielType.value == 'array' ? `<span class="value">${field.value} : ${fielType.value} of ${arrayType.value}</span>` : ''}
+  ${fielType.value == 'object' ? `<span class="value">${field.value} : ${fielType.value}</span>` : ''}
+  ${fielType.value !== 'object' && fielType.value !== 'array' ? `<span class="value" style='padding-left:28px'>${field.value} : ${fielType.value}</span>` : ""}
+  ${fielType.value == "object" ? `<span class="object" >{0}</span>` : ''}
+  ${fielType.value == "object" ? `<img class="addChild" src="${COMPONENT_PATH}/img/add.svg">` : ''}
+  <span class="delete"><svg class="deleteChild" width="20" height="20" viewBox="0 0 20 20" fill="#C4C4C4" xmlns="http://www.w3.org/2000/svg">
+  <path d="M8.33333 5H11.6667C11.6667 4.55797 11.4911 4.13405 11.1785 3.82149C10.866 3.50893 10.442 3.33333 10 3.33333C9.55797 3.33333 9.13405 3.50893 8.82149 3.82149C8.50893 4.13405 8.33333 4.55797 8.33333 5ZM6.66667 5C6.66667 4.11594 7.01786 3.2681 7.64298 2.64297C8.2681 2.01785 9.11595 1.66666 10 1.66666C10.8841 1.66666 11.7319 2.01785 12.357 2.64297C12.9821 3.2681 13.3333 4.11594 13.3333 5H17.5C17.721 5 17.933 5.0878 18.0893 5.24408C18.2455 5.40036 18.3333 5.61232 18.3333 5.83333C18.3333 6.05434 18.2455 6.26631 18.0893 6.42259C17.933 6.57887 17.721 6.66666 17.5 6.66666H16.765L16.0267 15.2833C15.9557 16.1154 15.575 16.8905 14.9599 17.4553C14.3448 18.0201 13.5401 18.3334 12.705 18.3333H7.295C6.45993 18.3334 5.65523 18.0201 5.04013 17.4553C4.42502 16.8905 4.04432 16.1154 3.97333 15.2833L3.235 6.66666H2.5C2.27899 6.66666 2.06703 6.57887 1.91075 6.42259C1.75447 6.26631 1.66667 6.05434 1.66667 5.83333C1.66667 5.61232 1.75447 5.40036 1.91075 5.24408C2.06703 5.0878 2.27899 5 2.5 5H6.66667ZM12.5 10C12.5 9.77898 12.4122 9.56702 12.2559 9.41074C12.0996 9.25446 11.8877 9.16666 11.6667 9.16666C11.4457 9.16666 11.2337 9.25446 11.0774 9.41074C10.9211 9.56702 10.8333 9.77898 10.8333 10V13.3333C10.8333 13.5543 10.9211 13.7663 11.0774 13.9226C11.2337 14.0789 11.4457 14.1667 11.6667 14.1667C11.8877 14.1667 12.0996 14.0789 12.2559 13.9226C12.4122 13.7663 12.5 13.5543 12.5 13.3333V10ZM8.33333 9.16666C8.55435 9.16666 8.76631 9.25446 8.92259 9.41074C9.07887 9.56702 9.16667 9.77898 9.16667 10V13.3333C9.16667 13.5543 9.07887 13.7663 8.92259 13.9226C8.76631 14.0789 8.55435 14.1667 8.33333 14.1667C8.11232 14.1667 7.90036 14.0789 7.74408 13.9226C7.5878 13.7663 7.5 13.5543 7.5 13.3333V10C7.5 9.77898 7.5878 9.56702 7.74408 9.41074C7.90036 9.25446 8.11232 9.16666 8.33333 9.16666ZM5.63333 15.1417C5.66884 15.5578 5.85931 15.9455 6.16704 16.2279C6.47477 16.5103 6.87732 16.6669 7.295 16.6667H12.705C13.1224 16.6665 13.5245 16.5097 13.8319 16.2274C14.1393 15.945 14.3295 15.5575 14.365 15.1417L15.0917 6.66666H4.90833L5.635 15.1417H5.63333Z"/>
+  </svg></span></li>`
+  event.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.appendChild(child)
+  // child.parentElement = event.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement;
+  let target = event.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement;
+  shadowRoot.querySelector('.child').remove();
+  if(fielType.value == 'array' && arrayType.value == 'object'){
+      let arrayObj = document.createElement('ul');
+      arrayObj.classList.add('collapsedTry');
+      arrayObj.innerHTML = `<li class="align collapsed arrayObj">
+      <span class="collapse-arrow"><img src="${COMPONENT_PATH}/img/collapse.svg" alt="collapse-arrow"></span>
+      <span>object</span>
+      <span class="object" >{0}</span>
+      <img class="addChild" src="${COMPONENT_PATH}/img/add.svg">
+      </li>
+      `
+      target.children[1].appendChild(arrayObj);
+  }
+  console.log(target.children[1].children[1])
+  if (target.firstChild.children[2].classList == 'object') target.firstChild.children[2].innerText = `{${target.childElementCount - 1}}`;
+}
+if (event.target.parentElement.parentElement.parentElement.classList == 'collapsedTry' && event.target.classList != 'addChild') {
+  console.log('check here')
+  console.log(event.target)
+  let main = event.target.parentElement.parentElement.parentElement.children;
+  if (main[0].classList[2] != 'active') {
+      main[0].classList.add('active');
+      for (let i = 1; i < main.length; i++) {
+          main[i].style.display = 'block'
+      }
+  } else {
+      main[0].classList.remove('active');
+      for (let i = 1; i < main.length; i++) {
+          main[i].style.display = 'none'
+      }
+  }
+}
+}
+
+function addOutputChild(event, element){
+  console.log(event.target);
+  const host = input_output_fields.getHostElement(element);
+  const shadowRoot = input_output_fields.getShadowRootByHost(host);
+  console.log(element)
+  console.log(host)
+  console.log(shadowRoot)
+  console.log(shadowRoot.querySelector('.container'))
+  if (shadowRoot.querySelector('.container') && event.target.classList == 'addChild') return;
+    console.log(event.target.classList[0] == 'addChild')
+    if (event.target.classList[0] == 'addChild') {
+      event.target.parentElement.parentElement.classList.add('active');
+        var content = event.target.parentElement.parentElement.nextElementSibling;
+        content.style.display = 'block'
+        let child = fieldAdd('parent')
+        shadowRoot.querySelector('#childTree').append(child)
+    }
+    if(event.target.classList == 'collapse'){
+      event.target.parentElement.parentElement.classList.toggle('active');
+        var content = event.target.parentElement.parentElement.nextElementSibling;
+        console.log(content)
+        if (content.style.display === "block") {
+            content.style.display = "none";
+        } else {
+            content.style.display = "block";
+        }
+    }
+}
+
+function addOutputSubChild(event, element){
+  const host = input_output_fields.getHostElement(element);
+  const shadowRoot = input_output_fields.getShadowRootByHost(host);
+  if (event.target.classList == 'addChild' && !shadowRoot.querySelector('.child')) {
+    console.log(event.target.parentElement.parentElement);
+    let parentSelect = event.target.parentElement.parentElement.children;
+    if (parentSelect[0].classList[2] != 'active') {
+        parentSelect[0].classList.add('active');
+        for (let i = 1; i < parentSelect.length; i++) {
+            parentSelect[i].style.display = 'block';
+        }
+    }
+    let child = fieldAdd('child');
+    event.target.parentElement.parentElement.append(child);
+}
+
+if (shadowRoot.querySelector('.parent') && !shadowRoot.querySelector('#arrayType')) {
+  if (shadowRoot.querySelector('#ftype').value === 'array') {
+      let text = document.createElement('span');
+      text.id = 'arrayOf';
+      text.innerText = 'of';
+      shadowRoot.querySelector('.cselect').appendChild(text);
+      let arrayType = document.createElement('select');
+      arrayType.id = 'arrayType';
+      arrayType.innerHTML = `<option class="values"  value="">Field Type</option>
+          <option class="values" value="string">String</option>
+          <option class="values"  value="number">Number</option>
+          <option class="values" value="integer">Integer</option>
+          <option class="values" value="object">Object</option>
+          <option class="values" value="array">Array</option>
+          <option class="values" value="null">Null</option>`
+      shadowRoot.querySelector('.cselect').appendChild(arrayType);
+  }
+}
+if (shadowRoot.querySelector('.child') && !shadowRoot.querySelector('#arrayType')) {
+  if (shadowRoot.querySelector('#ftype').value === 'array') {
+      let text = document.createElement('span');
+      text.id = 'arrayOf';
+      text.innerText = 'of';
+      shadowRoot.querySelector('.cselect').appendChild(text);
+      let arrayType = document.createElement('select');
+      arrayType.id = 'arrayType';
+      arrayType.innerHTML = `<option class="values"  value="">Field Type</option>
+          <option class="values" value="string">String</option>
+          <option class="values"  value="number">Number</option>
+          <option class="values" value="integer">Integer</option>
+          <option class="values" value="object">Object</option>
+          <option class="values" value="array">Array</option>
+          <option class="values" value="null">Null</option>`
+      shadowRoot.querySelector('.cselect').appendChild(arrayType);
+  }
+}
+if (event.target.classList == 'deleteChild') {
+  if (shadowRoot.querySelector('.parent')) shadowRoot.querySelector('.parent').remove();
+  else if (shadowRoot.querySelector('.child')) shadowRoot.querySelector('.child').remove();
+  else {
+      if(event.target.parentElement.parentElement.classList[2] == 'arrayObj'){
+          event.target.parentElement.parentElement.parentElement.parentElement.remove();
+          shadowRoot.querySelector('#output-count').innerText = `{${shadowRoot.querySelector('#childTree').childElementCount}}`
+      } else {
+      event.target.parentElement.parentElement.parentElement.remove();
+      shadowRoot.querySelector('#output-count').innerText = `{${shadowRoot.querySelector('#childTree').childElementCount}}`
+      if (event.path[4].id !== 'childTree') {
+          let target = event.path[4];
+          if (target.firstChild.children[2].classList == 'object') target.firstChild.children[2].innerText = `{${target.childElementCount - 1}}`;
+      }
+  }
+  }
+}
+
+let field = shadowRoot.querySelector("#fname");
+let fielDesc = shadowRoot.querySelector("#fdesc");
+let fielType = shadowRoot.querySelector("#ftype");
+let arrayType = shadowRoot.querySelector("#arrayType");
+
+if (event.target.parentElement.classList == 'ok' && shadowRoot.querySelector('.parent')) {
+  console.log(field.value)
+  console.log(fielDesc.value)
+  console.log(fielType.value)
+  shadowRoot.querySelector('.parent').remove();
+  let child = document.createElement('ul');
+  child.classList.add('collapsedTry')
+  child.innerHTML = `<li class="align collapsed">
+  ${fielType.value == 'object' || fielType.value == 'array' ? `<span class="collapse-arrow"><img src="${COMPONENT_PATH}/img/collapse.svg" alt="collapse-arrow"></span>` : ''}
+  ${fielType.value == 'array' ? `<span class="value">${field.value} : ${fielType.value} of ${arrayType.value}</span>` : ''}
+  ${fielType.value == 'object' ? `<span class="value">${field.value} : ${fielType.value}</span>` : ''}
+  ${fielType.value !== 'object' && fielType.value !== 'array' ? `<span class="value" style='padding-left:28px'>${field.value} : ${fielType.value}</span>` : ""}
+  ${fielType.value == "object" ? `<span class="object">{0}</span>` : ''}
+  ${fielType.value == "object" ? `<img class="addChild" src="${COMPONENT_PATH}/img/add.svg">` : ''}
+  <span class="delete"><svg class="deleteChild" width="20" height="20" viewBox="0 0 20 20" fill="#C4C4C4" xmlns="http://www.w3.org/2000/svg">
+  <path d="M8.33333 5H11.6667C11.6667 4.55797 11.4911 4.13405 11.1785 3.82149C10.866 3.50893 10.442 3.33333 10 3.33333C9.55797 3.33333 9.13405 3.50893 8.82149 3.82149C8.50893 4.13405 8.33333 4.55797 8.33333 5ZM6.66667 5C6.66667 4.11594 7.01786 3.2681 7.64298 2.64297C8.2681 2.01785 9.11595 1.66666 10 1.66666C10.8841 1.66666 11.7319 2.01785 12.357 2.64297C12.9821 3.2681 13.3333 4.11594 13.3333 5H17.5C17.721 5 17.933 5.0878 18.0893 5.24408C18.2455 5.40036 18.3333 5.61232 18.3333 5.83333C18.3333 6.05434 18.2455 6.26631 18.0893 6.42259C17.933 6.57887 17.721 6.66666 17.5 6.66666H16.765L16.0267 15.2833C15.9557 16.1154 15.575 16.8905 14.9599 17.4553C14.3448 18.0201 13.5401 18.3334 12.705 18.3333H7.295C6.45993 18.3334 5.65523 18.0201 5.04013 17.4553C4.42502 16.8905 4.04432 16.1154 3.97333 15.2833L3.235 6.66666H2.5C2.27899 6.66666 2.06703 6.57887 1.91075 6.42259C1.75447 6.26631 1.66667 6.05434 1.66667 5.83333C1.66667 5.61232 1.75447 5.40036 1.91075 5.24408C2.06703 5.0878 2.27899 5 2.5 5H6.66667ZM12.5 10C12.5 9.77898 12.4122 9.56702 12.2559 9.41074C12.0996 9.25446 11.8877 9.16666 11.6667 9.16666C11.4457 9.16666 11.2337 9.25446 11.0774 9.41074C10.9211 9.56702 10.8333 9.77898 10.8333 10V13.3333C10.8333 13.5543 10.9211 13.7663 11.0774 13.9226C11.2337 14.0789 11.4457 14.1667 11.6667 14.1667C11.8877 14.1667 12.0996 14.0789 12.2559 13.9226C12.4122 13.7663 12.5 13.5543 12.5 13.3333V10ZM8.33333 9.16666C8.55435 9.16666 8.76631 9.25446 8.92259 9.41074C9.07887 9.56702 9.16667 9.77898 9.16667 10V13.3333C9.16667 13.5543 9.07887 13.7663 8.92259 13.9226C8.76631 14.0789 8.55435 14.1667 8.33333 14.1667C8.11232 14.1667 7.90036 14.0789 7.74408 13.9226C7.5878 13.7663 7.5 13.5543 7.5 13.3333V10C7.5 9.77898 7.5878 9.56702 7.74408 9.41074C7.90036 9.25446 8.11232 9.16666 8.33333 9.16666ZM5.63333 15.1417C5.66884 15.5578 5.85931 15.9455 6.16704 16.2279C6.47477 16.5103 6.87732 16.6669 7.295 16.6667H12.705C13.1224 16.6665 13.5245 16.5097 13.8319 16.2274C14.1393 15.945 14.3295 15.5575 14.365 15.1417L15.0917 6.66666H4.90833L5.635 15.1417H5.63333Z"/>
+  </svg></span></li>`
+  shadowRoot.querySelector('#childTree').append(child)
+  shadowRoot.querySelector('#output-count').innerText = `{${shadowRoot.querySelector('#childTree').childElementCount}}`
+  if(fielType.value == 'array' && arrayType.value == 'object'){
+      let arrayObj = document.createElement('ul');
+      arrayObj.classList.add('collapsedTry');
+      arrayObj.innerHTML = `<li class="align collapsed arrayObj">
+      <span class="collapse-arrow"><img src="${COMPONENT_PATH}/img/collapse.svg" alt="collapse-arrow"></span>
+      <span>object</span>
+      <span class="object" >{0}</span>
+      <img class="addChild" src="${COMPONENT_PATH}/img/add.svg">
+      </li>
+      `
+      shadowRoot.querySelector('#newTree').lastChild.appendChild(arrayObj);
+  }
+}
+if (event.target.parentElement.classList == 'ok' && shadowRoot.querySelector('.child')) {
+  console.log(field.value)
+  console.log(fielDesc.value)
+  console.log(fielType.value)
+  let child = document.createElement('ul');
+  child.classList.add('collapsedTry')
+  child.innerHTML = `<li class="align collapsed">
+  ${fielType.value == 'object' || fielType.value == 'array' ? `<span class="collapse-arrow"><img src="${COMPONENT_PATH}/img/collapse.svg" alt="collapse-arrow"></span>` : ''}
+  ${fielType.value == 'array' ? `<span class="value">${field.value} : ${fielType.value} of ${arrayType.value}</span>` : ''}
+  ${fielType.value == 'object' ? `<span class="value">${field.value} : ${fielType.value}</span>` : ''}
+  ${fielType.value !== 'object' && fielType.value !== 'array' ? `<span class="value" style='padding-left:28px'>${field.value} : ${fielType.value}</span>` : ""}
+  ${fielType.value == "object" ? `<span class="object" >{0}</span>` : ''}
+  ${fielType.value == "object" ? `<img class="addChild" src="${COMPONENT_PATH}/img/add.svg">` : ''}
+  <span class="delete"><svg class="deleteChild" width="20" height="20" viewBox="0 0 20 20" fill="#C4C4C4" xmlns="http://www.w3.org/2000/svg">
+  <path d="M8.33333 5H11.6667C11.6667 4.55797 11.4911 4.13405 11.1785 3.82149C10.866 3.50893 10.442 3.33333 10 3.33333C9.55797 3.33333 9.13405 3.50893 8.82149 3.82149C8.50893 4.13405 8.33333 4.55797 8.33333 5ZM6.66667 5C6.66667 4.11594 7.01786 3.2681 7.64298 2.64297C8.2681 2.01785 9.11595 1.66666 10 1.66666C10.8841 1.66666 11.7319 2.01785 12.357 2.64297C12.9821 3.2681 13.3333 4.11594 13.3333 5H17.5C17.721 5 17.933 5.0878 18.0893 5.24408C18.2455 5.40036 18.3333 5.61232 18.3333 5.83333C18.3333 6.05434 18.2455 6.26631 18.0893 6.42259C17.933 6.57887 17.721 6.66666 17.5 6.66666H16.765L16.0267 15.2833C15.9557 16.1154 15.575 16.8905 14.9599 17.4553C14.3448 18.0201 13.5401 18.3334 12.705 18.3333H7.295C6.45993 18.3334 5.65523 18.0201 5.04013 17.4553C4.42502 16.8905 4.04432 16.1154 3.97333 15.2833L3.235 6.66666H2.5C2.27899 6.66666 2.06703 6.57887 1.91075 6.42259C1.75447 6.26631 1.66667 6.05434 1.66667 5.83333C1.66667 5.61232 1.75447 5.40036 1.91075 5.24408C2.06703 5.0878 2.27899 5 2.5 5H6.66667ZM12.5 10C12.5 9.77898 12.4122 9.56702 12.2559 9.41074C12.0996 9.25446 11.8877 9.16666 11.6667 9.16666C11.4457 9.16666 11.2337 9.25446 11.0774 9.41074C10.9211 9.56702 10.8333 9.77898 10.8333 10V13.3333C10.8333 13.5543 10.9211 13.7663 11.0774 13.9226C11.2337 14.0789 11.4457 14.1667 11.6667 14.1667C11.8877 14.1667 12.0996 14.0789 12.2559 13.9226C12.4122 13.7663 12.5 13.5543 12.5 13.3333V10ZM8.33333 9.16666C8.55435 9.16666 8.76631 9.25446 8.92259 9.41074C9.07887 9.56702 9.16667 9.77898 9.16667 10V13.3333C9.16667 13.5543 9.07887 13.7663 8.92259 13.9226C8.76631 14.0789 8.55435 14.1667 8.33333 14.1667C8.11232 14.1667 7.90036 14.0789 7.74408 13.9226C7.5878 13.7663 7.5 13.5543 7.5 13.3333V10C7.5 9.77898 7.5878 9.56702 7.74408 9.41074C7.90036 9.25446 8.11232 9.16666 8.33333 9.16666ZM5.63333 15.1417C5.66884 15.5578 5.85931 15.9455 6.16704 16.2279C6.47477 16.5103 6.87732 16.6669 7.295 16.6667H12.705C13.1224 16.6665 13.5245 16.5097 13.8319 16.2274C14.1393 15.945 14.3295 15.5575 14.365 15.1417L15.0917 6.66666H4.90833L5.635 15.1417H5.63333Z"/>
+  </svg></span></li>`
+  event.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.appendChild(child)
+  let target = event.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement;
+  shadowRoot.querySelector('.child').remove();
+  if(fielType.value == 'array' && arrayType.value == 'object'){
+      let arrayObj = document.createElement('ul');
+      arrayObj.classList.add('collapsedTry');
+      arrayObj.innerHTML = `<li class="align collapsed arrayObj">
+      <span class="collapse-arrow"><img src="${COMPONENT_PATH}/img/collapse.svg" alt="collapse-arrow"></span>
+      <span>object</span>
+      <span class="object" >{0}</span>
+      <img class="addChild" src="${COMPONENT_PATH}/img/add.svg">
+      </li>
+      `
+      target.children[1].appendChild(arrayObj);
+  }
+  console.log(target.children[1].children[1])
+  if (target.firstChild.children[2].classList == 'object') target.firstChild.children[2].innerText = `{${target.childElementCount - 1}}`;
+}
+if (event.target.parentElement.parentElement.parentElement.classList == 'collapsedTry' && event.target.classList != 'addChild') {
+  console.log('check here')
+  console.log(event.target)
+  let main = event.target.parentElement.parentElement.parentElement.children;
+  if (main[0].classList[2] != 'active') {
+      main[0].classList.add('active');
+      for (let i = 1; i < main.length; i++) {
+          main[i].style.display = 'block'
+      }
+  } else {
+      main[0].classList.remove('active');
+      for (let i = 1; i < main.length; i++) {
+          main[i].style.display = 'none'
+      }
+  }
+}
+}
+
 export const input_output_fields = {
-  trueWebComponentMode: true, elementRendered,elementConnected,addChild
+  trueWebComponentMode: true, elementRendered,elementConnected,addChild, addMainChild, addSubChild, addOutputChild, addOutputSubChild
 }
 
 monkshu_component.register(
