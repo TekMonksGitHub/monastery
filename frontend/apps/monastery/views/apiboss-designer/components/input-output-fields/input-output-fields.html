@@ -1,4 +1,3 @@
-
 <style>
      input.input-text {
         flex: 2;
@@ -13,11 +12,11 @@
     }
 
     
-    span#toolbar {
+    span.toolbar {
         padding-bottom: 10px;
         display: inline-flex;
         align-items: center;
-        width: 100%;
+        width: 90%;
         flex-direction: row;
         justify-content: space-between;
         max-width: calc(100vw - 192px);
@@ -25,19 +24,19 @@
         margin-top: 0.5em;
     }
 
-    span#toolbar>span>span {
+    span.toolbar>span>span {
         align-items: center;
         display: inline-flex;
-        font-size: smaller;
+        font-size: 18px;
         font-family: 'Red Hat Text';
         padding-right: 4vw;
     }
 
-    span#toolbar>span>span:last-child {
+    span.toolbar>span>span:last-child {
         padding-right: 0vw;
     }
 
-    span#toolbar>span>span.button {
+    span.toolbar>span>span.button {
         padding: 5px 10px 5px 10px;
         border: 1px solid #C6E3FF;
         border-radius: 5px;
@@ -47,7 +46,7 @@
     }
 
 
-    span#toolbar>span>span.button:last-child {
+    span.toolbar>span>span.button:last-child {
         margin-right: 0vw;
     }
 
@@ -243,7 +242,7 @@ input.input-text {
     border-radius: 5px;
 }
 
-select#ftype {
+select#ftype, select#output-ftype {
     /* for Firefox */
     -moz-appearance: none;
     /* for Safari, Chrome, Opera */
@@ -255,13 +254,23 @@ select#ftype ::-ms-expand {
     display: none;
 }
 
+select#output-ftype ::-ms-expand {
+    display: none;
+}
+
 
 /* (A3) POSITION CUSTOM ARROW */
-.cselect {
+.cselect, .output-cselect {
     position: relative;
 }
 
 .cselect::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.output-cselect::after {
     position: absolute;
     top: 0;
     right: 0;
@@ -273,7 +282,11 @@ select#ftype ::-ms-expand {
     width: 100%;
 }
 
-.cselect {
+.output-cselect select {
+    width: 100%;
+}
+
+.cselect, .output-cselect {
     max-width: 400px;
 }
 
@@ -283,6 +296,13 @@ select#ftype ::-ms-expand {
 .cselect,
 .cselect::after,
 .cselect select {
+    box-sizing: border-box;
+    /* height: 42px; */
+}
+
+.output-cselect,
+.output-cselect::after,
+.output-cselect select {
     box-sizing: border-box;
     /* height: 42px; */
 }
@@ -300,8 +320,24 @@ select#ftype ::-ms-expand {
     border: 1px solid #98CCFD;
 }
 
+.output-cselect select {
+    background: rgba(152, 204, 253, 1);
+    border: 1px solid #98CCFD;
+}
+
 /* (C2) DROPDOWN ARROW BOX */
 .cselect::after {
+    /* COLORS */
+    color: rgba(152, 204, 253, 1);
+    background: rgba(255, 255, 255, 1);
+    /* CENTER ARROW IN BOX */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(90deg);
+}
+
+.output-cselect::after {
     /* COLORS */
     color: rgba(152, 204, 253, 1);
     background: rgba(255, 255, 255, 1);
@@ -322,7 +358,17 @@ select#ftype ::-ms-expand {
     outline: none;
 }
 
+.output-cselect select:active,
+.output-cselect select:focus,
+.output-cselect select:hover {
+    outline: none;
+}
+
 .left.cselect select {
+    padding-left: 50px;
+}
+
+.left.output-cselect select {
     padding-left: 50px;
 }
 
@@ -332,7 +378,13 @@ select#ftype ::-ms-expand {
     border-radius: 50%;
 }
 
-select#ftype {
+.left.output-cselect::after {
+    right: auto;
+    left: 0;
+    border-radius: 50%;
+}
+
+select#ftype, select#output-ftype {
     width: 15%;
     font-family: inherit;
     background-color: rgba(255, 255, 255, 1);
@@ -346,7 +398,7 @@ select#ftype {
     padding-right: 5px;
 }
 
-select#arrayType {
+select#arrayType, select#output-arrayType {
     width: 15%;
     font-family: inherit;
     background-color: rgba(255, 255, 255, 1);
@@ -398,8 +450,19 @@ li:hover {
     fill: #FF0000;
 }
 
+.output-parent li:hover .deleteChild,
+.output-parent li:hover {
+    background-color: white;
+    fill: #FF0000;
+}
+
 .child li:hover .deleteChild,
 .child li:hover {
+    background-color: white;
+}
+
+.output-child li:hover .deleteChild,
+.output-child li:hover {
     background-color: white;
 }
 
@@ -428,14 +491,18 @@ li:hover {
 }
 
 .active .collapse img {
-    transform: rotate(90deg);
+    transform: rotate(90deg) !important;
 }
 
 .active .collapse-arrow img {
-    transform: rotate(90deg);
+    transform: rotate(90deg) !important;
 }
 
-.content {
+.collapsedTry>ul{
+    display: none;
+}
+
+.content, .output-content {
     /* padding: 0 6px; */
     display: none;
     /* overflow: hidden; */
@@ -446,24 +513,35 @@ li:hover {
     align-items: center;
     padding: 0px 4px;
 }
+.error{
+    border-color: white;
+    box-shadow: 0 0 5px #F33 !important;
+}
 
 </style>
+
+<script type="module">
+    import {image_button} from "../../../shared/components/image-button/image-button.mjs"
+</script>
 
 <table id="inputtable" style="overflow-y: auto;">
     <tr>
 
-        <td> <span id="toolbar">
-                <span id="leftitems">
+        <td>
+            <span class="toolbar">
+                <span class="leftitems">
                     Input Fields&nbsp;&nbsp;</span>
+                    <image-button img="{{{componentPath}}}/img/json.svg" onclick='monkshu_env.components["input-output-fields"].inputJson(this,event)' text="JSON" alt="JSON" styleBody="div#button{display: flex; align-items: center; gap: 0.5em; background-color: #D6EFFF; cursor: pointer;}"></image-button>
+                    <!-- <span><button onclick='monkshu_env.components["json-structure"].clicked(this,event)'>JSON</button></span> -->
             </span>
-            </span> </td>
-        <td> <span id="toolbar">
-                <span id="leftitems">
-                    <span>Output
-                        Fields&nbsp;&nbsp;<img src="{{{componentPath}}}/img/add.svg"
-                            onclick='monkshu_env.components["input-table"].rowop("add",this)'></span>
+         </td>
+        <td> <span class="toolbar">
+                <span class="leftitems">
+                    Output Fields&nbsp;&nbsp;</span>
+                    <!-- <span><button onclick='monkshu_env.components["json-structure"].clicked(this,event)'>JSON</button></span> -->
+                    <image-button img="{{{componentPath}}}/img/json.svg" onclick='monkshu_env.components["input-output-fields"].outputJson(this,event)' text="JSON" alt="JSON" styleBody="div#button{display: flex; align-items: center; gap: 0.5em; background-color: #D6EFFF; cursor: pointer;}"></image-button>
                 </span>
-            </span> </td>
+             </td>
     </tr>
 
     <tr class="tr">
@@ -473,12 +551,13 @@ li:hover {
                 </div>
                 <div id="newTree" class="content" onclick='monkshu_env.components["input-output-fields"].addSubChild(event,this)'></div>
             </div>
+            <!-- <div><button onclick='monkshu_env.components["input-output-fields"].getFinal(this)'>Collect</button></div> -->
         </td>
         <td>
             <div class="output-root">
                 <div id="outputTree" class="align" onclick='monkshu_env.components["input-output-fields"].addOutputChild(event,this)'><span class="collapse-arrow collapse"><img class="collapse" src="{{{componentPath}}}/img/collapse.svg" alt="collapse-arrow"></span><span>object</span> <span id="output-count">{0}</span><span class="addIcon"><img class="addChild" src="{{{componentPath}}}/img/add.svg"></span>
                 </div>
-                <div id="childTree" class="content" onclick='monkshu_env.components["input-output-fields"].addOutputSubChild(event,this)'></div>
+                <div id="output-childTree" class="output-content" onclick='monkshu_env.components["input-output-fields"].addOutputSubChild(event,this)'></div>
             </div>
         </td>
 

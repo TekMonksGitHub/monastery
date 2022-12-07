@@ -19,7 +19,8 @@
         "apiinput-apioutput": "components/apiinput-apioutput",
         "text-editor": "components/text-editor",
         "api-details": "components/api-details",
-        "input-output-fields": "components/input-output-fields"
+        "input-output-fields": "components/input-output-fields",
+        "floating-window": "components/floating-window"
 
         },
     "initModules": { 

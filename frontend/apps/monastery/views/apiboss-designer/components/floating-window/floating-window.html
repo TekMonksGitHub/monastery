@@ -1,0 +1,96 @@
+<!--
+/** 
+ * Floating Window hosting component.
+ * (C) 2022 TekMonks. All rights reserved.
+ * License: See enclosed LICENSE file.
+ */
+ -->
+ <style>
+body{
+    margin: 0; padding: 0;
+    font-family: var(--window-font, sans-serif);
+    font-size: inherit;
+}
+
+div::-webkit-scrollbar {
+    width: 0.5em !important;
+    height: 0.5em !important;
+    scroll-behavior: smooth !important;
+}
+
+div::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    margin: 40px;
+    border-radius: 10px !important;
+}
+
+div::-webkit-scrollbar-thumb {
+    background-color: darkgrey !important;
+    border-radius: 10px !important;
+    background-clip: padding-box;
+}
+
+div#window {
+    top: var(--window-top, 50%);
+    left: var(--window-left, 50%);
+    width: var(--window-width, auto);
+    height: var(--window-height, auto);
+    max-height: 90vh;
+    background: var(--window-background, white);
+    padding: var(--window-padding, 5px);
+    position: var(--window-position, fixed);
+    z-index: 105;
+    box-shadow: var(--box-shadow, 0 0 5px #ccc);
+    overflow: auto;
+    color: #444444;
+    border: var(--window-border, 1px solid #444444);
+    border-radius: var(--window-border-radius, 5px);
+    display: flex; 
+    flex-direction: column;
+    resize: none !important;
+}
+
+span#header {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: default;
+    user-select: none;
+}
+span#header > span#title {
+    font-size: var(--window-title-size, x-small);
+    width: 100%;
+}
+span#header > img#close {
+    width: var(--window-close-icon-size, 12px);
+    height: var(--window-close-icon-size, 12px);
+}
+
+div#windowcontent {
+    width: 100%;
+    height: 100%;
+}
+</style>
+
+{{{styleBody}}}
+
+<div id="window">
+    <!-- <span id="header" onmousedown="monkshu_env.components['floating-window'].mouseDownOnHeader(event, this)">
+        <span id="title">{{title}}{{^title}}Output{{/title}}</span>
+        <img id="close" src="{{closeIcon}}{{^closeIcon}}{{componentPath}}/img/close.svg{{/closeIcon}}" 
+            onclick="monkshu_env.components['floating-window'].hideWindow(this)">
+    </span> -->
+    <div class="json-head" id="header" onmousedown="monkshu_env.components['floating-window'].mouseDownOnHeader(event, this)">
+        <div>JSON</div>
+        <div class="json-icon">
+            <div><img src="{{componentPath}}/img/doc.svg" alt="doc"></div>
+            <div><img src="{{componentPath}}/img/copy.svg" alt="copy"></div>
+            <div><img src="{{componentPath}}/img/close.svg" alt="close" 
+                onclick="monkshu_env.components['floating-window'].hideWindow(this)"></div>
+        </div>
+    </div>
+
+    <div id="windowcontent"><!-- The window content will go here --></div>
+</div>
