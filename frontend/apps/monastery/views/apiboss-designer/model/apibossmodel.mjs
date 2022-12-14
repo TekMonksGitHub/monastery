@@ -41,8 +41,9 @@ function loadModel(jsonModel) {
     if (!(apibossmodelObj.apis)) { LOG.error(`Bad APIBOSS model, not in right format.`); return; }
 
     // first add all the commands
-    for (const apicl of apibossmodelObj.apis) for (const command of apicl.commands) {
-        const id = command.id || _getUniqueID(); idCache[id] = command; const clone = util.clone(command);
+    for (const nodes in apibossmodelObj) for (const node of apibossmodelObj[nodes] ) {
+        console.log(node);
+        const id = node.id || _getUniqueID(); idCache[id] = node; const clone = util.clone(node);
         const nodeName = clone.nodeName;
         blackboard.broadcastMessage(MSG_ADD_NODE, { nodeName, id, description: clone.description, properties: { ...clone }, connectable: true });
     }
@@ -55,8 +56,8 @@ function loadModel(jsonModel) {
     }
     console.log(apibossmodelObj);
     // add connections between commands
-    for (const command of apibossmodelObj.apicl[0].commands)
-        if (command.dependencies) for (const dependency of command.dependencies) connectNodes(dependency, command.id);
+    for (const api of apibossmodelObj.apis)
+        if (api.dependencies) for (const dependency of api.dependencies) connectNodes(dependency, api.id);
 
 }
 
@@ -112,20 +113,21 @@ function nodeDescriptionChanged(_nodeName, id, description) {
 function getModel() {
     const retModel = util.clone(apibossmodelObj);
     console.log(retModel);
-    const sortedCommands = algos.sortDependencies(retModel.apicl[0]);  // sort apicl commands in the order of dependencies
-    const NOPparams = saveCordinates(sortedCommands);
-    let APICL = algos.convertIntoAPICL(sortedCommands); // converting into the final APICL
-    const NOPcommand = `NOP PARAMS(${JSON.stringify({ "CORDINATES": NOPparams })})`;
-    const lastCommand = APICL[Object.keys(APICL).length]
-    if (lastCommand.includes("ENDAPI")) {
-        APICL[Object.keys(APICL).length] = NOPcommand;
-        APICL[Object.keys(APICL).length + 1] = lastCommand;
-        return APICL;
-    }
-    else {
-        APICL[Object.keys(APICL).length + 1] = NOPcommand;
-        return APICL;
-    }
+    // const sortedCommands = algos.sortDependencies(retModel.apicl[0]);  // sort apicl commands in the order of dependencies
+    // const NOPparams = saveCordinates(sortedCommands);
+    // let APICL = algos.convertIntoAPICL(sortedCommands); // converting into the final APICL
+    // const NOPcommand = `NOP PARAMS(${JSON.stringify({ "CORDINATES": NOPparams })})`;
+    // const lastCommand = APICL[Object.keys(APICL).length]
+    // if (lastCommand.includes("ENDAPI")) {
+    //     APICL[Object.keys(APICL).length] = NOPcommand;
+    //     APICL[Object.keys(APICL).length + 1] = lastCommand;
+    //     return APICL;
+    // }
+    // else {
+    //     APICL[Object.keys(APICL).length + 1] = NOPcommand;
+    //     return APICL;
+    // }
+    return retModel;
 
 }
 
@@ -143,7 +145,7 @@ function saveCordinates(modelObject) {
 
 
 
-const getModelAsFile = name => { return { data: JSON.stringify(getModel(), null, 4), mime: "application/json", filename: `${name || "api400api"}.apicl` } }
+const getModelAsFile = name => { return { data: JSON.stringify(getModel(), null, 4), mime: "application/json", filename: `${name || "api400api"}.apiboss` } }
 
 const _getUniqueID = _ => `${Date.now()}${Math.random() * 100}`;
 
@@ -179,7 +181,6 @@ function _nodeModified(nodeName, id, properties) {
     for (const key in properties) { // transfer the new properties
         idCache[id][key] = properties[key];
     }
-    console.log(apibossmodelObj);
     return true;
 }
 
