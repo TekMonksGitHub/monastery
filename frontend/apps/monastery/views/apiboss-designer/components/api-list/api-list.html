@@ -53,31 +53,49 @@
     div#container > div {
         display: flex;
         /* flex-direction: column; */
-        align-items: center;
         margin: 5px;
         /* width: 7.5em; */
         width: 100%;
         min-width: 2.5em;
         box-sizing: border-box;
         margin: 20px 0px;
+        justify-content: space-between;
+
     }
     div#container > div > span {
-        text-align: center;
-        width: 100%;
         overflow: hidden;
         text-overflow: ellipsis;
-        font-size: 0.75em;
-        padding: 15px 20px;
+        font-size: 1em;
     }
-    
     div#container > div > img {
         width: 50%;
     }
     
-    span#label {
-        font-size: smaller;
-        margin: 4px;
-        display: none;
+    span#text {
+     width: 70%;
+    word-break: break-word;
+    }
+    span#POST {
+        font-family: 'Red Hat Text';
+        font-style: normal;
+        font-weight: 700;
+        text-align: center;
+        color: #FFFFFF;
+        background: #535AFF;
+        border-radius: 5px;
+        padding: 5px;
+        height: 1.1em;
+    }
+    span#GET {
+        font-family: 'Red Hat Text';
+        font-style: normal;
+        font-weight: 700;
+        text-align: center;
+        color: #FFFFFF;
+        background: #039000;
+        border-radius: 5px;
+        padding: 5px 10px;;
+        height: 1.1em;
     }
     
     .beingDragged {opacity: 0.5;}
@@ -85,11 +103,12 @@
     
     {{{styleBody}}}
     
-    <span id="label">{{label}}</span>
     <div id="container">
         {{#items}}
         <div id="{{id}}" {{#ondblclick}}ondblclick="{{ondblclick}}"{{/ondblclick}}>
-            <span>{{label}}</span>
+            <span id="text">{{label}}</span>
+            <span id="{{method}}">{{method}}</span>
+
         </div>
         {{/items}}
     </div>
