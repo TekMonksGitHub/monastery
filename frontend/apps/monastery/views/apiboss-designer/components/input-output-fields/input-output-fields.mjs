@@ -4,11 +4,12 @@
  */
 import { util } from "/framework/js/util.mjs";
 import { monkshu_component } from "/framework/js/monkshu_component.mjs";
+import { floating_window } from "../floating-window/floating-window.mjs"
 
 
 const COMPONENT_PATH = util.getModulePath(import.meta);
 
-const FLOATING_WINDOW = window.monkshu_env.components["floating-window"];
+// const FLOATING_WINDOW = window.monkshu_env.components["floating-window"];
 const CONSOLE_THEME = {
     "var--window-background": "#DFF0FE", "var--window-left": "42vw",
     "var--window-border": "1px solid #4788C7", closeIcon: `${COMPONENT_PATH}/img/close.svg`
@@ -16,13 +17,13 @@ const CONSOLE_THEME = {
 
 async function inputJson(element, event) {
   event.stopPropagation();
-  console.log(FLOATING_WINDOW);
+  console.log(floating_window);
   const host = input_output_fields.getHostElement(element);
   const shadowRoot = input_output_fields.getShadowRootByHost(host);
   const floatingWindowHTML = await $$.requireText(CONSOLE_HTML_FILE);
 
   let result = await getFinal(shadowRoot.querySelector('#newTree'));
-  await FLOATING_WINDOW.showWindow(CONSOLE_THEME, Mustache.render(floatingWindowHTML, { message: `${JSON.stringify(JSON.parse(result), null, 2)}`, error: undefined }));
+  await floating_window.showWindow(CONSOLE_THEME, Mustache.render(floatingWindowHTML, { message: `${JSON.stringify(JSON.parse(result), null, 2)}`, error: undefined }));
 }
 
 async function outputJson(element, event) {
@@ -32,7 +33,7 @@ async function outputJson(element, event) {
   const floatingWindowHTML = await $$.requireText(CONSOLE_HTML_FILE);
 
   let result = await getFinal(shadowRoot.querySelector('#output-childTree'));
-  await FLOATING_WINDOW.showWindow(CONSOLE_THEME, Mustache.render(floatingWindowHTML, { message: `${JSON.stringify(JSON.parse(result), null, 2)}`, error: undefined }));
+  await floating_window.showWindow(CONSOLE_THEME, Mustache.render(floatingWindowHTML, { message: `${JSON.stringify(JSON.parse(result), null, 2)}`, error: undefined }));
 }
 
 const elementConnected = async function (element) {
