@@ -194,7 +194,7 @@
     </div>
 
 
-    <div class="container-header header-header">
+    <div class="container-header header-header" onclick='monkshu_env.components["api-details"].toggle(this, event)'>
         <div class="label">Headers</div>
         <div class="content">
             <div id="api-key" class="input-form">
@@ -223,7 +223,7 @@
         </div>
     </div>
 
-    <div class="container-header parameter-header">
+    <div class="container-header parameter-header" onclick='monkshu_env.components["api-details"].toggle(this, event)'>
         <div class="label"><span id="parameters">Parameters</span>
             <image-button img="{{{componentPath}}}/img/json.svg" text="{{i18n.json}}" style="width:6em; height: 100%;"
                 id="json" onclickHandler="window.monkshu_env['OPEN_SERVER_HELPER'].connectServerClicked()" type="row"
