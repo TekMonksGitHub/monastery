@@ -41,6 +41,8 @@ export const APP_CONSTANTS = {
     API_VALIDATE_TOTP: API_PATH+"/validatetotp",
     API_GETTOTPSEC: API_PATH+"/gettotpsec",
     API_GETPROFILE: API_PATH+"/getprofile",
+    API_GETAPPCONFIG: API_PATH+"/getappconfig",
+
     USERID: "userid",
     PWPH: "pwph",
     TIMEOUT: 600000,

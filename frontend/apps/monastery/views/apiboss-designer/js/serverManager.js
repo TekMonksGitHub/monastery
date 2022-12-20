@@ -16,7 +16,7 @@ import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 async function getModelList(server, port, adminid, adminpassword) {
     const API_ADMIN_URL_FRAGMENT = `://${server}:${port}/apps/monkruls/admin`;
 
-    const loginResult = await _loginToServer(server, port, adminid, adminpassword);
+    const loginResult = await loginToServer(server, port, adminid, adminpassword);
     if (!loginResult.result) return loginResult;    // failed to connect or login
 
     try {   // try to get the list now
@@ -39,7 +39,7 @@ async function getModelList(server, port, adminid, adminpassword) {
  async function getModel(name, server, port, adminid, adminpassword) {
     const API_ADMIN_URL_FRAGMENT = `://${server}:${port}/apps/monkruls/admin`;
 
-    const loginResult = await _loginToServer(server, port, adminid, adminpassword);
+    const loginResult = await loginToServer(server, port, adminid, adminpassword);
     if (!loginResult.result) return loginResult;    // failed to connect or login
 
     try {   // try to read the model now
@@ -62,7 +62,7 @@ async function getModelList(server, port, adminid, adminpassword) {
  async function unpublishModel(name, server, port, adminid, adminpassword) {
     const API_ADMIN_URL_FRAGMENT = `://${server}:${port}/apps/monkruls/admin`;
 
-    const loginResult = await _loginToServer(server, port, adminid, adminpassword);
+    const loginResult = await loginToServer(server, port, adminid, adminpassword);
     if (!loginResult.result) return loginResult;    // failed to connect or login
 
     try {   // try to delete
@@ -86,7 +86,7 @@ async function getModelList(server, port, adminid, adminpassword) {
 async function publishModel(model, name, server, port, adminid, adminpassword) {
     const API_ADMIN_URL_FRAGMENT = `://${server}:${port}/apps/monkruls/admin`;
 
-    const loginResult = await _loginToServer(server, port, adminid, adminpassword);
+    const loginResult = await loginToServer(server, port, adminid, adminpassword);
     if (!loginResult.result) return loginResult;    // failed to connect or login
 
     try {   // try to publish now
@@ -96,22 +96,22 @@ async function publishModel(model, name, server, port, adminid, adminpassword) {
     } catch (err)  {return {result: false, err: "Server connection issue", raw_err: err, key: "ConnectIssue"} }
 }
 
-async function _loginToServer(server, port, adminid, adminpassword) {
-    const API_LOGIN_SECURE = `https://${server}:${port}/apps/monkruls/login`;
-    const API_LOGIN_INSECURE = `http://${server}:${port}/apps/monkruls/login`;
+async function loginToServer(server, port, adminid, adminpassword) {
+    const API_LOGIN_SECURE = `https://${server}:${port}/apps/apiboss/admin/login`;
+    const API_LOGIN_INSECURE = `http://${server}:${port}/apps/apiboss/admin/login`;
 
     try {   // try secure first
-        const result = await apiman.rest(API_LOGIN_SECURE, "GET", {id: adminid, pw: adminpassword}, false, true);
+        const result = await apiman.rest(API_LOGIN_SECURE, "GET", {id: adminid, pw: adminpassword}, true);
         if (result.result) return {result: true, scheme:"https"};
         else throw `Server secure login failed, trying insecure, ${await i18n.get(SecureConnectFailed)}`;
     } catch (err)  {    // try insecure else give up
         try {
             LOG.debug(err);
-            const result = await apiman.rest(API_LOGIN_INSECURE, "GET", {id: adminid, pw: adminpassword}, false, true);
+            const result = await apiman.rest(API_LOGIN_INSECURE, "GET", {id: adminid, pw: adminpassword}, true);
             if (result.result) return {result: true, scheme:"http"};
             else return {result: false, err: "Login failed at the server", raw_err: "Login failed at the server", key: "LoginIssue"};
         } catch (err)  {return {result: false, err: "Server connection issue", raw_err: err, key: "ConnectIssue"} }
     }
 }
 
-export const serverManager = {publishModel, unpublishModel, getModelList, getModel};
+export const serverManager = {publishModel, unpublishModel, getModelList, getModel,loginToServer};
