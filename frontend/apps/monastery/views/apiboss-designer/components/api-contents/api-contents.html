@@ -11,21 +11,52 @@
     div#apidesc{
         padding: 8px 32px;
     }
+    span#exposedpath{
+        color:#0032E4;
+    }
+    span#POST {
+        font-family: 'Red Hat Text';
+        font-style: normal;
+        font-weight: 700;
+        text-align: center;
+        color: #FFFFFF;
+        background: #535AFF;
+        border-radius: 5px;
+        padding: 0px 5px;
+        height: 1.1em;
+    }
+    span#GET {
+        font-family: 'Red Hat Text';
+        font-style: normal;
+        font-weight: 700;
+        text-align: center;
+        color: #FFFFFF;
+        background: #039000;
+        border-radius: 5px;
+        padding: 0px 10px;;
+        height: 1.1em;
+    }
+
+    span#standard{
+        font-weight: bold;
+        color: #282828;
+    }
+
 
 </style>
 
 <div id="container">
     <div id="apidesc">
-        This API allows the caller to query customers by customer name. The only required input parameter is 'customer_name'
+        <span>{{description}}</span>
     </div>
     <div style="height: 20%;">
         <div style="background-color:#98CCFD; padding: 5px 32px;">
             Calling this API
         </div>
         <div style="padding: 0px 32px;">
-            <p>URL to call this API is</p>
-            <p>URL to call this API is</p>
-            <p>URL to call this API is</p>
+            <p>URL to call this API is <span id ="exposedpath">{{exposedpath}}</span></p>
+            <p>The HTTP action to call this API is <span id = "{{method}}">{{method}}</span></p>
+            <p>URL to call this API is <span id = "standard">{{standard}}</span> standard</p>
         </div>
     </div>
     <div>
