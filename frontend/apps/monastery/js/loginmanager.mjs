@@ -16,12 +16,12 @@ async function signin(id, pass, otp) {
     logoutListeners = [];   // reset listeners on sign in
         
     const resp = await apiman.rest(APP_CONSTANTS.API_LOGIN, "POST", {pwph, otp, id}, false, true);
-    if (true) {
-        // session.set(APP_CONSTANTS.USERID, resp.id); 
-        // session.set(APP_CONSTANTS.USERNAME, resp.name);
-        // session.set(APP_CONSTANTS.USERORG, resp.org);
-        // session.set("__org_telemeet_cuser_pass", pass);
-        securityguard.setCurrentRole("admin");
+    if (resp && resp.result && resp.tokenflag) {
+        session.set(APP_CONSTANTS.USERID, resp.id); 
+        session.set(APP_CONSTANTS.USERNAME, resp.name);
+        session.set(APP_CONSTANTS.USERORG, resp.org);
+        session.set("__org_telemeet_cuser_pass", pass);
+        securityguard.setCurrentRole(resp.role);
         const PERMISSIONS_MAP = securityguard.getPermissionsMap();
         PERMISSIONS_MAP[resp.org] = ["apiboss-designer", "monkruls-designer","api400-designer","asb-designer","monboss-designer"];
         securityguard.setPermissionsMap(PERMISSIONS_MAP);
