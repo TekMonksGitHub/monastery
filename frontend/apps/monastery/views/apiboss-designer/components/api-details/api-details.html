@@ -10,7 +10,7 @@
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        padding-bottom: 0.5em;
+        /* padding-bottom: 0.5em; */
     }
 
     span#method {
@@ -83,7 +83,7 @@
     div.input-fields {
         display: flex;
         align-items: center;
-        justify-content: flex-end;
+        /* justify-content: flex-end; */
         text-align: center;
         margin-top: 1em;
         color: #444444;
@@ -174,6 +174,36 @@
         font-size: 10px;
         margin: 2px 0px 0px 7px;
     }
+    div.wrapper-div{
+        margin: 0px 20px;
+        background-color: white;
+        border-radius: 5px;
+        padding-bottom: 10px;
+        padding-top: 1px;
+        margin-top: 8px;
+    }
+    div.wrapper-container{
+        max-height: 25em;
+        overflow: auto;
+    }
+    img.deleteBtn:hover{
+        cursor: pointer;
+    }
+    div.array-object {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        text-align: center;
+        margin-top: 1em;
+        color: #444444;
+
+    }
+    div.input-wrapper{
+        display: flex;
+        align-items: center;
+        padding: 6px 15px;
+        gap: 7px;
+    }
 </style>
 
 <div id="container">
@@ -183,17 +213,17 @@
             <span id="method">POST</span>
             <span id="path"> /exposed/path</span>
         </span>
-
+        <!-- onclickHandler="window.monkshu_env['OPEN_SERVER_HELPER'].connectServerClicked()" -->
         <image-button img="{{{componentPath}}}/img/try.svg" text="{{i18n.try}}" style="width:8em; height: 100%;"
-            id="try" onclickHandler="window.monkshu_env['OPEN_SERVER_HELPER'].connectServerClicked()" type="row"
+            id="try"  type="row"
             styleBody="div#button.row {flex-direction: row; justify-content: flex-start;} div#button {padding: 5px 5px 5px 20px;} div#button>img.row {width: 2em;height: 100%;} div#button>span {color: #4788C7; font-weight: 700; margin-left:5px}"
             color="#444444" border="0.5px solid #98CCFD" background-color="#F8FCFF" active-background-color="white"
-            display="inline-block;">
+            display="inline-block;" onclick='monkshu_env.components["api-details"].tryIt(this, event)'>
 
         </image-button>
     </div>
 
-
+    <div class="wrapper-container">
     <div class="container-header header-header" onclick='monkshu_env.components["api-details"].toggle(this, event)'>
         <div class="label">Headers</div>
         <div class="content">
@@ -233,7 +263,7 @@
 
             </image-button>
         </div>
-        <div class="content">
+        <div class="content" style="background-color: #DFF0FE; padding-bottom: 0.5em;">
             <!-- <div id="name" class="input-fields">
                 <label for="Myname" style="text-align: center; color: #444444;
                margin-left: 1.2em; ">name</label>
@@ -242,6 +272,7 @@
             </div> -->
 
         </div>
+    </div>
     </div>
 
 
