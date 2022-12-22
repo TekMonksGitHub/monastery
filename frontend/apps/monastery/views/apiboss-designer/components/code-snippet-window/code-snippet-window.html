@@ -1,0 +1,70 @@
+<style>
+    .json-structure{
+    display: flex;
+    flex-direction: column;
+    border: 0.5px solid;
+    border-radius: 6px;
+    width: 300px;
+    height: 330px;
+    background-color: #DFF0FE;
+}
+
+.json-head{
+    display: flex;
+    padding: 5px 15px;
+    justify-content: space-between;
+}
+.json-icon{
+    display: flex;
+    gap: 10px;
+}
+img{
+    width: 20px;
+    height: 20px;
+}
+.json-content{
+    width: 44.5em;
+    height: 18em;
+    border: 0.5px solid;
+    margin: 0 13px;
+    border-radius: 6px;
+    background-color: white;
+
+}
+.json-content-format{
+    /* height: 24em; */
+    overflow: auto;
+}
+pre::-webkit-scrollbar {
+    width: 0.5em !important;
+    height: 0.5em !important;
+    scroll-behavior: smooth !important;
+}
+
+pre::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    margin: 10px 2px;
+    border-radius: 10px !important;
+}
+
+pre::-webkit-scrollbar-thumb {
+    background-color: darkgrey !important;
+    border-radius: 10px !important;
+    background-clip: padding-box;
+}
+</style>
+
+<div class="json-content">
+    <pre class="json-content-format" {{#error}}class="error"{{/error}} readonly>
+        const https = require("https");
+
+        https.post("https://domain.com/exposed/path", (resp)=>{
+            
+            // The whole response has been received. Print out the result
+            resp.on("end", ()=>{
+            console.log(JSON.parse(data).explanation);
+            });
+        });
+    </pre>
+</div>

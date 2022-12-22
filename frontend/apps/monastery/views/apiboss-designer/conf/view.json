@@ -20,8 +20,8 @@
         "text-editor": "components/text-editor",
         "api-details": "components/api-details",
         "input-output-fields": "components/input-output-fields",
-        "floating-window": "components/floating-window"
-
+        "floating-window": "components/floating-window",
+        "code-snippet-window": "components/code-snippet-window"
         },
     "initModules": { 
         "apibossmodel": "model/apibossmodel.mjs", 

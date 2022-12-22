@@ -18,14 +18,18 @@ let _pendingRenderResolves, hostIDNum = 0;
  * @param templateData Data to pass to expand the template
  * @param hostID Optional: The ID to host the custom component inside the main HTML, only needed if default ID clashes
  */
-async function showWindow(themeOrThemePath, templateOrTemplateURL, templateData, hostID=_generateNewHostID()) {
+async function showWindow(header, themeOrThemePath, templateOrTemplateURL, templateData, hostID=_generateNewHostID()) {
 	console.log(themeOrThemePath);
 	console.log(templateOrTemplateURL);
 	console.log(templateData);
 	console.log(hostID);
+	// let data = {};
+	// data["header"] = header;
+	// const element = document.querySelector("floating-window");
+	// floating_window.bindData
 	await _initWindowFramework(hostID); 
 	await floating_window.bindData(await _processTheme((typeof themeOrThemePath == "string" || themeOrThemePath instanceof URL) ?
-		await $$.requireJSON(themeOrThemePath) : themeOrThemePath||DEFAULT_THEME), hostID );   // bind the theme data
+		await $$.requireJSON(themeOrThemePath) : themeOrThemePath||DEFAULT_THEME , header), hostID );   // bind the theme data
 
 	const shadowRoot = floating_window.getShadowRootByHostId(hostID);
 	console.log(shadowRoot)
@@ -79,8 +83,9 @@ function _initWindowFramework(hostID) {
 	return new Promise(resolve => _pendingRenderResolves = resolve);
 } 
 
-async function _processTheme(theme) {
+async function _processTheme(theme, header) {
 	const clone = JSON.parse(await router.expandPageData(JSON.stringify(theme)));
+	clone.header = header;
 	const cssVars = [];
 	for (const key in theme) if (key.startsWith("var--")) cssVars.push(`${key.substring(3)}: ${theme[key]}`);
 	if (cssVars.length || theme.styleBody)
