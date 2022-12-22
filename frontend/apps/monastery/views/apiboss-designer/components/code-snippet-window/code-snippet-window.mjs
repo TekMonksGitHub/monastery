@@ -16,15 +16,25 @@
 }, CONSOLE_HTML_FILE = `${COMPONENT_PATH}/code-snippet-window.html`;
 
 async function codeSnippetWindow(element) {
-    console.log(element)
+    // console.log(element)
+    // console.log(id)
     // event.stopPropagation();
     // console.log(floating_window);
     // const host = input_output_fields.getHostElement(element);
     // const shadowRoot = input_output_fields.getShadowRootByHost(host);
-    const floatingWindowHTML = await $$.requireText(CONSOLE_HTML_FILE);
-  
+    if(element == "NodeJS Client"){
+      const floatingWindowHTML = await $$.requireText(CONSOLE_HTML_FILE);
+      await floating_window.showWindow("NodeJS", CONSOLE_THEME, floatingWindowHTML);
+    }
+    else if(element == "Java Client"){
+      const floatingWindowHTML = await $$.requireText(CONSOLE_HTML_FILE);
+      await floating_window.showWindow("JAVA", CONSOLE_THEME, floatingWindowHTML);
+    }    
+    else if(element == "Curl Client"){
+      const floatingWindowHTML = await $$.requireText(CONSOLE_HTML_FILE);
+      await floating_window.showWindow("Curl", CONSOLE_THEME, floatingWindowHTML);
+    }
     // let result = await getFinal(shadowRoot.querySelector('#newTree'));
-    await floating_window.showWindow("NodeJS", CONSOLE_THEME, floatingWindowHTML);
   }
 
 // const https = require("https");
