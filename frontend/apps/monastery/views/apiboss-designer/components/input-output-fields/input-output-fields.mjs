@@ -275,7 +275,7 @@ if(flag){
   let child = document.createElement('ul');
   child.classList.add('collapsedTry')
   child.innerHTML = `<li class="align collapsed">
-  ${fielType.value == 'object' || fielType.value == 'array' ? `<span class="collapse-arrow"><img src="${COMPONENT_PATH}/img/collapse.svg" alt="collapse-arrow"></span>` : ''}
+  ${fielType.value == 'object' || (fielType.value == 'array' && arrayType.value == "object") ? `<span class="collapse-arrow"><img src="${COMPONENT_PATH}/img/collapse.svg" alt="collapse-arrow"></span>` : ''}
   ${fielType.value == 'array' ? `<span class="value">${field.value} : ${fielType.value} of ${arrayType.value}</span>` : ''}
   ${fielType.value == 'object' ? `<span class="value">${field.value} : ${fielType.value}</span>` : ''}
   ${fielType.value !== 'object' && fielType.value !== 'array' ? `<span class="value" style='padding-left:28px'>${field.value} : ${fielType.value}</span>` : ""}
@@ -333,7 +333,7 @@ if(flag){
   child.classList.add('collapsedTry')
   child.style.display = 'block'
   child.innerHTML = `<li class="align collapsed">
-  ${fielType.value == 'object' || fielType.value == 'array' ? `<span class="collapse-arrow"><img src="${COMPONENT_PATH}/img/collapse.svg" alt="collapse-arrow"></span>` : ''}
+  ${fielType.value == 'object' || (fielType.value == 'array' && arrayType.value == "object") ? `<span class="collapse-arrow"><img src="${COMPONENT_PATH}/img/collapse.svg" alt="collapse-arrow"></span>` : ''}
   ${fielType.value == 'array' ? `<span class="value">${field.value} : ${fielType.value} of ${arrayType.value}</span>` : ''}
   ${fielType.value == 'object' ? `<span class="value">${field.value} : ${fielType.value}</span>` : ''}
   ${fielType.value !== 'object' && fielType.value !== 'array' ? `<span class="value" style='padding-left:28px'>${field.value} : ${fielType.value}</span>` : ""}
@@ -528,7 +528,7 @@ if(flag){
   let child = document.createElement('ul');
   child.classList.add('collapsedTry')
   child.innerHTML = `<li class="align collapsed">
-  ${fielType.value == 'object' || fielType.value == 'array' ? `<span class="collapse-arrow"><img src="${COMPONENT_PATH}/img/collapse.svg" alt="collapse-arrow"></span>` : ''}
+  ${fielType.value == 'object' || (fielType.value == 'array' && arrayType.value == "object") ? `<span class="collapse-arrow"><img src="${COMPONENT_PATH}/img/collapse.svg" alt="collapse-arrow"></span>` : ''}
   ${fielType.value == 'array' ? `<span class="value">${field.value} : ${fielType.value} of ${arrayType.value}</span>` : ''}
   ${fielType.value == 'object' ? `<span class="value">${field.value} : ${fielType.value}</span>` : ''}
   ${fielType.value !== 'object' && fielType.value !== 'array' ? `<span class="value" style='padding-left:28px'>${field.value} : ${fielType.value}</span>` : ""}
@@ -586,7 +586,7 @@ if(flag){
   child.classList.add('collapsedTry')
   child.style.display = 'block'
   child.innerHTML = `<li class="align collapsed">
-  ${fielType.value == 'object' || fielType.value == 'array' ? `<span class="collapse-arrow"><img src="${COMPONENT_PATH}/img/collapse.svg" alt="collapse-arrow"></span>` : ''}
+  ${fielType.value == 'object' || (fielType.value == 'array' && arrayType.value == "object") ? `<span class="collapse-arrow"><img src="${COMPONENT_PATH}/img/collapse.svg" alt="collapse-arrow"></span>` : ''}
   ${fielType.value == 'array' ? `<span class="value">${field.value} : ${fielType.value} of ${arrayType.value}</span>` : ''}
   ${fielType.value == 'object' ? `<span class="value">${field.value} : ${fielType.value}</span>` : ''}
   ${fielType.value !== 'object' && fielType.value !== 'array' ? `<span class="value" style='padding-left:28px'>${field.value} : ${fielType.value}</span>` : ""}
@@ -632,13 +632,22 @@ if (event.target.parentElement.parentElement.parentElement.classList == 'collaps
 }
 }
 
-function getChild(parent){
-  var main = {};
+/**
+ * Function to convert html to json
+ */
+
+function getChild(parent, jsonFormat){
+  let main;
+  if(jsonFormat.requestBody){
+    main = jsonFormat["requestBody"]["content"]["application/json"]["schema"]["properties"];
+  } else if (jsonFormat.responses){
+    main = jsonFormat["responses"]["200"]["content"]["application/json"]["schema"]["properties"];
+  }
   parent.querySelectorAll(":scope>ul").forEach(function(para){
       console.log(para);
         getJson(para, main);
     });
-    return main;
+    return jsonFormat;
   }
   
   function getJson(ul, obj){
@@ -648,45 +657,118 @@ function getChild(parent){
     var value = keyValArr[1];
     var description = ul.querySelectorAll(".description")[0].innerText;
     if(key!== 'object' && description){
+      if(value.includes("array")){
         obj[key] = {
-      "type": value,
-      "desc": description
-      }
+          "type": "array",
+          "desc": description
+          }
+        }
+        else {
+          obj[key] = {
+            "type": value,
+            "desc": description
+            }
+        }    
   } else if(key!=='object' && !description){
-    obj[key] = {
-      "type": value,
-      }
+    if(value.includes("array")){
+      obj[key] = {
+        "type": "array",
+        }
+    } else {
+      obj[key] = {
+        "type": value,
+        }
+    }
+    
   }
       // if(key === 'object') delete obj[key]
-      if(value.includes('array')){
+      if(value.includes('array') && value.includes("object")){
           console.log(ul.querySelector(':scope>ul'));
           ul.querySelector(':scope>ul').querySelectorAll(":scope>ul").forEach(function(para){
-      console.log(key)
+      // console.log(key)
+      if(!obj[key].items){
+        obj[key].items = {
+            "type":`${value.replace("arrayof","")}`,
+            "properties": {}
+        }
+    }
       
-          getJson(para, obj[key])
+          getJson(para, obj[key].items.properties);
       })
-      } else {
-      ul.querySelectorAll(':scope>ul').forEach(function(para){
-      console.log(key)
+      }
+      else if(value.includes('array') && !value.includes("object")){
+          if(!obj[key].items){
+            obj[key].items = {
+              "type":`${value.replace("arrayof","")}`
+            }
+          }
+      }
+      else {
+        ul.querySelectorAll(':scope>ul').forEach(function(para){
+      // console.log(key)
+          if(!obj[key].properties){
+            obj[key].properties = {}
+          }
       
-          getJson(para, obj[key])
-      })
+          getJson(para, obj[key].properties);
+        })
       }
     return obj;
   }
   
   function getFinal(element){
+    let inputJsondata = {
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        }
+      }
+    }
+    let outputJsondata = {
+      "responses": {
+        "200": {
+          "description": "response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        }
+      }
+    }
+    // console.log(element)
+    // console.log(element.id)
+    // console.log(element.classList)
     const host = input_output_fields.getHostElement(element);
+    // console.log(host)
   // const shadowRoot = input_output_fields.getShadowRootByHost(host);
   // const shadowRoot = input_output_fields.getShadowRootByHostId(element.getAttribute("id"));
   // console.log(shadowRoot)
   // let parent = shadowRoot.querySelector('#)
-      let mainObj = getChild(element);
+  if(element.id == "newTree"){
+      let mainObj = getChild(element, inputJsondata);
       console.log(mainObj);
       return JSON.stringify(mainObj);
       // return mainObj;
       // $("#newTree").append("<pre>").find("pre").append(JSON.stringify(mainObj, null, 4));
+  } else {
+      let mainObj = getChild(element, outputJsondata);
+      console.log(mainObj);
+      return JSON.stringify(mainObj);
   }
+}
+
+/**
+ * Function to convert json to html
+ */
 
   function createChild(data, parent) {
     // console.log(data);
@@ -701,10 +783,10 @@ function buildHtml(key, val, target) {
     let child = document.createElement('ul');
     child.classList.add('collapsedTry')
     child.innerHTML = `<li class="align collapsed">
-        ${val.type == 'object' || val.type == 'arrayofobject' ? `<span class="collapse-arrow"><img src="${COMPONENT_PATH}/img/collapse.svg" alt="collapse-arrow"></span>` : ''}
-        ${val.type == 'arrayofobject' ? `<span class="value">${key} : ${val.type}</span>` : ''}
+        ${val.type == 'object' || (val.type == 'array' && val.items.type == "object") ? `<span class="collapse-arrow"><img src="${COMPONENT_PATH}/img/collapse.svg" alt="collapse-arrow"></span>` : ''}
+        ${(val.type == 'array' && val.items) ? `<span class="value">${key} : ${val.type} of ${val.items.type}</span>` : ''}
         ${val.type == 'object' ? `<span class="value">${key} : ${val.type}</span>` : ''}
-        ${val.type !== 'object' && val.type !== 'arrayofobject' ? `<span class="value" style='padding-left:28px'>${key} : ${val.type}</span>` : ""}
+        ${val.type !== 'object' && val.type !== 'array' ? `<span class="value" style='padding-left:28px'>${key} : ${val.type}</span>` : ""}
         ${val.type == "object" ? `<span class="object">{0}</span>` : ''}
         ${val.type == "object" ? `<img class="addChild" src="${COMPONENT_PATH}/img/add.svg">` : ''}
         <span class="delete"><svg class="deleteChild" width="20" height="20" viewBox="0 0 20 20" fill="#C4C4C4" xmlns="http://www.w3.org/2000/svg">
@@ -714,15 +796,15 @@ function buildHtml(key, val, target) {
     target.append(child);
 
     if (val.type == 'object') {
-        let updatedVal = val;
-        delete updatedVal.type;
-        delete updatedVal.desc;
+        let updatedVal = val.properties;
+        // delete updatedVal.type;
+        // delete updatedVal.desc;
         createChild(updatedVal, child);
     }
-    else if (val.type == 'arrayofobject') {
-        let updatedVal = val;
-        delete updatedVal.type;
-        delete updatedVal.desc;
+    else if (val.type == 'array' && val.items.type == "object") {
+        let updatedVal = val.items.properties;
+        // delete updatedVal.type;
+        // delete updatedVal.desc;
 
         let arrayObj = document.createElement('ul');
         arrayObj.classList.add('collapsedTry');
@@ -736,6 +818,11 @@ function buildHtml(key, val, target) {
         child.append(arrayObj);
         createChild(updatedVal, arrayObj);
     }
+    else if(val.type == "array" && val.items.type !== "object"){
+      let updatedVal = val;
+      delete val.items;
+      createChild(updatedVal, child)
+  }
 }
 
 function childCount(element) {
@@ -764,8 +851,16 @@ function create(jsonStr, element) {
   // console.log(target);
   element.previousElementSibling.classList.add('active');
     element.style.display = 'block';
-  createChild(jsonStr, element);
-  childCount(element);
+    if(jsonStr.requestBody){
+      let inputSide = jsonStr["requestBody"]["content"]["application/json"]["schema"]["properties"];
+      createChild(inputSide, element);
+      childCount(element);
+    }
+    else {
+      let outputSide = jsonStr["responses"]["200"]["content"]["application/json"]["schema"]["properties"];
+      createChild(outputSide, element);
+      childCount(element);
+    }
 }
 
 export const input_output_fields = {
