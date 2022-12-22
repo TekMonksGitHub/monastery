@@ -1,19 +1,22 @@
 <style>
-    body{
+    body {
         height: 80vh;
         margin: 1.3em;
     }
 
-    div#container{
+    div#container {
         background-color: #DFF0FE;
         border-radius: 10px;
     }
-    div#apidesc{
+
+    div#apidesc {
         padding: 8px 32px;
     }
-    span#exposedpath{
-        color:#0032E4;
+
+    span#exposedpath {
+        color: #0032E4;
     }
+
     span#POST {
         font-family: 'Red Hat Text';
         font-style: normal;
@@ -25,6 +28,7 @@
         padding: 0px 5px;
         height: 1.1em;
     }
+
     span#GET {
         font-family: 'Red Hat Text';
         font-style: normal;
@@ -33,15 +37,25 @@
         color: #FFFFFF;
         background: #039000;
         border-radius: 5px;
-        padding: 0px 10px;;
+        padding: 0px 10px;
         height: 1.1em;
     }
 
-    span#standard{
+    span#standard {
         font-weight: bold;
         color: #282828;
     }
+    
+    tr{
+        width:100%;
+        display: grid;
+        grid-template-columns: 3em 15em 13em 22em;
+    }
 
+    div#securityinfo{
+        display: grid;
+        grid-template-columns: 7% 93%; 
+    }
 
 </style>
 
@@ -54,9 +68,9 @@
             Calling this API
         </div>
         <div style="padding: 0px 32px;">
-            <p>URL to call this API is <span id ="exposedpath">{{exposedpath}}</span></p>
-            <p>The HTTP action to call this API is <span id = "{{method}}">{{method}}</span></p>
-            <p>URL to call this API is <span id = "standard">{{standard}}</span> standard</p>
+            <p>URL to call this API is <span id="exposedpath">{{exposedpath}}</span></p>
+            <p>The HTTP action to call this API is <span id="{{method}}">{{method}}</span></p>
+            <p>URL to call this API is <span id="standard">{{standard}}</span> standard</p>
         </div>
     </div>
     <div>
@@ -64,54 +78,14 @@
         <div style="height: 4.75em; padding: 10px 32px; overflow: auto;">
             <table style="border-collapse: separate; border-spacing: 0px 14px;">
                 <tbody>
+                    {{#inputparams}}
                     <tr>
-                        <td>1</td>
-                        <td>result</td>
-                        <td>Boolean</td>
-                        <td>The result is true on success and false on failure</td>
+                        <td>{{index}}</td>
+                        <td>{{name}}</td>
+                        <td>{{type}}</td>
+                        <td>{{desc}}</td>
                     </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>result</td>
-                        <td>Boolean</td>
-                        <td>The result is true on success and false on failure</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>result</td>
-                        <td>Boolean</td>
-                        <td>The result is true on success and false on failure</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>result</td>
-                        <td>Boolean</td>
-                        <td>The result is true on success and false on failure</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>result</td>
-                        <td>Boolean</td>
-                        <td>The result is true on success and false on failure</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>result</td>
-                        <td>Boolean</td>
-                        <td>The result is true on success and false on failure</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>result</td>
-                        <td>Boolean</td>
-                        <td>The result is true on success and false on failure</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>result</td>
-                        <td>Boolean</td>
-                        <td>The result is true on success and false on failure</td>
-                    </tr>
+                    {{/inputparams}}
                 </tbody>
             </table>
         </div>
@@ -121,68 +95,27 @@
         <div style="height: 9em; padding: 10px 32px; overflow: auto;">
             <table style="border-collapse: separate; border-spacing: 0px 14px;">
                 <tbody>
+                    {{#outputparams}}
                     <tr>
-                        <td>1</td>
-                        <td>result</td>
-                        <td>Boolean</td>
-                        <td>The result is true on success and false on failure</td>
+                        <td>{{index}}</td>
+                        <td>{{name}}</td>
+                        <td>{{type}}</td>
+                        <td>{{desc}}</td>
                     </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>result</td>
-                        <td>Boolean</td>
-                        <td>The result is true on success and false on failure</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>result</td>
-                        <td>Boolean</td>
-                        <td>The result is true on success and false on failure</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>result</td>
-                        <td>Boolean</td>
-                        <td>The result is true on success and false on failure</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>result</td>
-                        <td>Boolean</td>
-                        <td>The result is true on success and false on failure</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>result</td>
-                        <td>Boolean</td>
-                        <td>The result is true on success and false on failure</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>result</td>
-                        <td>Boolean</td>
-                        <td>The result is true on success and false on failure</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>result</td>
-                        <td>Boolean</td>
-                        <td>The result is true on success and false on failure</td>
-                    </tr>
+                    {{/outputparams}}
                 </tbody>
             </table>
         </div>
     </div>
     <div style>
         <div style="background-color:#98CCFD; padding: 5px 32px;">Security</div>
-        <div style="padding: 8px 32px;">
-            <span>1</span>
-            <span>This API needs a valid JWT token.</span>
+        {{#securitydata}}
+        <div style="padding: 8px 32px;" id ="securityinfo">
+            <span>{{index}}</span>
+            <span>{{value}}</span>
         </div>
-        <div style="padding: 8px 32px;">
-            <span>1</span>
-            <span>This API needs a valid JWT token.</span>
-        </div>
+        {{/securitydata}}
+       
     </div>
 
 </div>
