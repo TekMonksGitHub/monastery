@@ -45,7 +45,7 @@ function openClicked(element, elementid) {
    console.log(api_contents);
 
     console.log(element,elementid);
-    api_contents.bindApiContents(element, elementid)
+    api_contents.bindApiContents(elementid)
 
 
 }
