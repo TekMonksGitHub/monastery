@@ -23,7 +23,7 @@ async function inputJson(element, event) {
   const floatingWindowHTML = await $$.requireText(CONSOLE_HTML_FILE);
 
   let result = await getFinal(shadowRoot.querySelector('#newTree'));
-  await floating_window.showWindow(CONSOLE_THEME, Mustache.render(floatingWindowHTML, { message: `${JSON.stringify(JSON.parse(result), null, 2)}`, error: undefined }));
+  await floating_window.showWindow("JSON", CONSOLE_THEME, Mustache.render(floatingWindowHTML, { message: `${JSON.stringify(JSON.parse(result), null, 2)}`, error: undefined }));
 }
 
 async function outputJson(element, event) {
@@ -33,7 +33,7 @@ async function outputJson(element, event) {
   const floatingWindowHTML = await $$.requireText(CONSOLE_HTML_FILE);
 
   let result = await getFinal(shadowRoot.querySelector('#output-childTree'));
-  await floating_window.showWindow(CONSOLE_THEME, Mustache.render(floatingWindowHTML, { message: `${JSON.stringify(JSON.parse(result), null, 2)}`, error: undefined }));
+  await floating_window.showWindow("JSON", CONSOLE_THEME, Mustache.render(floatingWindowHTML, { message: `${JSON.stringify(JSON.parse(result), null, 2)}`, error: undefined }));
 }
 
 const elementConnected = async function (element) {

@@ -218,21 +218,25 @@ function deleteParameters(element, event){
  }
 }
 
-function getParaVal(element){
+function getParaVal(element, obj){
   if(element.firstChild.querySelector(":scope>input")){
     // console.log(element.firstChild.querySelector(":scope>label").innerText,element.firstChild.querySelector(":scope>input").value);
+    obj[element.firstChild.querySelector(":scope>label").innerText] = [element.firstChild.querySelector(":scope>input").value];
   }
   else if(element.firstChild.value){
     // console.log(element.firstChild.value);
   }
   else {
     let child = element.children;
+    if(child[0].id.includes("array")){
+      obj[child[0].firstChild.id.replace("my",'')] = [];
+    }
     let newChild = Array.from(child);
     newChild.shift();
     if(newChild.length){
     newChild.forEach((each)=>{
       each.querySelectorAll(":scope>div").forEach((para)=>{
-        getParaVal(para);
+        getParaVal(para, obj);
       })
     })
   }
@@ -241,18 +245,24 @@ function getParaVal(element){
 
 async function tryIt(element, event){
   let thisElement = api_details.getHostElementByID("apidetails");
-  const shadowRoot = api_details.getShadowRootByHost(thisElement)
-  let node = shadowRoot.querySelectorAll(".content")
+  const shadowRoot = api_details.getShadowRootByHost(thisElement);
+  let node = shadowRoot.querySelectorAll(".content");
   let targetNode = node[node.length-1];
+  let reqBody={}
   targetNode.querySelectorAll(":scope>div").forEach((para)=>{
-    getParaVal(para);
+    getParaVal(para, reqBody);
   })
   let name = shadowRoot.querySelector("#MyORGZIP").value;
-  let reqBody = {
-    "name": `${name}`
+  // let reqBody = {
+  //   "name": `${name}`
+  // }
+  let path;
+  for(let key in randomData.paths){
+    path = key;
+    break;
   }
-
-  let resp = await apiman.rest("http://128.199.24.231:9090/helloWorld", "POST", reqBody);
+  console.log(`http://localhost:9090${path}`)
+  let resp = await apiman.rest(`http://localhost:9090${path}`, "POST", reqBody);
   text_editor.getJsonData(resp);
 };
 
