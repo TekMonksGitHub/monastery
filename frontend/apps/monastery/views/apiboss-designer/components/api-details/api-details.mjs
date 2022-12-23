@@ -103,6 +103,7 @@ let model = {
     }
   ]
 }
+let target = JSON.parse(model.apis[0]["input-output"])["requestBody"]["content"]["application/json"]["schema"]["properties"];
 
 const elementConnected = async (element) => {
   const data = {
@@ -114,16 +115,18 @@ const elementConnected = async (element) => {
 }
 
 async function elementRendered(element) {
-  const shadowRoot = api_details.getShadowRootByHostId(element.getAttribute("id"));
-  fetchBaseParameters(element);
+  console.log("calling again")
+  fetchBaseParameters(element, target);
 }
 
 function updateExposedpathandMethod(elementid) {
   const data = {};
   for (const api of model.apis) {
     if (api["apiname"] == elementid) {
+      let target = JSON.parse(api["input-output"])["requestBody"]["content"]["application/json"]["schema"]["properties"];
       data["method"] = api["method"],
         data["exposedpath"] = api["exposedpath"]
+        fetchBaseParameters(api_details.getHostElementByID("apidetails"), target)
     }
 
   }
@@ -132,17 +135,32 @@ function updateExposedpathandMethod(elementid) {
   api_details.bindData(data, element.id);
 }
 
+// function updateInputModel(elementid) {
+//   const data = {};
+//   for (const api of model.apis) {
+//     if (api["apiname"] == elementid) {
+//       data["input-output"] = api["input-output"],
+//         data["exposedpath"] = api["exposedpath"]
+//     }
+
+//   }
+//   console.log(data);
+//   const element = api_details.getHostElementByID("apidetails")
+//   api_details.bindData(data, element.id);
+// }
+
 function toggle(element, event) {
   if (event.target.classList == "label") {
     element.classList.toggle("active");
   }
 }
 
-let target = JSON.parse(model.apis[1]["input-output"])["requestBody"]["content"]["application/json"]["schema"]["properties"];
 
-function fetchBaseParameters(element) {
+function fetchBaseParameters(element, target) {
+  console.log(element, target)
   const shadowRoot = api_details.getShadowRootByHostId(element.getAttribute("id"));
-  const content = shadowRoot.querySelectorAll('.content');
+  const content = shadowRoot.querySelector('#content');
+  content.innerHTML ='';
 
   for (let key in target) {
     console.log(key);
@@ -153,7 +171,7 @@ function fetchBaseParameters(element) {
    margin-left: 1.2em; ">${key}</label>
    <sub class="dataType">${target[key].type}</sub>
     ${target[key].type == "array" || target[key].type == "object" ? `<button class=${target[key].items.type} id=${key} style="margin: 0px 5px" value=${JSON.stringify(target[key])} onclick='monkshu_env.components["api-details"].addMoreParameters(this, event)'>${target[key].items.type}</button>` : `<input type="text" style="margin: 0px 5px" id="My${key}" class="input-text" /></div>`}`
-    content[content.length - 1].appendChild(child);
+    content.appendChild(child);
   }
 }
 
@@ -264,8 +282,8 @@ function getParaVal(element, obj) {
 async function tryIt(element, event) {
   let thisElement = api_details.getHostElementByID("apidetails");
   const shadowRoot = api_details.getShadowRootByHost(thisElement);
-  let node = shadowRoot.querySelectorAll(".content");
-  let targetNode = node[node.length - 1];
+  let node = shadowRoot.querySelector("#content");
+  let targetNode = node;
   let reqBody = {}
   targetNode.querySelectorAll(":scope>div").forEach((para) => {
     getParaVal(para, reqBody);
