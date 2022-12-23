@@ -5,7 +5,10 @@
 import { util } from "/framework/js/util.mjs";
 import { monkshu_component } from "/framework/js/monkshu_component.mjs";
 
+
 const COMPONENT_PATH = util.getModulePath(import.meta);
+// const jsPDF = $$.require(`${COMPONENT_PATH}/dist/jspdf.debug.js`)
+let docData;
 
 let model = {
   "apis": [
@@ -142,6 +145,7 @@ console.log(securityData);
   };
   if (element.getAttribute("styleBody")) data["styleBody"] = `<style>${element.getAttribute("styleBody")}</style>`;
   api_contents.setData(element.id, data);
+  docData = data;
 }
 
 function traverseObject(target, t, callback) {
@@ -193,11 +197,78 @@ function bindApiContents(elementid) {
   }
 
   api_contents.bindData(data, "apicontent");
+  console.log(data);
+  docData = data;
 
 }
 
+async function downloadPDF(){
+  await $$.require(`${COMPONENT_PATH}/dist/jspdf.debug.js`);
+  await $$.require(`${COMPONENT_PATH}/dist/jspdf.plugin.autotable.min.js`);
+  let inputdata = [];
+  let outputdata = [];
+  let securitydata = [];
+
+  docData.inputparams.forEach((data) => {
+    inputdata.push([`${data.index}`, `${data.name}`, `${data.type}`, `${data.desc}`])
+  })
+
+  docData.outputparams.forEach((data) => {
+    outputdata.push([`${data.index}`, `${data.name}`, `${data.type}`, `${data.desc}`])
+  })
+
+  docData.securitydata.forEach((data) => {
+    securitydata.push([`${data.index}`, `${data.value}`])
+  })
+  let doc = new jsPDF();
+  console.log(doc)
+  doc.autoTable({
+    body: [{ content: `${docData.description}` }]
+  })
+  doc.autoTable({
+    head: [{ content: "Calling this API" }],
+    body: [[`URL to call this API is ${docData.exposedpath}`], [`The HTTP action to call this API is ${docData.method}`], [`The API request and response is in ${docData.standard} standard`]]
+  })
+  doc.autoTable({
+    head: [{ content: "The input parameters are" }],
+  })
+  doc.autoTable({
+    columnStyles: {
+        0: { cellWidth: 5 },
+        1: { cellWidth: 20 },
+        2: { cellWidth: 15 },
+        3: { cellWidth: 60 }
+      },
+    body: inputdata
+  });
+  doc.autoTable({
+    head: [{ content: "The output parameters are" }]
+  })
+  doc.autoTable({
+    columnStyles: {
+        0: { cellWidth: 5 },
+        1: { cellWidth: 20 },
+        2: { cellWidth: 15 },
+        3: { cellWidth: 60 }
+      },
+    body: outputdata
+  });
+
+  doc.autoTable({
+    head: [{ content: "Security" }],
+  })
+  doc.autoTable({
+    columnStyles: {
+        0: { cellWidth: 5 },
+        1: { cellWidth: 95 },
+      },
+    body: securitydata
+  });
+  doc.save("api-doc.pdf");
+}
+
 export const api_contents = {
-  trueWebComponentMode: true, elementConnected, bindApiContents
+  trueWebComponentMode: true, elementConnected, bindApiContents, downloadPDF
 }
 
 monkshu_component.register(
