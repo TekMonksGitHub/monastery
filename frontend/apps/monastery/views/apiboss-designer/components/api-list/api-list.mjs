@@ -41,13 +41,8 @@ function _addClickHandlerToItems(items, onclick) {
     return items;
 }
 function openClicked(element, elementid) {
-   const api_contents = window.monkshu_env.components["api-contents"];
-   console.log(api_contents);
-
-    console.log(element,elementid);
-    api_contents.bindApiContents(elementid)
-
-
+  window.monkshu_env.components["api-contents"].bindApiContents(elementid);
+  window.monkshu_env.components["api-details"].updateExposedpathandMethod(elementid);
 }
 
 export const api_list = { trueWebComponentMode: true, elementConnected, openClicked };

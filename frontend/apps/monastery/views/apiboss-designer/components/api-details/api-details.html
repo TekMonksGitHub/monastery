@@ -13,7 +13,8 @@
         /* padding-bottom: 0.5em; */
     }
 
-    span#method {
+ 
+    span#POST {
         font-family: 'Red Hat Text';
         font-style: normal;
         font-weight: 700;
@@ -21,8 +22,21 @@
         color: #FFFFFF;
         background: #535AFF;
         border-radius: 5px;
-        padding: 3px;
+        padding: 5px;
+        height: 1.1em;
     }
+    span#GET {
+        font-family: 'Red Hat Text';
+        font-style: normal;
+        font-weight: 700;
+        text-align: center;
+        color: #FFFFFF;
+        background: #039000;
+        border-radius: 5px;
+        padding: 0px 10px;;
+        height: 1.1em;
+    }
+    
 
     image-button {
         display: inline-block;
@@ -204,14 +218,18 @@
         padding: 6px 15px;
         gap: 7px;
     }
+
+    span#path{
+        margin-left: 10px;
+    }
 </style>
 
 <div id="container">
 
     <div id="headcontainer">
         <span>
-            <span id="method">POST</span>
-            <span id="path"> /exposed/path</span>
+            <span id="{{method}}">{{method}}</span>
+            <span id="path"> {{exposedpath}}</span>
         </span>
         <!-- onclickHandler="window.monkshu_env['OPEN_SERVER_HELPER'].connectServerClicked()" -->
         <image-button img="{{{componentPath}}}/img/try.svg" text="{{i18n.try}}" style="width:8em; height: 100%;"
