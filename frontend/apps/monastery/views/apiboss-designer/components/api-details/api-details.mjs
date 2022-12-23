@@ -123,7 +123,7 @@ function updateExposedpathandMethod(elementid) {
   const data = {};
   for (const api of model.apis) {
     if (api["apiname"] == elementid) {
-      let target = JSON.parse(api["input-output"])["requestBody"]["content"]["application/json"]["schema"]["properties"];
+      target = JSON.parse(api["input-output"])["requestBody"]["content"]["application/json"]["schema"]["properties"];
       data["method"] = api["method"],
         data["exposedpath"] = api["exposedpath"]
         fetchBaseParameters(api_details.getHostElementByID("apidetails"), target)
@@ -289,7 +289,7 @@ async function tryIt(element, event) {
     getParaVal(para, reqBody);
   })
   console.log(reqBody)
-  let path = model.apis[1].exposedpath;
+  let path = shadowRoot.querySelector("span#path").innerText;
   console.log(`http://localhost:9090${path}`)
   if (Object.keys(reqBody).length) {
     let resp = await apiman.rest(`http://localhost:9090${path}`, "POST", reqBody);
