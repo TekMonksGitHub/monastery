@@ -12,25 +12,6 @@ body{
     font-size: inherit;
 }
 
-div::-webkit-scrollbar {
-    width: 0.5em !important;
-    height: 0.5em !important;
-    scroll-behavior: smooth !important;
-}
-
-div::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
-    margin: 40px;
-    border-radius: 10px !important;
-}
-
-div::-webkit-scrollbar-thumb {
-    background-color: darkgrey !important;
-    border-radius: 10px !important;
-    background-clip: padding-box;
-}
-
 div#window {
     top: var(--window-top, 50%);
     left: var(--window-left, 50%);
@@ -48,7 +29,7 @@ div#window {
     border-radius: var(--window-border-radius, 5px);
     display: flex; 
     flex-direction: column;
-    resize: none !important;
+    resize: both;
 }
 
 span#header {
@@ -72,23 +53,22 @@ div#windowcontent {
     width: 100%;
     height: 100%;
 }
+
+::-webkit-scrollbar {width: 5px;}
+ 
+::-webkit-scrollbar-thumb { border-radius: 100px;background: #cdeaf2;   box-shadow: inset 0 0 6px rgba(0,0,0,0.3);  border-radius: 10px !important;}
+
+::-webkit-scrollbar-track {background-color: #fff;border-radius: 10px !important; margin: 0.5em;}
 </style>
 
 {{{styleBody}}}
 
 <div id="window">
-    <!-- <span id="header" onmousedown="monkshu_env.components['floating-window'].mouseDownOnHeader(event, this)">
-        <span id="title">{{title}}{{^title}}Output{{/title}}</span>
-        <img id="close" src="{{closeIcon}}{{^closeIcon}}{{componentPath}}/img/close.svg{{/closeIcon}}" 
-            onclick="monkshu_env.components['floating-window'].hideWindow(this)">
-    </span> -->
     <div class="json-head" id="header" onmousedown="monkshu_env.components['floating-window'].mouseDownOnHeader(event, this)">
         <div>{{header}}</div>
         <div class="json-icon">
-            <div><img src="{{componentPath}}/img/doc.svg" alt="doc"></div>
-            <div><img src="{{componentPath}}/img/copy.svg" alt="copy"></div>
-            <div><img src="{{componentPath}}/img/close.svg" alt="close" 
-                onclick="monkshu_env.components['floating-window'].hideWindow(this)"></div>
+            <div><img src="{{componentPath}}/img/copy.svg" alt="copy" onclick="monkshu_env.components['floating-window'].copyToClipboard(this)"></div>
+            <div><img src="{{componentPath}}/img/close.svg" alt="close"  onclick="monkshu_env.components['floating-window'].hideWindow(this)"></div>
         </div>
     </div>
 
