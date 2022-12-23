@@ -11,6 +11,12 @@
 
     div#apidesc {
         padding: 8px 32px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    div#apidesc > img{
+        cursor: pointer;
     }
 
     span#exposedpath {
@@ -62,6 +68,7 @@
 <div id="container">
     <div id="apidesc">
         <span>{{description}}</span>
+        <img src="./img/pdf.svg" onclick='monkshu_env.components["api-contents"].downloadPDF()'>
     </div>
     <div style="height: 20%;">
         <div style="background-color:#98CCFD; padding: 5px 32px;">
