@@ -43,6 +43,7 @@ function _addClickHandlerToItems(items, onclick) {
 function openClicked(element, elementid) {
   window.monkshu_env.components["api-contents"].bindApiContents(elementid);
   window.monkshu_env.components["api-details"].updateExposedpathandMethod(elementid);
+  window.monkshu_env.components["apiinput-apioutput"].bindApiInputOutputParameters(elementid);
 
 }
 

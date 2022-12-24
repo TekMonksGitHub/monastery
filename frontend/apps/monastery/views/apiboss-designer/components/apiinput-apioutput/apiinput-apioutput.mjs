@@ -144,10 +144,8 @@ async function elementRendered(element) {
    
   // }
 
-  let inputdata = JSON.parse(model.apis[1]["input-output"])["requestBody"]["content"]["application/json"]["schema"]["properties"];
-  let outputdata = JSON.parse(model.apis[1]["input-output"])["responses"]["200"]["content"]["application/json"]["schema"]["properties"];
-
-  console.log(convertJsonFormat(inputdata, {}))
+  let inputdata = JSON.parse(model.apis[0]["input-output"])["requestBody"]["content"]["application/json"]["schema"]["properties"];
+  let outputdata = JSON.parse(model.apis[0]["input-output"])["responses"]["200"]["content"]["application/json"]["schema"]["properties"];
 
   const tree = jsonview.create(convertJsonFormat(inputdata, {}));
   jsonview.render(tree, shadowRoot.querySelector('.input-root'));
@@ -156,6 +154,28 @@ async function elementRendered(element) {
   const tree2 = jsonview.create(convertJsonFormat(outputdata, {}));
   jsonview.render(tree2,shadowRoot.querySelector('.output-root'));
   jsonview.expand(tree2);
+  console.log(shadowRoot.querySelector('.input-root'));
+console.log(shadowRoot.querySelector('.output-root'));
+console.log(shadowRoot.querySelector('.input-root').innerHTML);
+}
+
+function bindApiInputOutputParameters(elementid){
+  for (const api of model.apis) {
+    if (api["apiname"] == elementid) {
+      const shadowRoot = apiinput_apioutput.getShadowRootByHostId("treeview");
+      shadowRoot.querySelector('.input-root').innerHTML="";
+      shadowRoot.querySelector('.output-root').innerHTML=""
+    let inputdata = JSON.parse(api["input-output"])["requestBody"]["content"]["application/json"]["schema"]["properties"];
+    let outputdata = JSON.parse(api["input-output"])["responses"]["200"]["content"]["application/json"]["schema"]["properties"];
+    const tree = jsonview.create(convertJsonFormat(inputdata, {}));
+    jsonview.render(tree, shadowRoot.querySelector('.input-root'));
+    jsonview.expand(tree);
+  
+    const tree2 = jsonview.create(convertJsonFormat(outputdata, {}));
+    jsonview.render(tree2,shadowRoot.querySelector('.output-root'));
+    jsonview.expand(tree2);
+    }
+  }
 
 }
 
@@ -200,7 +220,7 @@ function convertJsonFormat(json, obj){
 
 
 export const apiinput_apioutput = {
-  trueWebComponentMode: false, elementRendered, convertJsonFormat, pushObjInArray
+  trueWebComponentMode: false, elementRendered, convertJsonFormat, pushObjInArray,bindApiInputOutputParameters
 }
 
 monkshu_component.register(
