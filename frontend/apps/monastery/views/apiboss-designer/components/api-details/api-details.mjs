@@ -170,10 +170,16 @@ function fetchBaseParameters(element, target) {
     <label for="My${target[key].type}" id="my${key}" style="text-align: center; color: #444444;
    margin-left: 1.2em; ">${key}</label>
    <sub class="dataType">${target[key].type}</sub>
-    ${target[key].type == "array" || target[key].type == "object" ? `<button class=${target[key].items.type} id=${key} style="margin: 0px 5px" value=${JSON.stringify(target[key])} onclick='monkshu_env.components["api-details"].addMoreParameters(this, event)'>${target[key].items.type}</button>` : `<input type="text" style="margin: 0px 5px" id="My${key}" class="input-text" /></div>`}`
+    ${target[key].type == "array" || target[key].type == "object" ?` <image-button img="./img/add.svg" text=${target[key].items.type} style=" width:6em; height: 100%; margin :0px 10px;"
+    class=${target[key].items.type } id=${key} type="row" value=${JSON.stringify(target[key])}
+    styleBody="div#button.row {flex-direction: row; justify-content: flex-start;} div#button {padding: 3px 10px;} div#button>img.row {width: 1.5em;height: 100%;} div#button>span {color: #000000; font-weight: 700; margin-left:5px}"
+    color="#444444" border="0.5px solid #98CCFD" background-color="#DFF0FE" active-background-color="white" margin = "0px 10px"
+    display="inline-block;" onclick='monkshu_env.components["api-details"].addMoreParameters(this, event)'></image-button>` : `<input type="text" style="margin: 0px 5px" id="My${key}" class="input-text" /></div>`}`
     content.appendChild(child);
   }
 }
+
+
 
 function findAllByKey(obj, keyToFind) {
   return Object.entries(obj)
@@ -191,7 +197,9 @@ function _serachParamInSchema(id) {
 }
 
 function addMoreParameters(element, event) {
-  if (event.composedPath()[0].classList == 'string') {
+  console.log(element);
+  console.log(event);
+  if (event.composedPath()[5].classList == 'string') {
     let stringWrapper = document.createElement("div");
     stringWrapper.classList.add("wrapper-div");
     stringWrapper.style.paddingBottom = "0px";
@@ -199,10 +207,10 @@ function addMoreParameters(element, event) {
     inputContainer.classList.add("input-wrapper");
     inputContainer.innerHTML = `<input class="input-text" style="padding:3px;" type="text" placeholder="string"/> <img class="deleteBtn" onclick='monkshu_env.components["api-details"].deleteParameters(this, event)' src=${COMPONENT_PATH}/img/delete.svg/>`
     stringWrapper.appendChild(inputContainer);
-    event.composedPath()[2].appendChild(stringWrapper);
+    event.composedPath()[7].appendChild(stringWrapper);
   }
-  else if (event.composedPath()[0].classList == "object") {
-    let newData = _serachParamInSchema(event.composedPath()[0].id).items.properties;
+  else if (event.composedPath()[5].classList == "object") {
+    let newData = _serachParamInSchema(event.composedPath()[5].id).items.properties;
     console.log('youre inside object');
     console.log(newData);
     let wrapperDiv = document.createElement('div');
@@ -223,12 +231,19 @@ function addMoreParameters(element, event) {
       <label for="My${newData[key].type}" style="text-align: center; color: #444444;
      margin-left: 1.2em; ">${key}</label>
      <sub class="dataType">${newData[key].type}</sub>
-      ${newData[key].type == "array" || newData[key].type == "object" ? `<button class=${newData[key].items.type} id=${key} style="margin: 0px 5px" value=${JSON.stringify(newData[key])} onclick='monkshu_env.components["api-details"].addMoreParameters(this, event)'>${newData[key].items.type}</button>` : `<input type="text" style="margin: 0px 5px" id="My${newData[key].type}" class="input-text" /></div>`}`
+      ${newData[key].type == "array" || newData[key].type == "object" ? `
+      <image-button img="./img/add.svg" text=${newData[key].items.type} style=" width:6em; height: 100%; margin :0px 10px;"
+      class=${newData[key].items.type} id=${key} type="row" value=${JSON.stringify(newData[key])}
+      styleBody="div#button.row {flex-direction: row; justify-content: flex-start;} div#button {padding: 3px 10px;} div#button>img.row {width: 1.5em;height: 100%;} div#button>span {color: #000000; font-weight: 700; margin-left:5px}"
+      color="#444444" border="0.5px solid #98CCFD" background-color="#DFF0FE; active-background-color="white"  margin = "0px 10px"
+      display="inline-block;" onclick='monkshu_env.components["api-details"].addMoreParameters(this, event)'></image-button>` : `<input type="text" style="margin: 0px 5px" id="My${newData[key].type}" class="input-text" /></div>`}`
       wrapperDiv.appendChild(child);
     }
-    event.composedPath()[2].appendChild(wrapperDiv);
+    event.composedPath()[7].appendChild(wrapperDiv);
   }
 }
+
+
 
 function deleteParameters(element, event) {
   console.log(event);
@@ -250,7 +265,7 @@ function getParaVal(element, obj) {
     let target = child[0].querySelector("label").innerText;
     console.log(child[0]);
     console.log(child[0].querySelector("label").innerText)
-    let type = child[0].querySelector("button").innerText;
+    let type = child[0].querySelector("image-button").getAttribute("text");
     // if(child[0].id.includes("array")){
     obj[`${target}`] = [];
     // }
