@@ -25,9 +25,6 @@ async function interceptPageLoadData() {
 }
 
 async function loadView(view) {
-    console.log("view");
-    console.log(securityguard.getCurrentRole());
-
     const org = new String(session.get(APP_CONSTANTS.USERORG)).toLowerCase(); 
     if (securityguard.isAllowed(view, org)) router.loadPage(`${APP_CONSTANTS.MAIN_HTML}?view=${view}`);
     else {

@@ -27,7 +27,6 @@ async function elementRendered(element) {
 }
 
 async function _instantiatePlugins(element) {
-	console.log(securityguard.getCurrentRole());
     const role = securityguard.getCurrentRole();
 	let plugins; try{plugins = await $$.requireJSON(`${COMPONENT_PATH}/${element.id}/pluginreg.json`);} catch (err) {LOG.error(`Can't read plugin registry, error is ${err}`); return {};};
 	if(role=="admin") plugins = ["admin","exit"];

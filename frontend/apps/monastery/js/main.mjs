@@ -15,8 +15,6 @@ const dialog = _ => monkshu_env.components['dialog-box'];
 
 
 async function init(viewURL) {
-    console.log("viewUrl");
-    console.log(viewURL);
     window.monkshu_env.frameworklibs.blackboard = blackboard;
 
     const view = (await import(`${viewURL}/view.mjs`)).view; await view.init(); 

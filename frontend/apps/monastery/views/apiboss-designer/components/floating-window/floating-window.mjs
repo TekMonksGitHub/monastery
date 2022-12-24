@@ -24,7 +24,6 @@ async function showWindow(header, themeOrThemePath, templateOrTemplateURL, templ
 		await $$.requireJSON(themeOrThemePath) : themeOrThemePath||DEFAULT_THEME , header), hostID );   // bind the theme data
 
 	const shadowRoot = floating_window.getShadowRootByHostId(hostID);
-	console.log(shadowRoot)
 	const templateHTML = typeof templateOrTemplateURL == "string" ? (templateData ? await router.expandPageData(
 		templateOrTemplateURL, undefined, templateData) : templateOrTemplateURL) : await router.loadHTML(templateOrTemplateURL, templateData, false);
 	const templateRoot = new DOMParser().parseFromString(templateHTML, "text/html").documentElement;
@@ -82,7 +81,6 @@ function copyToClipboard(element) {
 const windowContentElement = shadowRoot.querySelector('#windowcontent');
 const texinClitpboard= windowContentElement.querySelector("textarea#consoleText").value;
 navigator.clipboard.writeText(texinClitpboard)
-console.log(texinClitpboard);
 
 } 
 

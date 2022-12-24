@@ -136,7 +136,6 @@ async function getItemList() {
             //     id: models[i],
             //      label: models[i], method: methods[i]
             // });
-            console.log(items);
             return JSON.stringify(items);
         // }
     }

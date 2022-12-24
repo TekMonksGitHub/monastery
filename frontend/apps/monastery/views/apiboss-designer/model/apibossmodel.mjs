@@ -15,11 +15,10 @@ const MSG_NODES_MODIFIED = "NODES_MODIFIED", MSG_CONNECTORS_MODIFIED = "CONNECTO
     MSG_CONNECT_NODES = "CONNECT_NODES", MSG_ADD_NODE = "ADD_NODE";
 
 function init() {
-    console.log("init");
     blackboard.registerListener(MSG_NODES_MODIFIED, message => modelNodesModified(message.type, message.nodeName,
         message.id, message.properties), true);
     blackboard.registerListener(MSG_CONNECTORS_MODIFIED, message => {
-        console.log(message); modelConnectorsModified(message.type,
+        modelConnectorsModified(message.type,
             message.sourceNode, message.targetNode, message.sourceID, message.targetID)
     });
     blackboard.registerListener(MSG_NODE_DESCRIPTION_CHANGED, message => nodeDescriptionChanged(message.nodeName,
@@ -32,17 +31,14 @@ function init() {
 }
 
 function loadModel(jsonModel) {
-    console.log(jsonModel);
     try {
         apibossmodelObj = JSON.parse(jsonModel);
-        console.log(apibossmodelObj);
     }
     catch (err) { LOG.error(`Bad APIBOSS model, error ${err}, skipping.`); return; }
     if (!(apibossmodelObj.apis)) { LOG.error(`Bad APIBOSS model, not in right format.`); return; }
 
     // first add all the commands
     for (const nodes in apibossmodelObj) for (const node of apibossmodelObj[nodes] ) {
-        console.log(node);
         const id = node.id || _getUniqueID(); idCache[id] = node; const clone = util.clone(node);
         const nodeName = clone.nodeName;
         blackboard.broadcastMessage(MSG_ADD_NODE, { nodeName, id, description: clone.description, properties: { ...clone }, connectable: true });
@@ -54,7 +50,6 @@ function loadModel(jsonModel) {
         const sourceName = idCache[sourceID].nodeName, targetName = idCache[targetID].nodeName;
         blackboard.broadcastMessage(MSG_CONNECT_NODES, { sourceName, targetName, sourceID, targetID });
     }
-    console.log(apibossmodelObj);
     // add connections between commands
     for (const api of apibossmodelObj.apis)
         if (api.dependencies) for (const dependency of api.dependencies) connectNodes(dependency, api.id);
@@ -66,13 +61,10 @@ function modelNodesModified(type, nodeName, id, properties) {
     if (type == apibossmodel.ADDED) return _nodeAdded(nodeName, id, properties);
     if (type == apibossmodel.REMOVED) return _nodeRemoved(nodeName, id);
     if (type == apibossmodel.MODIFIED) return _nodeModified(nodeName, id, properties);
-console.log(apibossmodelObj);
     return false;   // unknown modification
 }
 
 function modelConnectorsModified(type, sourceName, targetName, sourceID, targetID) {
-    console.log(type);
-
     if ((!idCache[sourceID]) || (!idCache[targetID])) return;   // not connected
 
     const addOrRemoveDependencies = (sourceNode, targetNode, type) => {
@@ -112,7 +104,6 @@ function nodeDescriptionChanged(_nodeName, id, description) {
 
 function getModel() {
     const retModel = util.clone(apibossmodelObj);
-    console.log(retModel);
     // const sortedCommands = algos.sortDependencies(retModel.apicl[0]);  // sort apicl commands in the order of dependencies
     // const NOPparams = saveCordinates(sortedCommands);
     // let APICL = algos.convertIntoAPICL(sortedCommands); // converting into the final APICL

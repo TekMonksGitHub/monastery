@@ -107,42 +107,6 @@ let model = {
 async function elementRendered(element) {
 
   const shadowRoot = apiinput_apioutput.getShadowRootByHostId(element.getAttribute("id"));
-  console.log(shadowRoot);
-  // const inputdata = {
-  //   "givenName": "Vas",
-  //   "surName": "Sudanagunta",
-  //   "children": [
-  //     {
-  //       "givenName": "Natalia",
-  //       "age": 5
-  //     },
-  //     {
-  //       "givenName": "Aida",
-  //       "age": 17
-  //     }
-  //   ],
-  //   "address": {
-  //     "state": "NY",
-  //     "city": "Brooklyn",
-  //     "street": "718 Marcus Garvey Ave"
-  //   }
-  // }
-  // const outputdata= {
-  //   "name": "String",
-  //   "age": "Integer",
-  //   "location": {
-  //     "city": "String",
-  //     "state": "String",
-  //     "pin": "Integer",
-  //     "order": [
-  //       {
-  //         "item": "String",
-  //         "code": "Integer"
-  //       }
-  //     ]
-  //   }
-   
-  // }
 
   let inputdata = JSON.parse(model.apis[0]["input-output"])["requestBody"]["content"]["application/json"]["schema"]["properties"];
   let outputdata = JSON.parse(model.apis[0]["input-output"])["responses"]["200"]["content"]["application/json"]["schema"]["properties"];
@@ -154,9 +118,6 @@ async function elementRendered(element) {
   const tree2 = jsonview.create(convertJsonFormat(outputdata, {}));
   jsonview.render(tree2,shadowRoot.querySelector('.output-root'));
   jsonview.expand(tree2);
-  console.log(shadowRoot.querySelector('.input-root'));
-console.log(shadowRoot.querySelector('.output-root'));
-console.log(shadowRoot.querySelector('.input-root').innerHTML);
 }
 
 function bindApiInputOutputParameters(elementid){

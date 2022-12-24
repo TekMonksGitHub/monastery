@@ -48,7 +48,6 @@ async function init(viewPath) {
         {graphID: GRAPH_ID, shapeid: message.shapeid, label: message.label}));
    
    blackboard.registerListener(MSG_MODEL_ADD_NODE, message => { ID_CACHE[message.id] = message.properties; 
-    console.log(message);
         if (window.monkshu_env.NODE_REPOSITORY) window.monkshu_env.NODE_REPOSITORY.registerNode(message.description, message.nodeName);
         blackboard.broadcastMessage(MSG_ADD_SHAPE, {name: _generateShapeName(message.nodeName), id: message.id, 
             graphID: GRAPH_ID, label: message.description, x:message.properties.x||_generateShapeX(), 
@@ -67,7 +66,6 @@ async function init(viewPath) {
     // import required components, and init required modules
     for (const component in CONF.components) import (`${VIEW_PATH}/${CONF.components[component]}/${component}.mjs`);
     for (const initModule in CONF.initModules) (await import(`${VIEW_PATH}/${CONF.initModules[initModule]}`))[initModule].init();
-    console.log(ID_CACHE);
 }
 
 async function reset() {
@@ -75,7 +73,6 @@ async function reset() {
 }
 
 function shapeAdded(shapeName, id, label, connectable=true) {
-    console.log(shapeName);
     const shapeNameTweaked = _generateShapeName(shapeName);
     blackboard.broadcastMessage(MSG_ADD_SHAPE, {name: shapeNameTweaked, id, graphID: GRAPH_ID, label:label||"", 
         x:_generateShapeX(), y:_generateShapeY(), width:IMG_SIZE.width, height:IMG_SIZE.height, connectable});  // add to the flow diagram
@@ -120,9 +117,7 @@ async function _shapeObjectClickedOnFlowDiagram(shapeName, id, shapelabel) {
 }
 
 function _validateConnection(message) {
-    console.log(message);
     const validators = blackboard.getListeners(MSG_MODEL_ARE_NODES_CONNECTABLE); 
-    console.log(validators);
     for (const validator of validators) if (!validator({sourceName: message.sourceName, targetName: message.targetName, 
         sourceID: message.sourceID, targetID: message.targetID})) return false;
     return true;
