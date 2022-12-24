@@ -131,7 +131,6 @@ const elementConnected = async (element) => {
 
   if(jwtText) securityData.push({"index":securityData.length + 1,"value": jwtText})
   if(apikeys && apikeys.length>0) securityData.push({"index":securityData.length + 1,"value": `The following api keys is required - ${apikeys.join(",")}`})
-console.log(securityData);
 
 
   const data = {
@@ -141,7 +140,8 @@ console.log(securityData);
     "standard": model.apis[0]["yesorno"] == "YES" ? "REST" : "NOT REST",
     "inputparams": inputParams,
     "outputparams": outputParams,
-    "securitydata":securityData
+    "securitydata":securityData,
+    "apiname": model.apis[0]["apiname"]
   };
   if (element.getAttribute("styleBody")) data["styleBody"] = `<style>${element.getAttribute("styleBody")}</style>`;
   api_contents.setData(element.id, data);
@@ -162,7 +162,6 @@ function bindApiContents(elementid) {
   const data = {}
 
   for (const api of model.apis) {
-    console.log(api);
     let inputParams = [], outputParams = [];
 
     let IdsOfPolicies = api.dependencies, apikeys = [], jwtText = false, securityData = [];
@@ -178,8 +177,6 @@ function bindApiContents(elementid) {
 
     if(jwtText) securityData.push({"index":securityData.length + 1,"value": jwtText})
     if(apikeys && apikeys.length>0) securityData.push({"index":securityData.length + 1,"value": `The following api keys is required - ${apikeys.join(",")}`});
-    console.log(securityData);
-    console.log(apikeys);
 
     traverseObject(JSON.parse(api["input-output"])["requestBody"]["content"]["application/json"]["schema"]["properties"], false, function (node, key) { if (node && typeof node == "object") if (node.type) { inputParams.push({ "name": key, "type": node.type, "desc": node.desc ? node.desc : "", "index": inputParams.length + 1 }); } });
     traverseObject(JSON.parse(api["input-output"])["responses"]["200"]["content"]["application/json"]["schema"]["properties"], false, function (node, key) { if (node && typeof node == "object") if (node.type) { outputParams.push({ "name": key, "type": node.type, "desc": node.desc ? node.desc : "", "index": outputParams.length + 1 }); } });
@@ -192,12 +189,12 @@ function bindApiContents(elementid) {
       data["inputparams"] = inputParams;
       data["outputparams"] = outputParams;
       data["securitydata"] = securityData;
+      data["apiname"] = api["apiname"]
       break;
     }
   }
 
   api_contents.bindData(data, "apicontent");
-  console.log(data);
   docData = data;
 
 }
@@ -221,7 +218,10 @@ async function downloadPDF(){
     securitydata.push([`${data.index}`, `${data.value}`])
   })
   let doc = new jsPDF();
-  console.log(doc)
+  doc.autoTable({
+    styles: {fontStyle: 'bold', fontSize: '15'},
+    head:[{content: docData.apiname}]
+  })
   doc.autoTable({
     body: [{ content: `${docData.description}` }]
   })
@@ -264,7 +264,7 @@ async function downloadPDF(){
       },
     body: securitydata
   });
-  doc.save("api-doc.pdf");
+  doc.save(`${docData.apiname}.pdf`);
 }
 
 export const api_contents = {
