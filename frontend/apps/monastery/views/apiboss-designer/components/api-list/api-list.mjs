@@ -41,6 +41,12 @@ function _addClickHandlerToItems(items, onclick) {
     return items;
 }
 function openClicked(element, elementid) {
+    const containerArray = Array.from(element.parentElement.children);
+    for(let i=0;i<containerArray.length;i++){
+        if(element.id == containerArray[i].id){
+            containerArray[i].style.background = "#F8FCFF"
+        } else containerArray[i].style.background = "none"
+    }
   window.monkshu_env.components["api-contents"].bindApiContents(elementid);
   window.monkshu_env.components["api-details"].updateExposedpathandMethod(elementid);
   window.monkshu_env.components["apiinput-apioutput"].bindApiInputOutputParameters(elementid);
