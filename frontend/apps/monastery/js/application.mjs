@@ -23,8 +23,6 @@ async function main(page, desiredData) {
 	await _addPageLoadInterceptors(); await _readConfig();
 	const requesetedLocation = page || window.location.href;
 	const decodedURL = new URL(page || router.decodeURL(window.location.href)), justURL = decodedURL.href.split("?")[0];
-	console.log(page);
-    console.log(justURL);
 
 	if (session.get(APP_EXIT_FLAG)) {	// exit check, once exited, can't reload
 		router.loadPage(APP_CONSTANTS.EXIT_HTML);	

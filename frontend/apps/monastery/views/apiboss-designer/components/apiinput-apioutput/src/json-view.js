@@ -193,14 +193,12 @@ function getJsonObject(data) {
  */
 export function create(jsonData) {
   const parsedData = getJsonObject(jsonData);
-  console.log(parsedData);
   const rootNode = createNode({
     value: parsedData,
     key: getDataType(parsedData),
     type: getDataType(parsedData),
   });
   createSubnode(parsedData, rootNode);
-  console.log(rootNode);
   return rootNode;
 }
 

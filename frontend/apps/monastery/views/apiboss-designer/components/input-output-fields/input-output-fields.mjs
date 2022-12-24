@@ -18,7 +18,6 @@ const CONSOLE_THEME = {
 
 async function inputJson(element, event) {
   event.stopPropagation();
-  console.log(floating_window);
   const host = input_output_fields.getHostElement(element);
   const shadowRoot = input_output_fields.getShadowRootByHost(host);
   const floatingWindowHTML = await $$.requireText(CONSOLE_HTML_FILE);
@@ -58,16 +57,10 @@ const elementRendered = async function (element) {
   let outputField = shadowRoot.querySelector('#output-childTree');
   if(element.getAttribute("value")) _setValue(JSON.parse(element.getAttribute("value")), inputField, outputField);
   
-  console.log(element)
   const container =  shadowRoot.querySelector('div.input-root');
-
-console.log(shadowRoot);
-console.log(container);
 }
 
 function _getValue(element) {
-  console.log(element);
-
   const shadowRoot = input_output_fields.getShadowRootByHostId(element.getAttribute("id"));
   let inputField = shadowRoot.querySelector('#newTree');
   let outputField = shadowRoot.querySelector('#output-childTree');
@@ -75,22 +68,12 @@ function _getValue(element) {
 
   let inputValue = getFinal(inputField);
   let outPutValue = getFinal(outputField);
-  
-  console.log(inputValue)
-  console.log(outPutValue)
-
-  
   return JSON.stringify([inputValue, outPutValue]);
 };
 
 function _setValue(value, inputElement, outputElement) {
-  console.log("triggered from setvalue")
-
   const inputdata = JSON.parse(value[0]);
   const outputdata = JSON.parse(value[1]);
-
-  console.log(inputdata);
-  console.log(outputdata);
 
   if(inputdata) {create(inputdata, inputElement);}
   if(outputdata) {create(outputdata, outputElement);}
@@ -130,19 +113,10 @@ function fieldAdd(classname, divClass, selectClass, inputId, optionId, textareaI
 }
 
 function addMainChild(event, element){
-  console.log(event.target);
   const host = input_output_fields.getHostElement(element);
   const shadowRoot = input_output_fields.getShadowRootByHost(host);
-  console.log(element)
-  console.log(host)
-  console.log(shadowRoot)
-  console.log(shadowRoot.querySelector('.container'))
   if (shadowRoot.querySelector('.container') && event.target.classList == 'addChild') return;
-    console.log(event.target.classList[0] == 'addChild')
     if (event.target.classList[0] == 'addChild') {
-      // event.target.parentElement.parentElement.classList.add('active');
-      //   var content = event.target.parentElement.parentElement.nextElementSibling;
-      //   content.style.display = 'block'
       if(event.target.parentElement.parentElement.classList[1]!="active"){
         event.target.parentElement.parentElement.classList.add('active');
         var content = event.target.parentElement.parentElement.nextElementSibling;
@@ -154,7 +128,6 @@ function addMainChild(event, element){
     if(event.target.classList == 'collapse'){
       event.target.parentElement.parentElement.classList.toggle('active');
         var content = event.target.parentElement.parentElement.nextElementSibling;
-        console.log(content)
         if (content.style.display === "block") {
             content.style.display = "none";
         } else {
@@ -167,19 +140,10 @@ function addSubChild(event, element){
   const host = input_output_fields.getHostElement(element);
   const shadowRoot = input_output_fields.getShadowRootByHost(host);
   if (event.target.classList == 'addChild' && !shadowRoot.querySelector('.child')) {
-    console.log(event.target.parentElement.parentElement);
     if(event.target.parentElement.classList!='ok'){
-    // let parentSelect = event.target.parentElement.parentElement.children;
-    // if (parentSelect[0].classList[2] != 'active') {
-    //     parentSelect[0].classList.add('active');
-    //     for (let i = 1; i < parentSelect.length; i++) {
-    //         parentSelect[i].style.display = 'block';
-    //     }
-    // }
     let child = fieldAdd('child', 'container', 'cselect', 'fname', 'ftype', 'fdesc');
     event.target.parentElement.parentElement.append(child);
     let parentSelect = event.target.parentElement.parentElement;
-            console.log(parentSelect);
             parentSelect.querySelectorAll(":scope>ul").forEach((ul)=>{
                 if(parentSelect.firstChild.classList[2]!= 'active'){parentSelect.firstChild.classList.add('active');}
                 ul.style.display = 'block'
@@ -247,9 +211,6 @@ let fielType = shadowRoot.querySelector("#ftype");
 let arrayType = shadowRoot.querySelector("#arrayType");
 
 if (event.target.parentElement.classList == 'ok' && shadowRoot.querySelector('.parent')) {
-  console.log(field.value)
-  console.log(fielDesc.value)
-  console.log(fielType.value)
   let flag = false;
   let allChild = shadowRoot.querySelector('#newTree').querySelectorAll(":scope>ul.collapsedTry");
   if(allChild){
@@ -304,9 +265,6 @@ if(flag){
 }
 }
 if (event.target.parentElement.classList == 'ok' && shadowRoot.querySelector('.child')) {
-  console.log(field.value)
-  console.log(fielDesc.value)
-  console.log(fielType.value)
   let flag = false;
   let allChild = shadowRoot.querySelector('.child').parentElement.querySelectorAll(":scope>ul.collapsedTry");
   if(allChild){
@@ -359,13 +317,10 @@ if(flag){
       `
       target.lastChild.appendChild(arrayObj);
   }
-  console.log(target.children[1].children[1])
   if (target.firstChild.children[2].classList == 'object') target.firstChild.children[2].innerText = `{${target.childElementCount - 1}}`;
 }
 }
 if (event.target.parentElement.parentElement.parentElement.classList == 'collapsedTry' && event.target.classList != 'addChild') {
-  console.log('check here')
-  console.log(event.target)
   let main = event.target.parentElement.parentElement.parentElement.children;
   if (main[0].classList[2] != 'active' && main[0].classList[3] != 'active') {
       main[0].classList.add('active');
@@ -382,19 +337,10 @@ if (event.target.parentElement.parentElement.parentElement.classList == 'collaps
 }
 
 function addOutputChild(event, element){
-  console.log(event.target);
   const host = input_output_fields.getHostElement(element);
   const shadowRoot = input_output_fields.getShadowRootByHost(host);
-  console.log(element)
-  console.log(host)
-  console.log(shadowRoot)
-  console.log(shadowRoot.querySelector('.output-container')) // have to change here
   if (shadowRoot.querySelector('.output-container') && event.target.classList == 'addChild') return; // have to change here
-    console.log(event.target.classList[0] == 'addChild')
     if (event.target.classList[0] == 'addChild') {
-      // event.target.parentElement.parentElement.classList.add('active');
-      //   var content = event.target.parentElement.parentElement.nextElementSibling;
-      //   content.style.display = 'block'
       if(event.target.parentElement.parentElement.classList[1]!="active"){
         event.target.parentElement.parentElement.classList.add('active');
         var content = event.target.parentElement.parentElement.nextElementSibling;
@@ -406,7 +352,6 @@ function addOutputChild(event, element){
     if(event.target.classList == 'collapse'){
       event.target.parentElement.parentElement.classList.toggle('active');
         var content = event.target.parentElement.parentElement.nextElementSibling;
-        console.log(content)
         if (content.style.display === "block") {
             content.style.display = "none";
         } else {
@@ -419,19 +364,10 @@ function addOutputSubChild(event, element){
   const host = input_output_fields.getHostElement(element);
   const shadowRoot = input_output_fields.getShadowRootByHost(host);
   if (event.target.classList == 'addChild' && !shadowRoot.querySelector('.output-child')) { // have to change here
-    console.log(event.target.parentElement.parentElement);
     if(event.target.parentElement.classList!='ok'){
-    // let parentSelect = event.target.parentElement.parentElement.children;
-    // if (parentSelect[0].classList[2] != 'active') {
-    //     parentSelect[0].classList.add('active');
-    //     for (let i = 1; i < parentSelect.length; i++) {
-    //         parentSelect[i].style.display = 'block';
-    //     }
-    // }
     let child = fieldAdd('output-child', 'output-container', 'output-cselect', 'output-fname', 'output-ftype', 'output-fdesc'); // have to change here
     event.target.parentElement.parentElement.append(child);
     let parentSelect = event.target.parentElement.parentElement;
-            console.log(parentSelect);
             parentSelect.querySelectorAll(":scope>ul").forEach((ul)=>{
                 if(parentSelect.firstChild.classList[2]!= 'active'){parentSelect.firstChild.classList.add('active');}
                 ul.style.display = 'block'
@@ -499,9 +435,6 @@ let fielType = shadowRoot.querySelector("#output-ftype"); // have to change here
 let arrayType = shadowRoot.querySelector("#output-arrayType"); // have to change here
 
 if (event.target.parentElement.classList == 'ok' && shadowRoot.querySelector('.output-parent')) { // have to change here
-  // console.log(field.value)
-  // console.log(fielDesc.value)
-  // console.log(fielType.value)
   let flag = false;
   let allChild = shadowRoot.querySelector('#output-childTree').querySelectorAll(":scope>ul.collapsedTry");
   if(allChild){
@@ -557,9 +490,6 @@ if(flag){
 }
 }
 if (event.target.parentElement.classList == 'ok' && shadowRoot.querySelector('.output-child')) { // have to change here
-  // console.log(field.value)
-  // console.log(fielDesc.value)
-  // console.log(fielType.value)
   let flag = false;
   let allChild = shadowRoot.querySelector('.output-child').parentElement.querySelectorAll(":scope>ul.collapsedTry");
   if(allChild){
@@ -611,13 +541,10 @@ if(flag){
       `
       target.lastChild.appendChild(arrayObj);
   }
-  console.log(target.children[1].children[1])
   if (target.firstChild.children[2].classList == 'object') target.firstChild.children[2].innerText = `{${target.childElementCount - 1}}`;
 }
 }
 if (event.target.parentElement.parentElement.parentElement.classList == 'collapsedTry' && event.target.classList != 'addChild') {
-  console.log('check here')
-  console.log(event.target)
   let main = event.target.parentElement.parentElement.parentElement.children;
   if (main[0].classList[2] != 'active' && main[0].classList[3] != 'active') {
       main[0].classList.add('active');
@@ -645,14 +572,12 @@ function getChild(parent, jsonFormat){
     main = jsonFormat["responses"]["200"]["content"]["application/json"]["schema"]["properties"];
   }
   parent.querySelectorAll(":scope>ul").forEach(function(para){
-      console.log(para);
         getJson(para, main);
     });
     return jsonFormat;
   }
   
   function getJson(ul, obj){
-  // console.log(ul.querySelector('.value'))
       var keyValArr = ul.querySelectorAll(".value")[0].innerText.replace(/\s+/g, '').split(":");
     var key = keyValArr[0];
     var value = keyValArr[1];
@@ -684,9 +609,7 @@ function getChild(parent, jsonFormat){
   }
       // if(key === 'object') delete obj[key]
       if(value.includes('array') && value.includes("object")){
-          console.log(ul.querySelector(':scope>ul'));
           ul.querySelector(':scope>ul').querySelectorAll(":scope>ul").forEach(function(para){
-      // console.log(key)
       if(!obj[key].items){
         obj[key].items = {
             "type":`${value.replace("arrayof","")}`,
@@ -706,7 +629,6 @@ function getChild(parent, jsonFormat){
       }
       else {
         ul.querySelectorAll(':scope>ul').forEach(function(para){
-      // console.log(key)
           if(!obj[key].properties){
             obj[key].properties = {}
           }
@@ -745,24 +667,12 @@ function getChild(parent, jsonFormat){
         }
       }
     }
-    // console.log(element)
-    // console.log(element.id)
-    // console.log(element.classList)
     const host = input_output_fields.getHostElement(element);
-    // console.log(host)
-  // const shadowRoot = input_output_fields.getShadowRootByHost(host);
-  // const shadowRoot = input_output_fields.getShadowRootByHostId(element.getAttribute("id"));
-  // console.log(shadowRoot)
-  // let parent = shadowRoot.querySelector('#)
   if(element.id == "newTree"){
       let mainObj = getChild(element, inputJsondata);
-      console.log(mainObj);
       return JSON.stringify(mainObj);
-      // return mainObj;
-      // $("#newTree").append("<pre>").find("pre").append(JSON.stringify(mainObj, null, 4));
   } else {
       let mainObj = getChild(element, outputJsondata);
-      console.log(mainObj);
       return JSON.stringify(mainObj);
   }
 }
@@ -772,15 +682,12 @@ function getChild(parent, jsonFormat){
  */
 
   function createChild(data, parent) {
-    // console.log(data);
-    // console.log(parent);
     for (let key in data) {
         buildHtml(key, data[key], parent);
     }
 };
 
 function buildHtml(key, val, target) {
-  console.log(target);
     let child = document.createElement('ul');
     child.classList.add('collapsedTry')
     child.innerHTML = `<li class="align collapsed">
@@ -827,8 +734,6 @@ function buildHtml(key, val, target) {
 }
 
 function childCount(element) {
-    // shadowRoot.querySelector('#parent-count').innerText = `{${data.childElementCount}}`
-    // console.log(element.previousElementSibling.querySelector('#parent-count'));
     if(element.previousElementSibling.querySelector('#parent-count')){
       // element.previousElementSibling.classList.add = 'active';
       element.previousElementSibling.querySelector('#parent-count').innerText = `{${element.childElementCount}}`
@@ -845,11 +750,6 @@ function childCount(element) {
 }
 
 function create(jsonStr, element) {
-  console.log(element);
-  // const shadowRoot = input_output_fields.getShadowRootByHostId(element.getAttribute("id"));
-  // const target = shadowRoot.querySelector("#newTree");
-  // console.log(shadowRoot.querySelector('#parent-count').innerText);
-  // console.log(target);
   element.previousElementSibling.classList.add('active');
     element.style.display = 'block';
     if(jsonStr.requestBody){

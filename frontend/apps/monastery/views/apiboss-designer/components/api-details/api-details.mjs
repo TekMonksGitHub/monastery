@@ -110,12 +110,10 @@ const elementConnected = async (element) => {
     componentPath: COMPONENT_PATH, styleBody: element.getAttribute("styleBody") ?
       `<style>${element.getAttribute("styleBody")}</style>` : undefined, method: model.apis[0]["method"], exposedpath: model.apis[0]["exposedpath"]
   };
-  console.log(element);
   api_details.setData(element.id, data);
 }
 
 async function elementRendered(element) {
-  console.log("calling again")
   fetchBaseParameters(element, target);
 }
 
@@ -130,24 +128,9 @@ function updateExposedpathandMethod(elementid) {
     }
 
   }
-  console.log(data);
   const element = api_details.getHostElementByID("apidetails")
   api_details.bindData(data, element.id);
 }
-
-// function updateInputModel(elementid) {
-//   const data = {};
-//   for (const api of model.apis) {
-//     if (api["apiname"] == elementid) {
-//       data["input-output"] = api["input-output"],
-//         data["exposedpath"] = api["exposedpath"]
-//     }
-
-//   }
-//   console.log(data);
-//   const element = api_details.getHostElementByID("apidetails")
-//   api_details.bindData(data, element.id);
-// }
 
 function toggle(element, event) {
   if (event.target.classList == "label") {
@@ -157,14 +140,11 @@ function toggle(element, event) {
 
 
 function fetchBaseParameters(element, target) {
-  console.log(element, target)
   const shadowRoot = api_details.getShadowRootByHostId(element.getAttribute("id"));
   const content = shadowRoot.querySelector('#content');
   content.innerHTML ='';
 
   for (let key in target) {
-    console.log(key);
-    console.log(target[key].type)
     let child = document.createElement('div');
     child.innerHTML = `<div class="input-fields" style="padding-right: 10px" id=${target[key].type}>
     <label for="My${target[key].type}" id="my${key}" style="text-align: center; color: #444444;
@@ -197,8 +177,6 @@ function _serachParamInSchema(id) {
 }
 
 function addMoreParameters(element, event) {
-  console.log(element);
-  console.log(event);
   if (event.composedPath()[5].classList == 'string') {
     let stringWrapper = document.createElement("div");
     stringWrapper.classList.add("wrapper-div");
@@ -211,8 +189,6 @@ function addMoreParameters(element, event) {
   }
   else if (event.composedPath()[5].classList == "object") {
     let newData = _serachParamInSchema(event.composedPath()[5].id).items.properties;
-    console.log('youre inside object');
-    console.log(newData);
     let wrapperDiv = document.createElement('div');
     wrapperDiv.classList.add("wrapper-div");
     let objectDiv = document.createElement("div");
@@ -224,8 +200,6 @@ function addMoreParameters(element, event) {
    </div>`
     wrapperDiv.appendChild(objectDiv);
     for (let key in newData) {
-      console.log(key);
-      console.log(newData[key].type)
       let child = document.createElement('div');
       child.innerHTML = `<div class="input-fields" style="padding-right: 10px" id=${newData[key].type}>
       <label for="My${newData[key].type}" style="text-align: center; color: #444444;
@@ -246,8 +220,6 @@ function addMoreParameters(element, event) {
 
 
 function deleteParameters(element, event) {
-  console.log(event);
-  console.log(element)
   if (event.composedPath()[1].classList == "array-object") {
     event.composedPath()[3].remove();
   }
@@ -263,8 +235,6 @@ function getParaVal(element, obj) {
   else {
     let child = element.children;
     let target = child[0].querySelector("label").innerText;
-    console.log(child[0]);
-    console.log(child[0].querySelector("label").innerText)
     let type = child[0].querySelector("image-button").getAttribute("text");
     // if(child[0].id.includes("array")){
     obj[`${target}`] = [];
@@ -303,9 +273,7 @@ async function tryIt(element, event) {
   targetNode.querySelectorAll(":scope>div").forEach((para) => {
     getParaVal(para, reqBody);
   })
-  console.log(reqBody)
   let path = shadowRoot.querySelector("span#path").innerText;
-  console.log(`http://localhost:9090${path}`)
   if (Object.keys(reqBody).length) {
     let resp = await apiman.rest(`http://localhost:9090${path}`, "POST", reqBody);
     text_editor.getJsonData(resp);

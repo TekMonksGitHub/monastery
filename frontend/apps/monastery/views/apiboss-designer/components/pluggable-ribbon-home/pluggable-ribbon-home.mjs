@@ -32,9 +32,7 @@ async function _instantiatePlugins(element) {
 	
 	for (const plugin of plugins) {
 		const moduleSrc = `${COMPONENT_PATH}/${element.id}/${plugin}/${plugin}.mjs`;
-		console.log(moduleSrc);
 		const pluginModule = (await import(moduleSrc))[plugin]; 
-		console.log(pluginModule);
 		if (pluginModule && await pluginModule.init(`${COMPONENT_PATH}/${element.id}/${plugin}`)) {
 			pluggable_ribbon_home.extensions[element.id][plugin] = pluginModule;
 			const pluginObj = {img: pluginModule.getImage(), title: pluginModule.getHelpText(session.get($$.MONKSHU_CONSTANTS.LANG_ID)), 
