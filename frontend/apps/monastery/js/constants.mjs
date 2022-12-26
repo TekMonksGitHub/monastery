@@ -23,7 +23,7 @@ export const APP_CONSTANTS = {
     ERROR_HTML: APP_PATH+"/error.html",
     MANAGE_HTML: APP_PATH+"/manage.html",
     DEVELOPER_HTML: APP_PATH+"/developer.html",
-    MODEL_JSON: `${APP_PATH}/views/apiboss-designer/conf/metadata.json`,
+    CONF_PATH: `${APP_PATH}/views/apiboss-designer/conf`,
 
     DIALOGS_PATH: APP_PATH+"/dialogs",
 

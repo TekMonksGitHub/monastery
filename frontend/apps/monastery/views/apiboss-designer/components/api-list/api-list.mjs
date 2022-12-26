@@ -35,6 +35,11 @@ async function elementConnected(element) {
     api_list.setDataByHost(element, data);
 }
 
+async function elementRendered(element) {
+const items = Array.from(api_list.getShadowRootByHostId(element.id).querySelector("div#container").children)[0].style.background = "#F8FCFF";
+console.log(items);
+}
+
 function _addClickHandlerToItems(items, onclick) {
     if (!onclick) return;
     for (const item of items) item.onclick = onclick;
@@ -53,5 +58,5 @@ function openClicked(element, elementid) {
 
 }
 
-export const api_list = { trueWebComponentMode: true, elementConnected, openClicked };
+export const api_list = { trueWebComponentMode: true, elementConnected,elementRendered, openClicked };
 monkshu_component.register("api-list", `${COMPONENT_PATH}/api-list.html`, api_list);

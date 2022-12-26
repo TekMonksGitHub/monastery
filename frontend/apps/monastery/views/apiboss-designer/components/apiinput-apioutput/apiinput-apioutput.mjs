@@ -8,13 +8,13 @@ import { jsonview } from "./src/json-view.js";
 import { APP_CONSTANTS } from "../../../../js/constants.mjs";
 
 
-const COMPONENT_PATH = util.getModulePath(import.meta),VIEW_PATH=APP_CONSTANTS.MODEL_JSON;
+const COMPONENT_PATH = util.getModulePath(import.meta),VIEW_PATH=APP_CONSTANTS.CONF_PATH;
 
 let model ;
 
 
 async function elementRendered(element) {
-  model = await $$.requireJSON(VIEW_PATH);
+  model = await $$.requireJSON(`${VIEW_PATH}/metadata.json`);
   const shadowRoot = apiinput_apioutput.getShadowRootByHostId(element.getAttribute("id"));
 
   let inputdata = JSON.parse(model.apis[0]["input-output"])["requestBody"]["content"]["application/json"]["schema"]["properties"];
