@@ -8,12 +8,12 @@ import { text_editor } from "../text-editor/text-editor.mjs";
 import { apimanager as apiman } from "/framework/js/apimanager.mjs";
 import { APP_CONSTANTS } from "../../../../js/constants.mjs";
 
-const COMPONENT_PATH = util.getModulePath(import.meta),VIEW_PATH=APP_CONSTANTS.MODEL_JSON;
+const COMPONENT_PATH = util.getModulePath(import.meta),VIEW_PATH=APP_CONSTANTS.CONF_PATH;
 
 let model,target;
 
 const elementConnected = async (element) => {
-  model = await $$.requireJSON(VIEW_PATH);
+  model = await $$.requireJSON(`${VIEW_PATH}/metadata.json`);
   target = JSON.parse(model.apis[0]["input-output"])["requestBody"]["content"]["application/json"]["schema"]["properties"];
   const data = {
     componentPath: COMPONENT_PATH, styleBody: element.getAttribute("styleBody") ?
@@ -60,7 +60,7 @@ function fetchBaseParameters(element, target) {
    margin-left: 1.2em; ">${key}</label>
    <sub class="dataType">${target[key].type}</sub>
     ${target[key].type == "array" || target[key].type == "object" ?` <image-button img="./img/add.svg" text=${target[key].items.type} style=" width:6em; height: 100%; margin :0px 10px;"
-    class=${target[key].items.type } id=${key} type="row" value=${JSON.stringify(target[key])}
+    class=${target[key].items.type } id=${key} type="row"
     styleBody="div#button.row {flex-direction: row; justify-content: flex-start;} div#button {padding: 3px 10px;} div#button>img.row {width: 1.5em;height: 100%;} div#button>span {color: #000000; font-weight: 700; margin-left:5px}"
     color="#444444" border="0.5px solid #98CCFD" background-color="#DFF0FE" active-background-color="white" margin = "0px 10px"
     display="inline-block;" onclick='monkshu_env.components["api-details"].addMoreParameters(this, event)'></image-button>` : `<input type="text" style="margin: 0px 5px" id="My${key}" class="input-text" /></div>`}`
@@ -116,7 +116,7 @@ function addMoreParameters(element, event) {
      <sub class="dataType">${newData[key].type}</sub>
       ${newData[key].type == "array" || newData[key].type == "object" ? `
       <image-button img="./img/add.svg" text=${newData[key].items.type} style=" width:6em; height: 100%; margin :0px 10px;"
-      class=${newData[key].items.type} id=${key} type="row" value=${JSON.stringify(newData[key])}
+      class=${newData[key].items.type} id=${key} type="row"
       styleBody="div#button.row {flex-direction: row; justify-content: flex-start;} div#button {padding: 3px 10px;} div#button>img.row {width: 1.5em;height: 100%;} div#button>span {color: #000000; font-weight: 700; margin-left:5px}"
       color="#444444" border="0.5px solid #98CCFD" background-color="#DFF0FE; active-background-color="white"  margin = "0px 10px"
       display="inline-block;" onclick='monkshu_env.components["api-details"].addMoreParameters(this, event)'></image-button>` : `<input type="text" style="margin: 0px 5px" id="My${newData[key].type}" class="input-text" /></div>`}`

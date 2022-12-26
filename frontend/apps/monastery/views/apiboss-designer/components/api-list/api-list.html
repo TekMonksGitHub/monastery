@@ -46,8 +46,8 @@
         border: 1px solid #C6E3FF;
         height: 100%;
         width: 100%;
-        padding: 0px 2px;
         box-sizing: border-box;
+        cursor: pointer;
     }
     
     div#container > div {
@@ -106,7 +106,7 @@
     
     <div id="container">
         {{#items}}
-        <div id="{{id}}" {{#onclick}}onclick="{{onclick}}"{{/onclick}}>
+        <div id="{{id}}" {{#onclick}}onclick="{{onclick}}"{{/onclick}} class = "items">
             <span id="text">{{label}}</span>
             <span id="{{method}}">{{method}}</span>
 
