@@ -93,6 +93,20 @@
 			top: 1%;
 			right: 1%;
 		}
+		
+		div#details {
+			position: absolute;
+			top: 1%;
+			right: 100%;
+			border: 0.5px solid #4788C7;
+			width: max-content;
+			border-radius: 5px;
+			margin: 5px;
+			padding: 3px 4px 0px 4px;
+		}
+		span#username {
+			margin: 5px;
+		}
 *::-webkit-scrollbar {
     width: 0.3em !important;
     scroll-behavior: smooth !important;
@@ -116,7 +130,14 @@
 </head>
 
 <body>
-	<div id="topright"><img src="./img/exit.svg" title="{{i18n.Exit}}" onclick="window.monkshu_env.__chooser.exitClicked()"></div>
+	<div id="topright">
+		<div id="details">
+			<img src="./img/user-square.svg" title="{{i18n.User}}">
+			<span id="username">Hi, Cool User</span>	
+			<img src="./img/options.svg" title="{{i18n.Options}}" onclick="window.monkshu_env.__chooser.showOptions()">
+		</div>
+		<img src="./img/exit.svg" title="{{i18n.Exit}}" onclick="window.monkshu_env.__chooser.exitClicked()">
+	</div>
 	<div id="left">
 		<img src="./img/monastery.svg">
 		<span id="text"><p>{{i18n.IDEH1}}</p><p>&nbsp;</p> <p>{{i18n.IDEH2}}</p></span>
