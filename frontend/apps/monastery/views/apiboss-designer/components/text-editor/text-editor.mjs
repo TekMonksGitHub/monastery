@@ -36,12 +36,23 @@
 	 }, 10);
  }
 
- function getJsonData(json){
+  function getJsonData(json){
 	let data = JSON.stringify(json, null, 4);
 	const element = text_editor.getHostElementByID("response");
-
+	const shadowRoot = text_editor.getShadowRootByHost(element);
+	if(json && json.result){
+		shadowRoot.querySelector("div#statuscontainer").style.display = "block";
+	}
 	_setValue(data, element);
 	return;
+ }
+
+ function copyToClipboard(){
+	const host = text_editor.getHostElementByID("response");
+	const shadowRoot = text_editor.getShadowRootByHost(host);
+	if(shadowRoot.querySelector("span.cm-atom")){
+		navigator.clipboard.writeText(shadowRoot.querySelector("span.cm-atom").innerText);
+	}
  }
  
  async function open(element) {
@@ -68,5 +79,5 @@
  }
  
  // convert this all into a WebComponent so we can use it
- export const text_editor = {trueWebComponentMode: true, elementConnected, elementRendered, open, save ,getJsonData}
+ export const text_editor = {trueWebComponentMode: true, elementConnected, elementRendered, open, save ,getJsonData, copyToClipboard}
  monkshu_component.register("text-editor", `${COMPONENT_PATH}/text-editor.html`, text_editor);
