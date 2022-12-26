@@ -8,12 +8,12 @@ import { text_editor } from "../text-editor/text-editor.mjs";
 import { apimanager as apiman } from "/framework/js/apimanager.mjs";
 import { APP_CONSTANTS } from "../../../../js/constants.mjs";
 
-const COMPONENT_PATH = util.getModulePath(import.meta),VIEW_PATH=APP_CONSTANTS.MODEL_JSON;
+const COMPONENT_PATH = util.getModulePath(import.meta),VIEW_PATH=APP_CONSTANTS.CONF_PATH;
 
 let model,target;
 
 const elementConnected = async (element) => {
-  model = await $$.requireJSON(VIEW_PATH);
+  model = await $$.requireJSON(`${VIEW_PATH}/metadata.json`);
   target = JSON.parse(model.apis[0]["input-output"])["requestBody"]["content"]["application/json"]["schema"]["properties"];
   const data = {
     componentPath: COMPONENT_PATH, styleBody: element.getAttribute("styleBody") ?

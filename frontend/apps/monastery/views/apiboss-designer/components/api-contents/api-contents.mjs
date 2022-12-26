@@ -6,16 +6,14 @@ import { util } from "/framework/js/util.mjs";
 import { monkshu_component } from "/framework/js/monkshu_component.mjs";
 import { APP_CONSTANTS } from "../../../../js/constants.mjs";
 
-const COMPONENT_PATH = util.getModulePath(import.meta),VIEW_PATH=APP_CONSTANTS.MODEL_JSON;
-let docData,model;
+const COMPONENT_PATH = util.getModulePath(import.meta),VIEW_PATH=APP_CONSTANTS.CONF_PATH;
+let docData,model,serverDetails;
 
 
 const elementConnected = async (element) => {
-  console.log(VIEW_PATH);
 
-   model = await $$.requireJSON(VIEW_PATH);
+   model = await $$.requireJSON(`${VIEW_PATH}/metadata.json`),serverDetails = await $$.requireJSON(`${VIEW_PATH}/serverdetail.json`);
 
-  console.log(model)
   let inputParams = [], outputParams = [];
   traverseObject(JSON.parse(model.apis[0]["input-output"])["requestBody"]["content"]["application/json"]["schema"]["properties"], false, function (node, key) {
     if (node && typeof node == "object") if (node.type) {
@@ -43,7 +41,7 @@ const elementConnected = async (element) => {
 
   const data = {
     "description": model.apis[0]["apidescription"],
-    "exposedpath": `https://<domain>${model.apis[0]["exposedpath"]}`,
+    "exposedpath": `${serverDetails.secure ?"https":"http"}://${serverDetails.hostname}:${serverDetails.port}${model.apis[0]["exposedpath"]}`,
     "method": model.apis[0]["method"],
     "standard": model.apis[0]["yesorno"] == "YES" ? "REST" : "NOT REST",
     "inputparams": inputParams,
@@ -90,7 +88,7 @@ function bindApiContents(elementid) {
     traverseObject(JSON.parse(api["input-output"])["responses"]["200"]["content"]["application/json"]["schema"]["properties"], false, function (node, key) { if (node && typeof node == "object") if (node.type) { outputParams.push({ "name": key, "type": node.type, "desc": node.desc ? node.desc : "", "index": outputParams.length + 1 }); } });
     if (api["apiname"] == elementid) {
       data["description"] = api["apidescription"];
-      data["exposedpath"] = `https://<domain>${api["exposedpath"]}`;
+      data["exposedpath"] = `${serverDetails.secure ?"https":"http"}://${serverDetails.hostname}:${serverDetails.port}${api["exposedpath"]}`;
       data["method"] = api["method"];
       if (api["yesorno"] == "YES") data["standard"] = "REST";
       else data["standard"] = "NOT REST";
