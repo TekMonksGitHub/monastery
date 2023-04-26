@@ -1,0 +1,8 @@
+{
+    "P3_LIBS_CORE": ["3p/codemirror/lib/codemirror.js", "3p/codemirror/addon/selection/active-line.js"],
+    "P3_LIBS_SQL": ["3p/codemirror/mode/sql/sql.js", "3p/codemirror/addon/hint/sql-hint.js"],
+    "P3_LIBS_JAVASCRIPT": ["3p/codemirror/mode/javascript/javascript.js", 
+        "3p/codemirror/addon/edit/matchbrackets.js", "3p/codemirror/addon/lint/lint.js", 
+        "3p/codemirror/addon/lint/javascript-lint.js", "3p/jshint/jshint.js"],
+    "P3_LIBS_TEXT": []
+}

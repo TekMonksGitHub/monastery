@@ -8,16 +8,15 @@
 @import url("{{{componentPath}}}/3p/codemirror/lib/codemirror.css");
 @import url("{{{componentPath}}}/3p/codemirror/addon/lint/lint.css");
 
-body {
+html, body {
     margin: 0%;
     height: 100%;
-    width: calc(100vw - 192px);
+    width: 100%;
 }
 
 div#container {
     display: flex;
     flex-direction: column;
-    position: absolute;
     width: 100%;
     height: 100%;
 }
@@ -29,7 +28,6 @@ span#toolbar {
     width: 100%;
     flex-direction: row;
     justify-content: space-between;
-    max-width: calc(100vw - 192px);
 }
 
 span#toolbar > span > span {
@@ -75,8 +73,13 @@ img.button {width: 20px;}
         {{{toolbarPluginHTML}}}
     </span>
     <span id="rightitems">
+        {{#showToolbarLoadButton}}
         <span class="button" onclick='monkshu_env.components["text-editor"].open(this)'><img class="button" src="{{{componentPath}}}/img/open.svg">&nbsp;&nbsp;Load</span>
+        {{/showToolbarLoadButton}}
+
+        {{#showToolbarSaveButton}}
         <span class="button" onclick='monkshu_env.components["text-editor"].save(this)'><img class="button" src="{{{componentPath}}}/img/save.svg">&nbsp;&nbsp;Save</span>
+        {{/showToolbarSaveButton}}
     </span>
 </span>
 {{/showToolbar}}
