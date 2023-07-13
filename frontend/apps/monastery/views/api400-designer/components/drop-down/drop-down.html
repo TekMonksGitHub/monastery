@@ -1,0 +1,33 @@
+<!--
+/* 
+ * (C) 2022 TekMonks. All rights reserved.
+ * License: See enclosed license.txt file.
+ */
+ -->
+
+<style>
+  body {
+    width: 100%;
+  }
+
+  select#choices {
+    width: 100%;
+    font-family: inherit;
+    background-color: rgba(255, 255, 255, 1);
+    padding: 8px;
+    border: 0px;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    resize: none;
+  }
+</style>
+
+
+{{{styleBody}}}
+<select name="choices" id="choices">
+  <option value="" disabled selected hidden class="disabled">{{text}}</option>
+  {{#values}}
+  <option value="{{value}}" class="values" id="{{value}}">{{value}}</option>
+  {{/values}}
+</select>

@@ -1,0 +1,65 @@
+SCHEMA
+======
+{
+     "result": {"html":"input", "type":"text", "placeholder":"{{i18n.Result}}", "required":"true", "spellcheck":"false"},
+     "code": {"html":"text-editor","showToolbar":"true","mode":"javascript"}
+}
+======
+
+LAYOUT
+=================
+----------------
+|   result     |
+----------------
+|    code      |
+----------------
+=================
+Row Heights = 4em,calc(100vh - 152px - 4em )
+Col Widths = 100%
+=================
+
+
+CSS CLASSES
+===========
+CONTAINER CLASSES = grid-container-extension
+ITEM CLASSES = grid-item-extension
+PER ITEM CLASS = class
+===========
+
+CSS
+=======
+.grid-container-extension {
+    height100%;
+    width:100%;
+}
+
+.grid-item-extension {
+    background-color: var(--dialog-background, white);
+    display: flex;
+    justify-content: space-between;
+    flex-flow: row;
+    box-sizing: border-box;
+}
+
+::placeholder {opacity: 0.7;}
+
+body {
+    margin: 0%;
+    display: inline-block;
+    width: 100%;
+}
+
+input[type=text]#result {
+    width: 100%;
+    margin: 12px 20px 20px 2px;
+    outline: none;
+    padding: 6px;
+    resize: none;
+    border: none;
+    border-radius: 4px;
+    font-family: inherit;
+}
+
+text-editor#code{position: relative;}
+
+=======
