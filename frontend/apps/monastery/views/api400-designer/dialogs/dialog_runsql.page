@@ -1,0 +1,99 @@
+SCHEMA
+======
+{
+    "result": {"html":"input", "type":"text", "placeholder":"{{i18n.Result}}", "required":"true", "spellcheck":"false"},
+    "sql": {"html":"text-editor","showToolbar":"false","mode":"sql"},
+    "server": {"html":"input", "type":"text", "placeholder":"{{i18n.Server}}", "required":"true", "spellcheck":"false"},
+    "port": {"html":"input", "type":"number", "placeholder":"{{i18n.Port}}", "required":"true"},
+    "adminid": {"html":"input", "type":"text", "placeholder":"{{i18n.AdminID}}", "required":"true", "spellcheck":"false"},
+    "adminpassword": {"html":"input", "type":"password", "placeholder":"{{i18n.AdminPassword}}", "required":"true"},
+    "test" : {"html":"input","type":"button","value":"TEST SQL","onclick":"window.monkshu_env['TEST_SQL'].testSQL()"}     
+}
+======
+
+LAYOUT
+=================
+-----------------------------------------------
+|                      result                  |
+------------------------------------------------
+|                      sql                     |
+------------------------------------------------
+|   server             |        port           |
+------------------------------------------------
+|   adminid            |   adminpassword       |
+------------------------------------------------
+|                      test                    |
+------------------------------------------------
+=================
+Row Heights = 3em,calc(100vh - 152px - 17.3em - 10px),3em,3em,3em
+Col Widths = 50%, 50%
+=================
+
+
+CSS CLASSES
+===========
+CONTAINER CLASSES = grid-container-extension
+ITEM CLASSES = grid-item-extension
+PER ITEM CLASS = class
+===========
+
+CSS
+=======
+.grid-container-extension {
+    height100%;
+    width:100%;
+    display: grid;
+    row-gap:1em;
+}
+
+.grid-item-extension {
+    background-color: var(--dialog-background, white);
+    display: flex;
+    justify-content: space-between;
+    flex-flow: row;
+    box-sizing: border-box;
+}
+
+.grid-item-extension > input, .grid-item-extension > input:focus {
+    width: 100%;
+    border-radius: 10px;
+    border: 0px;
+    outline: none;
+    resize: none;
+    font-family: inherit;
+    margin: 0px 20px 0px 2px;
+    padding:18px;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+
+input[type=button] {
+  text-align: center;
+  background-color: var(--button-background-color, rgb(51, 204, 102));
+  color: var(--button-text-color, white);
+  cursor: pointer;
+  font-size: large;
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIuNTM5IDE5LjI1QzEuODc0NSAxOS4yNSAxLjI4OCAxOC45MDE1IDAuOTcwNDk3IDE4LjMxNzVDMC42NTI5OTcgMTcuNzM0IDAuNjc4OTk3IDE3LjA1MiAxLjA0IDE2LjQ5NEw3LjI1IDkuMTkwNVYyLjI1SDdDNi41ODY1IDIuMjUgNi4yNSAxLjkxMzUgNi4yNSAxLjVDNi4yNSAxLjA4NjUgNi41ODY1IDAuNzUgNyAwLjc1SDEzQzEzLjQxMzUgMC43NSAxMy43NSAxLjA4NjUgMTMuNzUgMS41QzEzLjc1IDEuOTEzNSAxMy40MTM1IDIuMjUgMTMgMi4yNUgxMi43NVY5LjE5MDVMMTguOTc5NSAxNi41MkMxOS4zMjEgMTcuMDUyIDE5LjM0NyAxNy43MzM1IDE5LjAyOTUgMTguMzE3NUMxOC43MTIgMTguOTAxNSAxOC4xMjU1IDE5LjI1IDE3LjQ2MSAxOS4yNUgyLjUzOVoiIGZpbGw9IiNERkYwRkUiLz4KPHBhdGggZD0iTTEzIDFDMTMuMjc1NSAxIDEzLjUgMS4yMjQ1IDEzLjUgMS41QzEzLjUgMS43NzU1IDEzLjI3NTUgMiAxMyAySDEyLjVWMi41VjkuMDk5VjkuMjgzTDEyLjYxOSA5LjQyM0wxOC43NjY1IDE2LjY1NkMxOS4wNjE1IDE3LjEzMSAxOS4wNzggMTcuNzA1NSAxOC44MSAxOC4xOTg1QzE4LjUzNyAxOC43MDA1IDE4LjAzMjUgMTkgMTcuNDYxIDE5SDIuNTM5QzEuOTY3NSAxOSAxLjQ2MyAxOC43MDA1IDEuMTkgMTguMTk4QzAuOTIxNSAxNy43MDUgMC45Mzg1IDE3LjEzMDUgMS4yMzM1IDE2LjY1NTVMNy4zODEgOS40MjI1TDcuNSA5LjI4MjVWOS4wOTg1VjIuNVYySDdDNi43MjQ1IDIgNi41IDEuNzc1NSA2LjUgMS41QzYuNSAxLjIyNDUgNi43MjQ1IDEgNyAxSDEzWk0xMyAwLjVIN0M2LjQ1IDAuNSA2IDAuOTUgNiAxLjVDNiAyLjA1IDYuNDUgMi41IDcgMi41VjkuMDk5TDAuODMgMTYuMzU4NUMtMC4wNDY1MDAzIDE3LjcxMyAwLjkyNiAxOS41IDIuNTM5IDE5LjVIMTcuNDYxQzE5LjA3NDUgMTkuNSAyMC4wNDY1IDE3LjcxMyAxOS4xNyAxNi4zNTg1TDEzIDkuMDk5VjIuNUMxMy41NSAyLjUgMTQgMi4wNSAxNCAxLjVDMTQgMC45NSAxMy41NSAwLjUgMTMgMC41WiIgZmlsbD0iIzQ3ODhDNyIvPgo8cGF0aCBkPSJNOSA1QzguODY3MzkgNSA4Ljc0MDIxIDUuMDUyNjggOC42NDY0NSA1LjE0NjQ1QzguNTUyNjggNS4yNDAyMSA4LjUgNS4zNjczOSA4LjUgNS41QzguNSA1LjYzMjYxIDguNTUyNjggNS43NTk3OSA4LjY0NjQ1IDUuODUzNTVDOC43NDAyMSA1Ljk0NzMyIDguODY3MzkgNiA5IDZDOS4xMzI2MSA2IDkuMjU5NzkgNS45NDczMiA5LjM1MzU1IDUuODUzNTVDOS40NDczMiA1Ljc1OTc5IDkuNSA1LjYzMjYxIDkuNSA1LjVDOS41IDUuMzY3MzkgOS40NDczMiA1LjI0MDIxIDkuMzUzNTUgNS4xNDY0NUM5LjI1OTc5IDUuMDUyNjggOS4xMzI2MSA1IDkgNVpNMTAuNSA4LjVDMTAuMjM0OCA4LjUgOS45ODA0MyA4LjYwNTM2IDkuNzkyODkgOC43OTI4OUM5LjYwNTM2IDguOTgwNDMgOS41IDkuMjM0NzggOS41IDkuNUM5LjUgOS43NjUyMiA5LjYwNTM2IDEwLjAxOTYgOS43OTI4OSAxMC4yMDcxQzkuOTgwNDMgMTAuMzk0NiAxMC4yMzQ4IDEwLjUgMTAuNSAxMC41QzEwLjc2NTIgMTAuNSAxMS4wMTk2IDEwLjM5NDYgMTEuMjA3MSAxMC4yMDcxQzExLjM5NDYgMTAuMDE5NiAxMS41IDkuNzY1MjIgMTEuNSA5LjVDMTEuNSA5LjIzNDc4IDExLjM5NDYgOC45ODA0MyAxMS4yMDcxIDguNzkyODlDMTEuMDE5NiA4LjYwNTM2IDEwLjc2NTIgOC41IDEwLjUgOC41WiIgZmlsbD0iIzQ3ODhDNyIvPgo8cGF0aCBkPSJNMi41MzkgMTkuMjVDMS44NzQ1IDE5LjI1IDEuMjg4IDE4LjkwMTUgMC45NzA0OTcgMTguMzE3NUMwLjY1Mjk5NyAxNy43MzQgMC42Nzg5OTcgMTcuMDUyIDEuMDQgMTYuNDk0TDQuNjUgMTIuMjVIMTUuMzVMMTguOTc5NSAxNi41MjA1QzE5LjMyMSAxNy4wNTI1IDE5LjM0NyAxNy43MzQgMTkuMDI5NSAxOC4zMThDMTguNzEyIDE4LjkwMiAxOC4xMjU1IDE5LjI1MDUgMTcuNDYxIDE5LjI1MDVIMi41MzlWMTkuMjVaIiBmaWxsPSIjOThDQ0ZEIi8+CjxwYXRoIGQ9Ik0xNS4yMzQ1IDEyLjVMMTguNzY2NSAxNi42NTU1QzE5LjA2MTUgMTcuMTMwNSAxOS4wNzggMTcuNzA1IDE4LjgxIDE4LjE5OEMxOC41MzcgMTguNzAwNSAxOC4wMzI1IDE5IDE3LjQ2MSAxOUgyLjUzOUMxLjk2NzUgMTkgMS40NjMgMTguNzAwNSAxLjE5IDE4LjE5OEMwLjkyMTUgMTcuNzA1IDAuOTM4NSAxNy4xMzA1IDEuMjMzNSAxNi42NTU1TDQuNzY1NSAxMi41SDE1LjIzNDVaTTE1LjQ2NiAxMkg0LjUzNEwwLjgzIDE2LjM1ODVDLTAuMDQ2NTAwMyAxNy43MTMgMC45MjYgMTkuNSAyLjUzOSAxOS41SDE3LjQ2MUMxOS4wNzQ1IDE5LjUgMjAuMDQ2NSAxNy43MTMgMTkuMTcgMTYuMzU4NUwxNS40NjYgMTJaIiBmaWxsPSIjNDc4OEM3Ii8+CjxwYXRoIGQ9Ik0xMi4yNSAxNkMxMi4wNTExIDE2IDExLjg2MDMgMTYuMDc5IDExLjcxOTcgMTYuMjE5N0MxMS41NzkgMTYuMzYwMyAxMS41IDE2LjU1MTEgMTEuNSAxNi43NUMxMS41IDE2Ljk0ODkgMTEuNTc5IDE3LjEzOTcgMTEuNzE5NyAxNy4yODAzQzExLjg2MDMgMTcuNDIxIDEyLjA1MTEgMTcuNSAxMi4yNSAxNy41QzEyLjQ0ODkgMTcuNSAxMi42Mzk3IDE3LjQyMSAxMi43ODAzIDE3LjI4MDNDMTIuOTIxIDE3LjEzOTcgMTMgMTYuOTQ4OSAxMyAxNi43NUMxMyAxNi41NTExIDEyLjkyMSAxNi4zNjAzIDEyLjc4MDMgMTYuMjE5N0MxMi42Mzk3IDE2LjA3OSAxMi40NDg5IDE2IDEyLjI1IDE2Wk03Ljc1IDE0QzcuNDE4NDggMTQgNy4xMDA1NCAxNC4xMzE3IDYuODY2MTIgMTQuMzY2MUM2LjYzMTcgMTQuNjAwNSA2LjUgMTQuOTE4NSA2LjUgMTUuMjVDNi41IDE1LjU4MTUgNi42MzE3IDE1Ljg5OTUgNi44NjYxMiAxNi4xMzM5QzcuMTAwNTQgMTYuMzY4MyA3LjQxODQ4IDE2LjUgNy43NSAxNi41QzguMDgxNTIgMTYuNSA4LjM5OTQ2IDE2LjM2ODMgOC42MzM4OCAxNi4xMzM5QzguODY4MyAxNS44OTk1IDkgMTUuNTgxNSA5IDE1LjI1QzkgMTQuOTE4NSA4Ljg2ODMgMTQuNjAwNSA4LjYzMzg4IDE0LjM2NjFDOC4zOTk0NiAxNC4xMzE3IDguMDgxNTIgMTQgNy43NSAxNFoiIGZpbGw9IiM0Nzg4QzciLz4KPC9zdmc+Cg==); 
+  background-position: calc(100% - 55.5%) 8px;
+  background-size: 2em;
+  background-repeat:no-repeat;
+}
+
+::placeholder {opacity: 0.7;}
+
+body {
+    margin: 0%;
+    display: inline-block;
+    width: 100%;
+}
+
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+text-editor#sql{position: relative;}
+=======

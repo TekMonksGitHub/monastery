@@ -1,0 +1,36 @@
+body {
+    background: #DFF0FE;
+    font-family: 'Red Hat Text';
+    user-select: none;
+}
+
+div#ribbon {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    padding: 10px 0px 10px 0px;
+}
+
+div#ribbon > div {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    align-items: center;
+}
+
+div#ribbon > div >  img {
+    height: 38px;
+    width: 38px;
+    cursor: copy;
+}
+
+div#ribbon > div >  span {
+    font-size: smaller;
+    padding: 3px 0px 4vh 0px;
+    overflow-wrap: break-word;
+    text-align: center;
+    color: #444444;
+    cursor: copy;
+}
+
+div#ribbon > div:last-child > span {padding-bottom: 0px;}

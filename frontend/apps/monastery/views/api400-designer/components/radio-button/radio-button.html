@@ -1,0 +1,154 @@
+<!--
+/* 
+ * (C) 2022 TekMonks. All rights reserved.
+ * License: See enclosed license.txt file.
+ */ 
+ -->
+
+<style>
+  body {
+    width: 100%;
+  }
+
+  .container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .container .scr-operations {
+    background: #DFF0FE;
+    border: 3px solid #FFFFFF;
+    height: 1.5em;
+    width: 11em;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 0 10px;
+    transition: all 0.3s ease;
+  }
+
+  .container .scr-operations .dot {
+    height: 12px;
+    width: 12px;
+    background: #FFFFFF;
+    border-radius: 50%;
+    position: relative;
+  }
+
+  input[type="radio"] {
+    display: none;
+  }
+
+  #start~.option-1:hover {
+    border-color: rgba(0, 131, 13, 0.25);
+  }
+
+  #stop~.option-2:hover {
+    border-color: rgba(255, 0, 0, 0.25);
+  }
+
+  #release~.option-3:hover {
+    border-color: rgba(0, 0, 255, 0.25);
+  }
+
+  #start:checked:checked~.option-1 {
+    border-color: rgba(0, 131, 13, 0.75);
+
+  }
+
+  #stop:checked:checked~.option-2 {
+    border-color: rgba(255, 0, 0, 0.75);
+
+  }
+
+  #release:checked:checked~.option-3 {
+    border-color: rgba(1, 1, 255, 0.75);
+
+  }
+
+  #start:checked:checked~.option-1 .dot {
+    height: 12px;
+    width: 12px;
+    background: rgba(0, 131, 13, 0.75);
+    border-radius: 50%;
+    position: relative;
+  }
+
+  #stop:checked:checked~.option-2 .dot {
+
+    height: 12px;
+    width: 12px;
+    background: rgba(255, 0, 0, 0.75);
+    border-radius: 50%;
+    position: relative;
+  }
+
+  #release:checked:checked~.option-3 .dot {
+
+    height: 12px;
+    width: 12px;
+    background: rgba(1, 1, 255, 0.75);
+    border-radius: 50%;
+    position: relative;
+
+  }
+
+  #start:hover~.option-1 .dot {
+
+    height: 12px;
+    width: 12px;
+    background: rgba(0, 131, 13, 0.25);
+    border-radius: 50%;
+    position: relative;
+  }
+
+  #stop:hover~.option-2 .dot {
+
+    height: 12px;
+    width: 12px;
+    background: rgba(255, 0, 0, 0.25);
+    border-radius: 50%;
+    position: relative;
+  }
+
+  #release:hover~.option-3 .dot {
+    height: 12px;
+    width: 12px;
+    background: rgba(0, 0, 255, 0.25);
+    border-radius: 50%;
+    position: relative;
+  }
+
+  .container .scr-operations span {
+    font-size: 15px;
+    font-family: 'Roboto';
+    font-style: normal;
+    color: rgba(0, 0, 0, 0.5);
+    margin-left: 11px;
+
+  }
+</style>
+{{{styleBody}}}
+
+<div class="container">
+  <input type="radio" id="start" name="scr" value="start" {{start}}>
+  <input type="radio" id="stop" name="scr" value="stop" {{stop}}>
+  <input type="radio" id="release" name="scr" value="release" {{release}}>
+  <label for="start" class="scr-operations option-1">
+    <div class="dot"></div>
+    <span>START</span>
+  </label>
+  <label for="stop" class="scr-operations option-2">
+    <div class="dot"></div>
+    <span>STOP</span>
+  </label>
+
+  <label for="release" class="scr-operations option-3">
+    <div class="dot"></div>
+    <span>RELEASE</span>
+  </label>
+</div>

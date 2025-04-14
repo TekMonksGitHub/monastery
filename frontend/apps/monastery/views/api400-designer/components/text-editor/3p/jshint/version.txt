@@ -1,0 +1,1 @@
+JSHint 2.13.0 from https://jshint.com/install/

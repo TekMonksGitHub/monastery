@@ -1,0 +1,12 @@
+{
+    "showErrorNotifier": false,
+    
+    "var--dialog-font": "Raleway",
+    "var--dialog-background": "#DFF0FE",
+    "var--button-background-color": "#B6DCFE",
+    "var--button-text-color": "black",
+    "var--dialog-border": "1px solid #B6DCFE",
+    "var--choice-select-box-border": "1px solid #B6DCFE",
+    "var--choice-select-box-font": "smaller Raleway",
+    "var--choice-select-box-color": "#444444"
+}

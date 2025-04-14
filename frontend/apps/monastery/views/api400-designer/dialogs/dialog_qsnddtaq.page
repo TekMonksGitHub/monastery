@@ -1,0 +1,67 @@
+SCHEMA
+======
+{
+    "libraryname": {"html":"input", "type":"text", "placeholder":"{{i18n.LibraryName}}", "spellcheck":"false"},
+    "dataqueue": {"html":"input", "type":"text", "placeholder":"{{i18n.DataQueueName}}", "spellcheck":"false"},
+    "value": {"html":"input", "type":"text", "placeholder":"{{i18n.Value}}","spellcheck":"false"}
+    
+}
+======
+
+
+LAYOUT
+=================
+------------------------------
+|   libraryname | dataqueue  |  
+------------------------------
+|           value            |   
+------------------------------ 
+
+=================
+Row Heights = 4em,3em
+Col Widths = 50%,50%
+=================
+
+
+CSS CLASSES
+===========
+CONTAINER CLASSES = grid-container-extension
+ITEM CLASSES = grid-item-extension
+PER ITEM CLASS = class
+===========
+
+CSS
+=======
+.grid-container-extension {
+    height: 100%;
+}
+
+.grid-item-extension {
+    background-color: var(--dialog-background, white);
+    padding: 0px 20px 0px 20px;
+    display: flex;
+    flex-flow: row;
+    box-sizing: border-box;
+    margin-top:15px;
+}
+
+.grid-item-extension > input, .grid-item-extension > input:focus{
+    width: 100%;
+    border-radius: 4px;
+    border: 0px;
+    outline: none;
+    padding: 11px;
+    resize: none;
+    height:10px;
+    font-family: inherit;
+}
+
+
+::placeholder {opacity: 0.8;}
+
+body {
+    margin: 0%;
+    display: inline-block;
+    width: 100%;
+}
+=======

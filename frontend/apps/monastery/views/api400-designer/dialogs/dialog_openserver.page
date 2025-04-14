@@ -1,0 +1,81 @@
+SCHEMA
+======
+{
+    "server": {"html":"input", "type":"text", "placeholder":"{{i18n.Server}}", "required":"true", "spellcheck":"false"},
+    "port": {"html":"input", "type":"number", "placeholder":"{{i18n.Port}}", "required":"true"},
+    "adminid": {"html":"input", "type":"text", "placeholder":"{{i18n.AdminID}}", "required":"true", "spellcheck":"false"},
+    "adminpassword": {"html":"input", "type":"password", "placeholder":"{{i18n.AdminPassword}}", "required":"true"},
+    "connect": {"html":"image-button", "img":"./views/{{url.view}}/dialogs/connect.svg", "text":"{{i18n.Connect}}", 
+        "style":"width:100%; height: 100%;", "onclickHandler":"window.monkshu_env['OPEN_SERVER_HELPER'].connectServerClicked()", "type":"column", 
+        "color":"#444444", "border":"0.5px solid #98CCFD", "background-color":"#B6DCFE", "active-background-color":"white"},
+    "packages": {"html":"item-list", "label":"{{i18n.DoubleClickToOpen}}", 
+        "ondblclickHandler":"window.monkshu_env['OPEN_SERVER_HELPER'].openClicked(this, this.id)", "style":"width:100%"}
+}
+======
+
+
+LAYOUT
+=================
+
+------------------------------------------------
+|   server    |     port           |  connect  |
+------------------------------------------------
+|   adminid   |    adminpassword   |  connect  |
+------------------------------------------------
+|                    packages                  |
+------------------------------------------------
+=================
+Row Heights = 4em, 4em, calc(100vh - 8em - 152px - 12px - 1em)
+Col Widths = calc((100% - 10em) / 2), calc((100% - 10em) / 2), 10em
+=================
+
+
+CSS CLASSES
+===========
+CONTAINER CLASSES = grid-container-extension
+ITEM CLASSES = grid-item-extension
+PER ITEM CLASS = class
+===========
+
+CSS
+=======
+.grid-container-extension {
+    height: 100%;
+}
+
+.grid-item-extension {
+    background-color: var(--dialog-background, white);
+    padding: 10px 20px 10px 20px;
+    display: flex;
+    flex-flow: row;
+    box-sizing: border-box;
+}
+
+.grid-item-extension > input, .grid-item-extension > input:focus {
+    width: 100%;
+    border-radius: 10px;
+    border: 0px;
+    outline: none;
+    padding: 10px;
+    resize: none;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+::placeholder {opacity: 0.8;}
+
+body {
+    margin: 0%;
+    display: inline-block;
+    width: 100%;
+}
+
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+=======

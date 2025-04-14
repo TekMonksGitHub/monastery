@@ -12,7 +12,7 @@ let api400modelObj = EMPTY_MODEL, idCache = {}, current_command_bundle = DEFAULT
 const MSG_NODES_MODIFIED = "NODES_MODIFIED", MSG_CONNECTORS_MODIFIED = "CONNECTORS_MODIFIED",
     MSG_NODE_DESCRIPTION_CHANGED = "NODE_DESCRIPTION_CHANGED", MSG_ARE_NODES_CONNECTABLE = "ARE_NODES_CONNECTABLE",
     MSG_GET_MODEL = "GET_MODEL", MSG_RESET = "RESET", MSG_LOAD_MODEL = "LOAD_MODEL",
-    MSG_CONNECT_NODES = "CONNECT_NODES", MSG_ADD_NODE = "ADD_NODE" ;
+    MSG_CONNECT_NODES = "CONNECT_NODES", MSG_ADD_NODE = "ADD_NODE";
 
 function init() {
 
@@ -44,7 +44,6 @@ function loadModel(jsonModel) {
         blackboard.broadcastMessage(MSG_ADD_NODE, { nodeName, id, description: clone.description, properties: { ...clone }, connectable: true });
     }
 
-
     const connectNodes = (sourceID, targetID) => {
         if ((!idCache[sourceID]) || (!idCache[targetID])) { LOG.error(`Bad dependency in the model ${sourceID}, skipping.`); return; }
         const sourceName = idCache[sourceID].nodeName, targetName = idCache[targetID].nodeName;
@@ -52,7 +51,7 @@ function loadModel(jsonModel) {
     }
 
     // add connections between commands
-    for (const command of api400modelObj.apicl[0].commands) 
+    for (const command of api400modelObj.apicl[0].commands)
         if (command.dependencies) for (const dependency of command.dependencies) connectNodes(dependency, command.id);
 
 }
@@ -87,14 +86,14 @@ function modelConnectorsModified(type, sourceName, targetName, sourceID, targetI
 }
 
 function isConnectable(sourceName, targetName, sourceID, targetID) {    // are these nodes connectable
-    
+
     if (sourceID == targetID) return false;  // can't loop from same node to itself
     if (targetName == "strapi") return false; // strapi can't be target, so that it will always be first command only
     if (sourceName == "endapi") return false; // endapi can't be connect to any next command
     if (((sourceName == "condition") && !((targetName == "iftrue") || (targetName == "iffalse")))) return false; // condition can only connect to iftrue and iffalse
     if (((sourceName != "condition") && ((targetName == "iftrue") || (targetName == "iffalse")))) return false; // iftrue and iffalse , can only be connect by condition
     if ((sourceName == "goto") && (targetName == "goto")) return false; // can't connect goto to goto
-    
+
     return true;
 }
 
@@ -111,9 +110,33 @@ function nodeDescriptionChanged(_nodeName, id, description) {
 
 function getModel() {
     const retModel = util.clone(api400modelObj);
-    retModel.apicl = algos.sortDependencies(retModel.apicl[0]);  // sort apicl commands in the order of dependencies
-    const APICL = algos.convertIntoAPICL(retModel.apicl); // converting into the final APICL
+    const sortedCommands = algos.sortDependencies(retModel.apicl[0]);  // sort apicl commands in the order of dependencies
+    const NOPparams = saveCordinates(sortedCommands);
+    let APICL = algos.convertIntoAPICL(sortedCommands); // converting into the final APICL
+    const NOPcommand = `NOP PARAMS(${JSON.stringify({ "CORDINATES": NOPparams })})`;
+    const lastCommand = APICL[Object.keys(APICL).length ]
+    if(lastCommand.includes("ENDAPI")){
+    APICL[Object.keys(APICL).length ] = NOPcommand;
+    APICL[Object.keys(APICL).length +1 ] = lastCommand;
     return APICL;
+    }
+    else{
+        APICL[Object.keys(APICL).length +1 ] =  NOPcommand;
+    return APICL;
+    }
+
+}
+
+function saveCordinates(modelObject) {
+    let visitedNodes = [], cordinates = [];
+    modelObject.forEach(node => {
+        if (!visitedNodes.includes(node.id)) {
+            const cordinate = { "description": node["description"], "x": node["x"] ? node["x"] : 30, "y": node["y"] ? node["y"] : 30 };
+            visitedNodes.push(node.id);
+            cordinates.push(cordinate);
+        }
+    })
+    return cordinates;
 }
 
 function getModules() {
@@ -122,7 +145,7 @@ function getModules() {
     for (const command of api400.apicl[0].commands) {
         let nameAndJs = [];
         if (command.nodeName == "mod") {
-            nameAndJs.push(command.result?command.result:'');
+            nameAndJs.push(command.modulename ? command.modulename : '');
             nameAndJs.push(command.code);
             nameAndJsArray.push(nameAndJs)
         }
@@ -151,11 +174,11 @@ function _nodeAdded(nodeName, id, properties) {
     if (nodeName == "strapi" || nodeName == "runsql" || nodeName == "runjs" || nodeName == "goto" || nodeName == "chgvar" ||
         nodeName == "sndapimsg" || nodeName == "condition" || nodeName == "iftrue" || nodeName == "iffalse" ||
         nodeName == "chgdtaara" || nodeName == "rtvdtaara" || nodeName == "call" || nodeName == "runsqlprc" ||
-        nodeName == "rest" || nodeName == "map" || nodeName == "scrread" || nodeName == "scrkeys" ||nodeName == "scrops" ||
-        nodeName == "substr" || nodeName == "qrcvdtaq" || nodeName == "qsnddtaq" || nodeName == "dsppfm" || 
-        nodeName == "log" ||nodeName == "jsonata" || nodeName == "mod" || nodeName == "endapi") {
-            node.name = name;
-            _findOrCreateCommand().commands.push(node);
+        nodeName == "rest" || nodeName == "map" || nodeName == "scrread" || nodeName == "scrkeys" || nodeName == "scrops" ||
+        nodeName == "substr" || nodeName == "qrcvdtaq" || nodeName == "qsnddtaq" || nodeName == "dsppfm" ||
+        nodeName == "log" || nodeName == "jsonata" || nodeName == "mod" || nodeName == "endapi") {
+        node.name = name;
+        _findOrCreateCommand().commands.push(node);
     }
 
     node.id = id; idCache[id] = node;   // transfer ID and cache the node
@@ -163,18 +186,18 @@ function _nodeAdded(nodeName, id, properties) {
 }
 
 function _nodeRemoved(nodeName, id) {
-
+    if (idCache && Object.keys(idCache).length === 0) api400modelObj = { apicl: [] };
     if (!idCache[id]) return;   // we don't know of this node
     const node = idCache[id];
-    const nextTargetNode =  algos.checkNodeInAllNodes(node,api400modelObj.apicl[0].commands);
-    if (nextTargetNode)  modelConnectorsModified(api400model.REMOVED,nodeName,nextTargetNode.nodeName,id,nextTargetNode.id);
 
-    if (nodeName == "strapi"||nodeName == "runsql"||nodeName == "runjs"||nodeName == "goto"||nodeName == "chgvar"||
-        nodeName == "sndapimsg"||nodeName == "iftrue"||nodeName == "iffalse"||nodeName == "chgdtaara"||nodeName == "rtvdtaara"||
-        nodeName == "call"||nodeName == "runsqlprc"||nodeName == "rest"||nodeName == "map"||nodeName == "scrread"||
-        nodeName == "scrkeys"||nodeName == "scrops"||nodeName == "substr"||nodeName == "qrcvdtaq"||nodeName == "qsnddtaq"||
-        nodeName == "dsppfm"||nodeName == "log"||nodeName == "jsonata"||nodeName == "mod"||nodeName == "endapi"||nodeName == "condition")  
-        _arrayDelete(api400modelObj.apicl[0].commands,node);
+    const nextTargetNode = algos.checkNodeInAllNodes(node, api400modelObj.apicl[0].commands);
+    if (nextTargetNode) modelConnectorsModified(api400model.REMOVED, nodeName, nextTargetNode.nodeName, id, nextTargetNode.id);
+    if (nodeName == "strapi" || nodeName == "runsql" || nodeName == "runjs" || nodeName == "goto" || nodeName == "chgvar" ||
+        nodeName == "sndapimsg" || nodeName == "iftrue" || nodeName == "iffalse" || nodeName == "chgdtaara" || nodeName == "rtvdtaara" ||
+        nodeName == "call" || nodeName == "runsqlprc" || nodeName == "rest" || nodeName == "map" || nodeName == "scrread" ||
+        nodeName == "scrkeys" || nodeName == "scrops" || nodeName == "substr" || nodeName == "qrcvdtaq" || nodeName == "qsnddtaq" ||
+        nodeName == "dsppfm" || nodeName == "log" || nodeName == "jsonata" || nodeName == "mod" || nodeName == "endapi" || nodeName == "condition")
+        _arrayDelete(api400modelObj.apicl[0].commands, node);
 
     delete idCache[id]; // uncache
     return true;
@@ -182,12 +205,12 @@ function _nodeRemoved(nodeName, id) {
 
 function _nodeModified(nodeName, id, properties) {
 
-    let parameters  = [];
+    let parameters = [];
     if (!idCache[id]) return false; // we don't know of this node
     for (const key in properties) { // transfer the new properties
         // listbox is used for the commands which are having the dynamic elements
-        if (key.includes("listbox") && (nodeName == "strapi" || nodeName == "sndapimsg" || nodeName == "call" || nodeName == "runsqlprc" || 
-                                        nodeName == "map" || nodeName == "scrread" || nodeName == "scrkeys")) {
+        if (key.includes("listbox") && (nodeName == "strapi" || nodeName == "sndapimsg" || nodeName == "call" || nodeName == "runsqlprc" ||
+            nodeName == "map" || nodeName == "scrread" || nodeName == "scrkeys")) {
             if (properties[key] != '') { parameters = properties[key]; }
         } else idCache[id][key] = properties[key];
     }

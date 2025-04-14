@@ -19,7 +19,7 @@ function elementConnected(element) {
     let data = {};
 
 	if (element.getAttribute("styleBody")) data.styleBody = `<style>${element.getAttribute("styleBody")}</style>`;
-	
+ 
 	if (element.id) {
 		if (!flow_diagram.datas) flow_diagram.datas = {}; flow_diagram.datas[element.id] = data;
 	} else flow_diagram.data = data;
@@ -46,7 +46,7 @@ function elementConnected(element) {
  */
 async function insertNode(hostID, id, value, shapeName, x=0, y=0, width=80, height=30, connectable=true) {
 	const graph = await _getGraph(hostID); if (!graph) return false;
-	const style = graph.getStylesheet().getCellStyle(shapeName);	
+	const style = graph.getStylesheet().getCellStyle(shapeName); 
 	if (!style[mxConstants.STYLE_IMAGE] != STYLE_CACHE[shapeName][mxConstants.STYLE_IMAGE]) 
 		graph.getStylesheet().putCellStyle(shapeName,STYLE_CACHE[shapeName]);	// there is some bug in mxGraph where it forgets styles
 	const parent = graph.getDefaultParent();
@@ -137,9 +137,9 @@ async function _getGraph(hostID) {
     const mxgraphContainer = _createNonWebComponentDiagramContainer(shadowRoot.querySelector(`#${containerID}`));
 
 	mxEvent.disableContextMenu(mxgraphContainer);
-	
+ 
 	GRAPHS[hostID] = new mxGraph(mxgraphContainer, null, "fastest"); GRAPHS[hostID].setConnectable(GRAPH_CONNECTABLE);
-	GRAPHS[hostID][GRAPH_MONASTERY_ID] = hostID; const graph = GRAPHS[hostID]; 	
+	GRAPHS[hostID][GRAPH_MONASTERY_ID] = hostID; const graph = GRAPHS[hostID];  
 
 	graph.popupMenuHandler.factoryMethod = (menu, cell, _evt) => { if (cell?.vertex || cell?.edge) {
 		if (cell.vertex) menu.addItem('Rename', null, _=>graph.startEditingAtCell(cell) ); 
@@ -155,12 +155,18 @@ async function _getGraph(hostID) {
 	});
 	graph.addListener(mxEvent.CELLS_REMOVED, (sender, evt) => {	// shape deleted or edge deleted
 		const listOfCellsRemoved = evt.getProperty("cells");
-		for (const cell of listOfCellsRemoved) 
+		for (const cell of listOfCellsRemoved) {
 			if (cell.vertex) blackboard.broadcastMessage(	// shape deleted
-				MSG_SHAPE_REMOVED, {name:cell.style, id:cell.id, graphID:_findGraphID(sender)} );
-			else if (cell.edge) blackboard.broadcastMessage(	// arrow connecting shapes deleted
-				MSG_SHAPES_DISCONNECTED, {sourceID: cell.source.id, sourceName: cell.source.style, 
-				targetName: cell.target.style, targetID: cell.target.id, graphID:_findGraphID(sender)} );
+				MSG_SHAPE_REMOVED, { name: cell.style, id: cell.id, graphID: _findGraphID(sender) });
+			else if (cell.edge) {
+				blackboard.broadcastMessage(	// arrow connecting shapes deleted
+					MSG_SHAPES_DISCONNECTED, {
+						sourceID: cell.source.id, sourceName: cell.source.style,
+					targetName: cell.target.style, targetID: cell.target.id, graphID: _findGraphID(sender)
+				});
+				if (cell.source.style == "condition" && cell.target)  graph.removeCells([cell.target])				
+			}
+		}
 	});
 	graph.addListener(mxEvent.CELLS_MOVED, (sender, evt) => {	// cells moved
 		const cells = evt.getProperty("cells");
